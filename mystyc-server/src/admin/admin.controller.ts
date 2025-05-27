@@ -1,0 +1,83 @@
+import { Controller, Get, Post, Patch, Param, NotFoundException } from '@nestjs/common';
+
+import { Roles } from '@/common/decorators/roles.decorator';
+import { UserRole } from '@/common/enums/roles.enum';
+import { UsersService } from '@/users/users.service';
+import { UserAuthService } from '@/users/user-auth.service';
+import { logger } from '@/util/logger';
+
+@Controller('admin')
+export class AdminController {
+
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly userAuthService: UserAuthService
+  ) {}
+
+  @Get('users')
+  @Roles(UserRole.ADMIN)
+  async getAllUsers() {
+    logger.info('Admin fetching all users', {}, 'AdminController');
+    
+    const users = await this.usersService.findAll();
+    
+    logger.info('Admin users list retrieved', { count: users.length }, 'AdminController');
+    return users;
+  }
+
+  @Post('users/:firebaseUid/promote')
+  @Roles(UserRole.ADMIN)
+  async promoteUser(@Param('firebaseUid') firebaseUid: string) {
+    logger.info('Admin promoting user', { targetUid: firebaseUid }, 'AdminController');
+    
+    try {
+      const result = await this.userAuthService.promoteToAdmin(firebaseUid);
+      
+      logger.info('User promoted successfully', { targetUid: firebaseUid }, 'AdminController');
+      return { 
+        success: true, 
+        message: 'User promoted to admin successfully',
+        user: result 
+      };
+    } catch (error) {
+      if (error.status === 404) {
+        logger.warn('User promotion failed - user not found', { targetUid: firebaseUid }, 'AdminController');
+        throw new NotFoundException('User not found');
+      }
+      
+      logger.error('User promotion failed', { 
+        targetUid: firebaseUid, 
+        error: error.message 
+      }, 'AdminController');
+      throw error;
+    }
+  }
+
+  @Patch('users/:firebaseUid/revoke-admin')
+  @Roles(UserRole.ADMIN)
+  async revokeAdmin(@Param('firebaseUid') firebaseUid: string) {
+    logger.info('Admin revoking admin access', { targetUid: firebaseUid }, 'AdminController');
+    
+    try {
+      const result = await this.userAuthService.revokeAdminAccess(firebaseUid);
+      
+      logger.info('Admin access revoked successfully', { targetUid: firebaseUid }, 'AdminController');
+      return { 
+        success: true, 
+        message: 'Admin access revoked successfully',
+        user: result 
+      };
+    } catch (error) {
+      if (error.status === 404) {
+        logger.warn('Admin revocation failed - user not found', { targetUid: firebaseUid }, 'AdminController');
+        throw new NotFoundException('User not found');
+      }
+      
+      logger.error('Admin revocation failed', { 
+        targetUid: firebaseUid, 
+        error: error.message 
+      }, 'AdminController');
+      throw error;
+    }
+  }
+}

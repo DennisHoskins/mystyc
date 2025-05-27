@@ -1,0 +1,26 @@
+services:
+  api:
+    container_name: mystyc-api
+    env_file: .env
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  mongo:
+    container_name: mystyc-db
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+      - ./mongod.conf:/etc/mongo/mongod.conf:ro
+    command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
