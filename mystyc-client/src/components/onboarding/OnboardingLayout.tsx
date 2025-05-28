@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/components/context/AuthContext';
 import { useBusy } from '@/components/context/BusyContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useSessionStorage } from '@/hooks/useSessionStorage';
+import { storage } from '@/util/storage';
 import { logger } from '@/util/logger';
 
 import OnboardingIntro from './steps/OnboardingIntro';
@@ -25,10 +25,18 @@ export default function OnboardingLayout() {
   const { setBusy } = useBusy();
   const router = useCustomRouter();
   const { loading, user } = useAuth();
-  const { value: introShown, isLoading: sessionLoading } = useSessionStorage('onboardingIntroShown');
+  const [introShown, setIntroShown] = useState<string | null>(null);
+  const [isStorageLoading, setIsStorageLoading] = useState(true);
 
   const [stepKey, setStepKey] = useState<StepKey>('intro');
   const [localLoading, setLocalLoading] = useState(true);
+
+  // Load intro shown state from storage
+  useEffect(() => {
+    const storedValue = storage.session.getItem('onboardingIntroShown');
+    setIntroShown(storedValue);
+    setIsStorageLoading(false);
+  }, []);
 
   const handleNext = useCallback(() => {
     const currentIndex = stepDefinitions.findIndex((s) => s.key === stepKey);
@@ -49,7 +57,7 @@ export default function OnboardingLayout() {
   }, [stepKey]);
 
   useEffect(() => {
-    if (loading || !user || stepKey !== 'intro' || sessionLoading) return;
+    if (loading || !user || stepKey !== 'intro' || isStorageLoading) return;
 
     const hasSeenIntro = introShown === user.userProfile.id;
 
@@ -64,19 +72,19 @@ export default function OnboardingLayout() {
       logger.log('[OnboardingLayout] Setting step to: complete');
       setStepKey('complete');
     }
-  }, [user, sessionLoading, introShown]);
+  }, [user, isStorageLoading, introShown]);
 
   useEffect(() => {
-    if (loading || !user || sessionLoading) {
+    if (loading || !user || isStorageLoading) {
       setBusy(true);
       setLocalLoading(true);
     } else {
       setLocalLoading(false);
       setBusy(false);
     }
-  }, [loading, user, sessionLoading]);
+  }, [loading, user, isStorageLoading]);
 
-  if (loading || localLoading || sessionLoading) return null;
+  if (loading || localLoading || isStorageLoading) return null;
 
   const current = stepDefinitions.find((s) => s.key === stepKey);
   if (!current) return null;

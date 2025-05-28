@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { User } from '@/interfaces/user.interface';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
+import { storage } from '@/util/storage';
 
 const getUserCacheKey = (firebaseUid: string) => `mystyc_user_${firebaseUid}`;
 const CACHE_KEYS_STORAGE = 'mystyc_cache_keys';
@@ -14,7 +15,7 @@ interface CachedUser {
 
 const getCachedKeys = (): string[] => {
   try {
-    const keys = sessionStorage.getItem(CACHE_KEYS_STORAGE);
+    const keys = storage.session.getItem(CACHE_KEYS_STORAGE);
     return keys ? JSON.parse(keys) : [];
   } catch {
     return [];
@@ -26,7 +27,7 @@ const addCacheKey = (key: string) => {
     const keys = getCachedKeys();
     if (!keys.includes(key)) {
       keys.push(key);
-      sessionStorage.setItem(CACHE_KEYS_STORAGE, JSON.stringify(keys));
+      storage.session.setItem(CACHE_KEYS_STORAGE, JSON.stringify(keys));
     }
   } catch {}
 };
@@ -34,7 +35,7 @@ const addCacheKey = (key: string) => {
 const removeCacheKey = (key: string) => {
   try {
     const keys = getCachedKeys().filter(k => k !== key);
-    sessionStorage.setItem(CACHE_KEYS_STORAGE, JSON.stringify(keys));
+    storage.session.setItem(CACHE_KEYS_STORAGE, JSON.stringify(keys));
   } catch {}
 };
 
@@ -56,7 +57,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
         };
         
         try {
-          sessionStorage.setItem(key, JSON.stringify(cachedUser));
+          storage.session.setItem(key, JSON.stringify(cachedUser));
           // Trigger state update in AuthContext
           onUserUpdate(event.data.userData);
         } catch (err) {
@@ -78,7 +79,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
 
   const getCachedUser = (firebaseUid: string): User | null => {
     try {
-      const cached = sessionStorage.getItem(getUserCacheKey(firebaseUid));
+      const cached = storage.session.getItem(getUserCacheKey(firebaseUid));
       if (cached) {
         const cachedUser: CachedUser = JSON.parse(cached);
         const isExpired = Date.now() - cachedUser.timestamp > CACHE_EXPIRY_MS;
@@ -107,7 +108,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
         data: userData,
         timestamp: Date.now()
       };
-      sessionStorage.setItem(key, JSON.stringify(cachedUser));
+      storage.session.setItem(key, JSON.stringify(cachedUser));
       addCacheKey(key);
       logger.log('[useUserCache] User data cached');
       
@@ -131,14 +132,14 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
     try {
       if (firebaseUid) {
         const key = getUserCacheKey(firebaseUid);
-        sessionStorage.removeItem(key);
+        storage.session.removeItem(key);
         removeCacheKey(key);
         logger.log('[useUserCache] User cache cleared');
       } else {
         getCachedKeys().forEach(key => {
-          sessionStorage.removeItem(key);
+          storage.session.removeItem(key);
         });
-        sessionStorage.removeItem(CACHE_KEYS_STORAGE);
+        storage.session.removeItem(CACHE_KEYS_STORAGE);
         logger.log('[useUserCache] All cache cleared');
       }
     } catch (err) {

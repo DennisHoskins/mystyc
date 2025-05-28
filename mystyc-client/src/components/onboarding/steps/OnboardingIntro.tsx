@@ -3,18 +3,17 @@
 import React from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
-import { useSessionStorage } from '@/hooks/useSessionStorage';
+import { storage } from '@/util/storage';
 
 import OnboardingHeader from '../OnboardingHeader';
 import Button from '@/components/ui/Button';
 
 export default function OnboardingIntro({ onNext }: { onNext: () => void }) {
   const { user } = useAuth();
-  const { setValue: setIntroShown } = useSessionStorage('onboardingIntroShown');
 
   const handleContinue = () => {
     if (user?.userProfile?.id) {
-      setIntroShown(user.userProfile.id);
+      storage.session.setItem('onboardingIntroShown', user.userProfile.id);
     }
     onNext();
   };
