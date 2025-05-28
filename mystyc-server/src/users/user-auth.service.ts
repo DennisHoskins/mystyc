@@ -3,16 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { logger } from '@/util/logger';
 
 import { UserService } from './user.service';
-import { UserRolesService } from './user-roles.service';
 
 @Injectable()
 export class UserAuthService {
   constructor(
-    private readonly userService: UserService,
-    private readonly userRolesService: UserRolesService
+    private readonly userService: UserService
   ) {}
 
   async getOrCreateUser(firebaseUser: FirebaseUser): Promise<User> {
@@ -25,37 +22,5 @@ export class UserAuthService {
 
   async updateUserProfile(firebaseUid: string, updates: UpdateUserDto, firebaseUser: FirebaseUser): Promise<User> {
     return this.userService.updateUserProfile(firebaseUid, updates, firebaseUser);
-  }
-
-  async promoteToAdmin(firebaseUid: string): Promise<User | null> {
-    logger.info('Promoting user to admin', { firebaseUid });
-
-    const existingUser = await this.userService.getUserProfile(firebaseUid, {
-      uid: firebaseUid,
-    });
-
-    if (!existingUser) {
-      logger.warn('Cannot promote - user not found', { firebaseUid });
-      return null;
-    }
-
-    await this.userRolesService.promoteToAdmin(firebaseUid);
-    return existingUser;
-  }
-
-  async revokeAdminAccess(firebaseUid: string): Promise<User | null> {
-    logger.info('Revoking admin access', { firebaseUid });
-
-    const existingUser = await this.userService.getUserProfile(firebaseUid, {
-      uid: firebaseUid,
-    });
-
-    if (!existingUser) {
-      logger.warn('Cannot revoke - user not found', { firebaseUid });
-      return null;
-    }
-
-    await this.userRolesService.revokeAdminAccess(firebaseUid);
-    return existingUser;
   }
 }

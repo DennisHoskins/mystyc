@@ -3,7 +3,7 @@ import { Controller, Get, Post, Patch, Param, NotFoundException } from '@nestjs/
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { UserProfileService } from '@/users/user-profile.service';
-import { UserAuthService } from '@/users/user-auth.service';
+import { UserRolesService } from '@/users/user-roles.service';
 import { logger } from '@/util/logger';
 
 @Controller('admin')
@@ -11,7 +11,7 @@ export class AdminController {
 
   constructor(
     private readonly userProfileService: UserProfileService,
-    private readonly userAuthService: UserAuthService
+    private readonly userRolesService: UserRolesService
   ) {}
 
   @Get('users')
@@ -31,13 +31,12 @@ export class AdminController {
     logger.info('Admin promoting user', { targetUid: firebaseUid }, 'AdminController');
     
     try {
-      const result = await this.userAuthService.promoteToAdmin(firebaseUid);
+      await this.userRolesService.promoteToAdmin(firebaseUid);
       
       logger.info('User promoted successfully', { targetUid: firebaseUid }, 'AdminController');
       return { 
         success: true, 
-        message: 'User promoted to admin successfully',
-        user: result 
+        message: 'User promoted to admin successfully'
       };
     } catch (error) {
       if (error.status === 404) {
@@ -59,13 +58,12 @@ export class AdminController {
     logger.info('Admin revoking admin access', { targetUid: firebaseUid }, 'AdminController');
     
     try {
-      const result = await this.userAuthService.revokeAdminAccess(firebaseUid);
+      await this.userRolesService.revokeAdminAccess(firebaseUid);
       
       logger.info('Admin access revoked successfully', { targetUid: firebaseUid }, 'AdminController');
       return { 
         success: true, 
-        message: 'Admin access revoked successfully',
-        user: result 
+        message: 'Admin access revoked successfully'
       };
     } catch (error) {
       if (error.status === 404) {
