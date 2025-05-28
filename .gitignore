@@ -1,8 +1,13 @@
-# Ignore all files at the root level
-*
+# Ignore everything
+/*
 
-# Allow directories at the root
-!*/
+# But keep these directories
+!/mystyc-client/
+!/mystyc-server/
+
+# Make sure contents of those directories are not ignored
+!/mystyc-client/**
+!/mystyc-server/**
 
 # Allow .gitignore itself
 !.gitignore
