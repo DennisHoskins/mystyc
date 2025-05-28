@@ -4,7 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { User } from '@/common/interfaces/user.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserAuthService } from './user-auth.service';
+import { UserService } from './user.service';
 import { UserMapperUtil } from '@/util/user-mapper.util';
 import { createServiceLogger } from '@/util/logger';
 import { FirebaseService } from '@/auth/firebase.service';
@@ -15,7 +15,7 @@ export class UsersController {
 
   constructor(
     private readonly firebaseService: FirebaseService,
-    private readonly userAuthService: UserAuthService,
+    private readonly userService: UserService,
   ) {}
 
   @Post()
@@ -27,7 +27,7 @@ export class UsersController {
 
     const firebaseUser = UserMapperUtil.transformFirebaseUser(firebaseUserFromDecorator);
     
-    return this.userAuthService.getOrCreateUser(firebaseUser);
+    return this.userService.getOrCreateUser(firebaseUser);
   }
 
   @Get('me')
@@ -45,7 +45,7 @@ export class UsersController {
       
       this.logger.debug('Getting current user', { uid: decodedToken.uid });
       
-      const user = await this.userAuthService.getOrCreateUser(firebaseUser);
+      const user = await this.userService.getOrCreateUser(firebaseUser);
       
       this.logger.debug('Current user retrieved successfully', { uid: decodedToken.uid });
       return user;
@@ -66,7 +66,7 @@ export class UsersController {
 
     const firebaseUser = UserMapperUtil.transformFirebaseUser(firebaseUserFromDecorator);
 
-    return this.userAuthService.updateUserProfile(firebaseUserFromDecorator.uid, body, firebaseUser);
+    return this.userService.updateUserProfile(firebaseUserFromDecorator.uid, body, firebaseUser);
   }
 
   @Get('profile')
@@ -77,7 +77,7 @@ export class UsersController {
 
     const firebaseUser = UserMapperUtil.transformFirebaseUser(firebaseUserFromDecorator);
 
-    const user = await this.userAuthService.getUserProfile(firebaseUserFromDecorator.uid, firebaseUser);
+    const user = await this.userService.getUserProfile(firebaseUserFromDecorator.uid, firebaseUser);
     return { user };
   }
 }
