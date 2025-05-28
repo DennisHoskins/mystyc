@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      if (firebaseUser && !hasLoadedCache) {
        const cachedUser = getCachedUser(firebaseUser.uid);
        if (cachedUser) {
-         logger.log('🟢 [AuthContext] Using cached user data');
+         logger.log('[AuthContext] Using cached user data');
          setUser(cachedUser);
        }
        setHasLoadedCache(true);

@@ -12,23 +12,21 @@ export function useCustomRouter() {
   const [isReady, setIsReady] = useState(true);
 
   const navigate = (method: 'push' | 'replace', href: string) => {
-    logger.log(`%c[CustomRouter] ${method} called: ${href}`, 'color: red; font-weight: bold;');
+    logger.log(`[CustomRouter] ${method}: ${href}`);
     
     if (href === pathname) {
-      logger.log('%c[CustomRouter] Already on this path, ignoring', 'color: red; font-weight: bold;');
+      logger.log('[CustomRouter] Already on this path, ignoring');
       return;
     }
 
     if (!isReady) {
-      logger.log('%c[CustomRouter] Navigation in progress, ignoring', 'color: red; font-weight: bold;');
+      logger.log('[CustomRouter] Navigation in progress, ignoring');
       return;
     }
-
-    logger.log('%c[CustomRouter] Starting transition out', 'color: red; font-weight: bold;');
     
     try {
       transition.startTransitionOut(() => {
-        logger.log('%c[CustomRouter] Transition out complete, navigating', 'color: red; font-weight: bold;');
+        logger.log('[CustomRouter] Transition out complete, navigating');
         setIsReady(false);
         
         try {
@@ -37,13 +35,13 @@ export function useCustomRouter() {
           // Timeout fallback - if navigation doesn't complete in 5 seconds
           setTimeout(() => {
             if (!isReady) {
-              logger.error('%c[CustomRouter] Navigation timeout, forcing clear', 'color: red; font-weight: bold;');
+              logger.error('[CustomRouter] Navigation timeout, forcing clear');
               setIsReady(true);
             }
           }, 5000);
           
         } catch (err) {
-          logger.error('%c[CustomRouter] Router navigation failed:', 'color: red; font-weight: bold;', err);
+          logger.error('[CustomRouter] Router navigation failed:', err);
           setIsReady(true);
         }
       });
@@ -51,18 +49,18 @@ export function useCustomRouter() {
       // Timeout for transition callbacks - if startTransitionOut callback never fires
       setTimeout(() => {
         if (!isReady) {
-          logger.error('%c[CustomRouter] Transition callback timeout, forcing clear', 'color: red; font-weight: bold;');
+          logger.error('[CustomRouter] Transition callback timeout, forcing clear');
           setIsReady(true);
         }
       }, 3000);
 
     } catch (err) {
-      logger.error('%c[CustomRouter] Transition start failed:', 'color: red; font-weight: bold;', err);
+      logger.error('[CustomRouter] Transition start failed:', err);
       setIsReady(true);
     }
 
     transition.onTransitionComplete(() => {
-      logger.log('%c[CustomRouter] Transition complete, router ready', 'color: red; font-weight: bold;');
+      logger.log('[CustomRouter] Transition complete, router ready');
       setIsReady(true);
     });
   };

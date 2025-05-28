@@ -16,9 +16,9 @@ export function useUserAPI() {
     setUser: (user: User | null) => void
   ): Promise<User | null> => {
     try {
-      logger.log('🔵 [useUserAPI] Cache miss - fetching from API...');
+      logger.log('[useUserAPI] Cache miss - fetching from API...');
       const user = await apiClient.getCurrentUser(token);
-      logger.log('🔵 [useUserAPI] Complete user response:', user);
+      logger.log('[useUserAPI] Complete user response:', user);
       
       setCachedUser(firebaseUser.uid, user);
       setUser(user);

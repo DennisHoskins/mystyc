@@ -53,21 +53,15 @@ export default function OnboardingLayout() {
 
     const hasSeenIntro = introShown === user.userProfile.id;
 
-    logger.log('🟦 [OnboardingLayout] Initial step setup');
-    logger.log('🟦 [OnboardingLayout] user.userProfile.id:', user.userProfile.id);
-    logger.log('🟦 [OnboardingLayout] introShown:', introShown);
-    logger.log('🟦 [OnboardingLayout] hasSeenIntro:', hasSeenIntro);
-    logger.log('🟦 [OnboardingLayout] user.userProfile.fullName:', user.userProfile.fullName);
-
     if (!user.userProfile.fullName) {
       const nextStep = hasSeenIntro ? 'name' : 'intro';
-      logger.log('🟦 [OnboardingLayout] Setting initial step to:', nextStep);
+      logger.log('[OnboardingLayout] Setting step to:', nextStep);
       setStepKey(nextStep);
     } else if (!user.userProfile.dateOfBirth) {
-      logger.log('🟦 [OnboardingLayout] Setting initial step to: birth');
+      logger.log('[OnboardingLayout] Setting step to: birth');
       setStepKey('birth');
     } else {
-      logger.log('🟦 [OnboardingLayout] Setting initial step to: complete');
+      logger.log('[OnboardingLayout] Setting step to: complete');
       setStepKey('complete');
     }
   }, [user, sessionLoading, introShown]);

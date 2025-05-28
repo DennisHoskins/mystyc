@@ -4,7 +4,7 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
+  useCallback,
   ReactNode,
 } from 'react';
 
@@ -22,21 +22,17 @@ export function BusyProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [delayMs, setDelayMs] = useState(500);
 
-  useEffect(() => {
-    logger.log('[BusyProvider] mounted');
-  }, []);
-
-  useEffect(() => {
-    logger.log('[BusyProvider] busy =', busy);
-  }, [busy]);
-
-  const setBusyWithDelay = (state: boolean, delay: number = 1000) => {
+  const setBusyWithDelay = useCallback((state: boolean, delay: number = 1000) => {
+    logger.log('[BusyProvider] setBusy:', state, 'delay:', delay);
+    
     if (state && busy) {
+      logger.log('[BusyProvider] Already busy, ignoring');
       return;
     }
+    
     setBusy(state);
     setDelayMs(delay);
-  };
+  }, [busy]);
 
   return (
     <BusyContext.Provider value={{ setBusy: setBusyWithDelay }}>

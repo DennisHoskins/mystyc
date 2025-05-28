@@ -27,20 +27,16 @@ export default function RootRedirect() {
   useEffect(() => {
     if (loading || firebaseUser === undefined) return;
 
-    logger.log('🔍 [RootRedirect] firebaseUser:', !!firebaseUser);
-    logger.log('🔍 [RootRedirect] user:', user);
-    logger.log('🔍 [RootRedirect] isUserOnboarded:', isUserOnboarded(user?.userProfile));
-
     if (!firebaseUser && !loading) {
       setBusy(false);
       setTimeout(() => setReady(true), 1500);
       setRenderComponent(<SplashScreen />);
     } else if (firebaseUser) {
       if (!user || !isUserOnboarded(user.userProfile)) {
-        logger.log('🔍 [RootRedirect] Setting OnboardingLayout');
+        logger.log('[RootRedirect] Loading onboarding');
         setRenderComponent(<OnboardingLayout />);
       } else {
-        logger.log('🔍 [RootRedirect] Setting Dashboard');
+        logger.log('[RootRedirect] Loading dashboard');
         setRenderComponent(<Dashboard />);
       }
     }

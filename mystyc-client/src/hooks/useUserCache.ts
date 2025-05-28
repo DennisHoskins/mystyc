@@ -46,7 +46,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'USER_UPDATED' && onUserUpdate) {
-        logger.log('🔄 [useUserCache] Received user update from another tab');
+        logger.log('[useUserCache] Cross-tab user update received');
         
         // Update local cache
         const key = getUserCacheKey(event.data.firebaseUid);
@@ -109,7 +109,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
       };
       sessionStorage.setItem(key, JSON.stringify(cachedUser));
       addCacheKey(key);
-      logger.log('🟢 [useUserCache] Cached user data');
+      logger.log('[useUserCache] User data cached');
       
       // Broadcast to other tabs
       broadcastChannel.postMessage({
@@ -117,7 +117,6 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
         firebaseUid,
         userData
       });
-      logger.log('🔄 [useUserCache] Broadcasted user update to other tabs');
       
     } catch (err) {
       errorHandler.processError(err, {
@@ -134,13 +133,13 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
         const key = getUserCacheKey(firebaseUid);
         sessionStorage.removeItem(key);
         removeCacheKey(key);
-        logger.log('🟢 [useUserCache] Cleared cached user data');
+        logger.log('[useUserCache] User cache cleared');
       } else {
         getCachedKeys().forEach(key => {
           sessionStorage.removeItem(key);
         });
         sessionStorage.removeItem(CACHE_KEYS_STORAGE);
-        logger.log('🟢 [useUserCache] Cleared all cached user data');
+        logger.log('[useUserCache] All cache cleared');
       }
     } catch (err) {
       errorHandler.processError(err, {

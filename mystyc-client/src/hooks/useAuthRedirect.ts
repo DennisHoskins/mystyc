@@ -16,60 +16,32 @@ export function useAuthRedirect(options: UseAuthRedirectOptions = { componentNam
   const { setBusy } = useBusy();
   const [showForm, setShowForm] = useState(false);
   const hasRedirected = useRef(false);
-  const isProcessing = useRef(false); // Start as false, not true
+  const isProcessing = useRef(false);
+  const hasShownForm = useRef(false);
 
   useEffect(() => {
-    logger.log(`🟡 [${componentName}] Component mounted`);
-  }, [componentName]); // Remove setBusy(false) call
-
-  // Handle auth state and redirect logic
-  useEffect(() => {
-    logger.log(`🟡 [${componentName}] Auth check effect triggered:`, {
-      ready,
-      user: !!user,
-      idToken: !!idToken,
-      hasRedirected: hasRedirected.current,
-      isProcessing: isProcessing.current,
-      showForm
-    });
-
     if (!ready) return;
-
-    // If already redirected, don't do anything
     if (hasRedirected.current) return;
 
-    // If we have an idToken but no user yet, we're still fetching user data
     const isFetchingUser = idToken && !user;
     
     if (user && !isProcessing.current) {
-      // User is already logged in and we're not processing auth
-      logger.log(`🟡 [${componentName}] User already logged in, redirecting`);
+      logger.log(`[${componentName}] User logged in, redirecting`);
       hasRedirected.current = true;
       router.replace(redirectTo);
-    } else if (!user && !isProcessing.current && !isFetchingUser) {
-      // User is confirmed NOT logged in, safe to show form
-      logger.log(`🟡 [${componentName}] User not logged in, showing form`);
+    } else if (!user && !isProcessing.current && !isFetchingUser && !hasShownForm.current) {
+      logger.log(`[${componentName}] Showing login form`);
       setShowForm(true);
-      setBusy(false); // Clear busy when showing login form
-    } else {
-      logger.log(`🟡 [${componentName}] Waiting - not ready to show form yet. isFetchingUser:`, isFetchingUser);
+      setBusy(false);
+      hasShownForm.current = true;
     }
-  }, [ready, user, idToken, router, showForm, redirectTo, componentName]);
+  }, [ready, user, idToken, router, redirectTo, componentName]);
 
-  // Handle successful auth redirect
   useEffect(() => {
-    logger.log(`🟡 [${componentName}] Login redirect effect triggered:`, {
-      user: !!user,
-      isProcessing: isProcessing.current,
-      hasRedirected: hasRedirected.current
-    });
-
     if (user && isProcessing.current && !hasRedirected.current) {
-      // This handles successful auth - redirect and clear processing
-      logger.log(`🟡 [${componentName}] Auth successful, redirecting`);
+      logger.log(`[${componentName}] Auth successful, redirecting`);
       hasRedirected.current = true;
-      isProcessing.current = false; // Clear processing flag
-      setBusy(false); // Clear busy state
+      isProcessing.current = false;
       router.replace(redirectTo);
     }
   }, [user, router, redirectTo, componentName, setBusy]);
@@ -81,9 +53,9 @@ export function useAuthRedirect(options: UseAuthRedirectOptions = { componentNam
 
   const endAuthProcess = (success: boolean = false) => {
     if (!success) {
-      isProcessing.current = false; // Reset flag on error
+      isProcessing.current = false;
+      setBusy(false);  // ← Fixed: Uncommented this line
     }
-    setBusy(false);
   };
 
   const shouldRender = ready && (showForm || hasRedirected.current);

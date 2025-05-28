@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useContext, ReactNode, useRef, useState } from 'react';
-import { logger } from '@/util/logger';
 
 interface TransitionContextType {
   startTransitionOut: (onComplete: () => void) => void;
@@ -23,18 +22,15 @@ export function TransitionProvider({ children }: Props) {
   const transitionCompleteCallback = useRef<(() => void) | null>(null);
 
   const startTransitionOut = (onComplete: () => void) => {
-    logger.log('[TransitionProvider] startTransitionOut called');
     transitionOutCallback.current = onComplete;
     setIsTransitionRequested(true);
   };
 
   const onTransitionComplete = (callback: () => void) => {
-    logger.log('[TransitionProvider] onTransitionComplete callback registered');
     transitionCompleteCallback.current = callback;
   };
 
   const callTransitionOutCallback = () => {
-    logger.log('[TransitionProvider] callTransitionOutCallback called');
     if (transitionOutCallback.current) {
       transitionOutCallback.current();
       transitionOutCallback.current = null;
@@ -43,7 +39,6 @@ export function TransitionProvider({ children }: Props) {
   };
 
   const callTransitionCompleteCallback = () => {
-    logger.log('[TransitionProvider] callTransitionCompleteCallback called');
     if (transitionCompleteCallback.current) {
       transitionCompleteCallback.current();
       transitionCompleteCallback.current = null;
