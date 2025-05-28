@@ -2,7 +2,7 @@ import { Controller, Get, Post, Patch, Param, NotFoundException } from '@nestjs/
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
-import { UsersService } from '@/users/users.service';
+import { UserProfileService } from '@/users/user-profile.service';
 import { UserAuthService } from '@/users/user-auth.service';
 import { logger } from '@/util/logger';
 
@@ -10,7 +10,7 @@ import { logger } from '@/util/logger';
 export class AdminController {
 
   constructor(
-    private readonly usersService: UsersService,
+    private readonly userProfileService: UserProfileService,
     private readonly userAuthService: UserAuthService
   ) {}
 
@@ -19,7 +19,7 @@ export class AdminController {
   async getAllUsers() {
     logger.info('Admin fetching all users', {}, 'AdminController');
     
-    const users = await this.usersService.findAll();
+    const users = await this.userProfileService.findAll();
     
     logger.info('Admin users list retrieved', { count: users.length }, 'AdminController');
     return users;
