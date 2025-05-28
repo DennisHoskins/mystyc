@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import * as express from 'express';
+import cookieParser from 'cookie-parser';
+import * as csurf from 'csurf';
 
 import { AppModule } from '@/app.module';
 import { logger } from '@/util/logger';
@@ -21,6 +23,24 @@ async function bootstrap() {
   app.use(helmet());
   logger.debug('Security headers enabled');
   
+  // Cookie parser (required for CSRF)
+  app.use(cookieParser());
+  logger.debug('Cookie parser configured');
+  
+  // CSRF protection - only in production same-origin setup
+  if (process.env.NODE_ENV === 'production') {
+    app.use(csurf({ 
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict'
+      }
+    }));
+    logger.debug('CSRF protection enabled');
+  } else {
+    logger.debug('CSRF protection disabled for development');
+  }
+  
   // Request size limits
   app.use(express.json({ limit: '10kb' }));
   app.use(express.urlencoded({ limit: '10kb', extended: true }));
@@ -38,10 +58,12 @@ async function bootstrap() {
   
   // Enable CORS
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: [
+      'http://localhost:3000',        // Development
+      'https://mystyc.app'            // Production same-origin
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: false,
-    allowedHeaders: 'Content-Type,Authorization',
+    allowedHeaders: 'Content-Type,Authorization,X-CSRF-Token',
   });
   logger.debug('CORS configured');
   

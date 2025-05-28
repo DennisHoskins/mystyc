@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
 import { User } from '@/common/interfaces/user.interface';
@@ -76,11 +76,31 @@ export class UserService {
 
     const userProfile = await this.userProfileService.updateProfile(firebaseUid, updates);
 
-    logger.info('User profile updated successfully', {
+    logger.info('UserProfileService.updateProfile returned:', {
       firebaseUid,
+      userProfile,
+      isNull: userProfile === null,
       profileId: userProfile?.id,
     });
 
-    return { firebaseUser, userProfile };
+    if (!userProfile) {
+      logger.error('User profile update failed - user not found', { firebaseUid });
+      throw new NotFoundException('User profile not found');
+    }
+
+    const result = { firebaseUser, userProfile };
+    
+    logger.info('User profile updated successfully - returning result:', {
+      firebaseUid,
+      profileId: userProfile.id,
+      resultStructure: {
+        hasFirebaseUser: !!result.firebaseUser,
+        hasUserProfile: !!result.userProfile,
+        firebaseUserUid: result.firebaseUser?.uid,
+        userProfileId: result.userProfile?.id
+      }
+    });
+
+    return result;
   }
 }
