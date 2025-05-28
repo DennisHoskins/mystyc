@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
-import { useBusy } from '@/components/context/BusyContext';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
 import Button from '@/components/ui/Button';
 import TextInput from '@/components/form/TextInput';
@@ -18,11 +17,13 @@ export default function PasswordResetPage() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useCustomRouter();
-  const { resetPassword, user } = useAuth();
-  const { setBusy } = useBusy();
+  const { resetPassword } = useAuth();
 
-  // Use centralized error handling
+  const { shouldRender, shouldShowForm } = useAuthRedirect({
+    redirectTo: '/',
+    componentName: 'PasswordResetPage'
+  });
+
   const { handleAuthError } = useErrorHandler({
     component: 'PasswordResetPage',
     showToast: false, // We show errors inline for forms
@@ -31,35 +32,30 @@ export default function PasswordResetPage() {
     }
   });
 
-  useEffect(() => {
-    setBusy(false);
-  }, []);  
-  
-  useEffect(() => {
-    if (user) {
-      router.replace('/');
-    }
-  }, [user, router]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    setError(''); // Clear previous errors
-    setMessage(''); // Clear previous success messages
+    setError('');
+    setMessage('');
     setLoading(true);
-    setBusy(true);
 
     try {
       await resetPassword(email);
       setMessage('Check your email for a password reset link.');
     } catch (err: any) {
-      // Use centralized error handling - one line!
       handleAuthError(err, 'password-reset');
     } finally {
       setLoading(false);
-      setBusy(false);
     }
   };
+
+  if (!shouldRender) {
+    return null;
+  }
+
+  if (!shouldShowForm) {
+    return null;
+  }
 
   return (
     <PageContainer>

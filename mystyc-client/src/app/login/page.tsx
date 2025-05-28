@@ -39,12 +39,11 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
-      // Don't call endAuthProcess here - let the redirect handle it
+      // Don't set loading to false on success - keep button in loading state
     } catch (err: any) {
       handleAuthError(err, 'login');
       endAuthProcess(false);
-    } finally {
-      setLoading(false);
+      setLoading(false); // Only clear loading on error
     }
   };
 
