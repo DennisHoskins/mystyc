@@ -12,7 +12,7 @@ export class FirebaseController {
 
   @Post('verify-token')
   @Public()
-  @Throttle({ auth: { limit: 5, ttl: 900000 } })
+  @Throttle({ auth: { limit: 50, ttl: 60000 } })
   async verifyToken(@Body() body: VerifyTokenDto) {
     try {
       const decodedToken = await this.firebaseService.verifyIdToken(body.idToken);

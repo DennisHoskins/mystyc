@@ -23,12 +23,12 @@ import { AdminModule } from '@/admin/admin.module';
       {
         name: 'default',
         ttl: 60000,
-        limit: 30,
+        limit: 1000,
       },
       {
         name: 'auth',
-        ttl: 900000,
-        limit: 5,
+        ttl: 60000,
+        limit: 100,
       }
     ]),
     FirebaseModule,

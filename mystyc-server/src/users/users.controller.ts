@@ -31,7 +31,7 @@ export class UsersController {
   }
 
   @Get('me')
-  @Throttle({ auth: { limit: 500, ttl: 900000 } })
+  @Throttle({ auth: { limit: 20, ttl: 60000 } })
   async getCurrentUser(@Headers('authorization') authHeader: string): Promise<User> {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       this.logger.warn('Get current user attempt without bearer token');
