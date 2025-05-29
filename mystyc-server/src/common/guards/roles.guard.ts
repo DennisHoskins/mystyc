@@ -6,6 +6,7 @@ import {
 import { Reflector } from '@nestjs/core';
 
 import { ROLES_KEY } from '@/common/decorators/roles.decorator';
+import { IS_PUBLIC_KEY } from '@/common/decorators/public.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { UserProfileService } from '@/users/user-profile.service';
 import { logger } from '@/util/logger';
@@ -18,6 +19,15 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -29,7 +39,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const firebaseUser = request.user; // This is the decoded Firebase token
+    const firebaseUser = request.user;
     
     if (!firebaseUser?.uid) {
       logger.warn('Roles guard failed - no user in request');
@@ -41,7 +51,6 @@ export class RolesGuard implements CanActivate {
       requiredRoles 
     });
 
-    // Fetch the database user profile
     const dbUserProfile = await this.userProfileService.findByFirebaseUid(firebaseUser.uid);
     
     if (!dbUserProfile?.roles) {
