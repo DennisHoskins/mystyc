@@ -22,7 +22,7 @@ export class FirebaseService {
     }, 'FirebaseService');
     
     try {
-      const result = await firebaseAdmin.auth().verifyIdToken(idToken);
+      const result = await firebaseAdmin.auth().verifyIdToken(idToken, true);
       
       logger.debug('Token verified successfully via Firebase Admin', {
         uid: result.uid,
