@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { User } from '@/interfaces/user.interface';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
@@ -40,12 +40,17 @@ const removeCacheKey = (key: string) => {
 };
 
 export function useUserCache(onUserUpdate?: (userData: User) => void) {
-  // Broadcast channel for cross-tab communication
+  const tabId = useRef(Math.random().toString(36)); // Unique tab identifier
   const broadcastChannel = new BroadcastChannel('user-cache-updates');
 
   // Listen for updates from other tabs
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      // Ignore messages from this tab
+      if (event.data.senderId === tabId.current) {
+        return;
+      }
+      
       if (event.data.type === 'USER_UPDATED' && onUserUpdate) {
         logger.log('[useUserCache] Cross-tab user update received');
         
@@ -116,7 +121,8 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
       broadcastChannel.postMessage({
         type: 'USER_UPDATED',
         firebaseUid,
-        userData
+        userData,
+        senderId: tabId.current
       });
       
     } catch (err) {
