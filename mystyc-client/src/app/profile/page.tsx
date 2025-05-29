@@ -7,6 +7,7 @@ import { withAuth } from '@/auth/withAuth';
 import { useBusy } from '@/components/context/BusyContext';
 import { useToast } from '@/hooks/useToast';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { formatDateForInput } from '@/util/dateTime';
 
 import PageContainer from '@/components/layout/PageContainer';
 import TextInput from '@/components/form/TextInput';
@@ -28,10 +29,7 @@ function EditProfilePage() {
     if (user?.userProfile) {
       setFullName(user.userProfile.fullName || '');
       setZodiacSign(user.userProfile.zodiacSign || '');
-      if (user.userProfile.dateOfBirth) {
-        const iso = new Date(user.userProfile.dateOfBirth).toISOString().slice(0, 10);
-        setDateOfBirth(iso);
-      }
+      setDateOfBirth(formatDateForInput(user.userProfile.dateOfBirth));
     }
   }, [user]);
 
@@ -122,5 +120,4 @@ function EditProfilePage() {
   );
 }
 
-// Use withAuth with requireOnboarding option
 export default withAuth(EditProfilePage, { requireOnboarding: true });

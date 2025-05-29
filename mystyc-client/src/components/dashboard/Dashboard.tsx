@@ -6,6 +6,7 @@ import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
 import AccountDetails from './AccountDetails';
@@ -33,24 +34,7 @@ const Dashboard = () => {
   };
 
   const fullName = user?.userProfile?.fullName || firebaseUser?.displayName || 'User';
-
-  let birthday: string | null = null;
-  try {
-    const rawDate = user?.userProfile?.dateOfBirth;
-    const parsedDate = rawDate instanceof Date ? rawDate : rawDate ? new Date(rawDate) : null;
-
-    if (parsedDate && !isNaN(parsedDate.getTime())) {
-      birthday = new Intl.DateTimeFormat(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: 'UTC',
-      }).format(parsedDate);
-    }
-  } catch (err) {
-    handleError(err, { action: 'parse-birthday' });
-    logger.warn('Invalid dateOfBirth:', user?.userProfile?.dateOfBirth);
-  }
+  const birthday = formatDateForDisplay(user?.userProfile?.dateOfBirth);
   
   return (
     <>
