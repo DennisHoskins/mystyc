@@ -1,4 +1,3 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -23,6 +22,9 @@ export class UserProfile {
 
   @Prop()
   email: string;
+
+  @Prop()
+  currentDeviceId: string;
 
   createdAt: Date;
   updatedAt: Date;
