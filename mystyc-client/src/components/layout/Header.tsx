@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 
 import Button from '@/components/ui/Button';
@@ -20,12 +22,12 @@ export default function Header() {
   return (
     <header className="w-full border-b bg-white px-4 py-3 shadow-sm animate-fade-in">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
-        <a
+        <Link
           href="/"
           onClick={handleClick}
         >
           <IconEye size={70} className="text-indigo-600" />
-        </a>
+        </Link>
         <Button onClick={handleSignOut} size="sm">
           Sign Out
         </Button>

@@ -97,7 +97,7 @@ export default function LoginPage() {
               <FormLink href="/password-reset">Forgot your password?</FormLink>
             </span>
             <span className="block mt-1">
-              Don't have an account? <FormLink href="/register">Register</FormLink>
+              Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
             </span>
           </p>
         </form>

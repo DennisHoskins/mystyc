@@ -44,7 +44,7 @@ function EditProfilePage() {
     try {
       await Promise.all([minDelay, update]);
       showToast('Profile updated');
-    } catch (err) {
+    } catch (e) {
       setError('Failed to update profile. Please try again.');
       setBusy(false);
     } finally {

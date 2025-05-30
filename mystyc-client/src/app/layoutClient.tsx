@@ -45,10 +45,10 @@ function ConnectionError({ onRetry }: { onRetry: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
       <div className="text-center space-y-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          Can't Connect to Server
+          Can&apos;t Connect to Server
         </h1>
         <p className="text-gray-600 max-w-md">
-          We're unable to connect to our servers. Please check your internet connection and try again.
+          We&apos;re unable to connect to our servers. Please check your internet connection and try again.
         </p>
         <Button onClick={onRetry}>
           Try Again

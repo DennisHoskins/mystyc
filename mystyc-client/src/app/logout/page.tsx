@@ -57,7 +57,7 @@ export default function LogoutPage() {
           
           <div className="space-y-4">
             <h1 className="text-2xl font-bold text-gray-900">
-              You've been signed out
+              You&apos;ve been signed out
             </h1>
             <p className="text-gray-600">
               Thanks for using mystyc! We hope to see you again soon.

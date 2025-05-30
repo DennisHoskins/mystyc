@@ -26,7 +26,7 @@ export default function PasswordResetPage() {
 
   const { handleAuthError } = useErrorHandler({
     component: 'PasswordResetPage',
-    showToast: false, // We show errors inline for forms
+    showToast: false,
     onError: (processedError) => {
       setError(processedError.message);
     }
@@ -90,7 +90,7 @@ export default function PasswordResetPage() {
               Remember your password? <FormLink href="/login">Sign In</FormLink>
             </span>
             <span className="block mt-1">
-              Don't have an account? <FormLink href="/register">Register</FormLink>
+              Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
             </span>
           </p>
         </form>
