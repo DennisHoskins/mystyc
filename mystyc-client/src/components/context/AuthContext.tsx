@@ -17,7 +17,6 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { User } from '@/interfaces/user.interface';
-import { UserProfile } from '@/interfaces/userProfile.interface';
 import { logger } from '@/util/logger';
 import { errorHandler } from '@/util/errorHandler';
 import { useUserCache } from '@/hooks/useUserCache';

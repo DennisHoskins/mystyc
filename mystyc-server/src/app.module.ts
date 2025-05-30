@@ -14,6 +14,7 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
 import { FirebaseModule } from '@/auth/firebase.module';
 import { UsersModule } from '@/users/users.module';
 import { AdminModule } from '@/admin/admin.module';
+import { NotificationsModule } from '@/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AdminModule } from '@/admin/admin.module';
     FirebaseModule,
     UsersModule,
     AdminModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

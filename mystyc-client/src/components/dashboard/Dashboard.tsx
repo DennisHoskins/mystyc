@@ -1,25 +1,26 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
 import { formatDateForDisplay } from '@/util/dateTime';
-import { logger } from '@/util/logger';
 
 import AccountDetails from './AccountDetails';
 
 const Dashboard = () => {
   const [showDetails, setShowDetails] = useState(false);
-  const { firebaseUser, user } = useAuth();
+  const { firebaseUser, user, idToken } = useAuth();
   const router = useCustomRouter();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler({
     component: 'Dashboard',
     showToast: true
   });
+  const { token, error, requestPermission } = useFirebaseMessaging();
 
   useEffect(() => {
     try {
@@ -29,8 +30,40 @@ const Dashboard = () => {
     }
   }, [setBusy, handleError]);
 
+  // Auto-request notification permission
+  useEffect(() => {
+    if (user && Notification.permission === 'default') {
+      requestPermission();
+    } else if (user && Notification.permission === 'granted' && !token) {
+      requestPermission();
+    }
+  }, [user, token, requestPermission]);
+
   const editProfile = () => {
     router.push('/profile');
+  };
+
+  const sendNotification = async () => {
+    try {
+      await fetch('https://skull.international/api/notifications/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ token }),
+      });
+
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  }
+
+  const handleSendNotification = async () => {
+    if (!token || !idToken) {
+      return;
+    }
+    setTimeout(() => sendNotification(), 10 * 1000); // Send in 10 seconds
   };
 
   const fullName = user?.userProfile?.fullName || firebaseUser?.displayName || 'User';
@@ -38,7 +71,7 @@ const Dashboard = () => {
   
   return (
     <>
-      <h2 className="mt-8 text-xl font-semibold text-center">Welcome, {fullName} 👋</h2>
+      <h2 className="mt-8 text-xl font-semibbold text-center">Welcome, {fullName} 👋</h2>
       <p className="mt-2 text-center text-gray-600">Glad to have you back.</p>
 
       <div className="mt-6 text-center">
@@ -61,6 +94,27 @@ const Dashboard = () => {
         >
           Edit Profile
         </button>
+
+        {token && (
+          <button
+            onClick={handleSendNotification}
+            className="mt-4 w-full max-w-xs text-center bg-purple-600 text-white py-2 px-4 rounded-md font-medium hover:bg-purple-700 transition"
+          >
+            Send Test Notification
+          </button>
+        )}
+
+        {token && (
+          <p className="mt-2 text-xs text-gray-500 break-all max-w-xs">
+            Notifications enabled ✓
+          </p>
+        )}
+
+        {error && (
+          <p className="mt-2 text-xs text-red-500">
+            Notification error: {error}
+          </p>
+        )}
 
         <button
           onClick={() => setShowDetails((prev) => !prev)}

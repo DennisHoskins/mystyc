@@ -60,7 +60,8 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',        // Development
-      'https://mystyc.app'            // Production same-origin
+      'https://mystyc.app',           // Production same-origin
+      /^https:\/\/.*\.loca\.lt$/      // Localtunnel
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Authorization,X-CSRF-Token',

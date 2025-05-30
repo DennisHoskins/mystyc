@@ -1,7 +1,7 @@
 import { parseApiDate } from '@/util/dateTime';
 import { errorHandler } from '@/util/errorHandler';
 
-const API_BASE_URL = 'http://dennishoskins.com:3000/api';
+const API_BASE_URL = 'https://skull.international/api';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
