@@ -1,15 +1,32 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import {
+  ValidateDeviceId,
+  ValidateFcmTokenOptional,
+  ValidatePlatform,
+  ValidateTimezone,
+  ValidateLanguageCode,
+  ValidateUserAgent,
+  ValidateAppVersion
+} from '@/common/decorators/validation.decorators';
 
 export class DeviceDto {
-  @IsString()
-  @IsNotEmpty()
+  @ValidateDeviceId()
   deviceId: string;
 
-  @IsString()
-  @IsNotEmpty()
-  fcmToken: string;
+  @ValidateFcmTokenOptional()
+  fcmToken?: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @ValidatePlatform()
   platform: string;
+
+  @ValidateTimezone()
+  timezone: string;
+
+  @ValidateLanguageCode()
+  language: string;
+
+  @ValidateUserAgent()
+  userAgent: string;
+
+  @ValidateAppVersion()
+  appVersion?: string;
 }
