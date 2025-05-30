@@ -35,7 +35,7 @@ export function useAuthRedirect(options: UseAuthRedirectOptions = { componentNam
       setBusy(false);
       hasShownForm.current = true;
     }
-  }, [ready, user, idToken, router, redirectTo, componentName]);
+  }, [ready, user, idToken, router, redirectTo, componentName, setBusy]);
 
   useEffect(() => {
     if (user && isProcessing.current && !hasRedirected.current) {
@@ -44,7 +44,7 @@ export function useAuthRedirect(options: UseAuthRedirectOptions = { componentNam
       isProcessing.current = false;
       router.replace(redirectTo);
     }
-  }, [user, router, redirectTo, componentName, setBusy]);
+  }, [user, router, redirectTo, componentName]);
 
   const startAuthProcess = () => {
     isProcessing.current = true;
@@ -54,7 +54,7 @@ export function useAuthRedirect(options: UseAuthRedirectOptions = { componentNam
   const endAuthProcess = (success: boolean = false) => {
     if (!success) {
       isProcessing.current = false;
-      setBusy(false);  // ← Fixed: Uncommented this line
+      setBusy(false);
     }
   };
 

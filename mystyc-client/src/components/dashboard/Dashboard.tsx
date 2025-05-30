@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useBusy } from '@/components/context/BusyContext';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -16,19 +15,11 @@ const Dashboard = () => {
   const { firebaseUser, user, idToken } = useAuth();
   const router = useCustomRouter();
   const { setBusy } = useBusy();
-  const { handleError } = useErrorHandler({
-    component: 'Dashboard',
-    showToast: true
-  });
   const { token, error, requestPermission } = useFirebaseMessaging();
 
   useEffect(() => {
-    try {
       setBusy(false);
-    } catch (err) {
-      handleError(err, { action: 'initialization' });
-    }
-  }, [setBusy, handleError]);
+  }, [setBusy]);
 
   // Auto-request notification permission
   useEffect(() => {

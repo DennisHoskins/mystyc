@@ -15,7 +15,7 @@ interface OnboardingNameProps {
   onBack: () => void;
 }
 
-export default function OnboardingName({ onNext, onBack }: OnboardingNameProps) {
+export default function OnboardingName({ onNext }: OnboardingNameProps) {
   const { updateOnboardingProfile, user } = useAuth();
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -36,16 +36,15 @@ export default function OnboardingName({ onNext, onBack }: OnboardingNameProps) 
   }, [user]);
 
   const handleSubmit = async () => {
-    setError(null); // Clear previous errors
+    setError(null);
     setLoading(true);
     
     try {
       await updateOnboardingProfile({ fullName: name });
       onNext();
-    } catch (err) {
-      logger.error('Error updating profile:', err);
-      
-      handleApiError(err, 'onboarding-name-update');
+    } catch (e) {
+      logger.error('Error updating profile:', e);
+      handleApiError(e, 'onboarding-name-update');
     } finally {
       setLoading(false);
     }

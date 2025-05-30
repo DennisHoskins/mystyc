@@ -22,7 +22,7 @@ export default function RootRedirect() {
 
   useEffect(() => {
     setBusy(true, 0);
-  }, []);
+  }, [setBusy]);
 
   useEffect(() => {
     if (loading || firebaseUser === undefined) return;
@@ -40,7 +40,7 @@ export default function RootRedirect() {
         setRenderComponent(<Dashboard />);
       }
     }
-  }, [loading, firebaseUser, user]);
+  }, [loading, firebaseUser, user, setBusy]);
 
   useEffect(() => {
     if (!firebaseUser && ready) {

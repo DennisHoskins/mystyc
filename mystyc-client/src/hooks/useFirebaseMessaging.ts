@@ -2,14 +2,6 @@ import { useState, useEffect } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
 import { messaging } from '@/lib/firebase';
 
-// Register service worker function
-const registerServiceWorker = async (): Promise<ServiceWorkerRegistration> => {
-  if ('serviceWorker' in navigator) {
-    return navigator.serviceWorker.register('/workers/notifications');
-  }
-  throw new Error('Service workers not supported');
-};
-
 export function useFirebaseMessaging() {
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

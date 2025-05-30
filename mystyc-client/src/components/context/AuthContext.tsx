@@ -5,6 +5,7 @@ import {
  useContext,
  useEffect,
  useState,
+ useCallback,
  ReactNode,
 } from 'react';
 import {
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
  const { getCachedUser, clearCachedUser } = useUserCache(setUser);
  const { fetchCompleteUser, updateUserProfile } = useUserAPI();
 
- const updateIdToken = async (firebaseUser: FirebaseAuthUser | null) => {
+ const updateIdToken = useCallback(async (firebaseUser: FirebaseAuthUser | null) => {
    if (!firebaseUser) {
      setIdToken(null);
      setTokenRefreshFailed(false);
@@ -80,13 +81,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    } finally {
      setIsRefreshingToken(false);
    }
- };
+ }, [isRefreshingToken]);
 
- const retryTokenRefresh = async () => {
+ const retryTokenRefresh = useCallback(async () => {
    if (firebaseUser) {
      await updateIdToken(firebaseUser);
    }
- };
+ }, [firebaseUser, updateIdToken]);
 
  useEffect(() => {
    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -110,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    });
 
    return () => unsubscribe();
- }, []); // Remove getCachedUser from deps
+ }, [getCachedUser, hasLoadedCache, updateIdToken]);
 
  useEffect(() => {
    if (!firebaseUser || !idToken) return;
@@ -118,13 +119,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      await updateIdToken(firebaseUser);
    }, 55 * 60 * 1000);
    return () => clearInterval(tokenRefreshInterval);
- }, [firebaseUser, idToken]);
+ }, [firebaseUser, idToken, updateIdToken]);
 
  useEffect(() => {
    if (ready && idToken && firebaseUser && !user) {
      fetchCompleteUser(idToken, firebaseUser, setUser);
    }
- }, [ready, idToken, firebaseUser, user]); // Remove fetchCompleteUser from deps
+ }, [ready, idToken, firebaseUser, user, fetchCompleteUser]);
 
  useEffect(() => {
    if (!firebaseUser) {

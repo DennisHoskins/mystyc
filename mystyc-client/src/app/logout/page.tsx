@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
-import { useBusy } from '@/components/context/BusyContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 
 import Button from '@/components/ui/Button';
@@ -15,11 +14,6 @@ export default function LogoutPage() {
   const router = useCustomRouter();
   const [countdown, setCountdown] = useState(5);
   const hasRedirected = useRef(false);
-  const { setBusy } = useBusy();
-
-  useEffect(() => {
-    setBusy(false);
-  }, []);  
 
   useEffect(() => {
     signOut(true);

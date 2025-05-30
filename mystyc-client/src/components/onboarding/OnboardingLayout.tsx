@@ -72,7 +72,7 @@ export default function OnboardingLayout() {
       logger.log('[OnboardingLayout] Setting step to: complete');
       setStepKey('complete');
     }
-  }, [user, isStorageLoading, introShown]);
+  }, [user, isStorageLoading, introShown, loading, stepKey]);
 
   useEffect(() => {
     if (loading || !user || isStorageLoading) {
@@ -82,7 +82,7 @@ export default function OnboardingLayout() {
       setLocalLoading(false);
       setBusy(false);
     }
-  }, [loading, user, isStorageLoading]);
+  }, [loading, user, isStorageLoading, setBusy]);
 
   if (loading || localLoading || isStorageLoading) return null;
 

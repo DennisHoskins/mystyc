@@ -8,6 +8,7 @@ import { useBusy } from '@/components/context/BusyContext';
 import { useToast } from '@/hooks/useToast';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { formatDateForInput } from '@/util/dateTime';
+import { errorHandler } from '@/util/errorHandler';
 
 import PageContainer from '@/components/layout/PageContainer';
 import TextInput from '@/components/form/TextInput';
@@ -46,6 +47,10 @@ function EditProfilePage() {
       showToast('Profile updated');
     } catch (e) {
       setError('Failed to update profile. Please try again.');
+      errorHandler.processError(e, {
+        component: 'EditProfilePage',
+        action: 'profile-update'
+      });      
       setBusy(false);
     } finally {
       setBusy(false);

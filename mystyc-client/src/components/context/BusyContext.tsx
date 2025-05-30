@@ -25,14 +25,20 @@ export function BusyProvider({ children }: { children: ReactNode }) {
   const setBusyWithDelay = useCallback((state: boolean, delay: number = 1000) => {
     logger.log('[BusyProvider] setBusy:', state, 'delay:', delay);
     
-    if (state && busy) {
-      logger.log('[BusyProvider] Already busy, ignoring');
-      return;
-    }
-    
-    setBusy(state);
-    setDelayMs(delay);
-  }, [busy]);
+    setBusy(currentBusy => {
+      if (state && currentBusy) {
+        logger.log('[BusyProvider] Already busy, ignoring');
+        return currentBusy; // No change
+      }
+      
+      // Only update delay when state actually changes
+      if (state !== currentBusy) {
+        setDelayMs(delay);
+      }
+      
+      return state;
+    });
+  }, []); // Empty deps - completely stable!
 
   return (
     <BusyContext.Provider value={{ setBusy: setBusyWithDelay }}>

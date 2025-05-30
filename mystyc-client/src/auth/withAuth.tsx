@@ -50,7 +50,7 @@ export function withAuth<P extends object>(
       if (user) {
         setIsLoading(false);
       }
-    }, [user, loading, ready, router, isRedirecting, requireOnboarding, redirectTo]);
+    }, [user, loading, ready, router, isRedirecting]);
 
     if (loading || !ready || isRedirecting || isLoading) {
       return null;

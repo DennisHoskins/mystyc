@@ -36,11 +36,12 @@ export default function OnboardingBirth({ onNext, onBack }: OnboardingBirthProps
         if (!isNaN(date.getTime())) {
           setDateOfBirth(date.toISOString().slice(0, 10));
         }
-      } catch (err) {
+      } catch (e) {
         logger.warn('Invalid dateOfBirth in user profile:', user.userProfile.dateOfBirth);
+        handleApiError(e, 'onboarding-birth-set');
       }
     }
-  }, [user]);
+  }, [user, handleApiError]);
 
   const handleSubmit = async () => {
     setError(null);
@@ -49,9 +50,9 @@ export default function OnboardingBirth({ onNext, onBack }: OnboardingBirthProps
     try {
       await updateOnboardingProfile({ dateOfBirth });
       onNext();
-    } catch (err) {
-      logger.error('Error updating date of birth:', err);
-      handleApiError(err, 'onboarding-birth-update');
+    } catch (e) {
+      logger.error('Error updating date of birth:', e);
+      handleApiError(e, 'onboarding-birth-update');
     } finally {
       setLoading(false);
     }
