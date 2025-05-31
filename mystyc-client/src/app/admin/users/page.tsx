@@ -12,6 +12,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminTable from '@/components/admin/AdminTable';
+import TableCellLink from '@/components/ui/table/TableCellLink';
 
 export default withAdminAuth(function UsersPage() {
   const { idToken } = useAuth();
@@ -50,9 +51,12 @@ export default withAdminAuth(function UsersPage() {
       id: 'summary',
       header: 'Summary',
       cell: ({ row }: any) => {
-        const { email, fullName, roles } = row.original;
+        const { email, fullName, roles, firebaseUid } = row.original;
         return (
           <div className="space-y-1">
+            <div className="font-medium text-xs break-words">
+              <TableCellLink value={firebaseUid} prefix="/admin/user" />
+            </div>
             <div className="font-medium break-words">{email}</div>
             <div className="text-gray-700 break-words">{fullName || '—'}</div>
             <div className="text-gray-500 text-sm">
@@ -64,9 +68,21 @@ export default withAdminAuth(function UsersPage() {
       meta: { className: 'sm:hidden' },
     },
     {
+      accessorKey: 'firebaseUid',
+      header: 'Firebase UID',
+      cell: ({ getValue }: any) => {
+        const uid = getValue() as string;
+        return <TableCellLink value={uid} prefix="/admin/user" />;
+      },
+      meta: { className: 'hidden sm:table-cell break-words' },
+    },
+    {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ getValue }: any) => <div className="break-words">{getValue() as string}</div>,
+      cell: ({ getValue }: any) => {
+        const email = getValue() as string;
+        return <TableCellLink value={email} prefix="/admin/user" />;
+      },
       meta: { className: 'hidden sm:table-cell break-words' },
     },
     {
