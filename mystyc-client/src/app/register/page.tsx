@@ -9,7 +9,7 @@ import TextInput from '@/components/form/TextInput';
 import FormLink from '@/components/form/FormLink';
 import PageContainer from '@/components/layout/PageContainer';
 import FormLayout from '@/components/layout/FormLayout';
-import Text from '@/components/ui/Text';
+import Form from '@/components/ui/form/Form';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -62,7 +62,7 @@ export default function RegisterPage() {
         subtitle="Create an account to begin your journey..."
         error={error}
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <Form onSubmit={handleSubmit}>
           <TextInput
             id="email"
             name="email"
@@ -93,15 +93,15 @@ export default function RegisterPage() {
             Create Account
           </Button>
 
-          <Text variant="small" className="text-center mt-2">
-            <Text as="span" className="block">
+          <p className="text-center text-sm mt-2 text-gray-600">
+            <span className="block">
               Already have an account? <FormLink href="/login">Sign In</FormLink>
-            </Text>
-            <Text as="span" className="block mt-1">
+            </span>
+            <span className="block mt-1">
               <FormLink href="/password-reset">Forgot your password?</FormLink>
-            </Text>
-          </Text>
-        </form>
+            </span>
+          </p>
+        </Form>
       </FormLayout>
     </PageContainer>
   );
