@@ -7,7 +7,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
 import Button from '@/components/ui/Button';
-import TextInput from '@/components/form/TextInput';
+import TextInput from '@/components/ui/form/TextInput';
 import FormLink from '@/components/form/FormLink';
 import PageContainer from '@/components/layout/PageContainer';
 import FormLayout from '@/components/layout/FormLayout';

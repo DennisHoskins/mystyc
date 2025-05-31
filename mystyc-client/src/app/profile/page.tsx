@@ -11,7 +11,7 @@ import { formatDateForInput } from '@/util/dateTime';
 import { errorHandler } from '@/util/errorHandler';
 
 import PageContainer from '@/components/layout/PageContainer';
-import TextInput from '@/components/form/TextInput';
+import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import FormError from '@/components/form/FormError';
 import Heading from '@/components/ui/Heading';
