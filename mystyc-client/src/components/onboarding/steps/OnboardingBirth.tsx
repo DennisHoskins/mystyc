@@ -7,7 +7,7 @@ import { logger } from '@/util/logger';
 
 import OnboardingBody from '../OnboardingBody';
 import Button from '@/components/ui/Button';
-import TextInput from '@/components/form/TextInput';
+import TextInput from '@/components/ui/form/TextInput';
 import FormError from '@/components/form/FormError';
 
 interface OnboardingBirthProps {
