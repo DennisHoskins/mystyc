@@ -18,7 +18,7 @@ export default function FormLayout({
   children,
 }: FormLayoutProps) {
   return (
-    <div className="text-center rounded-lg bg-white p-4 shadow-md">
+    <div className="text-center">
       <AppLogo scale={1.2} subheading={subtitle} />
 
       {error && <FormError message={error} />}
