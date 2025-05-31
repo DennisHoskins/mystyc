@@ -13,6 +13,7 @@ import { errorHandler } from '@/util/errorHandler';
 import PageContainer from '@/components/layout/PageContainer';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
+import FormLabel from '@/components/ui/form/FormLabel';
 import FormError from '@/components/form/FormError';
 import Heading from '@/components/ui/Heading';
 
@@ -69,7 +70,7 @@ function EditProfilePage() {
 
       <div className="mt-6 max-w-md mx-auto space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <FormLabel className="block text-sm font-medium text-gray-700 mb-1">Full Name</FormLabel>
           <TextInput
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
@@ -79,7 +80,7 @@ function EditProfilePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+          <FormLabel className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</FormLabel>
           <TextInput
             type="date"
             value={dateOfBirth}
@@ -89,7 +90,7 @@ function EditProfilePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Zodiac Sign</label>
+          <FormLabel className="block text-sm font-medium text-gray-700 mb-1">Zodiac Sign</FormLabel>
           <button
             type="button"
             className="w-full py-2 px-3 border border-gray-300 rounded-md text-left"

@@ -3,6 +3,8 @@
 import { InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
 
+import FormLabel from '@/components/ui/form/FormLabel';
+
 type TextInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
 };
@@ -17,9 +19,9 @@ export default function TextInput({
   return (
     <div>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+        <FormLabel htmlFor={id}>
           {label}
-        </label>
+        </FormLabel>
       )}
       <input
         id={id}
