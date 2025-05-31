@@ -1,5 +1,8 @@
 'use client';
 
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
+
 export default function OnboardingHeader({
   title,
   subtitle,
@@ -9,8 +12,8 @@ export default function OnboardingHeader({
 }) {
   return (
     <>
-      <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-      {subtitle && <p className="mt-2 text-gray-600">{subtitle}</p>}
+      <Heading level={2}>{title}</Heading>
+      {subtitle && <Text className="mt-2">{subtitle}</Text>}
     </>
   );
 }

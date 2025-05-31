@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/table';
 import Text from '@/components/ui/Text';
 import FormError from '@/components/form/FormError';
+import Heading from '@/components/ui/Heading';
 
 interface AdminTableProps<TData> {
   data: TData[];
@@ -63,7 +64,7 @@ export function AdminTable<TData>({
     <div className="space-y-4">
       {(title || description) && (
         <div>
-          {title && <h3 className="text-lg font-medium text-gray-900">{title}</h3>}
+          {title && <Heading level={3} size="lg">{title}</Heading>}
           {description && <Text variant="small">{description}</Text>}
         </div>
       )}

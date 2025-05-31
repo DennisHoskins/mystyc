@@ -4,6 +4,7 @@ import { FC } from 'react';
 import { User as FirebaseAuthUser } from 'firebase/auth';
 import { User } from '@/interfaces/user.interface';
 import Text from '@/components/ui/Text';
+import Heading from '@/components/ui/Heading';
 
 type Props = {
   firebaseUser: FirebaseAuthUser | null;
@@ -13,7 +14,7 @@ type Props = {
 const AccountDetails: FC<Props> = ({ firebaseUser, user }) => {
   return (
     <div className="rounded-md bg-gray-50 p-4">
-      <h4 className="font-medium mb-2">Firebase Auth Info:</h4>
+      <Heading level={4} size="sm" className="mb-2">Firebase Auth Info:</Heading>
       <Text><strong>Email:</strong> {firebaseUser?.email}</Text>
       <Text><strong>User ID:</strong> {firebaseUser?.uid}</Text>
       {firebaseUser?.displayName && <Text><strong>Name:</strong> {firebaseUser.displayName}</Text>}
@@ -21,7 +22,7 @@ const AccountDetails: FC<Props> = ({ firebaseUser, user }) => {
 
       {user?.userProfile && (
         <div className="mt-4 border-t border-gray-200 pt-4">
-          <h4 className="font-medium mb-2">Database User Info:</h4>
+          <Heading level={4} size="sm" className="mb-2">Database User Info:</Heading>
           <Text><strong>Database ID:</strong> {user.userProfile.id}</Text>
           <Text><strong>Firebase UID:</strong> {user.userProfile.firebaseUid}</Text>
           <Text><strong>Email:</strong> {user.userProfile.email}</Text>

@@ -14,6 +14,7 @@ import PageContainer from '@/components/layout/PageContainer';
 import TextInput from '@/components/form/TextInput';
 import Button from '@/components/ui/Button';
 import FormError from '@/components/form/FormError';
+import Heading from '@/components/ui/Heading';
 
 function EditProfilePage() {
   const router = useCustomRouter();
@@ -64,7 +65,7 @@ function EditProfilePage() {
 
   return (
     <PageContainer>
-      <h2 className="mt-8 text-xl font-semibold text-center">Edit Your Profile</h2>
+      <Heading level={2} className="mt-8 text-center">Edit Your Profile</Heading>
 
       <div className="mt-6 max-w-md mx-auto space-y-6">
         <div>

@@ -12,6 +12,7 @@ import { logger } from '@/util/logger';
 import AccountDetails from './AccountDetails';
 import Text from '@/components/ui/Text';
 import FormError from '@/components/form/FormError';
+import Heading from '@/components/ui/Heading';
 
 const Dashboard = () => {
   const [showDetails, setShowDetails] = useState(false);
@@ -58,7 +59,7 @@ const Dashboard = () => {
   
   return (
     <>
-      <h2 className="mt-8 text-xl font-semibbold text-center">Welcome, {fullName} 👋</h2>
+      <Heading level={2} className="mt-8 text-center">Welcome, {fullName} 👋</Heading>
       <Text variant="muted" className="mt-2 text-center">Glad to have you back.</Text>
 
       <div className="mt-6 text-center">

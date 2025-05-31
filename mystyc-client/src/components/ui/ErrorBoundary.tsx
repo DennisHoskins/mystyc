@@ -5,6 +5,8 @@ import { useBusy } from '@/components/context/BusyContext';
 import { errorHandler } from '@/util/errorHandler';
 
 import Button from './Button';
+import Heading from './Heading';
+import Text from './Text';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -64,12 +66,12 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorBoundaryStat
 
       return (
         <div className={`text-center p-6 ${className}`}>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <Heading level={2} className="mb-2">
             {fallbackTitle}
-          </h2>
-          <p className="text-gray-600 mb-4">
+          </Heading>
+          <Text className="mb-4">
             {fallbackMessage}
-          </p>
+          </Text>
           
           {showRetry && (
             <Button onClick={this.handleRetry}>

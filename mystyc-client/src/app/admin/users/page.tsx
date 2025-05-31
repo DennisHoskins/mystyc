@@ -9,6 +9,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AdminTable } from '@/components/admin/AdminTable';
 import PageContainer from '@/components/layout/PageContainer';
 import Text from '@/components/ui/Text';
+import Heading from '@/components/ui/Heading';
 
 interface User {
   id: string;
@@ -86,7 +87,7 @@ function UsersPage() {
     <PageContainer>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <Heading level={1}>User Management</Heading>
           <Text variant="muted">Manage user accounts and permissions</Text>
         </div>
         

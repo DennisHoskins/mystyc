@@ -14,6 +14,7 @@ import Button from '@/components/ui/Button';
 import PageContainer from '@/components/layout/PageContainer';
 import FormLayout from '@/components/layout/FormLayout';
 import Text from '@/components/ui/Text';
+import Heading from '@/components/ui/Heading';
 
 export default function LogoutPage() {
   const { signOut, idToken } = useAuth();
@@ -107,9 +108,9 @@ export default function LogoutPage() {
         <div className="text-center space-y-8">
           
           <div className="space-y-4">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <Heading level={1}>
               You&apos;ve been signed out
-            </h1>
+            </Heading>
             <Text>
               Thanks for using mystyc! We hope to see you again soon.
             </Text>
