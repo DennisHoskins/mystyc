@@ -43,7 +43,7 @@ export default withAdminAuth(function DevicesPage() {
     }
 
     doFetch();
-  }, [idToken, setBusy]);
+  }, [idToken, setBusy, handleError]);
 
   const handleRefresh = async () => {
     if (!idToken) return;

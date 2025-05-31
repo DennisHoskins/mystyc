@@ -17,7 +17,7 @@ import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function LogoutPage() {
-  const { signOut, idToken } = useAuth();
+  const { signOut, idToken, firebaseUser } = useAuth();
   const router = useCustomRouter();
   const { deviceData } = useDeviceInfo();
   const [countdown, setCountdown] = useState(5);
@@ -49,6 +49,7 @@ export default function LogoutPage() {
         // Generate logout auth event
         const authEventData: AuthEventData = {
           deviceId: deviceData.deviceId,
+          firebaseUid: firebaseUser?.uid || 'unknown',
           ip: 'unknown', // Server will extract real IP
           platform: deviceData.platform,
           clientTimestamp: new Date().toISOString(),
@@ -75,7 +76,7 @@ export default function LogoutPage() {
     };
 
     trackLogoutEvent();
-  }, [signOut, idToken, deviceData]);
+  }, [signOut, idToken, deviceData, firebaseUser]);
 
   useEffect(() => {
     const interval = setInterval(() => {

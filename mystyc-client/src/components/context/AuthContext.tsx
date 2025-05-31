@@ -162,6 +162,7 @@ useEffect(() => {
      
      const authEventData: AuthEventData = {
        deviceId: deviceData.deviceId,
+       firebaseUid: firebaseUser.uid,
        ip: '127.0.0.1',
        platform: deviceData.platform,
        clientTimestamp: new Date().toISOString(),

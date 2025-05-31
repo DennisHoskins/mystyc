@@ -1,89 +1,80 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useRef } from 'react';
 import { useToast } from './useToast';
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from './useCustomRouter';
 import { errorHandler, ErrorContext, ProcessedError } from '@/util/errorHandler';
 
 interface UseErrorHandlerOptions {
-  component?: string;
-  showToast?: boolean;
-  onError?: (processedError: ProcessedError) => void;
+ component?: string;
+ showToast?: boolean;
+ onError?: (processedError: ProcessedError) => void;
 }
 
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
-  const { showToast } = useToast();
-  const { signOut } = useAuth();
-  const router = useCustomRouter();
+ const { showToast } = useToast();
+ const { signOut } = useAuth();
+ const router = useCustomRouter();
 
-  // Stabilize options to prevent recreating handleError on every render
-  const stableOptions = useMemo(() => options, [
-    options.component,
-    options.showToast,
-    options.onError
-  ]);
+ const optionsRef = useRef(options);
+ optionsRef.current = options;
 
-  const handleError = useCallback((
-    error: any, 
-    context?: Partial<ErrorContext>
-  ): ProcessedError => {
-    // Build complete context
-    const fullContext: ErrorContext = {
-      component: stableOptions.component,
-      ...context,
-    };
+ const handleError = useCallback((
+   error: any, 
+   context?: Partial<ErrorContext>
+ ): ProcessedError => {
+   const currentOptions = optionsRef.current;
+   
+   const fullContext: ErrorContext = {
+     component: currentOptions.component,
+     ...context,
+   };
 
-    // Process the error
-    const processedError = errorHandler.processError(error, fullContext);
+   const processedError = errorHandler.processError(error, fullContext);
 
-    // Handle auth errors that require sign out
-    if (errorHandler.isAuthError(error) && processedError.code === 'auth/invalid-credential') {
-      // Don't auto-sign out for login failures, but do for session issues
-      if (context?.action !== 'login' && context?.action !== 'register') {
-        signOut(true);
-        router.replace('/login');
-      }
-    }
+   if (errorHandler.isAuthError(error) && processedError.code === 'auth/invalid-credential') {
+     if (context?.action !== 'login' && context?.action !== 'register') {
+       signOut(true);
+       router.replace('/login');
+     }
+   }
 
-    // Handle session expired errors
-    if (processedError.code === '401') {
-      signOut(true);
-      router.replace('/login');
-    }
+   if (processedError.code === '401') {
+     signOut(true);
+     router.replace('/login');
+   }
 
-    // Show toast if configured
-    if ((stableOptions.showToast !== false) && processedError.shouldToast) {
-      showToast(processedError.message);
-    }
+   if ((currentOptions.showToast !== false) && processedError.shouldToast) {
+     showToast(processedError.message);
+   }
 
-    // Call custom error handler if provided
-    if (stableOptions.onError) {
-      stableOptions.onError(processedError);
-    }
+   if (currentOptions.onError) {
+     currentOptions.onError(processedError);
+   }
 
-    return processedError;
-  }, [stableOptions, showToast, signOut, router]);
+   return processedError;
+ }, []);
 
-  const handleAuthError = useCallback((error: any, action: string): ProcessedError => {
-    return handleError(error, { action });
-  }, [handleError]);
+ const handleAuthError = useCallback((error: any, action: string): ProcessedError => {
+   return handleError(error, { action });
+ }, [handleError]);
 
-  const handleApiError = useCallback((error: any, action: string): ProcessedError => {
-    return handleError(error, { action });
-  }, [handleError]);
+ const handleApiError = useCallback((error: any, action: string): ProcessedError => {
+   return handleError(error, { action });
+ }, [handleError]);
 
-  const isRetryable = useCallback((error: any): boolean => {
-    return errorHandler.isRetryableError(error);
-  }, []);
+ const isRetryable = useCallback((error: any): boolean => {
+   return errorHandler.isRetryableError(error);
+ }, []);
 
-  const isNetworkError = useCallback((error: any): boolean => {
-    return errorHandler.isNetworkError(error);
-  }, []);
+ const isNetworkError = useCallback((error: any): boolean => {
+   return errorHandler.isNetworkError(error);
+ }, []);
 
-  return {
-    handleError,
-    handleAuthError,
-    handleApiError,
-    isRetryable,
-    isNetworkError,
-  };
+ return {
+   handleError,
+   handleAuthError,
+   handleApiError,
+   isRetryable,
+   isNetworkError,
+ };
 }

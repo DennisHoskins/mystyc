@@ -31,7 +31,40 @@ export class AdminController {
     return users;
   }
 
-  @Post('users/:firebaseUid/promote')
+  @Get('user/:firebaseUid')
+  @Roles(UserRole.ADMIN)
+  async getUser(@Param('firebaseUid') firebaseUid: string) {
+    logger.info('Admin fetching user by Firebase UID', { firebaseUid }, 'AdminController');
+    
+    try {
+      const user = await this.userProfileService.findByFirebaseUid(firebaseUid);
+      
+      if (!user) {
+        logger.warn('User not found', { firebaseUid }, 'AdminController');
+        throw new NotFoundException('User not found');
+      }
+
+      logger.info('User retrieved successfully', { 
+        firebaseUid, 
+        profileId: user.id 
+      }, 'AdminController');
+      
+      return user;
+    } catch (error) {
+      if (error.status === 404) {
+        throw error;
+      }
+      
+      logger.error('Failed to get user', {
+        firebaseUid,
+        error: error.message
+      }, 'AdminController');
+      
+      throw error;
+    }
+  }
+
+  @Post('user/:firebaseUid/promote')
   @Roles(UserRole.ADMIN)
   async promoteUser(@Param('firebaseUid') firebaseUid: string) {
     logger.info('Admin promoting user', { targetUid: firebaseUid }, 'AdminController');
@@ -58,7 +91,7 @@ export class AdminController {
     }
   }
 
-  @Patch('users/:firebaseUid/revoke-admin')
+  @Patch('user/:firebaseUid/revoke-admin')
   @Roles(UserRole.ADMIN)
   async revokeAdmin(@Param('firebaseUid') firebaseUid: string) {
     logger.info('Admin revoking admin access', { targetUid: firebaseUid }, 'AdminController');

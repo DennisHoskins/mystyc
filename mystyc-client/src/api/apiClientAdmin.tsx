@@ -77,6 +77,9 @@ export const apiClientAdmin = {
   // User Management
   getUsers: (token: string) =>
     fetchAdminApi('/admin/users', { method: 'GET', token }),
+
+  getUser: (token: string, firebaseUid: string) =>
+    fetchAdminApi(`/admin/user/${firebaseUid}`, { method: 'GET', token }),  
   
   promoteUser: (token: string, firebaseUid: string) =>
     fetchAdminApi(`/admin/users/${firebaseUid}/promote`, { method: 'POST', token }),

@@ -43,7 +43,7 @@ function AuthEventsPage() {
     }
 
     doFetch();
-  }, [idToken, setBusy]);
+  }, [idToken, setBusy, handleError]);
 
   const handleRefresh = async () => {
     if (!idToken) return;
