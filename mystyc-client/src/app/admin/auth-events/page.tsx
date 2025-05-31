@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
@@ -12,8 +11,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
-import AdminTable from '@/components/admin/AdminTable';
-import TableCellLink from '@/components/ui/table/TableCellLink';
+import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
 
 function AuthEventsPage() {
   const { idToken } = useAuth();
@@ -47,100 +45,32 @@ function AuthEventsPage() {
     doFetch();
   }, [idToken, setBusy]);
 
-  const columns: ColumnDef<AuthEventData>[] = [
-    {
-      id: 'summary',
-      header: 'Summary',
-      cell: ({ row }) => {
-        const { clientTimestamp, type, deviceId, platform, firebaseUid } = row.original;
-        return (
-          <div className="space-y-1">
-            <div className="font-medium text-sm">{type}</div>
-            <div className="text-gray-700 text-xs">
-              {new Date(clientTimestamp).toLocaleString()}
-            </div>
-            <div className="text-gray-500 text-xs">
-              {platform || 'Unknown platform'}
-            </div>
-            <div className="text-sm">
-              <TableCellLink value={`Device: ${deviceId}`} prefix="/admin/device" />
-            </div>
-            <div className="text-sm">
-              <TableCellLink value={`User: ${firebaseUid}`} prefix="/admin/user" />
-            </div>
-          </div>
-        );
-      },
-      meta: { className: 'sm:hidden' },
-    },
-    {
-      accessorKey: 'clientTimestamp',
-      header: 'Time',
-      cell: ({ getValue }) => new Date(getValue() as string).toLocaleString(),
-      meta: { className: 'hidden sm:table-cell' },
-    },
-    {
-      accessorKey: 'firebaseUid',
-      header: 'User ID',
-      cell: ({ getValue }) => {
-        const uid = getValue() as string;
-        return <TableCellLink value={uid} prefix="/admin/user" />;
-      },
-      meta: { className: 'hidden sm:table-cell' },
-    },
-    {
-      accessorKey: 'deviceId',
-      header: 'Device ID',
-      cell: ({ getValue }) => {
-        const dId = getValue() as string;
-        return <TableCellLink value={dId} prefix="/admin/device" />;
-      },
-      meta: { className: 'hidden sm:table-cell' },
-    },
-    {
-      accessorKey: 'type',
-      header: 'Action',
-      meta: { className: 'hidden sm:table-cell' },
-    },
-    {
-      accessorKey: 'ip',
-      header: 'IP Address',
-      cell: ({ getValue }) => getValue() || '—',
-      meta: { className: 'hidden sm:table-cell' },
-    },
-    {
-      accessorKey: 'platform',
-      header: 'Platform',
-      cell: ({ getValue }) => getValue() || '—',
-      meta: { className: 'hidden sm:table-cell' },
-    },
-  ];
+  const handleRefresh = async () => {
+    if (!idToken) return;
+    setBusy(true);
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await apiClientAdmin.getAuthEvents(idToken);
+      setEvents(data);
+    } catch (err: any) {
+      handleError(err);
+      setError(err.message || 'Failed to load auth events');
+    } finally {
+      setLoading(false);
+      setBusy(false);
+    }
+  };
 
   return (
     <PageContainer>
       <AdminHeader title="Auth Events" subtitle="Recent authentication activity logs" />
       <div className="mt-4 w-full">
-        <AdminTable
-          data={events}
-          columns={columns}
+        <TableAuthEvents
+          events={events}
           loading={loading}
           error={error}
-          onRefresh={async () => {
-            if (!idToken) return;
-            setBusy(true);
-            setLoading(true);
-            setError(null);
-            try {
-              const data = await apiClientAdmin.getAuthEvents(idToken);
-              setEvents(data);
-            } catch (err: any) {
-              handleError(err);
-              setError(err.message || 'Failed to load auth events');
-            } finally {
-              setLoading(false);
-              setBusy(false);
-            }
-          }}
+          onRefresh={handleRefresh}
         />
       </div>
     </PageContainer>
