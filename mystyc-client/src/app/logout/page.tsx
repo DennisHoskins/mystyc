@@ -4,20 +4,76 @@ import { useEffect, useState, useRef } from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
+import { apiClient } from '@/api/apiClient';
+import { AuthEventData } from '@/interfaces/authEventData.interface';
+import { errorHandler } from '@/util/errorHandler';
+import { logger } from '@/util/logger';
 
 import Button from '@/components/ui/Button';
 import PageContainer from '@/components/layout/PageContainer';
 import FormLayout from '@/components/layout/FormLayout';
 
 export default function LogoutPage() {
-  const { signOut } = useAuth();
+  const { signOut, idToken } = useAuth();
   const router = useCustomRouter();
+  const { deviceData } = useDeviceInfo();
   const [countdown, setCountdown] = useState(5);
   const hasRedirected = useRef(false);
+  const hasTrackedLogout = useRef(false);
 
+  // Track logout event before signing out
   useEffect(() => {
-    signOut(true);
-  }, [signOut]);
+    const trackLogoutEvent = async () => {
+      if (hasTrackedLogout.current) return;
+      hasTrackedLogout.current = true;
+
+      // Only track if we have auth token and device data
+      if (!idToken) {
+        logger.log('[LogoutPage] No auth token, skipping logout tracking');
+        signOut(true);
+        return;
+      }
+
+      if (!deviceData) {
+        logger.log('[LogoutPage] No device data, skipping logout tracking');
+        signOut(true);
+        return;
+      }
+
+      try {
+        logger.log('[LogoutPage] Tracking logout event');
+        
+        // Generate logout auth event
+        const authEventData: AuthEventData = {
+          deviceId: deviceData.deviceId,
+          ip: 'unknown', // Server will extract real IP
+          platform: deviceData.platform,
+          clientTimestamp: new Date().toISOString(),
+          type: 'logout'
+        };
+
+        // Send logout event to server with real device data
+        await apiClient.getCurrentUserWithDevice(idToken, deviceData, authEventData);
+        
+        logger.log('[LogoutPage] Logout event tracked successfully');
+      } catch (err) {
+        // Handle logout tracking errors gracefully
+        errorHandler.processError(err, {
+          component: 'LogoutPage',
+          action: 'trackLogoutEvent',
+          additional: { deviceId: deviceData?.deviceId }
+        });
+        
+        logger.warn('[LogoutPage] Failed to track logout event, continuing with signout');
+      } finally {
+        // Always sign out, regardless of tracking success/failure
+        signOut(true);
+      }
+    };
+
+    trackLogoutEvent();
+  }, [signOut, idToken, deviceData]);
 
   useEffect(() => {
     const interval = setInterval(() => {

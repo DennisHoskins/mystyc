@@ -7,6 +7,7 @@ import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useBusy } from '@/components/context/BusyContext';
 import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
 import { formatDateForDisplay } from '@/util/dateTime';
+import { logger } from '@/util/logger';
 
 import AccountDetails from './AccountDetails';
 
@@ -15,20 +16,11 @@ const Dashboard = () => {
   const { firebaseUser, user, idToken } = useAuth();
   const router = useCustomRouter();
   const { setBusy } = useBusy();
-  const { token, error, requestPermission } = useFirebaseMessaging();
+  const { token, error } = useFirebaseMessaging();
 
   useEffect(() => {
       setBusy(false);
   }, [setBusy]);
-
-  // Auto-request notification permission
-  useEffect(() => {
-    if (user && Notification.permission === 'default') {
-      requestPermission();
-    } else if (user && Notification.permission === 'granted' && !token) {
-      requestPermission();
-    }
-  }, [user, token, requestPermission]);
 
   const editProfile = () => {
     router.push('/profile');
@@ -46,7 +38,9 @@ const Dashboard = () => {
       });
 
     } catch (error) {
-      console.error('Error sending notification:', error);
+      logger.error('Error sending notification', { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
     }
   }
 

@@ -5,6 +5,7 @@ import {
  useContext,
  useEffect,
  useState,
+ useRef,
  useCallback,
  ReactNode,
 } from 'react';
@@ -17,11 +18,12 @@ import {
  onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { User } from '@/interfaces/user.interface';
+import { AuthEventData, User } from '@/interfaces';
 import { logger } from '@/util/logger';
 import { errorHandler } from '@/util/errorHandler';
 import { useUserCache } from '@/hooks/useUserCache';
 import { useUserAPI } from '@/hooks/useUserAPI';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 interface AuthContextType {
  firebaseUser: FirebaseAuthUser | null;
@@ -42,7 +44,11 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
  const [firebaseUser, setFirebaseUser] = useState<FirebaseAuthUser | null>(null);
  const [user, setUser] = useState<User | null>(null);
  const [loading, setLoading] = useState(true);
@@ -51,9 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
  const [tokenRefreshFailed, setTokenRefreshFailed] = useState(false);
  const [isRefreshingToken, setIsRefreshingToken] = useState(false);
  const [hasLoadedCache, setHasLoadedCache] = useState(false);
+ const [hasQuotaError, setHasQuotaError] = useState(false);
+ const hasAttemptedDeviceRegistration = useRef(false);
 
  const { getCachedUser, clearCachedUser } = useUserCache(setUser);
- const { fetchCompleteUser, updateUserProfile } = useUserAPI();
+ const { fetchCompleteUserWithDevice, updateUserProfile } = useUserAPI();
+ const { deviceData, regenerateDeviceId } = useDeviceInfo();
 
  const updateIdToken = useCallback(async (firebaseUser: FirebaseAuthUser | null) => {
    if (!firebaseUser) {
@@ -62,14 +71,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      return;
    }
 
-   if (isRefreshingToken) return;
+   if (isRefreshingToken || hasQuotaError) {
+     logger.log('[AuthContext] Skipping token update', { isRefreshingToken, hasQuotaError });
+     return;
+   }
    
    setIsRefreshingToken(true);
+   logger.log('[AuthContext] Starting token update for user:', firebaseUser.uid);
+   
    try {
      const token = await firebaseUser.getIdToken(true);
      setIdToken(token);
      setTokenRefreshFailed(false);
-   } catch (err) {
+     setHasQuotaError(false);
+     logger.log('[AuthContext] Token updated successfully');
+   } catch (err: any) {
+     logger.log('[AuthContext] Token update error:', err.message);
+     
+     if (err.message?.includes('quota-exceeded')) {
+       setHasQuotaError(true);
+       logger.log('[AuthContext] Quota exceeded - stopping token refresh attempts');
+       return;
+     }
+     
      errorHandler.processError(err, {
        component: 'AuthContext',
        action: 'updateIdToken',
@@ -81,18 +105,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    } finally {
      setIsRefreshingToken(false);
    }
- }, [isRefreshingToken]);
+ }, [isRefreshingToken, hasQuotaError]);
 
  const retryTokenRefresh = useCallback(async () => {
    if (firebaseUser) {
+     setHasQuotaError(false);
      await updateIdToken(firebaseUser);
    }
  }, [firebaseUser, updateIdToken]);
 
- useEffect(() => {
+useEffect(() => {
+   logger.log('[AuthContext] Setting up onAuthStateChanged listener');
+   
    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+     logger.log('[AuthContext] onAuthStateChanged triggered', { 
+       hasUser: !!firebaseUser, 
+       uid: firebaseUser?.uid
+     });
+     
      setFirebaseUser(firebaseUser);
-     await updateIdToken(firebaseUser);
+     
+     // Only update token on actual auth state changes, not on token refresh completion
+     if (firebaseUser && !idToken) {
+       await updateIdToken(firebaseUser);
+     } else if (!firebaseUser) {
+       setIdToken(null);
+       setTokenRefreshFailed(false);
+     }
      
      if (firebaseUser && !hasLoadedCache) {
        const cachedUser = getCachedUser(firebaseUser.uid);
@@ -110,25 +149,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      setReady(true);
    });
 
-   return () => unsubscribe();
- }, [getCachedUser, hasLoadedCache, updateIdToken]);
-
+   return () => {
+     logger.log('[AuthContext] Cleaning up onAuthStateChanged listener');
+     unsubscribe();
+   };
+ }, [getCachedUser, hasLoadedCache, updateIdToken, idToken]);
+ 
  useEffect(() => {
-   if (!firebaseUser || !idToken) return;
-   const tokenRefreshInterval = setInterval(async () => {
-     await updateIdToken(firebaseUser);
-   }, 55 * 60 * 1000);
-   return () => clearInterval(tokenRefreshInterval);
- }, [firebaseUser, idToken, updateIdToken]);
-
- useEffect(() => {
-   if (ready && idToken && firebaseUser && !user) {
-     fetchCompleteUser(idToken, firebaseUser, setUser);
+   if (ready && idToken && firebaseUser && !user && deviceData && !hasAttemptedDeviceRegistration.current) {
+     hasAttemptedDeviceRegistration.current = true;
+     logger.log('[AuthContext] First auth - using device registration');
+     
+     const authEventData: AuthEventData = {
+       deviceId: deviceData.deviceId,
+       ip: '127.0.0.1',
+       platform: deviceData.platform,
+       clientTimestamp: new Date().toISOString(),
+       type: 'login'
+     };
+     
+     fetchCompleteUserWithDevice(
+       idToken, 
+       firebaseUser, 
+       deviceData, 
+       authEventData, 
+       setUser,
+       regenerateDeviceId
+     ).catch((error) => {
+       logger.error('[AuthContext] Device registration failed', { error: error.message });
+       hasAttemptedDeviceRegistration.current = false;
+     });
    }
- }, [ready, idToken, firebaseUser, user, fetchCompleteUser]);
+ }, [ready, idToken, firebaseUser, user, deviceData, fetchCompleteUserWithDevice, regenerateDeviceId]);
 
  useEffect(() => {
    if (!firebaseUser) {
+     hasAttemptedDeviceRegistration.current = false;
      setUser(null);
    }
  }, [firebaseUser]);
@@ -174,6 +230,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      setIdToken(null);
      setUser(null);
      setTokenRefreshFailed(false);
+     setHasQuotaError(false);
      if (!skipRedirect) {
        setReady(false);
        setLoading(false);
@@ -189,6 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      setIdToken(null);
      setUser(null);
      setTokenRefreshFailed(false);
+     setHasQuotaError(false);
    }
  };
 

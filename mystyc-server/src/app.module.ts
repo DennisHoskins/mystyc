@@ -4,17 +4,19 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 
+import { FirebaseModule } from '@/auth/firebase.module';
+import { UsersModule } from '@/users/users.module';
+import { DevicesModule } from '@/devices/devices.module';
+import { AuthEventsModule } from '@/auth-events/auth-events.module';
+import { AdminModule } from '@/admin/admin.module';
+import { NotificationsModule } from '@/notifications/notifications.module';
+
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { ThrottlerExceptionFilter } from '@/common/filters/throttler-exception.filter';
 import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter';
-
-import { FirebaseModule } from '@/auth/firebase.module';
-import { UsersModule } from '@/users/users.module';
-import { AdminModule } from '@/admin/admin.module';
-import { NotificationsModule } from '@/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { NotificationsModule } from '@/notifications/notifications.module';
     ]),
     FirebaseModule,
     UsersModule,
+    DevicesModule,
+    AuthEventsModule,
     AdminModule,
     NotificationsModule,
   ],

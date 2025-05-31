@@ -8,8 +8,8 @@ export class UserProfile {
   @Prop({ required: true })
   firebaseUid: string;
   
-  @Prop({ type: [String], enum: UserRole, default: [UserRole.USER] })
-  roles: UserRole[];
+  @Prop({ type: [String], enum: UserRole, default: [UserRole.USER], required: true })
+  roles: UserRole[];  
 
   @Prop()
   fullName: string;

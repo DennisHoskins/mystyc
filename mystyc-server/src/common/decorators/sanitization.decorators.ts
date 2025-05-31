@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 
-import { SanitizationUtil, SanitizationOptions } from '@/util/sanitization.util';
+import { SanitizationUtil, SanitizationOptions } from '@/util/sanitization';
 
 /**
  * Generic text sanitization decorator

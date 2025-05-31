@@ -1,5 +1,7 @@
 import { parseApiDate } from '@/util/dateTime';
 import { errorHandler } from '@/util/errorHandler';
+import { AuthEventData, DeviceData } from '@/interfaces';
+import { logger } from '@/util/logger';
 
 const API_BASE_URL = 'https://skull.international/api';
 
@@ -31,17 +33,18 @@ async function fetchApi<T = any>(endpoint: string, options: ApiOptions = {}): Pr
   };
 
   if (body) {
+    logger.log('Full request body:', JSON.stringify(body, null, 2));
     requestOptions.body = JSON.stringify(body);
   }
 
-  console.log(`API request: ${method} ${endpoint}`, requestOptions);
-
+  logger.log(`API request: ${method} ${endpoint}`, requestOptions);
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, requestOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
       let errorMessage = `API error: ${response.status}`;
+      logger.error('Server error response:', errorText);
       try {
         const errorData = JSON.parse(errorText);
         errorMessage = errorData.message || errorMessage;
@@ -96,6 +99,21 @@ function transformUserResponse(userData: any) {
 export const apiClient = {
   getCurrentUser: (token: string) => 
     fetchApi('/users/me', { method: 'GET', token }).then(transformUserResponse),
+  
+  getCurrentUserWithDevice: (token: string, deviceData: DeviceData, authEventData: AuthEventData) =>
+    fetchApi('/users/me', { 
+      method: 'POST', 
+      body: { device: deviceData, authEvent: authEventData }, 
+      token 
+    }).then(transformUserResponse),
+  
+  updateFcmToken: (token: string, deviceId: string, fcmToken: string) =>
+    fetchApi('/devices/notify-token', {
+      method: 'POST',
+      body: { deviceId, fcmToken },
+      token
+    }),
+  
   updateUserProfile: (token: string, data: any) => 
     fetchApi('/users/update-profile', { method: 'PATCH', body: data, token }).then(transformUserResponse),
 };

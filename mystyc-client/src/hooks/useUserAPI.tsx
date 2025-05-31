@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User as FirebaseAuthUser } from 'firebase/auth';
 import { apiClient } from '@/api/apiClient';
-import { User } from '@/interfaces/user.interface';
+import { User, DeviceData, AuthEventData } from '@/interfaces';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 import { useUserCache } from './useUserCache';
@@ -27,6 +27,80 @@ export function useUserAPI() {
       errorHandler.processError(err, {
         component: 'useUserAPI',
         action: 'fetchCompleteUser',
+        userId: firebaseUser.uid
+      });
+      
+      setUser(null);
+      return null;
+    }
+  };
+
+  const fetchCompleteUserWithDevice = async (
+    token: string,
+    firebaseUser: FirebaseAuthUser,
+    deviceData: DeviceData,
+    authEventData: AuthEventData,
+    setUser: (user: User | null) => void,
+    regenerateDeviceId: () => string
+  ): Promise<User | null> => {
+    try {
+      logger.log('[useUserAPI] Fetching user with device registration...');
+      const user = await apiClient.getCurrentUserWithDevice(token, deviceData, authEventData);
+      logger.log('[useUserAPI] Complete user with device response:', user);
+      
+      setCachedUser(firebaseUser.uid, user);
+      setUser(user);
+      return user;
+    } catch (err: any) {
+      // Handle device conflict errors gracefully
+      if (err?.status === 409) {
+        logger.warn('[useUserAPI] Device hijacking detected, falling back to regular fetch');
+        errorHandler.processError(err, {
+          component: 'useUserAPI',
+          action: 'fetchCompleteUserWithDevice-409',
+          userId: firebaseUser.uid
+        });
+        
+        // Fall back to regular user fetch without device registration
+        return await fetchCompleteUser(token, firebaseUser, setUser);
+      }
+      
+      if (err?.status === 404) {
+        logger.warn('[useUserAPI] Device not found, regenerating device ID and retrying');
+        errorHandler.processError(err, {
+          component: 'useUserAPI',
+          action: 'fetchCompleteUserWithDevice-404',
+          userId: firebaseUser.uid
+        });
+        
+        try {
+          // Regenerate device ID and retry once
+          const newDeviceId = regenerateDeviceId();
+          const updatedDeviceData = { ...deviceData, deviceId: newDeviceId };
+          
+          logger.log('[useUserAPI] Retrying with new device ID:', newDeviceId);
+          const user = await apiClient.getCurrentUserWithDevice(token, updatedDeviceData, authEventData);
+          
+          setCachedUser(firebaseUser.uid, user);
+          setUser(user);
+          return user;
+        } catch (retryErr) {
+          logger.warn('[useUserAPI] Retry with new device ID failed, falling back to regular fetch');
+          errorHandler.processError(retryErr, {
+            component: 'useUserAPI',
+            action: 'fetchCompleteUserWithDevice-404-retry',
+            userId: firebaseUser.uid
+          });
+          
+          // Fall back to regular user fetch
+          return await fetchCompleteUser(token, firebaseUser, setUser);
+        }
+      }
+      
+      // For all other errors, bubble up normally
+      errorHandler.processError(err, {
+        component: 'useUserAPI',
+        action: 'fetchCompleteUserWithDevice',
         userId: firebaseUser.uid
       });
       
@@ -79,6 +153,7 @@ export function useUserAPI() {
 
   return {
     fetchCompleteUser,
+    fetchCompleteUserWithDevice,
     updateUserProfile,
     isUpdatingProfile
   };

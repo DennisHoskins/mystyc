@@ -1,11 +1,13 @@
-import { Controller, Post, Patch, Get, Body, Headers, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Patch, Get, Body, Headers, UnauthorizedException, Req } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { Request } from 'express';
 
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { User } from '@/common/interfaces/user.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RegisterSessionDto } from './dto/register-session.dto';
 import { UserService } from './user.service';
-import { UserMapperUtil } from '@/util/user-mapper.util';
+import { UserMapperUtil } from '@/util/user-mapper';
 import { createServiceLogger } from '@/util/logger';
 import { FirebaseService } from '@/auth/firebase.service';
 
@@ -28,6 +30,50 @@ export class UsersController {
     const firebaseUser = UserMapperUtil.transformFirebaseUser(firebaseUserFromDecorator);
     
     return this.userService.getOrCreateUser(firebaseUser);
+  }
+
+  @Post('me')
+  @Throttle({ auth: { limit: 10, ttl: 60000 } })
+  async registerSession(
+    @FirebaseUser() firebaseUserFromDecorator,
+    @Body() registerSessionDto: RegisterSessionDto,
+    @Req() request: Request
+  ): Promise<User> {
+    this.logger.info('Registering user session via POST /users/me', {
+      uid: firebaseUserFromDecorator.uid,
+      deviceId: registerSessionDto.device.deviceId,
+      authType: registerSessionDto.authEvent.type,
+      platform: registerSessionDto.device.platform
+    });
+
+    const firebaseUser = UserMapperUtil.transformFirebaseUser(firebaseUserFromDecorator);
+    
+    // Extract server IP from request
+    const serverIp = this.getClientIp(request);
+    
+    try {
+      const user = await this.userService.registerSession(
+        firebaseUser,
+        registerSessionDto,
+        serverIp
+      );
+
+      this.logger.info('Session registered successfully via controller', {
+        uid: firebaseUser.uid,
+        deviceId: registerSessionDto.device.deviceId,
+        serverIp
+      });
+
+      return user;
+    } catch (error) {
+      this.logger.error('Session registration failed via controller', {
+        uid: firebaseUser.uid,
+        deviceId: registerSessionDto.device.deviceId,
+        error: error.message
+      });
+
+      throw error;
+    }
   }
 
   @Get('me')
@@ -79,5 +125,16 @@ export class UsersController {
 
     const user = await this.userService.getUserProfile(firebaseUserFromDecorator.uid, firebaseUser);
     return { user };
+  }
+
+  private getClientIp(request: Request): string {
+    return (
+      request.headers['x-forwarded-for'] as string ||
+      request.headers['x-real-ip'] as string ||
+      request.connection.remoteAddress ||
+      request.socket.remoteAddress ||
+      request.ip ||
+      'unknown'
+    ).split(',')[0].trim();
   }
 }
