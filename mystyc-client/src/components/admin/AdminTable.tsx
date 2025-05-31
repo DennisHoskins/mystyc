@@ -15,6 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import Text from '@/components/ui/Text';
+import FormError from '@/components/form/FormError';
 
 interface AdminTableProps<TData> {
   data: TData[];
@@ -43,18 +45,16 @@ export function AdminTable<TData>({
 
   if (error) {
     return (
-      <div className="rounded-md bg-red-50 p-4">
-        <div className="text-sm text-red-700">
-          <p>Error loading data: {error}</p>
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              className="mt-2 text-red-600 hover:text-red-800 underline"
-            >
-              Try again
-            </button>
-          )}
-        </div>
+      <div>
+        <FormError message={`Error loading data: ${error}`} />
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            className="mt-2 text-red-600 hover:text-red-800 underline text-sm"
+          >
+            Try again
+          </button>
+        )}
       </div>
     );
   }
@@ -64,7 +64,7 @@ export function AdminTable<TData>({
       {(title || description) && (
         <div>
           {title && <h3 className="text-lg font-medium text-gray-900">{title}</h3>}
-          {description && <p className="text-sm text-gray-500">{description}</p>}
+          {description && <Text variant="small">{description}</Text>}
         </div>
       )}
 
@@ -121,9 +121,9 @@ export function AdminTable<TData>({
       </div>
 
       {!loading && data.length > 0 && (
-        <div className="text-sm text-gray-500">
+        <Text variant="small">
           Showing {data.length} result{data.length !== 1 ? 's' : ''}
-        </div>
+        </Text>
       )}
     </div>
   );

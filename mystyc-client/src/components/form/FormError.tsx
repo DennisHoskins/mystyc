@@ -1,5 +1,7 @@
 'use client';
 
+import Text from '@/components/ui/Text';
+
 type FormErrorProps = {
   message: string | null;
 };
@@ -8,8 +10,10 @@ export default function FormError({ message }: FormErrorProps) {
   if (!message) return null;
 
   return (
-    <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-      {message}
+    <div className="rounded-md bg-red-50 p-4">
+      <Text variant="small" className="text-red-700">
+        {message}
+      </Text>
     </div>
   );
 }

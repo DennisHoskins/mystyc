@@ -9,6 +9,7 @@ import TextInput from '@/components/form/TextInput';
 import FormLink from '@/components/form/FormLink';
 import PageContainer from '@/components/layout/PageContainer';
 import FormLayout from '@/components/layout/FormLayout';
+import Text from '@/components/ui/Text';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -92,14 +93,14 @@ export default function RegisterPage() {
             Create Account
           </Button>
 
-          <p className="text-center text-sm mt-2 text-gray-600">
-            <span className="block">
+          <Text variant="small" className="text-center mt-2">
+            <Text as="span" className="block">
               Already have an account? <FormLink href="/login">Sign In</FormLink>
-            </span>
-            <span className="block mt-1">
+            </Text>
+            <Text as="span" className="block mt-1">
               <FormLink href="/password-reset">Forgot your password?</FormLink>
-            </span>
-          </p>
+            </Text>
+          </Text>
         </form>
       </FormLayout>
     </PageContainer>

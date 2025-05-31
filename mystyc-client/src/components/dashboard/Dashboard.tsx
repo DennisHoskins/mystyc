@@ -10,6 +10,8 @@ import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
 import AccountDetails from './AccountDetails';
+import Text from '@/components/ui/Text';
+import FormError from '@/components/form/FormError';
 
 const Dashboard = () => {
   const [showDetails, setShowDetails] = useState(false);
@@ -57,18 +59,18 @@ const Dashboard = () => {
   return (
     <>
       <h2 className="mt-8 text-xl font-semibbold text-center">Welcome, {fullName} 👋</h2>
-      <p className="mt-2 text-center text-gray-600">Glad to have you back.</p>
+      <Text variant="muted" className="mt-2 text-center">Glad to have you back.</Text>
 
       <div className="mt-6 text-center">
         {birthday && (
-          <p>
+          <Text>
             🎂 <strong>Birthday:</strong> {birthday}
-          </p>
+          </Text>
         )}
         {user?.userProfile?.zodiacSign && (
-          <p className="mt-2">
+          <Text className="mt-2">
             🔮 <strong>Zodiac Sign:</strong> {user.userProfile.zodiacSign}
-          </p>
+          </Text>
         )}
       </div>
 
@@ -90,15 +92,15 @@ const Dashboard = () => {
         )}
 
         {token && (
-          <p className="mt-2 text-xs text-gray-500 break-all max-w-xs">
+          <Text variant="small" className="mt-2 max-w-xs break-all">
             Notifications enabled ✓
-          </p>
+          </Text>
         )}
 
         {error && (
-          <p className="mt-2 text-xs text-red-500">
-            Notification error: {error}
-          </p>
+          <div className="mt-2 max-w-xs">
+            <FormError message={`Notification error: ${error}`} />
+          </div>
         )}
 
         <button

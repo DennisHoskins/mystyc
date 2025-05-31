@@ -11,6 +11,7 @@ import TextInput from '@/components/form/TextInput';
 import FormLink from '@/components/form/FormLink';
 import PageContainer from '@/components/layout/PageContainer';
 import FormLayout from '@/components/layout/FormLayout';
+import Text from '@/components/ui/Text';
 
 export default function PasswordResetPage() {
   const [email, setEmail] = useState('');
@@ -85,14 +86,14 @@ export default function PasswordResetPage() {
             Send Reset Email
           </Button>
 
-          <p className="text-center text-sm mt-2 text-gray-600">
-            <span className="block">
+          <Text variant="small" className="text-center mt-2">
+            <Text as="span" className="block">
               Remember your password? <FormLink href="/login">Sign In</FormLink>
-            </span>
-            <span className="block mt-1">
+            </Text>
+            <Text as="span" className="block mt-1">
               Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
-            </span>
-          </p>
+            </Text>
+          </Text>
         </form>
       </FormLayout>
     </PageContainer>
