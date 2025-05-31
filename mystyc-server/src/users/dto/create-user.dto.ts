@@ -118,7 +118,7 @@ export class CreateUserDto {
   @IsOptional()
   @IsISO8601({ strict: true }, { message: 'Date of birth must be in YYYY-MM-DD format' })
   @Validate(IsValidBirthDate)
-  dateOfBirth?: string;
+  dateOfBirth?: Date;
 
   @IsOptional()
   @IsString({ message: 'Zodiac sign must be a string' })
