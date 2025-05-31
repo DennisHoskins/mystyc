@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useToast } from './useToast';
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from './useCustomRouter';
@@ -15,13 +15,20 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
   const { signOut } = useAuth();
   const router = useCustomRouter();
 
+  // Stabilize options to prevent recreating handleError on every render
+  const stableOptions = useMemo(() => options, [
+    options.component,
+    options.showToast,
+    options.onError
+  ]);
+
   const handleError = useCallback((
     error: any, 
     context?: Partial<ErrorContext>
   ): ProcessedError => {
     // Build complete context
     const fullContext: ErrorContext = {
-      component: options.component,
+      component: stableOptions.component,
       ...context,
     };
 
@@ -44,17 +51,17 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     // Show toast if configured
-    if ((options.showToast !== false) && processedError.shouldToast) {
+    if ((stableOptions.showToast !== false) && processedError.shouldToast) {
       showToast(processedError.message);
     }
 
     // Call custom error handler if provided
-    if (options.onError) {
-      options.onError(processedError);
+    if (stableOptions.onError) {
+      stableOptions.onError(processedError);
     }
 
     return processedError;
-  }, [options, showToast, signOut, router]);
+  }, [stableOptions, showToast, signOut, router]);
 
   const handleAuthError = useCallback((error: any, action: string): ProcessedError => {
     return handleError(error, { action });

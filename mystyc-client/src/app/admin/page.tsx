@@ -1,44 +1,42 @@
 'use client';
 
-import { useEffect } from 'react';
-import Link from 'next/link';
-
-import { useBusy } from '@/components/context/BusyContext';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
-import { withAdminAuth } from '@/auth/withAdminAuth';
-
 import PageContainer from '@/components/layout/PageContainer';
 import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
+import List from '@/components/ui/list/List';
+import ListItem from '@/components/ui/list/ListItem';
+import ListItemButton from '@/components/ui/list/ListItemButton';
+import { withAdminAuth } from '@/auth/withAdminAuth';
 
 function AdminPage() {
-  const { setBusy } = useBusy();
-  const { handleError } = useErrorHandler({
-    component: 'AdminPage',
-    showToast: true
-  });
-
-  useEffect(() => {
-    try {
-      setBusy(false);
-    } catch (err) {
-      handleError(err, { action: 'initialization' });
-    }
-  }, [setBusy, handleError]);
-
   return (
     <PageContainer>
-      <Heading level={2} className="mt-8 text-center">Admin Dashboard</Heading>
-      <Text variant="muted" className="mt-2 text-center">Welcome, admin.</Text>
-      
-      <div className="mt-8 space-y-4">
-        <Link 
-          href="/admin/users" 
-          className="block p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <Heading level={3} size="md">User Management</Heading>
-          <Text variant="small">View and manage user accounts</Text>
-        </Link>
+      <Heading level={1} size="xl">Admin Dashboard</Heading>
+      <Text>Manage administrative settings below.</Text>
+      <div className="mt-8">
+        <List columns={2} className="grid-cols-1 sm:grid-cols-2">
+          <ListItem>
+            <ListItemButton
+              label="User Management"
+              subtitle="View and manage user accounts"
+              href="/admin/users"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              label="Devices"
+              subtitle="View and manage devices"
+              href="/admin/devices"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              label="Auth Events"
+              subtitle="View authentication logs"
+              href="/admin/auth-events"
+            />
+          </ListItem>
+        </List>
       </div>
     </PageContainer>
   );

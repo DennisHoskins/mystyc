@@ -16,78 +16,71 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import Text from '@/components/ui/Text';
-import FormError from '@/components/form/FormError';
-import Heading from '@/components/ui/Heading';
+import Button from '@/components/ui/Button';
 
-interface AdminTableProps<TData> {
-  data: TData[];
-  columns: ColumnDef<TData>[];
-  loading?: boolean;
+interface AdminTableProps<T> {
+  data: T[];
+  columns: ColumnDef<T>[];
+  loading: boolean;
   error?: string | null;
   onRefresh?: () => void;
   title?: string;
   description?: string;
 }
 
-export function AdminTable<TData>({
+export default function AdminTable<T>({
   data,
   columns,
-  loading = false,
+  loading,
   error = null,
   onRefresh,
   title,
   description,
-}: AdminTableProps<TData>) {
+}: AdminTableProps<T>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (error) {
-    return (
-      <div>
-        <FormError message={`Error loading data: ${error}`} />
-        {onRefresh && (
-          <button
-            onClick={onRefresh}
-            className="mt-2 text-red-600 hover:text-red-800 underline text-sm"
-          >
-            Try again
-          </button>
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      {(title || description) && (
-        <div>
-          {title && <Heading level={3} size="lg">{title}</Heading>}
-          {description && <Text variant="small">{description}</Text>}
+    <div>
+      {title && <div className="mb-2 font-semibold">{title}</div>}
+      {description && <div className="mb-4 text-sm text-gray-500">{description}</div>}
+
+      {error && (
+        <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700">
+          {error}
         </div>
       )}
 
-      <div className="rounded-md border">
+      {onRefresh && (
+        <div className="mb-2">
+          <Button size="sm" onClick={onRefresh}>
+            Refresh
+          </Button>
+        </div>
+      )}
+
+      <div className="rounded-md border min-h-[60vh] overflow-auto">
         <Table>
-          <TableHeader>
+          <TableHeader className={!loading ? 'animate-fade-in' : 'opacity-0'}>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                  <TableHead
+                    key={header.id}
+                    className={(header.column.columnDef.meta as any)?.className ?? ''}
+                  >
+                    {!header.isPlaceholder &&
+                      flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+
+          <TableBody className={!loading ? 'animate-fade-in' : 'opacity-0'}>
             {loading ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -97,14 +90,14 @@ export function AdminTable<TData>({
                   </div>
                 </TableCell>
               </TableRow>
-            ) : table.getRowModel().rows?.length ? (
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={(cell.column.columnDef.meta as any)?.className ?? ''}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -113,7 +106,7 @@ export function AdminTable<TData>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  No data to display
                 </TableCell>
               </TableRow>
             )}

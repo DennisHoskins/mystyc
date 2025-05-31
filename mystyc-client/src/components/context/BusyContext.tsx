@@ -38,7 +38,7 @@ export function BusyProvider({ children }: { children: ReactNode }) {
       
       return state;
     });
-  }, []); // Empty deps - completely stable!
+  }, []);
 
   return (
     <BusyContext.Provider value={{ setBusy: setBusyWithDelay }}>

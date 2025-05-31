@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { useCustomRouter } from '@/hooks/useCustomRouter';
 
 interface ListItemButtonProps {
   label: string;
@@ -10,8 +10,17 @@ interface ListItemButtonProps {
   className?: string;
 }
 
-export default function ListItemButton({ label, subtitle, icon, href, onClick, className = '' }: ListItemButtonProps) {
-  const baseClasses = 'block w-full p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
+export default function ListItemButton({
+  label,
+  subtitle,
+  icon,
+  href,
+  onClick,
+  className = '',
+}: ListItemButtonProps) {
+  const router = useCustomRouter();
+  const baseClasses =
+    'block w-full p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
   const combinedClasses = `${baseClasses} ${className}`;
 
   const content = (
@@ -26,9 +35,13 @@ export default function ListItemButton({ label, subtitle, icon, href, onClick, c
 
   if (href) {
     return (
-      <Link href={href} passHref className={combinedClasses}>
+      <button
+        onClick={() => router.push(href)}
+        className={combinedClasses}
+        type="button"
+      >
         {content}
-      </Link>
+      </button>
     );
   }
 
