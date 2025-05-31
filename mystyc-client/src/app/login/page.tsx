@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useAuth } from '@/components/context/AuthContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
-import Button from '@/components/ui/Button';
-import TextInput from '@/components/ui/form/TextInput';
-import FormLink from '@/components/form/FormLink';
-import PageContainer from '@/components/layout/PageContainer';
+
+import PageContainerAuth from '@/components/layout/PageContainerAuth';
 import FormLayout from '@/components/layout/FormLayout';
+import FormLink from '@/components/form/FormLink';
 import Form from '@/components/ui/form/Form';
+import TextInput from '@/components/ui/form/TextInput';
+import Button from '@/components/ui/Button';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -57,7 +58,7 @@ export default function LoginPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainerAuth>
       <FormLayout
         subtitle="Sign in to continue your journey..."
         error={error}
@@ -103,6 +104,6 @@ export default function LoginPage() {
           </p>
         </Form>
       </FormLayout>
-    </PageContainer>
+    </PageContainerAuth>
   );
 }

@@ -2,14 +2,14 @@
 
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 
-type PageContainerProps = {
+type PageContainerAuthProps = {
   children: React.ReactNode;
 };
 
-export default function PageContainer({ children }: PageContainerProps) {
+export default function PageContainerAuth({ children }: PageContainerAuthProps) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 animate-fade-in">
-      <div className="w-full max-w-screen-xl space-y-8">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md">
         <ErrorBoundary
           fallbackTitle="Page Error"
           fallbackMessage="This page encountered an error. Please try again."

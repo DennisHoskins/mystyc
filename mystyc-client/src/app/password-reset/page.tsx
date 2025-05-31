@@ -6,12 +6,12 @@ import { useAuth } from '@/components/context/AuthContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
-import Button from '@/components/ui/Button';
-import TextInput from '@/components/ui/form/TextInput';
-import FormLink from '@/components/form/FormLink';
-import PageContainer from '@/components/layout/PageContainer';
-import FormLayout from '@/components/layout/FormLayout';
+import PageContainerAuth from '@/components/layout/PageContainerAuth';
 import Form from '@/components/ui/form/Form';
+import FormLayout from '@/components/layout/FormLayout';
+import FormLink from '@/components/form/FormLink';
+import TextInput from '@/components/ui/form/TextInput';
+import Button from '@/components/ui/Button';
 
 export default function PasswordResetPage() {
   const [email, setEmail] = useState('');
@@ -59,7 +59,7 @@ export default function PasswordResetPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainerAuth>
       <FormLayout
         subtitle="Reset your password"
         error={error}
@@ -96,6 +96,6 @@ export default function PasswordResetPage() {
           </p>
         </Form>
       </FormLayout>
-    </PageContainer>
+    </PageContainerAuth>
   );
 }

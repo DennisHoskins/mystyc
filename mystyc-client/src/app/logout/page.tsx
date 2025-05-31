@@ -10,11 +10,11 @@ import { AuthEventData } from '@/interfaces/authEventData.interface';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
-import Button from '@/components/ui/Button';
-import PageContainer from '@/components/layout/PageContainer';
+import PageContainerAuth from '@/components/layout/PageContainerAuth';
 import FormLayout from '@/components/layout/FormLayout';
-import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
+import Button from '@/components/ui/Button';
 
 export default function LogoutPage() {
   const { signOut, idToken } = useAuth();
@@ -103,7 +103,7 @@ export default function LogoutPage() {
   };
 
   return (
-    <PageContainer>
+    <PageContainerAuth>
       <FormLayout>
         <div className="text-center space-y-8">
           
@@ -130,6 +130,6 @@ export default function LogoutPage() {
           </div>
         </div>
       </FormLayout>
-    </PageContainer>
+    </PageContainerAuth>
   );
 }
