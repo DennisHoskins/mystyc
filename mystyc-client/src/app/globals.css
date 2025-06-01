@@ -93,3 +93,25 @@ main {
   }  
 
 }
+
+html.scrollbar-gutter {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin; /* Firefox */
+}
+
+html.scrollbar-gutter::-webkit-scrollbar {
+  width: 8px; /* Chrome/Safari/Edge */
+}
+
+html.scrollbar-gutter::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.scrollbar-gutter::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+html.scrollbar-gutter::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}

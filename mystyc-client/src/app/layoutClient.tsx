@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 import '@/app/globals.css';
 
@@ -61,11 +62,25 @@ function ConnectionError({ onRetry }: { onRetry: () => void }) {
 function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { user, ready, tokenRefreshFailed, retryTokenRefresh } = useAuth();
   const { isOnline, showConnectionError, triggerConnectionError, clearConnectionError } = useOffline();
+  const pathname = usePathname();
   
   useEffect(() => {
     setConnectionErrorHandler(triggerConnectionError);
     initializeGlobalErrorHandler();
   }, [triggerConnectionError]);
+
+  // Handle scrollbar gutter for admin routes
+  useEffect(() => {
+    const isAdmin = pathname.startsWith('/admin');
+    
+    if (isAdmin) {
+      document.documentElement.classList.add('scrollbar-gutter');
+    } else {
+      document.documentElement.classList.remove('scrollbar-gutter');
+    }
+    
+    return () => document.documentElement.classList.remove('scrollbar-gutter');
+  }, [pathname]);
 
   if (!ready) return null;
 
