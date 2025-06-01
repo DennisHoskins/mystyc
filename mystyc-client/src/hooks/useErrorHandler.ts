@@ -7,9 +7,9 @@ import { errorHandler, ErrorContext, ProcessedError } from '@/util/errorHandler'
 import { storage } from '@/util/storage';
 
 interface UseErrorHandlerOptions {
- component?: string;
- showToast?: boolean;
- onError?: (processedError: ProcessedError) => void;
+  component?: string;
+  showToast?: boolean;
+  onError?: (processedError: ProcessedError) => void;
 }
 
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
@@ -21,15 +21,17 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
   const optionsRef = useRef(options);
   const showToastRef = useRef(showToast);
   const signOutRef = useRef(signOut);
+  const clearCachedUserRef = useRef(clearCachedUser);
   const routerRef = useRef(router);
 
   optionsRef.current = options;
   showToastRef.current = showToast;
   signOutRef.current = signOut;
+  clearCachedUserRef.current = clearCachedUser;
   routerRef.current = router;
 
   const handleError = useCallback((
-    error: any, 
+    error: any,
     context?: Partial<ErrorContext>
   ): ProcessedError => {
     const currentOptions = optionsRef.current;
@@ -41,15 +43,12 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
 
     const processedError = errorHandler.processError(error, fullContext);
 
-    // Handle force logout (revoked tokens) specially
     if (processedError.isForceLogout) {
-      // Clear all auth state immediately
-      signOutRef.current(true); // Skip redirect
+      signOutRef.current(true);
 
-      clearCachedUser();
+      clearCachedUserRef.current();
       storage.session.removeItem('onboardingIntroShown');
-     
-      // Clear any cached user data
+
       const cacheKeys = storage.session.getItem('mystyc_cache_keys');
       if (cacheKeys) {
         try {
@@ -59,7 +58,6 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
         } catch {}
       }
 
-      // Redirect to server logout page
       routerRef.current.replace('/server-logout');
       return processedError;
     }
@@ -85,23 +83,23 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     return processedError;
-}, [clearCachedUser]);
+  }, []);
 
-const handleAuthError = useCallback((error: any, action: string): ProcessedError => {
-  return handleError(error, { action });
-}, [handleError]);
+  const handleAuthError = useCallback((error: any, action: string): ProcessedError => {
+    return handleError(error, { action });
+  }, [handleError]);
 
-const handleApiError = useCallback((error: any, action: string): ProcessedError => {
-  return handleError(error, { action });
-}, [handleError]);
+  const handleApiError = useCallback((error: any, action: string): ProcessedError => {
+    return handleError(error, { action });
+  }, [handleError]);
 
-const isRetryable = useCallback((error: any): boolean => {
-  return errorHandler.isRetryableError(error);
-}, []);
+  const isRetryable = useCallback((error: any): boolean => {
+    return errorHandler.isRetryableError(error);
+  }, []);
 
-const isNetworkError = useCallback((error: any): boolean => {
-  return errorHandler.isNetworkError(error);
-}, []);
+  const isNetworkError = useCallback((error: any): boolean => {
+    return errorHandler.isNetworkError(error);
+  }, []);
 
   return {
     handleError,
