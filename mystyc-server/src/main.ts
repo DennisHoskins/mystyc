@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import helmet from 'helmet';
 import * as express from 'express';
 import cookieParser from 'cookie-parser';
@@ -53,6 +53,32 @@ async function bootstrap() {
     transform: true,
     whitelist: true,
     forbidNonWhitelisted: true,
+    exceptionFactory: (errors) => {
+      if (process.env.NODE_ENV === 'development') {
+        const messages = errors.map(error => {
+          const constraints = error.constraints;
+          const property = error.property;
+          const value = error.value;
+          
+          console.log(`Validation failed for property: ${property}, value: ${value}, constraints:`, constraints);
+          
+          return {
+            property,
+            value,
+            constraints: constraints ? Object.values(constraints) : ['Unknown validation error']
+          };
+        });
+        
+        console.log('Full validation errors:', messages);
+        
+        throw new BadRequestException({
+          message: 'Validation failed',
+          details: messages
+        });
+      } else {
+        throw new BadRequestException('Validation failed');
+      }
+    }
   }));
   logger.debug('Global validation pipe configured');
   

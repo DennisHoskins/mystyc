@@ -1,12 +1,20 @@
+import { ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+import { DeviceDto } from '@/devices/dto/device.dto';
 import {
+  ValidateFirebaseUid,
   ValidateDeviceId,
-  ValidatePlatform,
   ValidateIpAddress,
+  ValidatePlatform,
   ValidateClientTimestamp,
   ValidateAuthEventType
 } from '@/common/decorators/validation.decorators';
 
-export class AuthEventDto {
+class AuthEventDataDto {
+  @ValidateFirebaseUid()
+  firebaseUid: string;
+
   @ValidateDeviceId()
   deviceId: string;
 
@@ -21,4 +29,14 @@ export class AuthEventDto {
 
   @ValidateAuthEventType()
   type: 'login' | 'logout' | 'create';
+}
+
+export class RegisterSessionDto {
+  @ValidateNested()
+  @Type(() => DeviceDto)
+  device: DeviceDto;
+
+  @ValidateNested()
+  @Type(() => AuthEventDataDto)
+  authEvent: AuthEventDataDto;
 }
