@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useAuth } from '@/components/context/AuthContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
-import Button from '@/components/ui/Button';
-import TextInput from '@/components/ui/form/TextInput';
-import FormLink from '@/components/form/FormLink';
-import PageContainer from '@/components/layout/PageContainer';
+
+import PageContainerAuth from '@/components/layout/PageContainerAuth';
 import FormLayout from '@/components/layout/FormLayout';
 import Form from '@/components/ui/form/Form';
+import FormLink from '@/components/form/FormLink';
+import Button from '@/components/ui/Button';
+import TextInput from '@/components/ui/form/TextInput';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -57,7 +58,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainerAuth>
       <FormLayout
         subtitle="Create an account to begin your journey..."
         error={error}
@@ -103,6 +104,6 @@ export default function RegisterPage() {
           </p>
         </Form>
       </FormLayout>
-    </PageContainer>
+    </PageContainerAuth>
   );
 }
