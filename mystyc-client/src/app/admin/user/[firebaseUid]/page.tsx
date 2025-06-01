@@ -23,7 +23,6 @@ import TableDevices from '@/components/admin/tables/TableDevices';
 import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
-import Button from '@/components/ui/Button';
 
 function UserDetailPage() {
   const params = useParams();
