@@ -48,9 +48,9 @@ export default function LogoutPage() {
         
         // Generate logout auth event
         const authEventData: AuthEventData = {
-          deviceId: deviceData.deviceId,
           firebaseUid: firebaseUser?.uid || 'unknown',
-          ip: 'unknown', // Server will extract real IP
+          deviceId: deviceData.deviceId,
+          ip: '192.0.0.0',
           platform: deviceData.platform,
           clientTimestamp: new Date().toISOString(),
           type: 'logout'

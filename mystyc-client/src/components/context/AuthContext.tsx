@@ -161,8 +161,8 @@ useEffect(() => {
      logger.log('[AuthContext] First auth - using device registration');
      
      const authEventData: AuthEventData = {
-       deviceId: deviceData.deviceId,
        firebaseUid: firebaseUser.uid,
+       deviceId: deviceData.deviceId,
        ip: '127.0.0.1',
        platform: deviceData.platform,
        clientTimestamp: new Date().toISOString(),
