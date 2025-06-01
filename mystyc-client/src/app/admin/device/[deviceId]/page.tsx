@@ -16,10 +16,10 @@ import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPanelUser from '@/components/admin/panels/AdminPanelUser';
 import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
-import Button from '@/components/ui/Button';
 
 function DeviceDetailPage() {
   const params = useParams();
@@ -152,21 +152,8 @@ function DeviceDetailPage() {
           subtitle={`Device Details • ${device.platform || 'Unknown Platform'}`}
         />
 
-        {/* Device Owner Section */}
         {deviceOwner && (
-          <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Heading level={4} className="text-blue-900 mb-2">Device Owner</Heading>
-                <Text className="text-blue-800 font-medium">{deviceOwner.fullName || deviceOwner.email}</Text>
-                <Text variant="small" className="text-blue-600">{deviceOwner.email}</Text>
-                <Text variant="small" className="text-blue-600">Firebase UID: {deviceOwner.firebaseUid}</Text>
-              </div>
-              <Button onClick={handleViewUser} size="sm">
-                View User Profile
-              </Button>
-            </div>
-          </div>
+          <AdminPanelUser user={deviceOwner} onViewUser={handleViewUser} />
         )}
 
         {/* Device Information Card */}

@@ -17,9 +17,10 @@ import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPanelAuthEvent from '@/components/admin/panels/AdminPanelAuthEvent';
+import AdminPanelUser from '@/components/admin/panels/AdminPanelUser';
+import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
-import Button from '@/components/ui/Button';
 
 function AuthEventDetailPage() {
   const params = useParams();
@@ -98,7 +99,7 @@ function AuthEventDetailPage() {
   };
 
   const handleViewDevice = () => {
-    if (eventDevice?.device.deviceId) {
+    if (eventDevice?.device?.deviceId) {
       router.push(`/admin/device/${eventDevice.device.deviceId}`);
     }
   };
@@ -128,75 +129,14 @@ function AuthEventDetailPage() {
           subtitle={`Auth Event Details • ${new Date(authEvent.clientTimestamp).toLocaleString()}`}
         />
 
-        {/* Auth Event Details - Blue Bubble */}
-        <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
-          <Heading level={3} className="text-blue-900 mb-4">Event Details</Heading>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <Text variant="small" className="font-medium text-blue-600 mb-1">Event Type</Text>
-              <Text className="text-blue-800 font-medium capitalize">{authEvent.type}</Text>
-            </div>
-            
-            <div>
-              <Text variant="small" className="font-medium text-blue-600 mb-1">Timestamp</Text>
-              <Text className="text-blue-800">{new Date(authEvent.clientTimestamp).toLocaleString()}</Text>
-            </div>
-            
-            <div>
-              <Text variant="small" className="font-medium text-blue-600 mb-1">IP Address</Text>
-              <Text className="text-blue-800 font-mono">{authEvent.ip || '—'}</Text>
-            </div>
-            
-            <div>
-              <Text variant="small" className="font-medium text-blue-600 mb-1">Platform</Text>
-              <Text className="text-blue-800">{authEvent.platform || '—'}</Text>
-            </div>
-            
-            <div>
-              <Text variant="small" className="font-medium text-blue-600 mb-1">Device ID</Text>
-              <Text className="text-blue-800 font-mono text-sm break-all">{authEvent.deviceId}</Text>
-            </div>
-            
-            <div>
-              <Text variant="small" className="font-medium text-blue-600 mb-1">Firebase UID</Text>
-              <Text className="text-blue-800 font-mono text-sm break-all">{authEvent.firebaseUid}</Text>
-            </div>
-          </div>
-        </div>
+        <AdminPanelAuthEvent authEvent={authEvent} />
 
-        {/* Associated User Section */}
         {eventUser && (
-          <div className="bg-green-50 rounded-lg border border-green-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Heading level={4} className="text-green-900 mb-2">Associated User</Heading>
-                <Text className="text-green-800 font-medium">{eventUser.fullName || eventUser.email}</Text>
-                <Text variant="small" className="text-green-600">{eventUser.email}</Text>
-                <Text variant="small" className="text-green-600">Firebase UID: {eventUser.firebaseUid}</Text>
-              </div>
-              <Button onClick={handleViewUser} size="sm" variant="secondary">
-                View User Profile
-              </Button>
-            </div>
-          </div>
+          <AdminPanelUser user={eventUser} onViewUser={handleViewUser} />
         )}
 
-        {/* Associated Device Section */}
         {eventDevice && (
-          <div className="bg-purple-50 rounded-lg border border-purple-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Heading level={4} className="text-purple-900 mb-2">Associated Device</Heading>
-                <Text className="text-purple-800 font-medium font-mono text-sm">{eventDevice.device.deviceId}</Text>
-                <Text variant="small" className="text-purple-600">{eventDevice.device.platform || 'Unknown Platform'}</Text>
-                <Text variant="small" className="text-purple-600">App Version: {eventDevice.device.appVersion || 'Unknown'}</Text>
-              </div>
-              <Button onClick={handleViewDevice} size="sm" variant="secondary">
-                View Device Details
-              </Button>
-            </div>
-          </div>
+          <AdminPanelDevice device={eventDevice.device} onViewDevice={handleViewDevice} />
         )}
 
         {/* Raw Event Data */}

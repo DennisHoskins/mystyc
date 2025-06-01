@@ -17,6 +17,7 @@ import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import TableDevices from '@/components/admin/tables/TableDevices';
 import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
 import Heading from '@/components/ui/Heading';
@@ -145,6 +146,12 @@ function UserDetailPage() {
     }
   };
 
+  const handleViewCurrentDevice = () => {
+    if (user?.currentDeviceId) {
+      router.push(`/admin/device/${user.currentDeviceId}`);
+    }
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -161,6 +168,11 @@ function UserDetailPage() {
       </PageContainer>
     );
   }
+
+  // Find current device from devices list
+  const currentDevice = user.currentDeviceId 
+    ? devices.find(d => d.deviceId === user.currentDeviceId)
+    : null;
 
   return (
     <PageContainer>
@@ -233,22 +245,8 @@ function UserDetailPage() {
         </div>
 
         {/* Current Device Section */}
-        {user.currentDeviceId && (
-          <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Heading level={4} className="text-blue-900 mb-2">Current Device</Heading>
-                <Text className="text-blue-800 font-medium font-mono text-sm">{user.currentDeviceId}</Text>
-                <Text variant="small" className="text-blue-600">Active device for this user</Text>
-              </div>
-              <Button 
-                onClick={() => router.push(`/admin/device/${user.currentDeviceId}`)} 
-                size="sm"
-              >
-                View Device Details
-              </Button>
-            </div>
-          </div>
+        {currentDevice && (
+          <AdminPanelDevice device={currentDevice} onViewDevice={handleViewCurrentDevice} />
         )}
 
         {/* User Devices and Auth Events */}
