@@ -22,21 +22,6 @@ export class DeviceService {
     }, 'DeviceService');
 
     try {
-      // Check if device exists with different user (security check)
-      const existingDevice = await this.deviceModel.findOne({ 
-        deviceId: deviceDto.deviceId 
-      });
-
-      if (existingDevice && existingDevice.firebaseUid !== firebaseUid) {
-        logger.security('Device hijacking attempt detected', {
-          deviceId: deviceDto.deviceId,
-          originalOwner: existingDevice.firebaseUid,
-          attemptedBy: firebaseUid
-        });
-        
-        throw new ConflictException('Device is already registered to another user');
-      }
-
       // Parse user agent
       const parser = new UAParser(deviceDto.userAgent);
       const userAgentParsed = parser.getResult();
@@ -50,7 +35,7 @@ export class DeviceService {
         }
       }, 'DeviceService');
 
-      // Upsert device
+      // Upsert device - allows device sharing/transfer between users
       const device = await this.deviceModel.findOneAndUpdate(
         { firebaseUid, deviceId: deviceDto.deviceId },
         {
@@ -75,7 +60,6 @@ export class DeviceService {
       logger.info('Device upserted successfully', {
         firebaseUid,
         deviceId: device.deviceId,
-        isNew: !existingDevice || existingDevice.firebaseUid === firebaseUid,
         browser: userAgentParsed.browser.name,
         os: userAgentParsed.os.name
       }, 'DeviceService');
