@@ -12,7 +12,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
-import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
+import TableAuthEvents from '@/components/admin/tables/AdminTableAuthEvents';
 
 function AuthEventsPage() {
   const { idToken } = useAuth();

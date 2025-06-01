@@ -12,7 +12,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
-import TableUsers from '@/components/admin/tables/TableUsers';
+import TableUsers from '@/components/admin/tables/AdminTableUsers';
 
 export default withAdminAuth(function UsersPage() {
   const { idToken } = useAuth();

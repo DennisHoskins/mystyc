@@ -18,7 +18,7 @@ import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import AdminPanelUser from '@/components/admin/panels/AdminPanelUser';
-import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
+import TableAuthEvents from '@/components/admin/tables/AdminTableAuthEvents';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 

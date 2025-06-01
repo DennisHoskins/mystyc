@@ -2,7 +2,7 @@
 'use client';
 
 import { UserProfile as User } from '@/interfaces/userProfile.interface';
-import AdminTable from '@/components/admin/AdminTable';
+import AdminTable from './AdminTable';
 import TableCellLink from '@/components/ui/table/TableCellLink';
 
 interface TableUsersProps {

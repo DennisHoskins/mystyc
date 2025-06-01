@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { AuthEventData } from '@/interfaces/authEventData.interface';
 
-import AdminTable from '@/components/admin/AdminTable';
+import AdminTable from './AdminTable';
 import TableCellLink from '@/components/ui/table/TableCellLink';
 
 interface TableAuthEventsProps {
