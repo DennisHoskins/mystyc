@@ -7,6 +7,8 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js')
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
 // Initialize Firebase in service worker
+// Firebase config must be exposed in service worker for FCM to function
+// API keys are public identifiers, not secrets - this is secure per Firebase docs
 firebase.initializeApp({
   apiKey: "${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}",
   authDomain: "${process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}",
