@@ -6,6 +6,7 @@ import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useBusy } from '@/components/context/BusyContext';
 import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
+import { useToast } from '@/hooks/useToast';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
@@ -19,6 +20,7 @@ const Dashboard = () => {
   const { firebaseUser, user, idToken } = useAuth();
   const router = useCustomRouter();
   const { setBusy } = useBusy();
+  const { showToast } = useToast();
   const { token, error } = useFirebaseMessaging();
 
   useEffect(() => {
@@ -51,6 +53,7 @@ const Dashboard = () => {
     if (!token || !idToken) {
       return;
     }
+    showToast('Test notification scheduled for 10 seconds');
     setTimeout(() => sendNotification(), 10 * 1000); // Send in 10 seconds
   };
 
