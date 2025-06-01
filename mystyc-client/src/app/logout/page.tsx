@@ -8,6 +8,7 @@ import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 import { apiClient } from '@/api/apiClient';
 import { AuthEventData } from '@/interfaces/authEventData.interface';
 import { errorHandler } from '@/util/errorHandler';
+import { storage } from "@/util/storage"
 import { logger } from '@/util/logger';
 
 import PageContainerAuth from '@/components/layout/PageContainerAuth';
@@ -72,6 +73,7 @@ export default function LogoutPage() {
       } finally {
         // Always sign out, regardless of tracking success/failure
         signOut(true);
+        storage.local.removeItem('mystyc_device_id');
       }
     };
 

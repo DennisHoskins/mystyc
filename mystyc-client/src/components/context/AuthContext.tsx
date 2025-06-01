@@ -24,6 +24,7 @@ import { errorHandler } from '@/util/errorHandler';
 import { useUserCache } from '@/hooks/useUserCache';
 import { useUserAPI } from '@/hooks/useUserAPI';
 import { useDeviceInfo } from '@/hooks/useDeviceInfo';
+import { storage } from '@/util/storage';
 
 interface AuthContextType {
  firebaseUser: FirebaseAuthUser | null;
@@ -191,6 +192,10 @@ useEffect(() => {
  }, [firebaseUser]);
 
  const signIn = async (email: string, password: string): Promise<FirebaseAuthUser> => {
+   // Clear all auth state before sign in
+   clearCachedUser();
+   storage.local.removeItem('mystyc_device_id');
+   
    setLoading(true);
    try {
      const result = await signInWithEmailAndPassword(auth, email, password);
@@ -207,6 +212,10 @@ useEffect(() => {
  };
 
  const register = async (email: string, password: string): Promise<FirebaseAuthUser> => {
+   // Clear all auth state before register
+   clearCachedUser();
+   storage.local.removeItem('mystyc_device_id');
+   
    try {
      const result = await createUserWithEmailAndPassword(auth, email, password);
      return result.user;
