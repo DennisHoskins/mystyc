@@ -8,14 +8,20 @@ import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces/userProfile.interface';
+import { DeviceData } from '@/interfaces/deviceData.interface';
+import { AuthEventData } from '@/interfaces/authEventData.interface';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import TableDevices from '@/components/admin/tables/TableDevices';
+import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
+import Button from '@/components/ui/Button';
 
 function UserDetailPage() {
   const params = useParams();
@@ -23,10 +29,17 @@ function UserDetailPage() {
   const { idToken } = useAuth();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler();
+  const router = useCustomRouter();
 
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [devices, setDevices] = useState<DeviceData[]>([]);
+  const [authEvents, setAuthEvents] = useState<AuthEventData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [devicesLoading, setDevicesLoading] = useState(true);
+  const [authEventsLoading, setAuthEventsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [devicesError, setDevicesError] = useState<string | null>(null);
+  const [authEventsError, setAuthEventsError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUser() {
@@ -38,16 +51,8 @@ function UserDetailPage() {
       setError(null);
 
       try {
-        // Get all users and filter for the one we want
-        // TODO: Could add a specific getUserById API endpoint later
-        const allUsers = await apiClientAdmin.getUsers(idToken);
-        const foundUser = allUsers.find((u: UserProfile) => u.firebaseUid === firebaseUid);
-        
-        if (!foundUser) {
-          throw new Error('User not found');
-        }
-        
-        setUser(foundUser);
+        const userData = await apiClientAdmin.getUser(idToken, firebaseUid);
+        setUser(userData);
         logger.log('[UserDetailPage] User details loaded successfully');
       } catch (err: any) {
         logger.error('[UserDetailPage] Failed to load user details:', err);
@@ -61,6 +66,84 @@ function UserDetailPage() {
 
     fetchUser();
   }, [idToken, firebaseUid, setBusy, handleError]);
+
+  useEffect(() => {
+    async function fetchUserDevices() {
+      if (!idToken || !firebaseUid) return;
+
+      logger.log('[UserDetailPage] Fetching devices for user:', firebaseUid);
+      setDevicesLoading(true);
+      setDevicesError(null);
+
+      try {
+        const userDevices = await apiClientAdmin.getUserDevices(idToken, firebaseUid);
+        setDevices(userDevices);
+        logger.log('[UserDetailPage] User devices loaded successfully');
+      } catch (err: any) {
+        logger.error('[UserDetailPage] Failed to load user devices:', err);
+        handleError(err);
+        setDevicesError(err.message || 'Failed to load devices');
+      } finally {
+        setDevicesLoading(false);
+      }
+    }
+
+    fetchUserDevices();
+  }, [idToken, firebaseUid, handleError]);
+
+  useEffect(() => {
+    async function fetchUserAuthEvents() {
+      if (!idToken || !firebaseUid) return;
+
+      logger.log('[UserDetailPage] Fetching auth events for user:', firebaseUid);
+      setAuthEventsLoading(true);
+      setAuthEventsError(null);
+
+      try {
+        const userAuthEvents = await apiClientAdmin.getUserAuthEvents(idToken, firebaseUid, 50, 0);
+        setAuthEvents(userAuthEvents);
+        logger.log('[UserDetailPage] User auth events loaded successfully');
+      } catch (err: any) {
+        logger.error('[UserDetailPage] Failed to load user auth events:', err);
+        handleError(err);
+        setAuthEventsError(err.message || 'Failed to load auth events');
+      } finally {
+        setAuthEventsLoading(false);
+      }
+    }
+
+    fetchUserAuthEvents();
+  }, [idToken, firebaseUid, handleError]);
+
+  const handleDevicesRefresh = async () => {
+    if (!idToken || !firebaseUid) return;
+    setDevicesLoading(true);
+    setDevicesError(null);
+    try {
+      const userDevices = await apiClientAdmin.getUserDevices(idToken, firebaseUid);
+      setDevices(userDevices);
+    } catch (err: any) {
+      handleError(err);
+      setDevicesError(err.message || 'Failed to load devices');
+    } finally {
+      setDevicesLoading(false);
+    }
+  };
+
+  const handleAuthEventsRefresh = async () => {
+    if (!idToken || !firebaseUid) return;
+    setAuthEventsLoading(true);
+    setAuthEventsError(null);
+    try {
+      const userAuthEvents = await apiClientAdmin.getUserAuthEvents(idToken, firebaseUid, 50, 0);
+      setAuthEvents(userAuthEvents);
+    } catch (err: any) {
+      handleError(err);
+      setAuthEventsError(err.message || 'Failed to load auth events');
+    } finally {
+      setAuthEventsLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -88,7 +171,7 @@ function UserDetailPage() {
         />
 
         {/* User Information Card */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <div className="bg-blue-50 rounded-lg border border-gray-200 p-6 shadow-sm">
           <Heading level={3} className="mb-6">User Information</Heading>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -149,20 +232,45 @@ function UserDetailPage() {
           </div>
         </div>
 
-        {/* Placeholder for devices and auth events */}
+        {/* Current Device Section */}
+        {user.currentDeviceId && (
+          <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <Heading level={4} className="text-blue-900 mb-2">Current Device</Heading>
+                <Text className="text-blue-800 font-medium font-mono text-sm">{user.currentDeviceId}</Text>
+                <Text variant="small" className="text-blue-600">Active device for this user</Text>
+              </div>
+              <Button 
+                onClick={() => router.push(`/admin/device/${user.currentDeviceId}`)} 
+                size="sm"
+              >
+                View Device Details
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* User Devices and Auth Events */}
         <div className="space-y-8">
           <div>
             <Heading level={3} className="mb-4">User Devices</Heading>
-            <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
-              Device table will go here
-            </div>
+            <TableDevices
+              devices={devices}
+              loading={devicesLoading}
+              error={devicesError}
+              onRefresh={handleDevicesRefresh}
+            />
           </div>
           
           <div>
             <Heading level={3} className="mb-4">Recent Auth Events</Heading>
-            <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
-              Auth events table will go here
-            </div>
+            <TableAuthEvents
+              events={authEvents}
+              loading={authEventsLoading}
+              error={authEventsError}
+              onRefresh={handleAuthEventsRefresh}
+            />
           </div>
         </div>
       </div>

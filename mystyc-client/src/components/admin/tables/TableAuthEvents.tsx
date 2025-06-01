@@ -24,12 +24,26 @@ export default function TableAuthEvents({
       id: 'summary',
       header: 'Summary',
       cell: ({ row }) => {
-        const { clientTimestamp, type, deviceId, platform, firebaseUid } = row.original;
+        const { _id, clientTimestamp, type, deviceId, platform, firebaseUid } = row.original;
         return (
           <div className="space-y-1">
-            <div className="font-medium text-sm">{type}</div>
+            <div className="font-medium text-sm">
+              {_id ? (
+                <TableCellLink value={_id} prefix="/admin/auth-event">
+                  {type}
+                </TableCellLink>
+              ) : (
+                type
+              )}
+            </div>
             <div className="text-gray-700 text-xs">
-              {new Date(clientTimestamp).toLocaleString()}
+              {_id ? (
+                <TableCellLink value={_id} prefix="/admin/auth-event">
+                  {new Date(clientTimestamp).toLocaleString()}
+                </TableCellLink>
+              ) : (
+                new Date(clientTimestamp).toLocaleString()
+              )}
             </div>
             <div className="text-gray-500 text-xs">
               {platform || 'Unknown platform'}
@@ -48,7 +62,17 @@ export default function TableAuthEvents({
     {
       accessorKey: 'clientTimestamp',
       header: 'Time',
-      cell: ({ getValue }) => new Date(getValue() as string).toLocaleString(),
+      cell: ({ getValue, row }) => {
+        const timestamp = getValue() as string;
+        const { _id } = row.original;
+        return _id ? (
+          <TableCellLink value={_id} prefix="/admin/auth-event">
+            {new Date(timestamp).toLocaleString()}
+          </TableCellLink>
+        ) : (
+          new Date(timestamp).toLocaleString()
+        );
+      },
       meta: { className: 'hidden sm:table-cell' },
     },
     {
@@ -72,6 +96,17 @@ export default function TableAuthEvents({
     {
       accessorKey: 'type',
       header: 'Action',
+      cell: ({ getValue, row }) => {
+        const type = getValue() as string;
+        const { _id } = row.original;
+        return _id ? (
+          <TableCellLink value={_id} prefix="/admin/auth-event">
+            {type}
+          </TableCellLink>
+        ) : (
+          type
+        );
+      },
       meta: { className: 'hidden sm:table-cell' },
     },
     {

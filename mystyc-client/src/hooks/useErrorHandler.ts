@@ -16,7 +16,14 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
  const router = useCustomRouter();
 
  const optionsRef = useRef(options);
+ const showToastRef = useRef(showToast);
+ const signOutRef = useRef(signOut);
+ const routerRef = useRef(router);
+
  optionsRef.current = options;
+ showToastRef.current = showToast;
+ signOutRef.current = signOut;
+ routerRef.current = router;
 
  const handleError = useCallback((
    error: any, 
@@ -33,18 +40,18 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
 
    if (errorHandler.isAuthError(error) && processedError.code === 'auth/invalid-credential') {
      if (context?.action !== 'login' && context?.action !== 'register') {
-       signOut(true);
-       router.replace('/login');
+       signOutRef.current(true);
+       routerRef.current.replace('/login');
      }
    }
 
    if (processedError.code === '401') {
-     signOut(true);
-     router.replace('/login');
+     signOutRef.current(true);
+     routerRef.current.replace('/login');
    }
 
    if ((currentOptions.showToast !== false) && processedError.shouldToast) {
-     showToast(processedError.message);
+     showToastRef.current(processedError.message);
    }
 
    if (currentOptions.onError) {
