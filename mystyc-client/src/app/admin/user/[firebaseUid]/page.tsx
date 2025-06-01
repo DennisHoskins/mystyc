@@ -1,4 +1,3 @@
-// mystyc-client/src/app/admin/user/[firebaseUid]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -12,13 +11,11 @@ import { DeviceData } from '@/interfaces/deviceData.interface';
 import { AuthEventData } from '@/interfaces/authEventData.interface';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
-import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import TableDevices from '@/components/admin/tables/AdminTableDevices';
 import TableAuthEvents from '@/components/admin/tables/AdminTableAuthEvents';
 import Heading from '@/components/ui/Heading';
@@ -30,7 +27,6 @@ function UserDetailPage() {
   const { idToken } = useAuth();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler();
-  const router = useCustomRouter();
 
   const [user, setUser] = useState<UserProfile | null>(null);
   const [devices, setDevices] = useState<DeviceData[]>([]);
@@ -146,12 +142,6 @@ function UserDetailPage() {
     }
   };
 
-  const handleViewCurrentDevice = () => {
-    if (user?.currentDeviceId) {
-      router.push(`/admin/device/${user.currentDeviceId}`);
-    }
-  };
-
   if (loading) {
     return (
       <PageContainer>
@@ -174,11 +164,6 @@ function UserDetailPage() {
       </PageContainer>
     );
   }
-
-  // Find current device from devices list
-  const currentDevice = user.currentDeviceId 
-    ? devices.find(d => d.deviceId === user.currentDeviceId)
-    : null;
 
   return (
     <PageContainer>
@@ -236,11 +221,6 @@ function UserDetailPage() {
             </div>
             
             <div>
-              <Text variant="small" className="font-medium text-gray-500 mb-1">Current Device</Text>
-              <Text className="font-mono text-sm break-all">{user.currentDeviceId || '—'}</Text>
-            </div>
-            
-            <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Account Created</Text>
               <Text>{new Date(user.createdAt).toLocaleString()}</Text>
             </div>
@@ -251,11 +231,6 @@ function UserDetailPage() {
             </div>
           </div>
         </div>
-
-        {/* Current Device Section */}
-        {currentDevice && (
-          <AdminPanelDevice device={currentDevice} onViewDevice={handleViewCurrentDevice} />
-        )}
 
         {/* User Devices and Auth Events */}
         <div className="space-y-8">

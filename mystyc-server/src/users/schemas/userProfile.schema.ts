@@ -23,9 +23,6 @@ export class UserProfile {
   @Prop()
   email: string;
 
-  @Prop()
-  currentDeviceId: string;
-
   createdAt: Date;
   updatedAt: Date;
 }

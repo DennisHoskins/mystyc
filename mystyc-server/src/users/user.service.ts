@@ -87,32 +87,13 @@ export class UserService {
         authEventDto
       );
 
-      // Update current device ID on user profile
-      const updatedProfile = await this.userProfileService.updateProfile(
-        firebaseUser.uid,
-        { currentDeviceId: device.deviceId }
-      );
-
-      if (!updatedProfile) {
-        logger.error('Failed to update current device ID', {
-          firebaseUid: firebaseUser.uid,
-          deviceId: device.deviceId
-        }, 'UserService');
-        
-        throw new NotFoundException('User profile not found during device update');
-      }
-
       logger.info('Session registered successfully', {
         firebaseUid: firebaseUser.uid,
         deviceId: device.deviceId,
-        currentDeviceId: updatedProfile.currentDeviceId,
         authType: registerSessionDto.authEvent.type
       }, 'UserService');
 
-      return {
-        firebaseUser,
-        userProfile: updatedProfile
-      };
+      return user;
     } catch (error) {
       logger.error('Session registration failed', {
         firebaseUid: firebaseUser.uid,

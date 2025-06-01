@@ -8,7 +8,6 @@ export interface UserProfile {
   dateOfBirth?: Date | null;
   zodiacSign?: string;
   roles: UserRole[];
-  currentDeviceId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
