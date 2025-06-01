@@ -51,9 +51,10 @@ export default function TableUsers({
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ getValue }: any) => {
+      cell: ({ getValue, row }: any) => {
         const email = getValue() as string;
-        return <TableCellLink value={email} prefix="/admin/user" />;
+        const { firebaseUid } = row.original;
+        return <TableCellLink value={firebaseUid} prefix="/admin/user">{email}</TableCellLink>;
       },
       meta: { className: 'hidden sm:table-cell break-words' },
     },
