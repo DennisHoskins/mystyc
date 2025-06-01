@@ -115,7 +115,7 @@ export default function AdminTable<T>({
       </div>
 
       {!loading && data.length > 0 && (
-        <Text variant="small">
+        <Text variant="small" className='pt-2'>
           Showing {data.length} result{data.length !== 1 ? 's' : ''}
         </Text>
       )}
