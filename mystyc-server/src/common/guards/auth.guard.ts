@@ -50,6 +50,18 @@ export class FirebaseAuthGuard implements CanActivate {
      
      return true;
    } catch (error) {
+     // Handle revoked tokens specifically
+     if (error.code === 'auth/id-token-revoked') {
+       logger.security('Revoked token access attempt', {
+         ip: request.ip,
+         userAgent: request.headers['user-agent'],
+         endpoint: request.url,
+         method: request.method,
+         error: error.message
+       });
+       throw new UnauthorizedException('Token revoked by admin');
+     }
+
      logger.security('Invalid token attempt', {
        ip: request.ip,
        userAgent: request.headers['user-agent'],

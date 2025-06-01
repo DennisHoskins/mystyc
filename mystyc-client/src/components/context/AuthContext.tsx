@@ -24,7 +24,6 @@ import { errorHandler } from '@/util/errorHandler';
 import { useUserCache } from '@/hooks/useUserCache';
 import { useUserAPI } from '@/hooks/useUserAPI';
 import { useDeviceInfo } from '@/hooks/useDeviceInfo';
-import { storage } from '@/util/storage';
 
 interface AuthContextType {
  firebaseUser: FirebaseAuthUser | null;
@@ -89,6 +88,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
    } catch (err: any) {
      logger.log('[AuthContext] Token update error:', err.message);
      
+     // Handle revoked tokens - kill auth entirely
+     if (err.code === 'auth/id-token-revoked') {
+       logger.log('[AuthContext] Token revoked - killing auth flow');
+       
+       // Clear all state immediately
+       setIdToken(null);
+       setTokenRefreshFailed(false);
+       setHasQuotaError(false);
+       setUser(null);
+       clearCachedUser();
+       
+       // Force redirect to server logout page
+       window.location.href = '/server-logout';
+       return;
+     }
+     
      if (err.message?.includes('quota-exceeded')) {
        setHasQuotaError(true);
        logger.log('[AuthContext] Quota exceeded - stopping token refresh attempts');
@@ -106,7 +121,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    } finally {
      setIsRefreshingToken(false);
    }
- }, [isRefreshingToken, hasQuotaError]);
+ }, [isRefreshingToken, hasQuotaError, clearCachedUser]);
 
  const retryTokenRefresh = useCallback(async () => {
    if (firebaseUser) {
@@ -194,7 +209,6 @@ useEffect(() => {
  const signIn = async (email: string, password: string): Promise<FirebaseAuthUser> => {
    // Clear all auth state before sign in
    clearCachedUser();
-   storage.local.removeItem('mystyc_device_id');
    
    setLoading(true);
    try {
@@ -214,7 +228,6 @@ useEffect(() => {
  const register = async (email: string, password: string): Promise<FirebaseAuthUser> => {
    // Clear all auth state before register
    clearCachedUser();
-   storage.local.removeItem('mystyc_device_id');
    
    try {
      const result = await createUserWithEmailAndPassword(auth, email, password);

@@ -14,6 +14,7 @@ export interface ProcessedError {
   shouldLog: boolean;
   shouldToast: boolean;
   shouldRetry: boolean;
+  isForceLogout?: boolean;
 }
 
 class ErrorHandler {
@@ -187,6 +188,17 @@ class ErrorHandler {
       shouldToast: true,
       shouldRetry: true,
     },
+    
+    // Server Logout Specific
+    'TOKEN_REVOKED': {
+      message: 'Your session was ended by an administrator.',
+      code: 'TOKEN_REVOKED',
+      severity: 'high',
+      shouldLog: true,
+      shouldToast: false, // Show dedicated page instead
+      shouldRetry: false,
+      isForceLogout: true,
+    },
   };
 
   // Default fallback error
@@ -229,6 +241,9 @@ class ErrorHandler {
   }
 
   private extractErrorCode(error: any): string | null {
+    // Check for API response error codes first
+    if (error?.response?.data?.code) return error.response.data.code;
+    
     // Firebase errors
     if (error?.code) return error.code;
     
@@ -295,6 +310,11 @@ class ErrorHandler {
   isNetworkError(error: any): boolean {
     const code = this.extractErrorCode(error);
     return code === 'NetworkError' || code === 'TimeoutError';
+  }
+
+  isForceLogoutError(error: any): boolean {
+    const processed = this.processError(error);
+    return !!processed.isForceLogout;
   }
 }
 

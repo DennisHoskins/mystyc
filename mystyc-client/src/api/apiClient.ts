@@ -1,6 +1,7 @@
 import { parseApiDate } from '@/util/dateTime';
 import { errorHandler } from '@/util/errorHandler';
 import { AuthEventData, DeviceData } from '@/interfaces';
+import { storage } from '@/util/storage';
 import { logger } from '@/util/logger';
 
 const API_BASE_URL = 'https://skull.international/api';
@@ -44,20 +45,52 @@ async function fetchApi<T = any>(endpoint: string, options: ApiOptions = {}): Pr
     if (!response.ok) {
       const errorText = await response.text();
       let errorMessage = `API error: ${response.status}`;
+      let errorCode: string | undefined;
+      
       logger.error('Server error response:', errorText);
+      
       try {
         const errorData = JSON.parse(errorText);
         errorMessage = errorData.message || errorMessage;
+        errorCode = errorData.code;
       } catch {}
+      
+      // Handle revoked tokens specifically
+      if (response.status === 401 && errorCode === 'TOKEN_REVOKED') {
+        logger.error('[apiClient] Token revoked by server - forcing logout');
+        
+        // Clear all auth state immediately
+        storage.session.removeItem('mystyc_user');
+        storage.session.removeItem('onboardingIntroShown');
+        
+        // Clear any cached user data
+        const cacheKeys = storage.session.getItem('mystyc_cache_keys');
+        if (cacheKeys) {
+          try {
+            const keys = JSON.parse(cacheKeys);
+            keys.forEach((key: string) => storage.session.removeItem(key));
+            storage.session.removeItem('mystyc_cache_keys');
+          } catch {}
+        }
+        
+        // Force redirect to server logout page
+        window.location.href = '/server-logout';
+        throw new Error('TOKEN_REVOKED'); // Throw to exit function properly
+      }
       
       const apiError = new Error(errorMessage);
       (apiError as any).status = response.status;
       (apiError as any).response = { status: response.status, data: errorText };
       
+      // Add error code if available
+      if (errorCode) {
+        (apiError as any).response.data = { code: errorCode, message: errorMessage };
+      }
+      
       errorHandler.processError(apiError, {
         component: 'apiClient',
         action: `${method} ${endpoint}`,
-        additional: { status: response.status }
+        additional: { status: response.status, errorCode }
       });
       
       throw apiError;
@@ -66,6 +99,11 @@ async function fetchApi<T = any>(endpoint: string, options: ApiOptions = {}): Pr
     const text = await response.text();
     return text ? JSON.parse(text) : ({} as T);
   } catch (error) {
+    // Skip normal error handling if we already redirected for revoked token
+    if (typeof window !== 'undefined' && window.location.pathname === '/server-logout') {
+      return {} as T;
+    }
+    
     if (!navigator.onLine && triggerConnectionError) {
       triggerConnectionError();
     }

@@ -142,4 +142,27 @@ export class FirebaseService {
       throw new UnauthorizedException('User not found');
     }
   }
+
+  async revokeRefreshTokens(firebaseUid: string): Promise<void> {
+    logger.info('Revoking all refresh tokens for user', { firebaseUid }, 'FirebaseService');
+    
+    try {
+      await firebaseAdmin.auth().revokeRefreshTokens(firebaseUid);
+      
+      logger.security('User refresh tokens revoked successfully', {
+        firebaseUid,
+        revokedAt: new Date().toISOString(),
+        action: 'admin_token_revocation'
+      });
+      
+    } catch (error) {
+      logger.error('Failed to revoke refresh tokens', {
+        firebaseUid,
+        error: error.message,
+        errorCode: error.code
+      }, 'FirebaseService');
+      
+      throw error;
+    }
+  }
 }

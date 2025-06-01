@@ -6,6 +6,7 @@ import { UserProfileService } from '@/users/user-profile.service';
 import { UserRolesService } from '@/users/user-roles.service';
 import { DeviceService } from '@/devices/device.service';
 import { AuthEventService } from '@/auth-events/auth-event.service';
+import { FirebaseService } from '@/auth/firebase.service';
 import { DeviceQueryDto } from './dto/device-query.dto';
 import { AuthEventQueryDto } from './dto/auth-event-query.dto';
 import { logger } from '@/util/logger';
@@ -17,7 +18,8 @@ export class AdminController {
     private readonly userProfileService: UserProfileService,
     private readonly userRolesService: UserRolesService,
     private readonly deviceService: DeviceService,
-    private readonly authEventService: AuthEventService
+    private readonly authEventService: AuthEventService,
+    private readonly firebaseService: FirebaseService
   ) {}
 
   @Get('users')
@@ -111,6 +113,39 @@ export class AdminController {
       }
       
       logger.error('Admin revocation failed', { 
+        targetUid: firebaseUid, 
+        error: error.message 
+      }, 'AdminController');
+      throw error;
+    }
+  }
+
+  @Post('user/:firebaseUid/revoke-tokens')
+  @Roles(UserRole.ADMIN)
+  async revokeUserTokens(@Param('firebaseUid') firebaseUid: string) {
+    logger.info('Admin revoking user tokens', { targetUid: firebaseUid }, 'AdminController');
+    
+    try {
+      // Verify user exists first
+      const user = await this.userProfileService.findByFirebaseUid(firebaseUid);
+      if (!user) {
+        logger.warn('Token revocation failed - user not found', { targetUid: firebaseUid }, 'AdminController');
+        throw new NotFoundException('User not found');
+      }
+
+      await this.firebaseService.revokeRefreshTokens(firebaseUid);
+      
+      logger.info('User tokens revoked successfully', { targetUid: firebaseUid }, 'AdminController');
+      return { 
+        success: true, 
+        message: 'User tokens revoked successfully'
+      };
+    } catch (error) {
+      if (error.status === 404) {
+        throw error;
+      }
+      
+      logger.error('Token revocation failed', { 
         targetUid: firebaseUid, 
         error: error.message 
       }, 'AdminController');

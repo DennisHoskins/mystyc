@@ -87,6 +87,9 @@ export const apiClientAdmin = {
   revokeAdmin: (token: string, firebaseUid: string) =>
     fetchAdminApi(`/admin/users/${firebaseUid}/revoke-admin`, { method: 'PATCH', token }),
 
+  revokeUserTokens: (token: string, firebaseUid: string) =>
+    fetchAdminApi(`/admin/user/${firebaseUid}/revoke-tokens`, { method: 'POST', token }),
+
   // Device Management
   getDevices: (token: string, query?: Record<string, any>) => {
     const params = query ? new URLSearchParams(query).toString() : '';

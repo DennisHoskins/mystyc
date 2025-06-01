@@ -22,6 +22,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let status: number;
     let message: string;
     let details: string | undefined;
+    let errorCode: string | undefined;
 
     // Get user context safely (without exposing sensitive data)
     const userContext = {
@@ -51,6 +52,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       } else {
         message = typeof exceptionResponse === 'string' ? exceptionResponse : exception.message;
       }
+
+      // Handle revoked token exceptions specifically
+      if (status === 401 && message === 'Token revoked by admin') {
+        errorCode = 'TOKEN_REVOKED';
+        logger.security('Revoked token exception caught', {
+          ...userContext,
+          errorCode,
+          message
+        });
+      }
       
       // Don't log expected client errors (4xx) as server errors
       if (status >= 500) {
@@ -61,12 +72,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           stack: exception.stack
         }, 'GlobalExceptionFilter');
       } else if (status === 401 || status === 403) {
-        // Log auth failures for security monitoring
-        logger.security('Authentication/Authorization failure', {
-          ...userContext,
-          status,
-          message
-        });
+        // Log auth failures for security monitoring (but revoked tokens already logged above)
+        if (errorCode !== 'TOKEN_REVOKED') {
+          logger.security('Authentication/Authorization failure', {
+            ...userContext,
+            status,
+            message
+          });
+        }
       }
     } else if (this.isMongooseValidationError(exception)) {
       // Mongoose validation errors
@@ -131,6 +144,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: this.sanitizeErrorMessage(message),
+      ...(errorCode && { code: errorCode }),
       ...(details && process.env.NODE_ENV === 'development' && { details })
     };
 

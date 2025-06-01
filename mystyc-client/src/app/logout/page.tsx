@@ -5,10 +5,10 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useDeviceInfo } from '@/hooks/useDeviceInfo';
+import { useUserCache } from '@/hooks/useUserCache';
 import { apiClient } from '@/api/apiClient';
 import { AuthEventData } from '@/interfaces/authEventData.interface';
 import { errorHandler } from '@/util/errorHandler';
-import { storage } from "@/util/storage"
 import { logger } from '@/util/logger';
 
 import PageContainerAuth from '@/components/layout/PageContainerAuth';
@@ -21,6 +21,7 @@ export default function LogoutPage() {
   const { signOut, idToken, firebaseUser } = useAuth();
   const router = useCustomRouter();
   const { deviceData } = useDeviceInfo();
+  const { clearCachedUser } = useUserCache();
   const [countdown, setCountdown] = useState(5);
   const hasRedirected = useRef(false);
   const hasTrackedLogout = useRef(false);
@@ -72,13 +73,13 @@ export default function LogoutPage() {
         logger.warn('[LogoutPage] Failed to track logout event, continuing with signout');
       } finally {
         // Always sign out, regardless of tracking success/failure
+        clearCachedUser();
         signOut(true);
-        storage.local.removeItem('mystyc_device_id');
       }
     };
 
     trackLogoutEvent();
-  }, [signOut, idToken, deviceData, firebaseUser]);
+  }, [signOut, idToken, deviceData, firebaseUser, clearCachedUser]);
 
   useEffect(() => {
     const interval = setInterval(() => {
