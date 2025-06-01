@@ -16,6 +16,7 @@ import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import AdminPanelUser from '@/components/admin/panels/AdminPanelUser';
 import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
 import Heading from '@/components/ui/Heading';
@@ -130,7 +131,10 @@ function DeviceDetailPage() {
   if (loading) {
     return (
       <PageContainer>
-        <AdminHeader title="Loading..." subtitle="Loading device details" />
+        <div className="space-y-8">
+          <AdminBreadcrumbs entityName="Loading..." />
+          <AdminHeader title="Loading..." subtitle="Loading device details" />
+        </div>
       </PageContainer>
     );
   }
@@ -138,8 +142,11 @@ function DeviceDetailPage() {
   if (error || !device) {
     return (
       <PageContainer>
-        <AdminHeader title="Device Not Found" subtitle="The requested device could not be found" />
-        <div className="text-center text-red-600 mt-4">{error}</div>
+        <div className="space-y-8">
+          <AdminBreadcrumbs entityName="Not Found" />
+          <AdminHeader title="Device Not Found" subtitle="The requested device could not be found" />
+          <div className="text-center text-red-600 mt-4">{error}</div>
+        </div>
       </PageContainer>
     );
   }
@@ -147,6 +154,8 @@ function DeviceDetailPage() {
   return (
     <PageContainer>
       <div className="space-y-8">
+        <AdminBreadcrumbs entityName={device.deviceId} />
+        
         <AdminHeader 
           title={`Device ${device.deviceId}`} 
           subtitle={`Device Details • ${device.platform || 'Unknown Platform'}`}

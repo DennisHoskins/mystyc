@@ -17,6 +17,7 @@ import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import AdminPanelAuthEvent from '@/components/admin/panels/AdminPanelAuthEvent';
 import AdminPanelUser from '@/components/admin/panels/AdminPanelUser';
 import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
@@ -107,7 +108,10 @@ function AuthEventDetailPage() {
   if (loading) {
     return (
       <PageContainer>
-        <AdminHeader title="Loading..." subtitle="Loading auth event details" />
+        <div className="space-y-8">
+          <AdminBreadcrumbs entityName="Loading..." />
+          <AdminHeader title="Loading..." subtitle="Loading auth event details" />
+        </div>
       </PageContainer>
     );
   }
@@ -115,8 +119,11 @@ function AuthEventDetailPage() {
   if (error || !authEvent) {
     return (
       <PageContainer>
-        <AdminHeader title="Auth Event Not Found" subtitle="The requested auth event could not be found" />
-        <div className="text-center text-red-600 mt-4">{error}</div>
+        <div className="space-y-8">
+          <AdminBreadcrumbs entityName="Not Found" />
+          <AdminHeader title="Auth Event Not Found" subtitle="The requested auth event could not be found" />
+          <div className="text-center text-red-600 mt-4">{error}</div>
+        </div>
       </PageContainer>
     );
   }
@@ -124,6 +131,8 @@ function AuthEventDetailPage() {
   return (
     <PageContainer>
       <div className="space-y-8">
+        <AdminBreadcrumbs entityName={`${authEvent.type} Event`} />
+        
         <AdminHeader 
           title={`${authEvent.type} Event`} 
           subtitle={`Auth Event Details • ${new Date(authEvent.clientTimestamp).toLocaleString()}`}

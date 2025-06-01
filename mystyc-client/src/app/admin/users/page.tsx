@@ -11,6 +11,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import TableUsers from '@/components/admin/tables/TableUsers';
 
 export default withAdminAuth(function UsersPage() {
@@ -65,6 +66,8 @@ export default withAdminAuth(function UsersPage() {
   return (
     <PageContainer>
       <div className="space-y-6">
+        <AdminBreadcrumbs />
+        
         <AdminHeader
           title="User Management"
           subtitle="Manage user accounts and permissions"

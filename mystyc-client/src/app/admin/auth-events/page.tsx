@@ -11,6 +11,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
 
 function AuthEventsPage() {
@@ -64,7 +65,10 @@ function AuthEventsPage() {
 
   return (
     <PageContainer>
+      <AdminBreadcrumbs />
+      
       <AdminHeader title="Auth Events" subtitle="Recent authentication activity logs" />
+      
       <div className="mt-4 w-full">
         <TableAuthEvents
           events={events}

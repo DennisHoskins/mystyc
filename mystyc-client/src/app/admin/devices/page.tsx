@@ -11,6 +11,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import TableDevices from '@/components/admin/tables/TableDevices';
 
 export default withAdminAuth(function DevicesPage() {
@@ -64,7 +65,10 @@ export default withAdminAuth(function DevicesPage() {
 
   return (
     <PageContainer>
+      <AdminBreadcrumbs />
+      
       <AdminHeader title="Devices" subtitle="All registered devices in the system" />
+      
       <div className="mt-4 w-full">
         <TableDevices
           devices={devices}

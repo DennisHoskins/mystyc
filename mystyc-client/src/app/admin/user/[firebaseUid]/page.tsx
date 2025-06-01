@@ -17,6 +17,7 @@ import { logger } from '@/util/logger';
 
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import TableDevices from '@/components/admin/tables/TableDevices';
 import TableAuthEvents from '@/components/admin/tables/TableAuthEvents';
@@ -155,7 +156,10 @@ function UserDetailPage() {
   if (loading) {
     return (
       <PageContainer>
-        <AdminHeader title="Loading..." subtitle="Loading user details" />
+        <div className="space-y-8">
+          <AdminBreadcrumbs entityName="Loading..." />
+          <AdminHeader title="Loading..." subtitle="Loading user details" />
+        </div>
       </PageContainer>
     );
   }
@@ -163,8 +167,11 @@ function UserDetailPage() {
   if (error || !user) {
     return (
       <PageContainer>
-        <AdminHeader title="User Not Found" subtitle="The requested user could not be found" />
-        <div className="text-center text-red-600 mt-4">{error}</div>
+        <div className="space-y-8">
+          <AdminBreadcrumbs entityName="Not Found" />
+          <AdminHeader title="User Not Found" subtitle="The requested user could not be found" />
+          <div className="text-center text-red-600 mt-4">{error}</div>
+        </div>
       </PageContainer>
     );
   }
@@ -177,6 +184,8 @@ function UserDetailPage() {
   return (
     <PageContainer>
       <div className="space-y-8">
+        <AdminBreadcrumbs entityName={user.fullName || user.email} />
+        
         <AdminHeader 
           title={user.fullName || user.email || 'User Details'} 
           subtitle={`User Profile • ${firebaseUid}`}
