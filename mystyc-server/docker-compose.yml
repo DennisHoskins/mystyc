@@ -15,7 +15,7 @@ services:
     container_name: mystyc-db
     image: mongo
     ports:
-      - '27017:27017'
+      - '127.0.0.1:27017:27017'
     volumes:
       - mongo_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro
