@@ -1,8 +1,7 @@
 'use client';
 
 import PageContainer from '@/components/layout/PageContainer';
-import Text from '@/components/ui/Text';
-import Heading from '@/components/ui/Heading';
+import AdminHeader from '@/components/admin/AdminHeader';
 import List from '@/components/ui/list/List';
 import ListItem from '@/components/ui/list/ListItem';
 import ListItemButton from '@/components/ui/list/ListItemButton';
@@ -11,8 +10,10 @@ import { withAdminAuth } from '@/auth/withAdminAuth';
 function AdminPage() {
   return (
     <PageContainer>
-      <Heading level={1} size="xl">Admin Dashboard</Heading>
-      <Text>Manage administrative settings below.</Text>
+      <AdminHeader
+        title="Admin Dashboard"
+        subtitle="Manage administrative settings"
+      />
       <div className="mt-8">
         <List columns={2} className="grid-cols-1 sm:grid-cols-2">
           <ListItem>
