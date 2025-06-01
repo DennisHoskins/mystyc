@@ -31,7 +31,7 @@ function AuthEventDetailPage() {
 
   const [authEvent, setAuthEvent] = useState<AuthEventData | null>(null);
   const [eventUser, setEventUser] = useState<UserProfile | null>(null);
-  const [eventDevice, setEventDevice] = useState<DeviceData | null>(null);
+  const [eventDevice, setEventDevice] = useState<{ authEvent: AuthEventData, device: DeviceData } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -98,8 +98,8 @@ function AuthEventDetailPage() {
   };
 
   const handleViewDevice = () => {
-    if (eventDevice?.deviceId) {
-      router.push(`/admin/device/${eventDevice.deviceId}`);
+    if (eventDevice?.device.deviceId) {
+      router.push(`/admin/device/${eventDevice.device.deviceId}`);
     }
   };
 
@@ -188,9 +188,9 @@ function AuthEventDetailPage() {
             <div className="flex items-center justify-between">
               <div>
                 <Heading level={4} className="text-purple-900 mb-2">Associated Device</Heading>
-                <Text className="text-purple-800 font-medium font-mono text-sm">{eventDevice.deviceId}</Text>
-                <Text variant="small" className="text-purple-600">{eventDevice.platform || 'Unknown Platform'}</Text>
-                <Text variant="small" className="text-purple-600">App Version: {eventDevice.appVersion || 'Unknown'}</Text>
+                <Text className="text-purple-800 font-medium font-mono text-sm">{eventDevice.device.deviceId}</Text>
+                <Text variant="small" className="text-purple-600">{eventDevice.device.platform || 'Unknown Platform'}</Text>
+                <Text variant="small" className="text-purple-600">App Version: {eventDevice.device.appVersion || 'Unknown'}</Text>
               </div>
               <Button onClick={handleViewDevice} size="sm" variant="secondary">
                 View Device Details
