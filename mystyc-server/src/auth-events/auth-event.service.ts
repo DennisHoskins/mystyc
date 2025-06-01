@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { AuthEvent, AuthEventDocument } from './schemas/auth-event.schema';
-import { AuthEventDto } from './dto/auth-event.dto';
+import { AuthEventData } from '@/common/interfaces/authEventData.interface';
 import { logger } from '@/util/logger';
 
 @Injectable()
@@ -14,33 +14,33 @@ export class AuthEventService {
 
   async recordAuthEvent(
     firebaseUid: string, 
-    authEventDto: AuthEventDto
+    authEventData: AuthEventData
   ): Promise<AuthEvent> {
     logger.info('Recording auth event', {
       firebaseUid,
-      deviceId: authEventDto.deviceId,
-      type: authEventDto.type,
-      platform: authEventDto.platform,
-      ip: authEventDto.ip
+      deviceId: authEventData.deviceId,
+      type: authEventData.type,
+      platform: authEventData.platform,
+      ip: authEventData.ip
     }, 'AuthEventService');
 
     try {
       const authEvent = new this.authEventModel({
         firebaseUid,
-        deviceId: authEventDto.deviceId,
-        type: authEventDto.type,
-        ip: authEventDto.ip,
-        platform: authEventDto.platform,
+        deviceId: authEventData.deviceId,
+        type: authEventData.type,
+        ip: authEventData.ip,
+        platform: authEventData.platform,
         timestamp: new Date(), // Server UTC timestamp
-        clientTimestamp: new Date(authEventDto.clientTimestamp)
+        clientTimestamp: new Date(authEventData.clientTimestamp)
       });
 
       const savedEvent = await authEvent.save();
 
       logger.info('Auth event recorded successfully', {
         firebaseUid,
-        deviceId: authEventDto.deviceId,
-        type: authEventDto.type,
+        deviceId: authEventData.deviceId,
+        type: authEventData.type,
         eventId: savedEvent._id.toString(),
         serverTime: savedEvent.timestamp,
         clientTime: savedEvent.clientTimestamp
@@ -50,8 +50,8 @@ export class AuthEventService {
     } catch (error) {
       logger.error('Auth event recording failed', {
         firebaseUid,
-        deviceId: authEventDto.deviceId,
-        type: authEventDto.type,
+        deviceId: authEventData.deviceId,
+        type: authEventData.type,
         error: error.message,
         code: error.code
       }, 'AuthEventService');
