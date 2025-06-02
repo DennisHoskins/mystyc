@@ -21,7 +21,7 @@ import Button from '@/components/ui/Button';
 export default function LogoutPage() {
   const { signOut, idToken, firebaseUser } = useAuth();
   const router = useCustomRouter();
-  const { deviceData } = useDeviceInfo();
+  const { deviceData } = useAuth();
   const { clearCachedUser } = useUserCache();
   const [countdown, setCountdown] = useState(5);
   const hasRedirected = useRef(false);
