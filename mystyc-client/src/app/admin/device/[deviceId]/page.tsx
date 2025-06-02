@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
@@ -25,17 +25,8 @@ function DeviceDetailPage() {
   const { idToken } = useAuth();
   const { showToast } = useToast();
 
-  const {
-    entity: device,
-    relatedData,
-    loading,
-    error,
-    router,
-    refetch
-  } = useAdminDetailPage<Device>({
-    entityName: 'Device',
-    paramKey: 'deviceId',
-    fetcher: {
+  const fetcher = useMemo(
+    () => ({
       main: apiClientAdmin.getDevice,
       related: [
         {
@@ -55,8 +46,22 @@ function DeviceDetailPage() {
             apiClientAdmin.getDeviceAuthEvents(token, deviceId, 50, 0),
           optional: true,
         },
-      ],
-    },
+      ]
+    }),
+    []
+  );
+
+  const {
+    entity: device,
+    relatedData,
+    loading,
+    error,
+    router,
+    refetch
+  } = useAdminDetailPage<Device>({
+    entityName: 'Device',
+    paramKey: 'deviceId',
+    fetcher,
     breadcrumbBase: {
       label: 'Devices',
       href: '/admin/devices',

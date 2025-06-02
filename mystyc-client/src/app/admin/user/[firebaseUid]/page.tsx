@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces/userProfile.interface';
@@ -15,17 +17,9 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
 function UserDetailPage() {
-  const {
-    entity: user,
-    relatedData,
-    loading,
-    error,
-    router,
-    refetch
-  } = useAdminDetailPage<UserProfile>({
-    entityName: 'User',
-    paramKey: 'firebaseUid',
-    fetcher: {
+
+  const fetcher = useMemo(
+    () => ({
       main: apiClientAdmin.getUser,
       related: [
         {
@@ -40,11 +34,21 @@ function UserDetailPage() {
           optional: true,
         },
       ],
-    },
-    breadcrumbBase: {
-      label: 'Users',
-      href: '/admin/users',
-    },
+    }),
+    []
+  );
+  
+  const {
+    entity: user,
+    relatedData,
+    loading,
+    error,
+    router,
+    refetch
+  } = useAdminDetailPage<UserProfile>({
+    entityName: 'User',
+    paramKey: 'firebaseUid',
+    fetcher
   });
 
   const devices = relatedData.devices as Device[] || [];

@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useAuth } from '@/components/context/AuthContext';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 interface EntityFetcher<T> {
@@ -22,10 +21,7 @@ interface UseAdminDetailPageOptions<T> {
   entityName: string;
   paramKey: string;
   fetcher: EntityFetcher<T>;
-  breadcrumbBase: {
-    label: string;
-    href: string;
-  };
+  breadcrumbBase ?: { label: string; href: string };
 }
 
 interface UseAdminDetailPageReturn<T> {
@@ -41,7 +37,6 @@ export function useAdminDetailPage<T>({
   entityName,
   paramKey,
   fetcher,
-  breadcrumbBase,
 }: UseAdminDetailPageOptions<T>): UseAdminDetailPageReturn<T> {
   const params = useParams();
   const entityId = params[paramKey] as string;
@@ -55,7 +50,7 @@ export function useAdminDetailPage<T>({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!idToken || !entityId) return;
 
     logger.log(`[useAdminDetailPage] Fetching ${entityName} details for:`, entityId);
@@ -66,18 +61,18 @@ export function useAdminDetailPage<T>({
     try {
       // Fetch main entity
       const mainEntity = await fetcher.main(idToken, entityId);
-      
+
       if (!mainEntity) {
         throw new Error(`${entityName} not found`);
       }
-      
+
       setEntity(mainEntity);
       logger.log(`[useAdminDetailPage] ${entityName} details loaded successfully`);
 
       // Fetch related data if specified
       if (fetcher.related && fetcher.related.length > 0) {
         const relatedResults: Record<string, any> = {};
-        
+
         for (const relatedFetcher of fetcher.related) {
           try {
             const args = relatedFetcher.args || [];
@@ -93,10 +88,9 @@ export function useAdminDetailPage<T>({
             }
           }
         }
-        
+
         setRelatedData(relatedResults);
       }
-
     } catch (err: any) {
       logger.error(`[useAdminDetailPage] Failed to load ${entityName} details:`, err);
       handleError(err);
@@ -105,11 +99,20 @@ export function useAdminDetailPage<T>({
       setLoading(false);
       setBusy(false);
     }
-  };
+  }, [
+    idToken,
+    entityId,
+    entityName,
+    fetcher,
+    setBusy,
+    setLoading,
+    setError,
+    handleError,
+  ]);
 
   useEffect(() => {
     fetchData();
-  }, [idToken, entityId]);
+  }, [fetchData]);
 
   const refetch = async () => {
     await fetchData();

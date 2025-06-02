@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent, Device } from '@/interfaces';
@@ -13,16 +15,9 @@ import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import Heading from '@/components/ui/Heading';
 
 function AuthEventDetailPage() {
-  const {
-    entity: authEvent,
-    relatedData,
-    loading,
-    error,
-    router,
-  } = useAdminDetailPage<AuthEvent>({
-    entityName: 'Auth event',
-    paramKey: 'eventId',
-    fetcher: {
+
+  const fetcher = useMemo(
+    () => ({
       main: apiClientAdmin.getAuthEvent,
       related: [
         {
@@ -42,7 +37,20 @@ function AuthEventDetailPage() {
           optional: true,
         },
       ],
-    },
+    }),
+    []
+  );
+
+  const {
+    entity: authEvent,
+    relatedData,
+    loading,
+    error,
+    router,
+  } = useAdminDetailPage<AuthEvent>({
+    entityName: 'Auth event',
+    paramKey: 'eventId',
+    fetcher,
     breadcrumbBase: {
       label: 'Auth Events',
       href: '/admin/auth-events',

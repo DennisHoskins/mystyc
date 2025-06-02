@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
 import { useBusy } from '@/components/context/BusyContext';
@@ -31,7 +31,7 @@ export function useAdminListPage<T>({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!idToken) return;
 
     logger.log(`[useAdminListPage] Fetching ${entityName} list`);
@@ -51,11 +51,20 @@ export function useAdminListPage<T>({
       setLoading(false);
       setBusy(false);
     }
-  };
+  }, [
+    idToken,
+    entityName,
+    fetcher,
+    query,
+    setBusy,
+    setLoading,
+    setError,
+    handleError,
+  ]);
 
   useEffect(() => {
     fetchData();
-  }, [idToken]);
+  }, [fetchData]);
 
   const refresh = async () => {
     await fetchData();
