@@ -66,7 +66,7 @@ export default withAdminAuth(function UsersPage() {
   return (
     <PageContainer>
       <div className="space-y-6">
-        <AdminBreadcrumbs />
+        <AdminBreadcrumbs items={[{ label: 'Users' }]} />
         
         <AdminHeader
           title="User Management"

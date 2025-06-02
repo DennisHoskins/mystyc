@@ -107,7 +107,10 @@ function AuthEventDetailPage() {
     return (
       <PageContainer>
         <div className="space-y-8">
-          <AdminBreadcrumbs entityName="Loading..." />
+          <AdminBreadcrumbs items={[
+            { label: 'Auth Events', href: '/admin/auth-events' },
+            { label: 'Loading...' }
+          ]} />
           <AdminHeader title="Loading..." subtitle="Loading auth event details" />
         </div>
       </PageContainer>
@@ -118,7 +121,10 @@ function AuthEventDetailPage() {
     return (
       <PageContainer>
         <div className="space-y-8">
-          <AdminBreadcrumbs entityName="Not Found" />
+          <AdminBreadcrumbs items={[
+            { label: 'Auth Events', href: '/admin/auth-events' },
+            { label: 'Not Found' }
+          ]} />
           <AdminHeader title="Auth Event Not Found" subtitle="The requested auth event could not be found" />
           <div className="text-center text-red-600 mt-4">{error}</div>
         </div>
@@ -129,7 +135,10 @@ function AuthEventDetailPage() {
   return (
     <PageContainer>
       <div className="space-y-8">
-        <AdminBreadcrumbs entityName={`${authEvent.type} Event`} />
+        <AdminBreadcrumbs items={[
+          { label: 'Auth Events', href: '/admin/auth-events' },
+          { label: `${authEvent.type} Event` }
+        ]} />
         
         <AdminHeader 
           title={`${authEvent.type} Event`} 

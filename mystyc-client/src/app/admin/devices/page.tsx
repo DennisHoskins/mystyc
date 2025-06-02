@@ -65,7 +65,7 @@ export default withAdminAuth(function DevicesPage() {
 
   return (
     <PageContainer>
-      <AdminBreadcrumbs />
+      <AdminBreadcrumbs items={[{ label: 'Devices' }]} />
       
       <AdminHeader title="Devices" subtitle="All registered devices in the system" />
       

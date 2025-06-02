@@ -132,7 +132,10 @@ function DeviceDetailPage() {
     return (
       <PageContainer>
         <div className="space-y-8">
-          <AdminBreadcrumbs entityName="Loading..." />
+          <AdminBreadcrumbs items={[
+            { label: 'Devices', href: '/admin/devices' },
+            { label: 'Loading...' }
+          ]} />
           <AdminHeader title="Loading..." subtitle="Loading device details" />
         </div>
       </PageContainer>
@@ -143,7 +146,10 @@ function DeviceDetailPage() {
     return (
       <PageContainer>
         <div className="space-y-8">
-          <AdminBreadcrumbs entityName="Not Found" />
+          <AdminBreadcrumbs items={[
+            { label: 'Devices', href: '/admin/devices' },
+            { label: 'Not Found' }
+          ]} />
           <AdminHeader title="Device Not Found" subtitle="The requested device could not be found" />
           <div className="text-center text-red-600 mt-4">{error}</div>
         </div>
@@ -154,7 +160,10 @@ function DeviceDetailPage() {
   return (
     <PageContainer>
       <div className="space-y-8">
-        <AdminBreadcrumbs entityName={device.deviceId} />
+        <AdminBreadcrumbs items={[
+          { label: 'Devices', href: '/admin/devices' },
+          { label: device.deviceId }
+        ]} />
         
         <AdminHeader 
           title={`Device ${device.deviceId}`} 

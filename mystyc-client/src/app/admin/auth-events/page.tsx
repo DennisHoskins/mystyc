@@ -65,7 +65,7 @@ function AuthEventsPage() {
 
   return (
     <PageContainer>
-      <AdminBreadcrumbs />
+      <AdminBreadcrumbs items={[{ label: 'Auth Events' }]} />
       
       <AdminHeader title="Auth Events" subtitle="Recent authentication activity logs" />
       
