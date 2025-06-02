@@ -11,13 +11,15 @@ interface TableAuthEventsProps {
   loading: boolean;
   error?: string | null;
   onRefresh?: () => void;
+  compact?: boolean;
 }
 
 export default function TableAuthEvents({ 
   events, 
   loading, 
   error, 
-  onRefresh 
+  onRefresh,
+  compact = false
 }: TableAuthEventsProps) {
   const columns: ColumnDef<AuthEvent>[] = [
     {
@@ -130,6 +132,7 @@ export default function TableAuthEvents({
       loading={loading}
       error={error}
       onRefresh={onRefresh}
+      compact={compact}
     />
   );
 }

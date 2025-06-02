@@ -11,13 +11,15 @@ interface TableDevicesProps {
   loading: boolean;
   error?: string | null;
   onRefresh?: () => void;
+  compact?: boolean;
 }
 
 export default function TableDevices({ 
   devices, 
   loading, 
   error, 
-  onRefresh 
+  onRefresh,
+  compact = false
 }: TableDevicesProps) {
   const columns: ColumnDef<Device>[] = [
     {
@@ -104,6 +106,7 @@ export default function TableDevices({
       loading={loading}
       error={error}
       onRefresh={onRefresh}
+      compact={compact}
     />
   );
 }

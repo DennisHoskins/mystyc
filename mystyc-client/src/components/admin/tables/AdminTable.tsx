@@ -26,6 +26,7 @@ interface AdminTableProps<T> {
   onRefresh?: () => void;
   title?: string;
   description?: string;
+  compact?: boolean;
 }
 
 export default function AdminTable<T>({
@@ -36,6 +37,7 @@ export default function AdminTable<T>({
   onRefresh,
   title,
   description,
+  compact = false,
 }: AdminTableProps<T>) {
   const table = useReactTable({
     data,
@@ -62,7 +64,7 @@ export default function AdminTable<T>({
         </div>
       )}
 
-      <div className="rounded-md border min-h-[60vh] overflow-auto">
+      <div className={`rounded-md border overflow-auto ${compact ? 'min-h-0' : 'min-h-[60vh]'}`}>
         <Table>
           <TableHeader className={!loading ? 'animate-fade-in' : 'opacity-0'}>
             {table.getHeaderGroups().map((headerGroup) => (
