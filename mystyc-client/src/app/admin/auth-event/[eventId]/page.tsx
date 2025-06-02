@@ -4,7 +4,7 @@ import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent, Device } from '@/interfaces';
 import { UserProfile } from '@/interfaces/userProfile.interface';
-import { useAdminDetailPage } from '@/hooks/useAdminDetailPage';
+import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
 
 import AdminDetailLayout from '@/components/admin/AdminDetailLayout';
 import AdminPanelAuthEvent from '@/components/admin/panels/AdminPanelAuthEvent';

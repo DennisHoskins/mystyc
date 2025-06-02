@@ -7,7 +7,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces/device.interface';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { UserProfile } from '@/interfaces/userProfile.interface';
-import { useAdminDetailPage } from '@/hooks/useAdminDetailPage';
+import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
 
 import AdminDetailLayout from '@/components/admin/AdminDetailLayout';
 import AdminPanelUser from '@/components/admin/panels/AdminPanelUser';
