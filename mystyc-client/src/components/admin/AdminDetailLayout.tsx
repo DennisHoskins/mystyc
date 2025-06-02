@@ -20,6 +20,7 @@ interface AdminDetailLayoutProps {
   notFoundTitle?: string;
   notFoundSubtitle?: string;
   children: React.ReactNode;
+  action?: React.ReactNode;
 }
 
 export default function AdminDetailLayout({
@@ -33,6 +34,7 @@ export default function AdminDetailLayout({
   notFoundTitle = "Not Found",
   notFoundSubtitle = "The requested item could not be found",
   children,
+  action,
 }: AdminDetailLayoutProps) {
   if (loading) {
     return (
@@ -67,7 +69,10 @@ export default function AdminDetailLayout({
     <PageContainer>
       <div className="space-y-8">
         <AdminBreadcrumbs items={breadcrumbs} />
-        <AdminHeader title={title} subtitle={subtitle} />
+        <div className="flex items-center justify-between">
+          <AdminHeader title={title} subtitle={subtitle} />
+          {action && <div>{action}</div>}
+        </div>
         {children}
       </div>
     </PageContainer>
