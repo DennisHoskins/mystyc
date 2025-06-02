@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react';
 
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 import { useUserCache } from '@/hooks/useUserCache';
 import { apiClient } from '@/api/apiClient';
 import { AuthEvent } from '@/interfaces/authEvent.interface';

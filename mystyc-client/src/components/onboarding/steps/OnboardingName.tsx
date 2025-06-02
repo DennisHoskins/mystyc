@@ -23,7 +23,7 @@ export default function OnboardingName({ onNext }: OnboardingNameProps) {
 
   const { handleApiError } = useErrorHandler({
     component: 'OnboardingName',
-    showToast: false, // We show errors inline for forms
+    showToast: false,
     onError: (processedError) => {
       setError(processedError.message);
     }
@@ -44,7 +44,7 @@ export default function OnboardingName({ onNext }: OnboardingNameProps) {
       onNext();
     } catch (e) {
       logger.error('Error updating profile:', e);
-      handleApiError(e, 'onboarding-name-update');
+      handleApiError(e);
     } finally {
       setLoading(false);
     }

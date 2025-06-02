@@ -2,9 +2,9 @@ import { useCallback, useRef } from 'react';
 import { useToast } from './useToast';
 import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from './useCustomRouter';
-import { useUserCache } from './useUserCache';
 import { errorHandler, ErrorContext, ProcessedError } from '@/util/errorHandler';
-import { storage } from '@/util/storage';
+import { apiClient } from '@/api/apiClient';  // ← added import
+import type { AuthEvent } from '@/interfaces/authEvent.interface';
 
 interface UseErrorHandlerOptions {
   component?: string;
@@ -14,21 +14,17 @@ interface UseErrorHandlerOptions {
 
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
   const { showToast } = useToast();
-  const { signOut } = useAuth();
-  const { clearCachedUser } = useUserCache();
-  const router = useCustomRouter();
 
-  const optionsRef = useRef(options);
-  const showToastRef = useRef(showToast);
+  const { idToken, deviceData, firebaseUser, signOut } = useAuth();  // ← added deviceData, idToken, firebaseUser
+  const routerRef = useRef(useCustomRouter());
   const signOutRef = useRef(signOut);
-  const clearCachedUserRef = useRef(clearCachedUser);
-  const routerRef = useRef(router);
+  const showToastRef = useRef(showToast);
+  const optionsRef = useRef(options);
 
-  optionsRef.current = options;
-  showToastRef.current = showToast;
+  // keep refs in sync
   signOutRef.current = signOut;
-  clearCachedUserRef.current = clearCachedUser;
-  routerRef.current = router;
+  showToastRef.current = showToast;
+  optionsRef.current = options;
 
   const handleError = useCallback((
     error: any,
@@ -44,25 +40,24 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     const processedError = errorHandler.processError(error, fullContext);
 
     if (processedError.isForceLogout) {
-      signOutRef.current(true);
-
-      clearCachedUserRef.current();
-      storage.session.removeItem('onboardingIntroShown');
-
-      const cacheKeys = storage.session.getItem('mystyc_cache_keys');
-      if (cacheKeys) {
-        try {
-          const keys = JSON.parse(cacheKeys);
-          keys.forEach((key: string) => storage.session.removeItem(key));
-          storage.session.removeItem('mystyc_cache_keys');
-        } catch {}
+      if (deviceData && idToken && firebaseUser) {
+        const authEvent: AuthEvent = {
+          firebaseUid: firebaseUser.uid,
+          deviceId: deviceData.deviceId,
+          ip: '',
+          platform: deviceData.platform,
+          clientTimestamp: new Date().toISOString(),
+          type: 'logout',
+        };
+        apiClient.logout(idToken, deviceData, authEvent)
+          .catch((err) =>
+            errorHandler.processError(err, {
+              component: 'useErrorHandler',
+              action: 'logoutTracking',
+            })
+          );
       }
 
-      routerRef.current.replace('/server-logout');
-      return processedError;
-    }
-
-    if (errorHandler.isAuthError(error) && processedError.code === 'auth/invalid-credential') {
       if (context?.action !== 'login' && context?.action !== 'register') {
         signOutRef.current(true);
         routerRef.current.replace('/login');
@@ -70,6 +65,24 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     if (processedError.code === '401') {
+      if (deviceData && idToken && firebaseUser) {
+        const authEvent: AuthEvent = {
+          firebaseUid: firebaseUser.uid,
+          deviceId: deviceData.deviceId,
+          ip: '',
+          platform: deviceData.platform,
+          clientTimestamp: new Date().toISOString(),
+          type: 'logout',
+        };
+        apiClient.logout(idToken, deviceData, authEvent)
+          .catch((err) =>
+            errorHandler.processError(err, {
+              component: 'useErrorHandler',
+              action: 'logoutTracking',
+            })
+          );
+      }
+
       signOutRef.current(true);
       routerRef.current.replace('/login');
     }
@@ -78,23 +91,19 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
       showToastRef.current(processedError.message);
     }
 
-    if (currentOptions.onError) {
-      currentOptions.onError(processedError);
-    }
-
     return processedError;
-  }, []);
+  }, [firebaseUser, idToken, deviceData]);
 
-  const handleAuthError = useCallback((error: any, action: string): ProcessedError => {
-    return handleError(error, { action });
+  const handleAuthError = useCallback((error: any) => {
+    return handleError(error, { component: 'AuthHandler', action: 'auth' });
   }, [handleError]);
 
-  const handleApiError = useCallback((error: any, action: string): ProcessedError => {
-    return handleError(error, { action });
+  const handleApiError = useCallback((error: any) => {
+    return handleError(error, { component: 'ApiHandler', action: 'api' });
   }, [handleError]);
 
   const isRetryable = useCallback((error: any): boolean => {
-    return errorHandler.isRetryableError(error);
+    return errorHandler.isNetworkError(error);
   }, []);
 
   const isNetworkError = useCallback((error: any): boolean => {

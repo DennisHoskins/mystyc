@@ -38,7 +38,7 @@ export default function OnboardingBirth({ onNext, onBack }: OnboardingBirthProps
         }
       } catch (e) {
         logger.warn('Invalid dateOfBirth in user profile:', user.userProfile.dateOfBirth);
-        handleApiError(e, 'onboarding-birth-set');
+        handleApiError(e);
       }
     }
   }, [user, handleApiError]);
@@ -52,7 +52,7 @@ export default function OnboardingBirth({ onNext, onBack }: OnboardingBirthProps
       onNext();
     } catch (e) {
       logger.error('Error updating date of birth:', e);
-      handleApiError(e, 'onboarding-birth-update');
+      handleApiError(e);
     } finally {
       setLoading(false);
     }

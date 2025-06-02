@@ -34,7 +34,7 @@ export default function OnboardingComplete() {
     } catch (err) {
       logger.error('Error updating zodiac sign:', err);
       
-      handleApiError(err, 'onboarding-complete');
+      handleApiError(err);
     } finally {
       setLoading(false);
     }

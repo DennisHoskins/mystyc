@@ -43,7 +43,7 @@ export default function RegisterPage() {
       await register(email, password);
       // Don't set loading to false on success - keep button in loading state
     } catch (err: any) {
-      handleAuthError(err, 'register');
+      handleAuthError(err);
       endAuthProcess(false);
       setLoading(false); // Only clear loading on error
     }

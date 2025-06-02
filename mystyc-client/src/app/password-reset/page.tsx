@@ -44,7 +44,7 @@ export default function PasswordResetPage() {
       await resetPassword(email);
       setMessage('Check your email for a password reset link.');
     } catch (err: any) {
-      handleAuthError(err, 'password-reset');
+      handleAuthError(err);
     } finally {
       setLoading(false);
     }

@@ -150,7 +150,7 @@ export function useDeviceInfo() {
     setDeviceData(null);
     setIsLoading(true);
     logger.log('[useDeviceInfo] Device data cleared');
-  }, []);
+  }, [deviceData]);
 
   // Regenerate device ID (for server conflict handling)
   const regenerateDeviceId = useCallback((): string => {
