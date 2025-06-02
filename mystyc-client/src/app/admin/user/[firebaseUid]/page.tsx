@@ -1,190 +1,87 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-
-import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces/userProfile.interface';
 import { Device } from '@/interfaces/device.interface';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
-import { useBusy } from '@/components/context/BusyContext';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
-import { logger } from '@/util/logger';
+import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
 
-import PageContainer from '@/components/layout/PageContainer';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
+import AdminDetailLayout from '@/components/admin/AdminDetailLayout';
+import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import TableDevices from '@/components/admin/tables/AdminTableDevices';
 import TableAuthEvents from '@/components/admin/tables/AdminTableAuthEvents';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
 function UserDetailPage() {
-  const params = useParams();
-  const firebaseUid = params.firebaseUid as string;
-  const { idToken } = useAuth();
-  const { setBusy } = useBusy();
-  const { handleError } = useErrorHandler();
+  const {
+    entity: user,
+    relatedData,
+    loading,
+    error,
+    router,
+    refetch
+  } = useAdminDetailPage<UserProfile>({
+    entityName: 'User',
+    paramKey: 'firebaseUid',
+    fetcher: {
+      main: apiClientAdmin.getUser,
+      related: [
+        {
+          key: 'devices',
+          fetcher: apiClientAdmin.getUserDevices,
+          optional: true,
+        },
+        {
+          key: 'authEvents',
+          fetcher: (token: string, firebaseUid: string) => 
+            apiClientAdmin.getUserAuthEvents(token, firebaseUid, 50, 0),
+          optional: true,
+        },
+      ],
+    },
+    breadcrumbBase: {
+      label: 'Users',
+      href: '/admin/users',
+    },
+  });
 
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [devicesLoading, setDevicesLoading] = useState(true);
-  const [authEventsLoading, setAuthEventsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [devicesError, setDevicesError] = useState<string | null>(null);
-  const [authEventsError, setAuthEventsError] = useState<string | null>(null);
+  const devices = relatedData.devices as Device[] || [];
+  const authEvents = relatedData.authEvents as AuthEvent[] || [];
 
-  useEffect(() => {
-    async function fetchUser() {
-      if (!idToken || !firebaseUid) return;
+  // Filter for ready/online devices (devices with FCM tokens)
+  const readyDevices = devices.filter(device => device.fcmToken);
 
-      logger.log('[UserDetailPage] Fetching user details for:', firebaseUid);
-      setBusy(true);
-      setLoading(true);
-      setError(null);
-
-      try {
-        const userData = await apiClientAdmin.getUser(idToken, firebaseUid);
-        setUser(userData);
-        logger.log('[UserDetailPage] User details loaded successfully');
-      } catch (err: any) {
-        logger.error('[UserDetailPage] Failed to load user details:', err);
-        handleError(err);
-        setError(err.message || 'Failed to load user details');
-      } finally {
-        setLoading(false);
-        setBusy(false);
-      }
-    }
-
-    fetchUser();
-  }, [idToken, firebaseUid, setBusy, handleError]);
-
-  useEffect(() => {
-    async function fetchUserDevices() {
-      if (!idToken || !firebaseUid) return;
-
-      logger.log('[UserDetailPage] Fetching devices for user:', firebaseUid);
-      setDevicesLoading(true);
-      setDevicesError(null);
-
-      try {
-        const userDevices = await apiClientAdmin.getUserDevices(idToken, firebaseUid);
-        setDevices(userDevices);
-        logger.log('[UserDetailPage] User devices loaded successfully');
-      } catch (err: any) {
-        logger.error('[UserDetailPage] Failed to load user devices:', err);
-        handleError(err);
-        setDevicesError(err.message || 'Failed to load devices');
-      } finally {
-        setDevicesLoading(false);
-      }
-    }
-
-    fetchUserDevices();
-  }, [idToken, firebaseUid, handleError]);
-
-  useEffect(() => {
-    async function fetchUserAuthEvents() {
-      if (!idToken || !firebaseUid) return;
-
-      logger.log('[UserDetailPage] Fetching auth events for user:', firebaseUid);
-      setAuthEventsLoading(true);
-      setAuthEventsError(null);
-
-      try {
-        const userAuthEvents = await apiClientAdmin.getUserAuthEvents(idToken, firebaseUid, 50, 0);
-        setAuthEvents(userAuthEvents);
-        logger.log('[UserDetailPage] User auth events loaded successfully');
-      } catch (err: any) {
-        logger.error('[UserDetailPage] Failed to load user auth events:', err);
-        handleError(err);
-        setAuthEventsError(err.message || 'Failed to load auth events');
-      } finally {
-        setAuthEventsLoading(false);
-      }
-    }
-
-    fetchUserAuthEvents();
-  }, [idToken, firebaseUid, handleError]);
+  const handleViewDevice = (device: Device) => {
+    router.push(`/admin/device/${device.deviceId}`);
+  };
 
   const handleDevicesRefresh = async () => {
-    if (!idToken || !firebaseUid) return;
-    setDevicesLoading(true);
-    setDevicesError(null);
-    try {
-      const userDevices = await apiClientAdmin.getUserDevices(idToken, firebaseUid);
-      setDevices(userDevices);
-    } catch (err: any) {
-      handleError(err);
-      setDevicesError(err.message || 'Failed to load devices');
-    } finally {
-      setDevicesLoading(false);
-    }
+    await refetch();
   };
 
   const handleAuthEventsRefresh = async () => {
-    if (!idToken || !firebaseUid) return;
-    setAuthEventsLoading(true);
-    setAuthEventsError(null);
-    try {
-      const userAuthEvents = await apiClientAdmin.getUserAuthEvents(idToken, firebaseUid, 50, 0);
-      setAuthEvents(userAuthEvents);
-    } catch (err: any) {
-      handleError(err);
-      setAuthEventsError(err.message || 'Failed to load auth events');
-    } finally {
-      setAuthEventsLoading(false);
-    }
+    await refetch();
   };
 
-  if (loading) {
-    return (
-      <PageContainer>
-        <div className="space-y-8">
-          <AdminBreadcrumbs items={[
-            { label: 'Users', href: '/admin/users' },
-            { label: 'Loading...' }
-          ]} />
-          <AdminHeader title="Loading..." subtitle="Loading user details" />
-        </div>
-      </PageContainer>
-    );
-  }
-
-  if (error || !user) {
-    return (
-      <PageContainer>
-        <div className="space-y-8">
-          <AdminBreadcrumbs items={[
-            { label: 'Users', href: '/admin/users' },
-            { label: 'Not Found' }
-          ]} />
-          <AdminHeader title="User Not Found" subtitle="The requested user could not be found" />
-          <div className="text-center text-red-600 mt-4">{error}</div>
-        </div>
-      </PageContainer>
-    );
-  }
-
   return (
-    <PageContainer>
-      <div className="space-y-8">
-        <AdminBreadcrumbs items={[
-          { label: 'Users', href: '/admin/users' },
-          { label: user.fullName || user.email }
-        ]} />
-        
-        <AdminHeader 
-          title={user.fullName || user.email || 'User Details'} 
-          subtitle={`User Profile • ${firebaseUid}`}
-        />
-
-        {/* User Information Card */}
+    <AdminDetailLayout
+      breadcrumbs={[
+        { label: 'Users', href: '/admin/users' },
+        { label: user ? (user.fullName || user.email) : 'User' }
+      ]}
+      title={user ? (user.fullName || user.email || 'User Details') : 'User Details'}
+      subtitle={user ? `User Profile • ${user.firebaseUid}` : 'User Profile'}
+      loading={loading}
+      error={error}
+      loadingTitle="Loading..."
+      loadingSubtitle="Loading user details"
+      notFoundTitle="User Not Found"
+      notFoundSubtitle="The requested user could not be found"
+    >
+      {/* User Information Card */}
+      {user && (
         <div className="bg-blue-50 rounded-lg border border-gray-200 p-6 shadow-sm">
           <Heading level={3} className="mb-6">User Information</Heading>
           
@@ -240,31 +137,49 @@ function UserDetailPage() {
             </div>
           </div>
         </div>
+      )}
 
-        {/* User Devices and Auth Events */}
-        <div className="space-y-8">
-          <div>
-            <Heading level={3} className="mb-4">User Devices</Heading>
-            <TableDevices
-              devices={devices}
-              loading={devicesLoading}
-              error={devicesError}
-              onRefresh={handleDevicesRefresh}
-            />
-          </div>
-          
-          <div>
-            <Heading level={3} className="mb-4">Recent Auth Events</Heading>
-            <TableAuthEvents
-              events={authEvents}
-              loading={authEventsLoading}
-              error={authEventsError}
-              onRefresh={handleAuthEventsRefresh}
-            />
+      {/* Ready/Online Devices */}
+      {readyDevices.length > 0 && (
+        <div className="space-y-4">
+          <Heading level={3}>Ready Devices ({readyDevices.length})</Heading>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {readyDevices.map((device) => (
+              <AdminPanelDevice
+                key={device.deviceId}
+                device={device}
+                onViewDevice={() => handleViewDevice(device)}
+              />
+            ))}
           </div>
         </div>
+      )}
+
+      {/* All User Devices and Auth Events */}
+      <div className="space-y-8">
+        <div>
+          <Heading level={3} className="mb-4">All User Devices</Heading>
+          <TableDevices
+            devices={devices}
+            loading={loading}
+            error={null}
+            onRefresh={handleDevicesRefresh}
+            compact={true}
+          />
+        </div>
+        
+        <div>
+          <Heading level={3} className="mb-4">Recent Auth Events</Heading>
+          <TableAuthEvents
+            events={authEvents}
+            loading={loading}
+            error={null}
+            onRefresh={handleAuthEventsRefresh}
+            compact={true}
+          />
+        </div>
       </div>
-    </PageContainer>
+    </AdminDetailLayout>
   );
 }
 

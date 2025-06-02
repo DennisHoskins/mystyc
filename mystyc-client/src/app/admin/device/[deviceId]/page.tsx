@@ -8,16 +8,22 @@ import { Device } from '@/interfaces/device.interface';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { UserProfile } from '@/interfaces/userProfile.interface';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
+import { useAuth } from '@/components/context/AuthContext';
+import { useToast } from '@/hooks/useToast';
+import { logger } from '@/util/logger';
 
 import AdminDetailLayout from '@/components/admin/AdminDetailLayout';
 import AdminPanelUser from '@/components/admin/panels/AdminPanelUser';
 import TableAuthEvents from '@/components/admin/tables/AdminTableAuthEvents';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
+import Button from '@/components/ui/Button';
 
 function DeviceDetailPage() {
   const [authEventsLoading, setAuthEventsLoading] = useState(false);
   const [authEventsError, setAuthEventsError] = useState<string | null>(null);
+  const { idToken } = useAuth();
+  const { showToast } = useToast();
 
   const {
     entity: device,
@@ -78,6 +84,29 @@ function DeviceDetailPage() {
     }
   };
 
+  const handleSendNotification = async () => {
+    if (!device?.deviceId) {
+      showToast('Device ID not available');
+      return;
+    }
+
+    if (!idToken) {
+      showToast('Authentication required');
+      return;
+    }
+
+    try {
+      await apiClientAdmin.sendDeviceNotification(idToken, device.deviceId);
+      showToast('Notification sent to device successfully');
+    } catch (error) {
+      logger.error('Error sending notification to device', { 
+        error: error instanceof Error ? error.message : String(error),
+        deviceId: device.deviceId
+      });
+      showToast('Failed to send notification to device');
+    }
+  };
+
   return (
     <AdminDetailLayout
       breadcrumbs={[
@@ -92,6 +121,16 @@ function DeviceDetailPage() {
       loadingSubtitle="Loading device details"
       notFoundTitle="Device Not Found"
       notFoundSubtitle="The requested device could not be found"
+      action={
+        device?.deviceId ? (
+          <Button 
+            onClick={handleSendNotification}
+            variant="primary"
+          >
+            Send Notification
+          </Button>
+        ) : undefined
+      }
     >
       {deviceOwner && (
         <AdminPanelUser user={deviceOwner} onViewUser={handleViewUser} />
