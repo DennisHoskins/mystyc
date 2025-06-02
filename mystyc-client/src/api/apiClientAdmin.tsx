@@ -82,10 +82,10 @@ export const apiClientAdmin = {
     fetchAdminApi(`/admin/user/${firebaseUid}`, { method: 'GET', token }),  
   
   promoteUser: (token: string, firebaseUid: string) =>
-    fetchAdminApi(`/admin/users/${firebaseUid}/promote`, { method: 'POST', token }),
+    fetchAdminApi(`/admin/user/${firebaseUid}/promote`, { method: 'POST', token }),
   
   revokeAdmin: (token: string, firebaseUid: string) =>
-    fetchAdminApi(`/admin/users/${firebaseUid}/revoke-admin`, { method: 'PATCH', token }),
+    fetchAdminApi(`/admin/user/${firebaseUid}/revoke-admin`, { method: 'PATCH', token }),
 
   revokeUserTokens: (token: string, firebaseUid: string) =>
     fetchAdminApi(`/admin/user/${firebaseUid}/revoke-tokens`, { method: 'POST', token }),
