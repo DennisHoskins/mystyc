@@ -30,6 +30,9 @@ export class Device {
   @Prop({ required: true })
   language: string;
 
+  @Prop({ default: false, index: true })
+  notificationReady: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,3 +43,6 @@ export const DeviceSchema = SchemaFactory.createForClass(Device);
 
 // Compound index for firebaseUid + deviceId
 DeviceSchema.index({ firebaseUid: 1, deviceId: 1 }, { unique: true });
+
+// Additional index for notification-ready devices
+DeviceSchema.index({ notificationReady: 1 });

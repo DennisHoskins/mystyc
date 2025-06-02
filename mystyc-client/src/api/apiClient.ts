@@ -151,6 +151,13 @@ export const apiClient = {
       body: { deviceId, fcmToken },
       token
     }),
+
+  logout: (token: string, deviceData: Device, authEventData: AuthEvent) =>
+    fetchApi('/users/logout', {
+      method: 'POST',
+      body: { device: deviceData, authEvent: authEventData },
+      token
+    }),    
   
   updateUserProfile: (token: string, data: any) => 
     fetchApi('/users/update-profile', { method: 'PATCH', body: data, token }).then(transformUserResponse),

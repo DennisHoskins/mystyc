@@ -8,6 +8,7 @@ import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 import { useUserCache } from '@/hooks/useUserCache';
 import { apiClient } from '@/api/apiClient';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
+import { Device } from '@/interfaces/device.interface';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
@@ -25,6 +26,28 @@ export default function LogoutPage() {
   const [countdown, setCountdown] = useState(5);
   const hasRedirected = useRef(false);
   const hasTrackedLogout = useRef(false);
+  const deviceDataRef = useRef<Device | null>(null);
+  const idTokenRef = useRef<string | null>(null);
+  const firebaseUserRef = useRef(firebaseUser);
+
+  // Capture auth data before it gets cleared
+  useEffect(() => {
+    if (deviceData) {
+      deviceDataRef.current = deviceData;
+    }
+  }, [deviceData]);
+
+  useEffect(() => {
+    if (idToken) {
+      idTokenRef.current = idToken;
+    }
+  }, [idToken]);
+
+  useEffect(() => {
+    if (firebaseUser) {
+      firebaseUserRef.current = firebaseUser;
+    }
+  }, [firebaseUser]);
 
   // Track logout event before signing out
   useEffect(() => {
@@ -32,14 +55,21 @@ export default function LogoutPage() {
       if (hasTrackedLogout.current) return;
       hasTrackedLogout.current = true;
 
+      console.log('[LogoutPage Debug]', {
+        hasIdToken: !!idTokenRef.current,
+        hasDeviceData: !!deviceDataRef.current,
+        hasFirebaseUser: !!firebaseUserRef.current,
+        hasTrackedLogout: hasTrackedLogout.current,
+      });
+
       // Only track if we have auth token and device data
-      if (!idToken) {
+      if (!idTokenRef.current) {
         logger.log('[LogoutPage] No auth token, skipping logout tracking');
         signOut(true);
         return;
       }
 
-      if (!deviceData) {
+      if (!deviceDataRef.current) {
         logger.log('[LogoutPage] No device data, skipping logout tracking');
         signOut(true);
         return;
@@ -50,16 +80,16 @@ export default function LogoutPage() {
         
         // Generate logout auth event
         const authEvent: AuthEvent = {
-          firebaseUid: firebaseUser?.uid || 'unknown',
-          deviceId: deviceData.deviceId,
+          firebaseUid: firebaseUserRef.current?.uid || 'unknown',
+          deviceId: deviceDataRef.current.deviceId,
           ip: '192.0.0.0',
-          platform: deviceData.platform,
+          platform: deviceDataRef.current.platform,
           clientTimestamp: new Date().toISOString(),
           type: 'logout'
         };
 
         // Send logout event to server with real device data
-        await apiClient.getCurrentUserWithDevice(idToken, deviceData, authEvent);
+        await apiClient.logout(idTokenRef.current, deviceDataRef.current, authEvent);
         
         logger.log('[LogoutPage] Logout event tracked successfully');
       } catch (err) {
@@ -67,7 +97,7 @@ export default function LogoutPage() {
         errorHandler.processError(err, {
           component: 'LogoutPage',
           action: 'trackLogoutEvent',
-          additional: { deviceId: deviceData?.deviceId }
+          additional: { deviceId: deviceDataRef.current?.deviceId }
         });
         
         logger.warn('[LogoutPage] Failed to track logout event, continuing with signout');
@@ -79,7 +109,7 @@ export default function LogoutPage() {
     };
 
     trackLogoutEvent();
-  }, [signOut, idToken, deviceData, firebaseUser, clearCachedUser]);
+  }, [signOut, clearCachedUser]);
 
   useEffect(() => {
     const interval = setInterval(() => {

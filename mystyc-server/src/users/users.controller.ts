@@ -115,6 +115,59 @@ export class UsersController {
     return this.userService.updateUserProfile(firebaseUserFromDecorator.uid, body, firebaseUser);
   }
 
+  @Post('logout')
+  @Throttle({ auth: { limit: 10, ttl: 60000 } })
+  async logout(
+    @FirebaseUser() firebaseUserFromDecorator,
+    @Body() registerSessionDto: RegisterSessionDto,
+    @Req() request: Request
+  ): Promise<{ success: boolean; message: string }> {
+    this.logger.info('User logout via POST /users/logout', {
+      uid: firebaseUserFromDecorator.uid,
+      deviceId: registerSessionDto.device.deviceId,
+      platform: registerSessionDto.device.platform
+    });
+
+    const firebaseUser = UserMapperUtil.transformFirebaseUser(firebaseUserFromDecorator);
+    
+    // Extract server IP from request
+    const serverIp = this.getClientIp(request);
+    
+    try {
+      // Create logout auth event
+      const logoutAuthEvent = {
+        ...registerSessionDto.authEvent,
+        type: 'logout' as const,
+        ip: serverIp
+      };
+
+      const user = await this.userService.registerSession(
+        firebaseUser,
+        { ...registerSessionDto, authEvent: logoutAuthEvent },
+        serverIp
+      );
+
+      this.logger.info('Logout recorded successfully via controller', {
+        uid: firebaseUser.uid,
+        deviceId: registerSessionDto.device.deviceId,
+        serverIp
+      });
+
+      return {
+        success: true,
+        message: 'Logout recorded successfully'
+      };
+    } catch (error) {
+      this.logger.error('Logout recording failed via controller', {
+        uid: firebaseUser.uid,
+        deviceId: registerSessionDto.device.deviceId,
+        error: error.message
+      });
+
+      throw error;
+    }
+  }
+
   @Get('profile')
   async getProfile(@FirebaseUser() firebaseUserFromDecorator): Promise<{ user: User | null }> {
     this.logger.debug('Getting profile via GET /profile', { 

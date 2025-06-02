@@ -24,7 +24,7 @@ export default function TableDevices({
       id: 'summary',
       header: 'Summary',
       cell: ({ row }) => {
-        const { deviceId, platform, appVersion } = row.original;
+        const { deviceId, platform, appVersion, notificationReady } = row.original;
         return (
           <div className="space-y-1">
             <div className="font-medium text-sm">
@@ -33,6 +33,15 @@ export default function TableDevices({
             <div className="text-gray-700 text-sm">{platform}</div>
             <div className="text-gray-500 text-xs">
               {appVersion || 'No version'}
+            </div>
+            <div className="text-xs">
+              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                notificationReady 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
+                {notificationReady ? 'Notifications Ready' : 'Not Ready'}
+              </span>
             </div>
           </div>
         );
@@ -67,6 +76,23 @@ export default function TableDevices({
       accessorKey: 'appVersion',
       header: 'App Version',
       cell: ({ getValue }) => getValue() || '—',
+      meta: { className: 'hidden sm:table-cell' },
+    },
+    {
+      accessorKey: 'notificationReady',
+      header: 'Notifications',
+      cell: ({ getValue }) => {
+        const ready = getValue() as boolean;
+        return (
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+            ready 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-gray-100 text-gray-800'
+          }`}>
+            {ready ? 'Ready' : 'Not Ready'}
+          </span>
+        );
+      },
       meta: { className: 'hidden sm:table-cell' },
     },
   ];

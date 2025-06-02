@@ -49,6 +49,7 @@ export class DeviceService {
           userAgentParsed,
           timezone: deviceDto.timezone,
           language: deviceDto.language,
+          notificationReady: !!deviceDto.fcmToken,
           updatedAt: new Date()
         },
         { 
@@ -62,7 +63,8 @@ export class DeviceService {
         firebaseUid,
         deviceId: device.deviceId,
         browser: userAgentParsed.browser.name,
-        os: userAgentParsed.os.name
+        os: userAgentParsed.os.name,
+        notificationReady: device.notificationReady
       }, 'DeviceService');
 
       return this.transformToDevice(device);
@@ -92,6 +94,7 @@ export class DeviceService {
         },
         {
           fcmToken: updateFcmTokenDto.fcmToken,
+          notificationReady: true,
           updatedAt: new Date()
         },
         { 
@@ -111,7 +114,8 @@ export class DeviceService {
 
       logger.info('FCM token updated successfully', {
         firebaseUid,
-        deviceId: device.deviceId
+        deviceId: device.deviceId,
+        notificationReady: device.notificationReady
       }, 'DeviceService');
 
       return this.transformToDevice(device);
@@ -175,6 +179,7 @@ export class DeviceService {
         { deviceId },
         { 
           $unset: { fcmToken: 1 },
+          notificationReady: false,
           updatedAt: new Date()
         }
       );
@@ -183,6 +188,28 @@ export class DeviceService {
     } catch (error) {
       logger.error('Failed to remove invalid FCM token', {
         deviceId,
+        error: error.message
+      }, 'DeviceService');
+    }
+  }
+
+  async setNotificationReady(deviceId: string, ready: boolean): Promise<void> {
+    logger.info('Setting notification ready status', { deviceId, ready }, 'DeviceService');
+
+    try {
+      await this.deviceModel.findOneAndUpdate(
+        { deviceId },
+        { 
+          notificationReady: ready,
+          updatedAt: new Date()
+        }
+      );
+
+      logger.info('Notification ready status updated', { deviceId, ready }, 'DeviceService');
+    } catch (error) {
+      logger.error('Failed to update notification ready status', {
+        deviceId,
+        ready,
         error: error.message
       }, 'DeviceService');
     }
@@ -199,6 +226,7 @@ export class DeviceService {
       userAgentParsed: doc.userAgentParsed,
       fcmToken: doc.fcmToken,
       appVersion: doc.appVersion,
+      notificationReady: doc.notificationReady,
     };
   }
 }

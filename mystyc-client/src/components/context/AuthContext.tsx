@@ -138,7 +138,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    }
  }, [firebaseUser, updateIdToken]);
 
-useEffect(() => {
+  useEffect(() => {
    logger.log('[AuthContext] Setting up onAuthStateChanged listener');
    
    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
