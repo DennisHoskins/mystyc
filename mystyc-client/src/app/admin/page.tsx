@@ -34,6 +34,13 @@ function AdminPage() {
           </ListItem>
           <ListItem>
             <ListItemButton
+              label="Notifications"
+              subtitle="Manage system notifications"
+              href="/admin/notifications"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemButton
               label="Auth Events"
               subtitle="View authentication logs"
               href="/admin/auth-events"

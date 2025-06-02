@@ -127,4 +127,34 @@ export const apiClientAdmin = {
 
   getAuthEventDevice: (token: string, eventId: string) =>
     fetchAdminApi(`/admin/auth-events/${eventId}/device`, { method: 'GET', token }),
+
+  // Notifications Management
+  sendTestNotification: (token: string, fcmToken: string) =>
+    fetchAdminApi('/admin/notifications/test', { 
+      method: 'POST', 
+      body: { token: fcmToken }, 
+      token 
+    }),
+
+  sendUserNotification: (token: string, firebaseUid: string) =>
+    fetchAdminApi('/admin/notifications/send', { 
+      method: 'POST', 
+      body: { 
+        firebaseUid,
+        title: 'Admin Notification',
+        body: 'You have received a notification from an administrator'
+      }, 
+      token 
+    }),
+
+  sendDeviceNotification: (token: string, deviceId: string) =>
+    fetchAdminApi('/admin/notifications/send', { 
+      method: 'POST', 
+      body: { 
+        deviceId,
+        title: 'Admin Notification',
+        body: 'You have received a notification from an administrator'
+      }, 
+      token 
+    }),
 };
