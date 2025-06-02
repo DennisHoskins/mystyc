@@ -124,33 +124,39 @@ class Logger {
   }
 
   private formatMessage(level: LogLevel, message: string, context?: LogContext, service?: string): string {
-    const entry: LogEntry = {
-      timestamp: new Date().toISOString(),
-      level: LogLevel[level],
-      message,
-      ...(context && { context: this.sanitizeContext(context) }),
-      ...(service && { service }),
-    };
-
-    if (this.isDev) {
-      // Pretty print for development
-      const levelColors = {
-        [LogLevel.ERROR]: '\x1b[31m', // Red
-        [LogLevel.WARN]: '\x1b[33m',  // Yellow
-        [LogLevel.INFO]: '\x1b[36m',  // Cyan
-        [LogLevel.DEBUG]: '\x1b[37m', // White
+    try {
+      const entry: LogEntry = {
+        timestamp: new Date().toISOString(),
+        level: LogLevel[level],
+        message,
+        ...(context && { context: this.sanitizeContext(context) }),
+        ...(service && { service }),
       };
-      const reset = '\x1b[0m';
-      const color = levelColors[level] || reset;
-      
-      let output = `${color}[${entry.level}]${reset} ${entry.timestamp} ${message}`;
-      if (service) output += ` [${service}]`;
-      if (context) output += `\n  Context: ${JSON.stringify(entry.context, null, 2)}`;
-      
-      return output;
-    } else {
-      // JSON format for production
-      return JSON.stringify(entry);
+
+      if (this.isDev) {
+        // Pretty print for development
+        const levelColors = {
+          [LogLevel.ERROR]: '\x1b[31m', // Red
+          [LogLevel.WARN]: '\x1b[33m',  // Yellow
+          [LogLevel.INFO]: '\x1b[36m',  // Cyan
+          [LogLevel.DEBUG]: '\x1b[37m', // White
+        };
+        const reset = '\x1b[0m';
+        const color = levelColors[level] || reset;
+        
+        let output = `${color}[${entry.level}]${reset} ${entry.timestamp} ${message}`;
+        if (service) output += ` [${service}]`;
+        if (context) output += `\n  Context: ${JSON.stringify(entry.context, null, 2)}`;
+        
+        return output;
+      } else {
+        // JSON format for production
+        return JSON.stringify(entry);
+      }
+    } catch (error) {
+      // CRITICAL: Never call logger methods here - use console directly to avoid infinite recursion
+      console.error('[LOGGER ERROR] Failed to format message:', error.message);
+      return `[LOGGER ERROR] ${message}`;
     }
   }
 
@@ -160,25 +166,25 @@ class Logger {
 
   error(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.ERROR)) {
-      logger.error(this.formatMessage(LogLevel.ERROR, message, context, service));
+      console.error(this.formatMessage(LogLevel.ERROR, message, context, service));
     }
   }
 
   warn(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.WARN)) {
-      logger.warn(this.formatMessage(LogLevel.WARN, message, context, service));
+      console.warn(this.formatMessage(LogLevel.WARN, message, context, service));
     }
   }
 
   info(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.INFO)) {
-      logger.info(this.formatMessage(LogLevel.INFO, message, context, service));
+      console.info(this.formatMessage(LogLevel.INFO, message, context, service));
     }
   }
 
   debug(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      logger.info(this.formatMessage(LogLevel.DEBUG, message, context, service));
+      console.info(this.formatMessage(LogLevel.DEBUG, message, context, service));
     }
   }
 
@@ -186,7 +192,7 @@ class Logger {
   security(message: string, context?: LogContext): void {
     // Security events are always logged regardless of level
     const securityEntry = this.formatMessage(LogLevel.ERROR, `[SECURITY] ${message}`, context, 'SECURITY');
-    logger.error(securityEntry);
+    console.error(securityEntry);
   }
 
   api(method: string, endpoint: string, context?: LogContext): void {
