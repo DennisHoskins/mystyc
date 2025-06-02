@@ -173,6 +173,39 @@ export class AdminController {
     return devices;
   }
 
+  @Get('device/:deviceId')
+  @Roles(UserRole.ADMIN)
+  async getDevice(@Param('deviceId') deviceId: string) {
+    logger.info('Admin fetching device by device ID', { deviceId }, 'AdminController');
+    
+    try {
+      const device = await this.deviceService.findByDeviceId(deviceId);
+      
+      if (!device) {
+        logger.warn('Device not found', { deviceId }, 'AdminController');
+        throw new NotFoundException('Device not found');
+      }
+
+      logger.info('Device retrieved successfully', { 
+        deviceId,
+        firebaseUid: device.firebaseUid 
+      }, 'AdminController');
+      
+      return device;
+    } catch (error) {
+      if (error.status === 404) {
+        throw error;
+      }
+      
+      logger.error('Failed to get device', {
+        deviceId,
+        error: error.message
+      }, 'AdminController');
+      
+      throw error;
+    }
+  }
+
   @Get('devices/:firebaseUid')
   @Roles(UserRole.ADMIN)
   async getUserDevices(@Param('firebaseUid') firebaseUid: string) {
@@ -214,6 +247,22 @@ export class AdminController {
     }, 'AdminController');
     
     return events;
+  }
+
+  @Get('auth-event/:eventId')
+  @Roles(UserRole.ADMIN)
+  async getAuthEvent(@Param('eventId') eventId: string) {
+    logger.info('Admin fetching auth event by ID', { eventId }, 'AdminController');
+    
+    const event = await this.authEventService.findById(eventId);
+    
+    if (!event) {
+      logger.warn('Auth event not found', { eventId }, 'AdminController');
+      throw new NotFoundException('Auth event not found');
+    }
+
+    logger.info('Auth event retrieved', { eventId }, 'AdminController');
+    return event;
   }
 
   @Get('auth-events/:firebaseUid')
@@ -311,22 +360,6 @@ export class AdminController {
 
       throw error;
     }
-  }
-
-  @Get('auth-events/:eventId')
-  @Roles(UserRole.ADMIN)
-  async getAuthEvent(@Param('eventId') eventId: string) {
-    logger.info('Admin fetching auth event by ID', { eventId }, 'AdminController');
-    
-    const event = await this.authEventService.findById(eventId);
-    
-    if (!event) {
-      logger.warn('Auth event not found', { eventId }, 'AdminController');
-      throw new NotFoundException('Auth event not found');
-    }
-
-    logger.info('Auth event retrieved', { eventId }, 'AdminController');
-    return event;
   }
 
   // Notification management endpoints
