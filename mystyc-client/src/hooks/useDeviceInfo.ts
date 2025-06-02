@@ -144,9 +144,6 @@ export function useDeviceInfo() {
 
   // Clear device data (for logout)
   const clearDeviceData = useCallback(() => {
-
-    console.log("wtfers", deviceData)
-    
     setDeviceData(null);
     setIsLoading(true);
     logger.log('[useDeviceInfo] Device data cleared');

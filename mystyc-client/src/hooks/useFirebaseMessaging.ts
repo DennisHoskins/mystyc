@@ -14,7 +14,7 @@ export function useFirebaseMessaging() {
   useEffect(() => {
     if (messaging) {
       const unsubscribe = onMessage(messaging, (payload) => {
-        console.log('Received foreground message:', payload);
+        logger.log('Received foreground message:', payload);
       });
       
       return () => unsubscribe();

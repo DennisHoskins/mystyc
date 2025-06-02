@@ -21,9 +21,9 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log('Received background message:', payload);
-  console.log('Payload data:', payload.data);
-  console.log('Payload notification:', payload.notification);
+  loggerlog('Received background message:', payload);
+  loggerlog('Payload data:', payload.data);
+  loggerlog('Payload notification:', payload.notification);
   
   const notificationTitle = payload.data?.title || 'New Message';
   const notificationOptions = {
@@ -34,14 +34,14 @@ messaging.onBackgroundMessage((payload) => {
     }
   };
 
-  console.log('Showing notification with:', notificationTitle, notificationOptions);
+  loggerlog('Showing notification with:', notificationTitle, notificationOptions);
   
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // Handle notification clicks
 self.addEventListener('notificationclick', function(event) {
-  console.log('Notification clicked');
+  loggerlog('Notification clicked');
   event.notification.close();
   
   // Open skull.international

@@ -60,7 +60,7 @@ async function bootstrap() {
           const property = error.property;
           const value = error.value;
           
-          console.log(`Validation failed for property: ${property}, value: ${value}, constraints:`, constraints);
+          logger.info(`Validation failed for property: ${property}, value: ${value}, constraints:`, constraints);
           
           return {
             property,
@@ -69,7 +69,7 @@ async function bootstrap() {
           };
         });
         
-        console.log('Full validation errors:', messages);
+        logger.info('Full validation errors:', messages);
         
         throw new BadRequestException({
           message: 'Validation failed',

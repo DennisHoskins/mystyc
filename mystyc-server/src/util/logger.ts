@@ -160,25 +160,25 @@ class Logger {
 
   error(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.ERROR)) {
-      console.error(this.formatMessage(LogLevel.ERROR, message, context, service));
+      logger.error(this.formatMessage(LogLevel.ERROR, message, context, service));
     }
   }
 
   warn(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatMessage(LogLevel.WARN, message, context, service));
+      logger.warn(this.formatMessage(LogLevel.WARN, message, context, service));
     }
   }
 
   info(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.INFO)) {
-      console.log(this.formatMessage(LogLevel.INFO, message, context, service));
+      logger.info(this.formatMessage(LogLevel.INFO, message, context, service));
     }
   }
 
   debug(message: string, context?: LogContext, service?: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      console.log(this.formatMessage(LogLevel.DEBUG, message, context, service));
+      logger.info(this.formatMessage(LogLevel.DEBUG, message, context, service));
     }
   }
 
@@ -186,7 +186,7 @@ class Logger {
   security(message: string, context?: LogContext): void {
     // Security events are always logged regardless of level
     const securityEntry = this.formatMessage(LogLevel.ERROR, `[SECURITY] ${message}`, context, 'SECURITY');
-    console.error(securityEntry);
+    logger.error(securityEntry);
   }
 
   api(method: string, endpoint: string, context?: LogContext): void {

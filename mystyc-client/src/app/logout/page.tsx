@@ -54,7 +54,7 @@ export default function LogoutPage() {
       if (hasTrackedLogout.current) return;
       hasTrackedLogout.current = true;
 
-      console.log('[LogoutPage Debug]', {
+      logger.log('[LogoutPage Debug]', {
         hasIdToken: !!idTokenRef.current,
         hasDeviceData: !!deviceDataRef.current,
         hasFirebaseUser: !!firebaseUserRef.current,
