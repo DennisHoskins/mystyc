@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Head from 'next/head';
 
-import ClientLayout from './layoutClient';
+import AppLayout from '@/components/layout/AppLayout';
 
 export const metadata: Metadata = {
   title: 'mystyc',
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <ClientLayout>{children}</ClientLayout>
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   );

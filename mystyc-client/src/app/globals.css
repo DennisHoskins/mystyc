@@ -2,8 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+.client-layout {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin; /* Firefox */
+}
+
+.client-layout::-webkit-scrollbar {
+  width: 8px; /* Chrome/Safari/Edge */
+}
+
+.client-layout::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.client-layout::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.client-layout::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
 body {
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 main {
@@ -94,24 +117,3 @@ main {
 
 }
 
-html.scrollbar-gutter {
-  scrollbar-gutter: stable;
-  scrollbar-width: thin; /* Firefox */
-}
-
-html.scrollbar-gutter::-webkit-scrollbar {
-  width: 8px; /* Chrome/Safari/Edge */
-}
-
-html.scrollbar-gutter::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-html.scrollbar-gutter::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-html.scrollbar-gutter::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
