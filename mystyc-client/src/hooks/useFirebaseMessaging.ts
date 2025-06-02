@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
 import { messaging } from '@/lib/firebase';
 import { useAuth } from '@/components/context/AuthContext';
-import { useDeviceInfo } from './useDeviceInfo';
 import { apiClient } from '@/api/apiClient';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
@@ -10,8 +9,7 @@ import { logger } from '@/util/logger';
 export function useFirebaseMessaging() {
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { idToken } = useAuth();
-  const { deviceData } = useDeviceInfo();
+  const { idToken, deviceData } = useAuth();
 
   useEffect(() => {
     if (messaging) {

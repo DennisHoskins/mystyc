@@ -18,7 +18,7 @@ import {
  onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { AuthEvent, User } from '@/interfaces';
+import { AuthEvent, User, Device } from '@/interfaces';
 import { logger } from '@/util/logger';
 import { errorHandler } from '@/util/errorHandler';
 import { useUserCache } from '@/hooks/useUserCache';
@@ -28,6 +28,7 @@ import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 interface AuthContextType {
  firebaseUser: FirebaseAuthUser | null;
  user: User | null;
+ deviceData: Device | null;
  loading: boolean;
  ready: boolean;
  idToken: string | null;
@@ -320,6 +321,7 @@ useEffect(() => {
  const value = {
    firebaseUser,
    user,
+   deviceData,
    loading,
    ready,
    idToken,
