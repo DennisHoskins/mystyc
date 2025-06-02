@@ -6,9 +6,7 @@ import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useBusy } from '@/components/context/BusyContext';
 import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
-import { useToast } from '@/hooks/useToast';
 import { formatDateForDisplay } from '@/util/dateTime';
-import { logger } from '@/util/logger';
 
 import AccountDetails from './AccountDetails';
 import Text from '@/components/ui/Text';
@@ -17,10 +15,9 @@ import Heading from '@/components/ui/Heading';
 
 const Dashboard = () => {
   const [showDetails, setShowDetails] = useState(false);
-  const { firebaseUser, user, idToken } = useAuth();
+  const { firebaseUser, user } = useAuth();
   const router = useCustomRouter();
   const { setBusy } = useBusy();
-  const { showToast } = useToast();
   const { token, error } = useFirebaseMessaging();
 
   useEffect(() => {
@@ -29,32 +26,6 @@ const Dashboard = () => {
 
   const editProfile = () => {
     router.push('/profile');
-  };
-
-  const sendNotification = async () => {
-    try {
-      await fetch('https://skull.international/api/notifications/test', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ token }),
-      });
-
-    } catch (error) {
-      logger.error('Error sending notification', { 
-        error: error instanceof Error ? error.message : String(error) 
-      });
-    }
-  }
-
-  const handleSendNotification = async () => {
-    if (!token || !idToken) {
-      return;
-    }
-    showToast('Test notification scheduled for 10 seconds');
-    setTimeout(() => sendNotification(), 10 * 1000); // Send in 10 seconds
   };
 
   const fullName = user?.userProfile?.fullName || firebaseUser?.displayName || 'User';
@@ -85,15 +56,6 @@ const Dashboard = () => {
         >
           Edit Profile
         </button>
-
-        {token && (
-          <button
-            onClick={handleSendNotification}
-            className="mt-4 w-full max-w-xs text-center bg-purple-600 text-white py-2 px-4 rounded-md font-medium hover:bg-purple-700 transition"
-          >
-            Send Test Notification
-          </button>
-        )}
 
         {token && (
           <Text variant="small" className="mt-2 max-w-xs break-all">

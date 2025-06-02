@@ -15,6 +15,38 @@ export function useFirebaseMessaging() {
     if (messaging) {
       const unsubscribe = onMessage(messaging, (payload) => {
         logger.log('Received foreground message:', payload);
+        
+        // Always show notification, even when app is in foreground
+        if ('Notification' in window && Notification.permission === 'granted') {
+          const title = payload.data?.title || payload.notification?.title || 'New Message';
+          const body = payload.data?.body || payload.notification?.body || 'You have a new message';
+          
+          const notification = new Notification(title, {
+            body,
+            icon: '/favicon/favicon.ico',
+            tag: 'mystyc-notification', // Prevents duplicate notifications
+            requireInteraction: true, // Keeps notification visible until clicked
+            data: {
+              url: payload.data?.url || 'https://skull.international/'
+            }
+          });
+
+          // Handle notification click
+          notification.onclick = function(event) {
+            event.preventDefault();
+            window.focus(); // Focus the browser window
+            notification.close();
+            
+            // Navigate to URL if provided
+            if (payload.data?.url) {
+              window.open(payload.data.url, '_blank');
+            }
+          };
+
+          logger.log('Foreground notification displayed:', title);
+        } else {
+          logger.warn('Cannot show notification - permission not granted or Notification API not available');
+        }
       });
       
       return () => unsubscribe();
