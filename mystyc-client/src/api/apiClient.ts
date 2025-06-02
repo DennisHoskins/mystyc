@@ -1,6 +1,6 @@
 import { parseApiDate } from '@/util/dateTime';
 import { errorHandler } from '@/util/errorHandler';
-import { AuthEventData, DeviceData } from '@/interfaces';
+import { AuthEvent, Device } from '@/interfaces';
 import { storage } from '@/util/storage';
 import { logger } from '@/util/logger';
 
@@ -138,7 +138,7 @@ export const apiClient = {
   getCurrentUser: (token: string) => 
     fetchApi('/users/me', { method: 'GET', token }).then(transformUserResponse),
   
-  getCurrentUserWithDevice: (token: string, deviceData: DeviceData, authEventData: AuthEventData) =>
+  getCurrentUserWithDevice: (token: string, deviceData: Device, authEventData: AuthEvent) =>
     fetchApi('/users/me', { 
       method: 'POST', 
       body: { device: deviceData, authEvent: authEventData }, 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User as FirebaseAuthUser } from 'firebase/auth';
 import { apiClient } from '@/api/apiClient';
-import { User, DeviceData, AuthEventData } from '@/interfaces';
+import { User, Device, AuthEvent } from '@/interfaces';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 import { useUserCache } from './useUserCache';
@@ -38,8 +38,8 @@ export function useUserAPI() {
   const fetchCompleteUserWithDevice = async (
     token: string,
     firebaseUser: FirebaseAuthUser,
-    deviceData: DeviceData,
-    authEventData: AuthEventData,
+    deviceData: Device,
+    authEventData: AuthEvent,
     setUser: (user: User | null) => void,
     regenerateDeviceId: () => string
   ): Promise<User | null> => {

@@ -7,7 +7,7 @@ import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 import { useUserCache } from '@/hooks/useUserCache';
 import { apiClient } from '@/api/apiClient';
-import { AuthEventData } from '@/interfaces/authEventData.interface';
+import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
@@ -49,7 +49,7 @@ export default function LogoutPage() {
         logger.log('[LogoutPage] Tracking logout event');
         
         // Generate logout auth event
-        const authEventData: AuthEventData = {
+        const authEvent: AuthEvent = {
           firebaseUid: firebaseUser?.uid || 'unknown',
           deviceId: deviceData.deviceId,
           ip: '192.0.0.0',
@@ -59,7 +59,7 @@ export default function LogoutPage() {
         };
 
         // Send logout event to server with real device data
-        await apiClient.getCurrentUserWithDevice(idToken, deviceData, authEventData);
+        await apiClient.getCurrentUserWithDevice(idToken, deviceData, authEvent);
         
         logger.log('[LogoutPage] Logout event tracked successfully');
       } catch (err) {

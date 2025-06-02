@@ -5,7 +5,7 @@ export interface UserProfile {
   fullName?: string;
   dateOfBirth?: Date | null;
   zodiacSign?: string;
-  roles?: string[];
+  roles: string[];
   createdAt: Date;
   updatedAt: Date;
 }

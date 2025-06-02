@@ -2,10 +2,10 @@ import React from 'react';
 
 import AdminPanel from './AdminPanel';
 import Text from '@/components/ui/Text';
-import { AuthEventData } from '@/interfaces/authEventData.interface';
+import { AuthEvent } from '@/interfaces/authEvent.interface';
 
 interface AdminPanelAuthEventProps {
-  authEvent: AuthEventData;
+  authEvent: AuthEvent;
 }
 
 export default function AdminPanelAuthEvent({ authEvent }: AdminPanelAuthEventProps) {

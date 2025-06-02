@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 import { UserRole } from '@/common/enums/roles.enum';
 
-@Schema({ timestamps: true, collection: 'users' })
+@Schema({ timestamps: true, collection: 'userProfiles' })
 export class UserProfile {
   @Prop({ required: true })
   firebaseUid: string;

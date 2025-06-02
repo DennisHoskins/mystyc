@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { DeviceData } from '@/interfaces/deviceData.interface';
+import { Device } from '@/interfaces/device.interface';
 import { storage } from '@/util/storage';
 import { logger } from '@/util/logger';
 
@@ -101,15 +101,18 @@ const getOrCreateDeviceId = (): string => {
 };
 
 export function useDeviceInfo() {
-  const [deviceData, setDeviceData] = useState<DeviceData | null>(null);
+  const [deviceData, setDeviceData] = useState<Device | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize device data
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+  // Create device data when we have a firebaseUid
+  const createDeviceData = useCallback((firebaseUid: string): Device => {
+    if (typeof window === 'undefined') {
+      throw new Error('Device info can only be created in browser environment');
+    }
 
     try {
-      const data: DeviceData = {
+      const data: Device = {
+        firebaseUid,
         deviceId: getOrCreateDeviceId(),
         platform: getPlatform(),
         timezone: getTimezone(),
@@ -117,24 +120,33 @@ export function useDeviceInfo() {
         userAgent: getUserAgent(),
       };
 
+      logger.log('[useDeviceInfo] Device data created for user:', firebaseUid, data);
+      return data;
+    } catch (err) {
+      logger.error('[useDeviceInfo] Failed to create device data:', err);
+      throw err;
+    }
+  }, []);
+
+  // Initialize device data when firebaseUid is provided
+  const initializeDeviceData = useCallback((firebaseUid: string) => {
+    try {
+      const data = createDeviceData(firebaseUid);
       setDeviceData(data);
+      setIsLoading(false);
       logger.log('[useDeviceInfo] Device data initialized:', data);
     } catch (err) {
       logger.error('[useDeviceInfo] Failed to initialize device data:', err);
-      
-      // Fallback device data
-      const fallbackData: DeviceData = {
-        deviceId: generateDeviceId(),
-        platform: 'unknown',
-        timezone: 'UTC',
-        language: 'en',
-        userAgent: 'unknown',
-      };
-
-      setDeviceData(fallbackData);
-    } finally {
+      setDeviceData(null);
       setIsLoading(false);
     }
+  }, [createDeviceData]);
+
+  // Clear device data (for logout)
+  const clearDeviceData = useCallback(() => {
+    setDeviceData(null);
+    setIsLoading(true);
+    logger.log('[useDeviceInfo] Device data cleared');
   }, []);
 
   // Regenerate device ID (for server conflict handling)
@@ -148,7 +160,7 @@ export function useDeviceInfo() {
     const newId = generateDeviceId();
     storage.local.setItem(DEVICE_ID_KEY, newId);
     
-    // Update current device data
+    // Update current device data if it exists
     setDeviceData(prev => prev ? { ...prev, deviceId: newId } : null);
     
     logger.log('[useDeviceInfo] Regenerated device ID due to server conflict:', newId);
@@ -162,9 +174,17 @@ export function useDeviceInfo() {
     return storage.local.getItem(DEVICE_ID_KEY) || deviceData?.deviceId || null;
   }, [deviceData?.deviceId]);
 
+  // Set loading to false initially since we don't auto-initialize
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
   return {
     deviceData,
     isLoading,
+    initializeDeviceData,
+    clearDeviceData,
+    createDeviceData,
     regenerateDeviceId,
     getCurrentDeviceId,
   };

@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { UAParser } from 'ua-parser-js';
 
 import { Device, DeviceDocument } from './schemas/device.schema';
+import { Device as DeviceInterface } from '@/common/interfaces/device.interface';
 import { DeviceDto } from './dto/device.dto';
 import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
 import { logger } from '@/util/logger';
@@ -14,7 +15,7 @@ export class DeviceService {
     @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>
   ) {}
 
-  async upsertDevice(firebaseUid: string, deviceDto: DeviceDto): Promise<Device> {
+  async upsertDevice(firebaseUid: string, deviceDto: DeviceDto): Promise<DeviceInterface> {
     logger.info('Upserting device', {
       firebaseUid,
       deviceId: deviceDto.deviceId,
@@ -64,7 +65,7 @@ export class DeviceService {
         os: userAgentParsed.os.name
       }, 'DeviceService');
 
-      return device.toObject();
+      return this.transformToDevice(device);
     } catch (error) {
       logger.error('Device upsert failed', {
         firebaseUid,
@@ -77,7 +78,7 @@ export class DeviceService {
     }
   }
 
-  async updateFcmToken(firebaseUid: string, updateFcmTokenDto: UpdateFcmTokenDto): Promise<Device> {
+  async updateFcmToken(firebaseUid: string, updateFcmTokenDto: UpdateFcmTokenDto): Promise<DeviceInterface> {
     logger.info('Updating FCM token', {
       firebaseUid,
       deviceId: updateFcmTokenDto.deviceId
@@ -113,7 +114,7 @@ export class DeviceService {
         deviceId: device.deviceId
       }, 'DeviceService');
 
-      return device.toObject();
+      return this.transformToDevice(device);
     } catch (error) {
       logger.error('FCM token update failed', {
         firebaseUid,
@@ -125,7 +126,7 @@ export class DeviceService {
     }
   }
 
-  async findByFirebaseUid(firebaseUid: string): Promise<Device[]> {
+  async findByFirebaseUid(firebaseUid: string): Promise<DeviceInterface[]> {
     logger.debug('Finding devices by Firebase UID', { firebaseUid }, 'DeviceService');
 
     const devices = await this.deviceModel.find({ firebaseUid }).exec();
@@ -135,10 +136,10 @@ export class DeviceService {
       count: devices.length 
     }, 'DeviceService');
 
-    return devices.map(device => device.toObject());
+    return devices.map(device => this.transformToDevice(device));
   }
 
-  async findByDeviceId(deviceId: string): Promise<Device | null> {
+  async findByDeviceId(deviceId: string): Promise<DeviceInterface | null> {
     logger.debug('Finding device by device ID', { deviceId }, 'DeviceService');
 
     const device = await this.deviceModel.findOne({ deviceId }).exec();
@@ -153,17 +154,17 @@ export class DeviceService {
       firebaseUid: device.firebaseUid 
     }, 'DeviceService');
 
-    return device.toObject();
+    return this.transformToDevice(device);
   }
 
-  async findAll(): Promise<Device[]> {
+  async findAll(): Promise<DeviceInterface[]> {
     logger.debug('Finding all devices', {}, 'DeviceService');
 
     const devices = await this.deviceModel.find().exec();
 
     logger.debug('All devices retrieved', { count: devices.length }, 'DeviceService');
 
-    return devices.map(device => device.toObject());
+    return devices.map(device => this.transformToDevice(device));
   }
 
   async removeInvalidFcmToken(deviceId: string): Promise<void> {
@@ -185,5 +186,19 @@ export class DeviceService {
         error: error.message
       }, 'DeviceService');
     }
+  }
+
+  private transformToDevice(doc: DeviceDocument): DeviceInterface {
+    return {
+      firebaseUid: doc.firebaseUid,
+      deviceId: doc.deviceId,
+      platform: doc.platform,
+      timezone: doc.timezone,
+      language: doc.language,
+      userAgent: doc.userAgent,
+      userAgentParsed: doc.userAgentParsed,
+      fcmToken: doc.fcmToken,
+      appVersion: doc.appVersion,
+    };
   }
 }

@@ -3,10 +3,10 @@ import React from 'react';
 import AdminPanel from './AdminPanel';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
-import { DeviceData } from '@/interfaces/deviceData.interface';
+import { Device } from '@/interfaces/device.interface';
 
 interface AdminPanelDeviceProps {
-  device: DeviceData;
+  device: Device;
   onViewDevice?: () => void;
 }
 

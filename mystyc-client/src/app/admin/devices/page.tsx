@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { DeviceData } from '@/interfaces/deviceData.interface';
+import { Device } from '@/interfaces/device.interface';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 
@@ -18,7 +18,7 @@ export default withAdminAuth(function DevicesPage() {
   const { idToken } = useAuth();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler();
-  const [devices, setDevices] = useState<DeviceData[]>([]);
+  const [devices, setDevices] = useState<Device[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { AuthEventData } from '@/interfaces/authEventData.interface';
+import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 
@@ -18,7 +18,7 @@ function AuthEventsPage() {
   const { idToken } = useAuth();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler();
-  const [events, setEvents] = useState<AuthEventData[]>([]);
+  const [events, setEvents] = useState<AuthEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 

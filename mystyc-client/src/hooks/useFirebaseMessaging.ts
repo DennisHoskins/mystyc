@@ -11,7 +11,7 @@ export function useFirebaseMessaging() {
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { idToken } = useAuth();
-  const { getCurrentDeviceId } = useDeviceInfo();
+  const { deviceData } = useDeviceInfo();
 
   useEffect(() => {
     if (messaging) {
@@ -29,21 +29,20 @@ export function useFirebaseMessaging() {
       return;
     }
 
-    const deviceId = getCurrentDeviceId();
-    if (!deviceId) {
+    if (!deviceData?.deviceId) {
       logger.warn('[useFirebaseMessaging] No device ID available for FCM token update');
       return;
     }
 
     try {
-      await apiClient.updateFcmToken(idToken, deviceId, fcmToken);
+      await apiClient.updateFcmToken(idToken, deviceData.deviceId, fcmToken);
       logger.log('[useFirebaseMessaging] FCM token updated on server successfully');
     } catch (err) {
       errorHandler.processError(err, {
         component: 'useFirebaseMessaging',
         action: 'updateFcmToken',
         additional: { 
-          deviceId,
+          deviceId: deviceData.deviceId,
           hasToken: !!fcmToken
         }
       });
@@ -51,7 +50,7 @@ export function useFirebaseMessaging() {
       // Don't throw - FCM token update failure shouldn't break the app
       logger.warn('[useFirebaseMessaging] Failed to update FCM token on server, continuing...');
     }
-  }, [idToken, getCurrentDeviceId]);
+  }, [idToken, deviceData?.deviceId]);
 
   const requestPermission = useCallback(async () => {
     try {
@@ -90,17 +89,17 @@ export function useFirebaseMessaging() {
     }
   }, [updateFcmTokenOnServer]);
 
-  // Auto-retrieve token if permission is already granted
+  // Auto-retrieve token if permission is already granted and we have device data
   useEffect(() => {
-    if (Notification.permission === 'granted' && !token && !error) {
-      logger.log('[useFirebaseMessaging] Permission already granted, retrieving FCM token');
+    if (Notification.permission === 'granted' && !token && !error && deviceData) {
+      logger.log('[useFirebaseMessaging] Permission already granted and device ready, retrieving FCM token');
       requestPermission();
     }
-  }, [token, error, requestPermission]);
+  }, [token, error, requestPermission, deviceData]);
 
   // Handle token refresh events
   useEffect(() => {
-    if (!messaging || !token) return;
+    if (!messaging || !token || !deviceData) return;
 
     // Listen for token refresh
     const handleTokenRefresh = async () => {
@@ -134,7 +133,7 @@ export function useFirebaseMessaging() {
     const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
     
     return () => clearInterval(refreshInterval);
-  }, [token, idToken, updateFcmTokenOnServer]);
+  }, [token, idToken, updateFcmTokenOnServer, deviceData]);
 
   return { token, error, requestPermission };
 }

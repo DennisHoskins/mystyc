@@ -1,4 +1,4 @@
-export interface AuthEventData {
+export interface AuthEvent {
   _id?: string;
   firebaseUid: string;
   deviceId: string;

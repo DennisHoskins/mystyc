@@ -1,13 +1,13 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { DeviceData } from '@/interfaces/deviceData.interface';
+import { Device } from '@/interfaces/device.interface';
 
 import AdminTable from './AdminTable';
 import TableCellLink from '@/components/ui/table/TableCellLink';
 
 interface TableDevicesProps {
-  devices: DeviceData[];
+  devices: Device[];
   loading: boolean;
   error?: string | null;
   onRefresh?: () => void;
@@ -19,7 +19,7 @@ export default function TableDevices({
   error, 
   onRefresh 
 }: TableDevicesProps) {
-  const columns: ColumnDef<DeviceData>[] = [
+  const columns: ColumnDef<Device>[] = [
     {
       id: 'summary',
       header: 'Summary',

@@ -1,13 +1,13 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { AuthEventData } from '@/interfaces/authEventData.interface';
+import { AuthEvent } from '@/interfaces/authEvent.interface';
 
 import AdminTable from './AdminTable';
 import TableCellLink from '@/components/ui/table/TableCellLink';
 
 interface TableAuthEventsProps {
-  events: AuthEventData[];
+  events: AuthEvent[];
   loading: boolean;
   error?: string | null;
   onRefresh?: () => void;
@@ -19,7 +19,7 @@ export default function TableAuthEvents({
   error, 
   onRefresh 
 }: TableAuthEventsProps) {
-  const columns: ColumnDef<AuthEventData>[] = [
+  const columns: ColumnDef<AuthEvent>[] = [
     {
       id: 'summary',
       header: 'Summary',

@@ -18,7 +18,7 @@ import {
  onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { AuthEventData, User } from '@/interfaces';
+import { AuthEvent, User } from '@/interfaces';
 import { logger } from '@/util/logger';
 import { errorHandler } from '@/util/errorHandler';
 import { useUserCache } from '@/hooks/useUserCache';
@@ -59,10 +59,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
  const [hasLoadedCache, setHasLoadedCache] = useState(false);
  const [hasQuotaError, setHasQuotaError] = useState(false);
  const hasAttemptedDeviceRegistration = useRef(false);
+ const hasInitializedDevice = useRef(false);
 
  const { getCachedUser, clearCachedUser } = useUserCache(setUser);
  const { fetchCompleteUserWithDevice, updateUserProfile } = useUserAPI();
- const { deviceData, regenerateDeviceId } = useDeviceInfo();
+ const { 
+   deviceData, 
+   initializeDeviceData, 
+   clearDeviceData, 
+   regenerateDeviceId 
+ } = useDeviceInfo();
 
  const updateIdToken = useCallback(async (firebaseUser: FirebaseAuthUser | null) => {
    if (!firebaseUser) {
@@ -98,6 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
        setHasQuotaError(false);
        setUser(null);
        clearCachedUser();
+       clearDeviceData();
        
        // Force redirect to server logout page
        window.location.href = '/server-logout';
@@ -121,7 +128,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    } finally {
      setIsRefreshingToken(false);
    }
- }, [isRefreshingToken, hasQuotaError, clearCachedUser]);
+ }, [isRefreshingToken, hasQuotaError, clearCachedUser, clearDeviceData]);
 
  const retryTokenRefresh = useCallback(async () => {
    if (firebaseUser) {
@@ -140,6 +147,15 @@ useEffect(() => {
      });
      
      setFirebaseUser(firebaseUser);
+     
+     // Initialize device data when user logs in (only once)
+     if (firebaseUser && !hasInitializedDevice.current) {
+       hasInitializedDevice.current = true;
+       initializeDeviceData(firebaseUser.uid);
+     } else if (!firebaseUser) {
+       hasInitializedDevice.current = false;
+       clearDeviceData();
+     }
      
      // Only update token on actual auth state changes, not on token refresh completion
      if (firebaseUser && !idToken) {
@@ -169,14 +185,14 @@ useEffect(() => {
      logger.log('[AuthContext] Cleaning up onAuthStateChanged listener');
      unsubscribe();
    };
- }, [getCachedUser, hasLoadedCache, updateIdToken, idToken]);
+ }, [getCachedUser, hasLoadedCache, updateIdToken, idToken, initializeDeviceData, clearDeviceData]);
  
  useEffect(() => {
    if (ready && idToken && firebaseUser && !user && deviceData && !hasAttemptedDeviceRegistration.current) {
      hasAttemptedDeviceRegistration.current = true;
      logger.log('[AuthContext] First auth - using device registration');
      
-     const authEventData: AuthEventData = {
+     const authEventData: AuthEvent = {
        firebaseUid: firebaseUser.uid,
        deviceId: deviceData.deviceId,
        ip: '127.0.0.1',
@@ -202,6 +218,7 @@ useEffect(() => {
  useEffect(() => {
    if (!firebaseUser) {
      hasAttemptedDeviceRegistration.current = false;
+     hasInitializedDevice.current = false;
      setUser(null);
    }
  }, [firebaseUser]);
@@ -209,6 +226,7 @@ useEffect(() => {
  const signIn = async (email: string, password: string): Promise<FirebaseAuthUser> => {
    // Clear all auth state before sign in
    clearCachedUser();
+   clearDeviceData();
    
    setLoading(true);
    try {
@@ -228,6 +246,7 @@ useEffect(() => {
  const register = async (email: string, password: string): Promise<FirebaseAuthUser> => {
    // Clear all auth state before register
    clearCachedUser();
+   clearDeviceData();
    
    try {
      const result = await createUserWithEmailAndPassword(auth, email, password);
@@ -248,6 +267,8 @@ useEffect(() => {
      } else {
        clearCachedUser();
      }
+     
+     clearDeviceData();
      
      await firebaseSignOut(auth);
      setIdToken(null);

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { AuthEvent, AuthEventDocument } from './schemas/auth-event.schema';
-import { AuthEventData } from '@/common/interfaces/authEventData.interface';
+import { AuthEvent as AuthEventInterface } from '@/common/interfaces/authEvent.interface';
 import { logger } from '@/util/logger';
 
 @Injectable()
@@ -14,8 +14,8 @@ export class AuthEventService {
 
   async recordAuthEvent(
     firebaseUid: string, 
-    authEventData: AuthEventData
-  ): Promise<AuthEvent> {
+    authEventData: AuthEventInterface
+  ): Promise<AuthEventInterface> {
     logger.info('Recording auth event', {
       firebaseUid,
       deviceId: authEventData.deviceId,
@@ -46,7 +46,7 @@ export class AuthEventService {
         clientTime: savedEvent.clientTimestamp
       }, 'AuthEventService');
 
-      return savedEvent.toObject();
+      return this.transformToAuthEvent(savedEvent);
     } catch (error) {
       logger.error('Auth event recording failed', {
         firebaseUid,
@@ -64,7 +64,7 @@ export class AuthEventService {
     firebaseUid: string, 
     limit: number = 50, 
     offset: number = 0
-  ): Promise<AuthEvent[]> {
+  ): Promise<AuthEventInterface[]> {
     logger.debug('Finding auth events by Firebase UID', {
       firebaseUid,
       limit,
@@ -85,14 +85,14 @@ export class AuthEventService {
       offset
     }, 'AuthEventService');
 
-    return events.map(event => event.toObject());
+    return events.map(event => this.transformToAuthEvent(event));
   }
 
   async findByDeviceId(
     deviceId: string, 
     limit: number = 50, 
     offset: number = 0
-  ): Promise<AuthEvent[]> {
+  ): Promise<AuthEventInterface[]> {
     logger.debug('Finding auth events by device ID', {
       deviceId,
       limit,
@@ -113,14 +113,14 @@ export class AuthEventService {
       offset
     }, 'AuthEventService');
 
-    return events.map(event => event.toObject());
+    return events.map(event => this.transformToAuthEvent(event));
   }
 
   async findByType(
     type: 'login' | 'logout' | 'create',
     limit: number = 50,
     offset: number = 0
-  ): Promise<AuthEvent[]> {
+  ): Promise<AuthEventInterface[]> {
     logger.debug('Finding auth events by type', {
       type,
       limit,
@@ -141,7 +141,7 @@ export class AuthEventService {
       offset
     }, 'AuthEventService');
 
-    return events.map(event => event.toObject());
+    return events.map(event => this.transformToAuthEvent(event));
   }
 
   async findWithFilters(
@@ -154,7 +154,7 @@ export class AuthEventService {
     },
     limit: number = 50,
     offset: number = 0
-  ): Promise<AuthEvent[]> {
+  ): Promise<AuthEventInterface[]> {
     logger.debug('Finding auth events with filters', {
       filters,
       limit,
@@ -199,10 +199,10 @@ export class AuthEventService {
       offset
     }, 'AuthEventService');
 
-    return events.map(event => event.toObject());
+    return events.map(event => this.transformToAuthEvent(event));
   }
 
-  async findAll(limit: number = 100, offset: number = 0): Promise<AuthEvent[]> {
+  async findAll(limit: number = 100, offset: number = 0): Promise<AuthEventInterface[]> {
     logger.debug('Finding all auth events', { limit, offset }, 'AuthEventService');
 
     const events = await this.authEventModel
@@ -218,10 +218,10 @@ export class AuthEventService {
       offset
     }, 'AuthEventService');
 
-    return events.map(event => event.toObject());
+    return events.map(event => this.transformToAuthEvent(event));
   }
 
-  async getRecentAuthEvent(firebaseUid: string): Promise<AuthEvent | null> {
+  async getRecentAuthEvent(firebaseUid: string): Promise<AuthEventInterface | null> {
     logger.debug('Getting most recent auth event', { firebaseUid }, 'AuthEventService');
 
     const event = await this.authEventModel
@@ -241,10 +241,10 @@ export class AuthEventService {
       timestamp: event.timestamp
     }, 'AuthEventService');
 
-    return event.toObject();
+    return this.transformToAuthEvent(event);
   }
 
-  async findById(eventId: string): Promise<AuthEvent | null> {
+  async findById(eventId: string): Promise<AuthEventInterface | null> {
     logger.debug('Finding auth event by ID', { eventId }, 'AuthEventService');
 
     try {
@@ -262,7 +262,7 @@ export class AuthEventService {
         type: event.type
       }, 'AuthEventService');
 
-      return event.toObject();
+      return this.transformToAuthEvent(event);
     } catch (error) {
       logger.error('Failed to find auth event by ID', {
         eventId,
@@ -283,5 +283,20 @@ export class AuthEventService {
     }, 'AuthEventService');
     
     return result.deletedCount || 0;
+  }
+
+  private transformToAuthEvent(doc: AuthEventDocument): AuthEventInterface {
+    return {
+      _id: doc._id.toString(),
+      firebaseUid: doc.firebaseUid,
+      deviceId: doc.deviceId,
+      ip: doc.ip,
+      platform: doc.platform,
+      clientTimestamp: doc.clientTimestamp.toISOString(),
+      type: doc.type,
+      timestamp: doc.timestamp,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    };
   }
 }

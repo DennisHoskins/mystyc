@@ -6,8 +6,8 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { DeviceData } from '@/interfaces/deviceData.interface';
-import { AuthEventData } from '@/interfaces/authEventData.interface';
+import { Device } from '@/interfaces/device.interface';
+import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { UserProfile } from '@/interfaces/userProfile.interface';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
@@ -30,9 +30,9 @@ function DeviceDetailPage() {
   const { handleError } = useErrorHandler();
   const router = useCustomRouter();
 
-  const [device, setDevice] = useState<DeviceData | null>(null);
+  const [device, setDevice] = useState<Device | null>(null);
   const [deviceOwner, setDeviceOwner] = useState<UserProfile | null>(null);
-  const [authEvents, setAuthEvents] = useState<AuthEventData[]>([]);
+  const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [authEventsLoading, setAuthEventsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +50,7 @@ function DeviceDetailPage() {
       try {
         // Get all devices and find the one we want
         const allDevices = await apiClientAdmin.getDevices(idToken);
-        const foundDevice = allDevices.find((d: DeviceData) => d.deviceId === deviceId);
+        const foundDevice = allDevices.find((d: Device) => d.deviceId === deviceId);
         
         if (!foundDevice) {
           throw new Error('Device not found');

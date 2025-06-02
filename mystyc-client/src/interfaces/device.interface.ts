@@ -1,4 +1,5 @@
-export interface DeviceData {
+export interface Device {
+  firebaseUid: string;
   deviceId: string;
   platform: string;
   timezone: string;

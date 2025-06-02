@@ -7,8 +7,8 @@ import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces/userProfile.interface';
-import { DeviceData } from '@/interfaces/deviceData.interface';
-import { AuthEventData } from '@/interfaces/authEventData.interface';
+import { Device } from '@/interfaces/device.interface';
+import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { logger } from '@/util/logger';
@@ -29,8 +29,8 @@ function UserDetailPage() {
   const { handleError } = useErrorHandler();
 
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [devices, setDevices] = useState<DeviceData[]>([]);
-  const [authEvents, setAuthEvents] = useState<AuthEventData[]>([]);
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [devicesLoading, setDevicesLoading] = useState(true);
   const [authEventsLoading, setAuthEventsLoading] = useState(true);

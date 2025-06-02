@@ -1,4 +1,3 @@
-// mystyc-client/src/app/admin/auth-event/[eventId]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -7,8 +6,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { AuthEventData } from '@/interfaces/authEventData.interface';
-import { DeviceData } from '@/interfaces/deviceData.interface';
+import { AuthEvent, Device } from '@/interfaces';
 import { UserProfile } from '@/interfaces/userProfile.interface';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
@@ -31,9 +29,9 @@ function AuthEventDetailPage() {
   const { handleError } = useErrorHandler();
   const router = useCustomRouter();
 
-  const [authEvent, setAuthEvent] = useState<AuthEventData | null>(null);
+  const [authEvent, setAuthEvent] = useState<AuthEvent | null>(null);
   const [eventUser, setEventUser] = useState<UserProfile | null>(null);
-  const [eventDevice, setEventDevice] = useState<{ authEvent: AuthEventData, device: DeviceData } | null>(null);
+  const [eventDevice, setEventDevice] = useState<{ authEvent: AuthEvent, device: Device } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +47,7 @@ function AuthEventDetailPage() {
       try {
         // Get all auth events and find the one we want
         const allAuthEvents = await apiClientAdmin.getAuthEvents(idToken);
-        const foundEvent = allAuthEvents.find((e: AuthEventData) => e._id === eventId);
+        const foundEvent = allAuthEvents.find((e: AuthEvent) => e._id === eventId);
         
         if (!foundEvent) {
           throw new Error('Auth event not found');

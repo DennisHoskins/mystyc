@@ -5,10 +5,14 @@ import {
   ValidateTimezone,
   ValidateLanguageCode,
   ValidateUserAgent,
-  ValidateAppVersion
+  ValidateAppVersion,
+  ValidateFirebaseUid
 } from '@/common/decorators/validation.decorators';
 
 export class DeviceDto {
+  @ValidateFirebaseUid()
+  firebaseUid: string;
+
   @ValidateDeviceId()
   deviceId: string;
 
