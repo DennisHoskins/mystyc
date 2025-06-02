@@ -1,14 +1,21 @@
-import { Controller, Get, Post, Patch, Param, NotFoundException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, NotFoundException, Query, Body, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
+import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
+import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
+import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
 import { UserProfileService } from '@/users/user-profile.service';
 import { UserRolesService } from '@/users/user-roles.service';
 import { DeviceService } from '@/devices/device.service';
 import { AuthEventService } from '@/auth-events/auth-event.service';
+import { NotificationsService } from '@/notifications/notifications.service';
 import { FirebaseService } from '@/auth/firebase.service';
 import { DeviceQueryDto } from './dto/device-query.dto';
 import { AuthEventQueryDto } from './dto/auth-event-query.dto';
+import { SendNotificationDto } from '@/notifications/dto/send-notification.dto';
 import { logger } from '@/util/logger';
 
 @Controller('admin')
@@ -19,6 +26,7 @@ export class AdminController {
     private readonly userRolesService: UserRolesService,
     private readonly deviceService: DeviceService,
     private readonly authEventService: AuthEventService,
+    private readonly notificationsService: NotificationsService,
     private readonly firebaseService: FirebaseService
   ) {}
 
@@ -301,6 +309,92 @@ export class AdminController {
         error: error.message
       }, 'AdminController');
 
+      throw error;
+    }
+  }
+
+  @Get('auth-events/:eventId')
+  @Roles(UserRole.ADMIN)
+  async getAuthEvent(@Param('eventId') eventId: string) {
+    logger.info('Admin fetching auth event by ID', { eventId }, 'AdminController');
+    
+    const event = await this.authEventService.findById(eventId);
+    
+    if (!event) {
+      logger.warn('Auth event not found', { eventId }, 'AdminController');
+      throw new NotFoundException('Auth event not found');
+    }
+
+    logger.info('Auth event retrieved', { eventId }, 'AdminController');
+    return event;
+  }
+
+  // Notification management endpoints
+  @Post('notifications/test')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  async sendTestNotification(
+    @Body() body: { token: string },
+    @FirebaseUserDecorator() user: FirebaseUser
+  ) {
+    logger.info('Sending test notification', {
+      token: body.token.substring(0, 20) + '...'
+    }, 'AdminController');
+
+    try {
+      const result = await this.notificationsService.sendNotification(
+        body.token,
+        'Hello World',
+        'This is a test notification from your server!'
+      );
+
+      return {
+        success: true,
+        messageId: result
+      };
+    } catch (error) {
+      logger.error('Test notification failed', { error: error.message }, 'AdminController');
+      throw error;
+    }
+  }
+
+  @Post('notifications/send')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async sendNotification(
+    @Body() sendNotificationDto: SendNotificationDto,
+    @FirebaseUserDecorator() user: FirebaseUser
+  ) {
+    logger.info('Admin sending notification', {
+      adminUid: user.uid,
+      targetType: sendNotificationDto.test ? 'test' : 
+                  sendNotificationDto.deviceId ? 'device' : 
+                  sendNotificationDto.firebaseUid ? 'user' : 
+                  sendNotificationDto.broadcast ? 'broadcast' : 'unknown',
+      title: sendNotificationDto.title,
+      hasCustomMessage: !!(sendNotificationDto.title || sendNotificationDto.body)
+    }, 'AdminController');
+
+    try {
+      const result = await this.notificationsService.sendNotificationToTargets(
+        user.uid,
+        sendNotificationDto
+      );
+
+      logger.info('Notification batch completed successfully', {
+        adminUid: user.uid,
+        sent: result.sent,
+        failed: result.failed
+      }, 'AdminController');
+
+      return result;
+    } catch (error) {
+      logger.error('Notification batch failed', { 
+        adminUid: user.uid,
+        error: error.message 
+      }, 'AdminController');
       throw error;
     }
   }

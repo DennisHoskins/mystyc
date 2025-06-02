@@ -5,11 +5,10 @@ import { UsersModule } from '@/users/users.module';
 import { DevicesModule } from '@/devices/devices.module';
 
 import { NotificationsService } from './notifications.service';
-import { NotificationsController } from './notifications.controller';
 
 @Module({
   imports: [FirebaseModule, UsersModule, DevicesModule],
-  controllers: [NotificationsController],
   providers: [NotificationsService],
+  exports: [NotificationsService],
 })
 export class NotificationsModule {}
