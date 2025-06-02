@@ -49,20 +49,19 @@ function DeviceDetailPage() {
 
       try {
         // Get all devices and find the one we want
-        const allDevices = await apiClientAdmin.getDevices(idToken);
-        const foundDevice = allDevices.find((d: Device) => d.deviceId === deviceId);
+        const device = await apiClientAdmin.getDevice(idToken, deviceId);
         
-        if (!foundDevice) {
+        if (!device) {
           throw new Error('Device not found');
         }
         
-        setDevice(foundDevice);
+        setDevice(device);
         logger.log('[DeviceDetailPage] Device details loaded successfully');
 
         // If device has associated user data, fetch the user profile
-        if (foundDevice.firebaseUid) {
+        if (device.firebaseUid) {
           try {
-            const userProfile = await apiClientAdmin.getUser(idToken, foundDevice.firebaseUid);
+            const userProfile = await apiClientAdmin.getUser(idToken, device.firebaseUid);
             setDeviceOwner(userProfile);
             logger.log('[DeviceDetailPage] Device owner loaded successfully');
           } catch (userErr) {

@@ -46,20 +46,19 @@ function AuthEventDetailPage() {
 
       try {
         // Get all auth events and find the one we want
-        const allAuthEvents = await apiClientAdmin.getAuthEvents(idToken);
-        const foundEvent = allAuthEvents.find((e: AuthEvent) => e._id === eventId);
+        const authEvent = await apiClientAdmin.getAuthEvent(idToken, eventId);
         
-        if (!foundEvent) {
+        if (!authEvent) {
           throw new Error('Auth event not found');
         }
         
-        setAuthEvent(foundEvent);
+        setAuthEvent(authEvent);
         logger.log('[AuthEventDetailPage] Auth event details loaded successfully');
 
         // Fetch the associated user if firebaseUid exists
-        if (foundEvent.firebaseUid) {
+        if (authEvent.firebaseUid) {
           try {
-            const userProfile = await apiClientAdmin.getUser(idToken, foundEvent.firebaseUid);
+            const userProfile = await apiClientAdmin.getUser(idToken, authEvent.firebaseUid);
             setEventUser(userProfile);
             logger.log('[AuthEventDetailPage] Event user loaded successfully');
           } catch (userErr) {
