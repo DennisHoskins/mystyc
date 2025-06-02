@@ -7,6 +7,7 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { SendNotificationDto } from './dto/send-notification.dto';
 import { logger } from '@/util/logger';
 import { NotificationsService } from './notifications.service';
 
@@ -41,6 +42,46 @@ export class NotificationsController {
       };
     } catch (error) {
       logger.error('Test notification failed', { error: error.message });
+      throw error;
+    }
+  }
+
+  @Post('send')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async sendNotification(
+    @Body() sendNotificationDto: SendNotificationDto,
+    @FirebaseUserDecorator() user: FirebaseUser
+  ) {
+    logger.info('Admin sending notification', {
+      adminUid: user.uid,
+      targetType: sendNotificationDto.test ? 'test' : 
+                  sendNotificationDto.deviceId ? 'device' : 
+                  sendNotificationDto.firebaseUid ? 'user' : 
+                  sendNotificationDto.broadcast ? 'broadcast' : 'unknown',
+      title: sendNotificationDto.title,
+      hasCustomMessage: !!(sendNotificationDto.title || sendNotificationDto.body)
+    });
+
+    try {
+      const result = await this.notificationsService.sendNotificationToTargets(
+        user.uid,
+        sendNotificationDto
+      );
+
+      logger.info('Notification batch completed successfully', {
+        adminUid: user.uid,
+        sent: result.sent,
+        failed: result.failed
+      });
+
+      return result;
+    } catch (error) {
+      logger.error('Notification batch failed', { 
+        adminUid: user.uid,
+        error: error.message 
+      });
       throw error;
     }
   }
