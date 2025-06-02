@@ -3,7 +3,7 @@ import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import helmet from 'helmet';
 import * as express from 'express';
 import cookieParser from 'cookie-parser';
-import * as csurf from 'csurf';
+import csurf from 'csurf';
 
 import { AppModule } from '@/app.module';
 import { logger } from '@/util/logger';
