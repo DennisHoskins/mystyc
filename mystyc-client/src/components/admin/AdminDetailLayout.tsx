@@ -39,7 +39,7 @@ export default function AdminDetailLayout({
   if (loading) {
     return (
       <PageContainer>
-        <div className="space-y-8">
+        <div className="space-y-8 pb-6">
           <AdminBreadcrumbs items={[
             ...breadcrumbs.slice(0, -1),
             { label: 'Loading...' }
@@ -53,7 +53,7 @@ export default function AdminDetailLayout({
   if (error) {
     return (
       <PageContainer>
-        <div className="space-y-8">
+        <div className="space-y-8 pb-6">
           <AdminBreadcrumbs items={[
             ...breadcrumbs.slice(0, -1),
             { label: 'Not Found' }
@@ -67,7 +67,7 @@ export default function AdminDetailLayout({
 
   return (
     <PageContainer>
-      <div className="space-y-8">
+      <div className="space-y-8 pb-6">
         <AdminBreadcrumbs items={breadcrumbs} />
         <div className="flex items-center justify-between">
           <AdminHeader title={title} subtitle={subtitle} />

@@ -23,7 +23,7 @@ export default function AdminListLayout({
 }: AdminListLayoutProps) {
   return (
     <PageContainer>
-      <div className={`space-y-6 ${className}`}>
+      <div className={`space-y-6 pb-6 ${className}`}>
         <AdminBreadcrumbs items={[{ label: breadcrumbLabel }]} />
         
         <div className="flex items-center justify-between">
