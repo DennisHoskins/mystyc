@@ -54,7 +54,7 @@ export class NotificationsService {
   ): Promise<{ messageId: string; notificationId: string }> {
     // Create notification record
     const notification = await this.createNotificationRecord({
-      firebaseUid: sentBy, // For test notifications, use admin's UID
+      firebaseUid: sentBy,
       deviceId,
       fcmToken: token,
       title,

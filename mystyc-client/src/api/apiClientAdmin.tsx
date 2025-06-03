@@ -81,7 +81,7 @@ export const apiClientAdmin = {
   getUser: (token: string, firebaseUid: string) =>
     fetchAdminApi(`/admin/user/${firebaseUid}`, { method: 'GET', token }),  
   
-  promoteUser: (token: string, firebaseUid: string) =>
+  promoteAdmin: (token: string, firebaseUid: string) =>
     fetchAdminApi(`/admin/user/${firebaseUid}/promote-admin`, { method: 'POST', token }),
   
   revokeAdmin: (token: string, firebaseUid: string) =>
@@ -115,14 +115,14 @@ export const apiClientAdmin = {
     const params = new URLSearchParams();
     if (limit) params.append('limit', limit.toString());
     if (offset) params.append('offset', offset.toString());
-    return fetchAdminApi(`/admin/auth-events/${firebaseUid}${params.toString() ? `?${params}` : ''}`, { method: 'GET', token });
+    return fetchAdminApi(`/admin/auth-events/user/${firebaseUid}${params.toString() ? `?${params}` : ''}`, { method: 'GET', token });
   },
 
   getDeviceAuthEvents: (token: string, deviceId: string, limit?: number, offset?: number) => {
     const params = new URLSearchParams();
     if (limit) params.append('limit', limit.toString());
     if (offset) params.append('offset', offset.toString());
-    return fetchAdminApi(`/admin/devices/${deviceId}/auth-events${params.toString() ? `?${params}` : ''}`, { method: 'GET', token });
+    return fetchAdminApi(`/admin/device/${deviceId}/auth-events${params.toString() ? `?${params}` : ''}`, { method: 'GET', token });
   },
 
   getAuthEventDevice: (token: string, eventId: string) =>
