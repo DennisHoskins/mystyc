@@ -133,24 +133,14 @@ export class NotificationsService {
     }
   }
 
-  private async sendToDevice(
-    deviceId: string, 
-    title: string, 
-    body: string, 
-    results: any, 
+  private async sendToSingleDevice(
+    device: any,
+    title: string,
+    body: string,
     type: 'test' | 'admin' | 'broadcast',
-    sentBy: string
+    sentBy: string,
+    results: any
   ): Promise<void> {
-    const device = await this.deviceService.findByDeviceId(deviceId);
-    
-    if (!device) {
-      throw new NotFoundException('Device not found');
-    }
-
-    if (!device.fcmToken) {
-      throw new BadRequestException('Device does not have FCM token - notifications not enabled');
-    }
-
     // Create notification record
     const notification = await this.createNotificationRecord({
       firebaseUid: device.firebaseUid,
@@ -170,7 +160,7 @@ export class NotificationsService {
       
       results.sent += 1;
       results.details.push({
-        deviceId,
+        deviceId: device.deviceId,
         firebaseUid: device.firebaseUid,
         fcmToken: device.fcmToken.substring(0, 20) + '...',
         status: 'sent',
@@ -183,7 +173,7 @@ export class NotificationsService {
       
       results.failed += 1;
       results.details.push({
-        deviceId,
+        deviceId: device.deviceId,
         firebaseUid: device.firebaseUid,
         fcmToken: device.fcmToken.substring(0, 20) + '...',
         status: 'failed',
@@ -191,6 +181,27 @@ export class NotificationsService {
         notificationId: notification._id.toString()
       });
     }
+  }
+
+  private async sendToDevice(
+    deviceId: string, 
+    title: string, 
+    body: string, 
+    results: any, 
+    type: 'test' | 'admin' | 'broadcast',
+    sentBy: string
+  ): Promise<void> {
+    const device = await this.deviceService.findByDeviceId(deviceId);
+    
+    if (!device) {
+      throw new NotFoundException('Device not found');
+    }
+
+    if (!device.fcmToken) {
+      throw new BadRequestException('Device does not have FCM token - notifications not enabled');
+    }
+
+    await this.sendToSingleDevice(device, title, body, type, sentBy, results);
   }
 
   private async sendToUserDevices(
@@ -221,46 +232,7 @@ export class NotificationsService {
     }
 
     for (const device of notifiableDevices) {
-      // Create notification record for each device
-      const notification = await this.createNotificationRecord({
-        firebaseUid: device.firebaseUid,
-        deviceId: device.deviceId,
-        fcmToken: device.fcmToken,
-        title,
-        body,
-        type,
-        sentBy
-      });
-
-      try {
-        const messageId = await this.sendNotification(device.fcmToken, title, body);
-        
-        // Update notification as sent
-        await this.updateNotificationStatus(notification._id.toString(), 'sent', messageId);
-        
-        results.sent += 1;
-        results.details.push({
-          deviceId: device.deviceId,
-          firebaseUid: device.firebaseUid,
-          fcmToken: device.fcmToken.substring(0, 20) + '...',
-          status: 'sent',
-          messageId,
-          notificationId: notification._id.toString()
-        });
-      } catch (error) {
-        // Update notification as failed
-        await this.updateNotificationStatus(notification._id.toString(), 'failed', undefined, error.message);
-        
-        results.failed += 1;
-        results.details.push({
-          deviceId: device.deviceId,
-          firebaseUid: device.firebaseUid,
-          fcmToken: device.fcmToken.substring(0, 20) + '...',
-          status: 'failed',
-          error: error.message,
-          notificationId: notification._id.toString()
-        });
-      }
+      await this.sendToSingleDevice(device, title, body, type, sentBy, results);
     }
   }
 
@@ -285,46 +257,7 @@ export class NotificationsService {
     });
 
     for (const device of notifiableDevices) {
-      // Create notification record for each device
-      const notification = await this.createNotificationRecord({
-        firebaseUid: device.firebaseUid,
-        deviceId: device.deviceId,
-        fcmToken: device.fcmToken,
-        title,
-        body,
-        type: 'broadcast',
-        sentBy
-      });
-
-      try {
-        const messageId = await this.sendNotification(device.fcmToken, title, body);
-        
-        // Update notification as sent
-        await this.updateNotificationStatus(notification._id.toString(), 'sent', messageId);
-        
-        results.sent += 1;
-        results.details.push({
-          deviceId: device.deviceId,
-          firebaseUid: device.firebaseUid,
-          fcmToken: device.fcmToken.substring(0, 20) + '...',
-          status: 'sent',
-          messageId,
-          notificationId: notification._id.toString()
-        });
-      } catch (error) {
-        // Update notification as failed
-        await this.updateNotificationStatus(notification._id.toString(), 'failed', undefined, error.message);
-        
-        results.failed += 1;
-        results.details.push({
-          deviceId: device.deviceId,
-          firebaseUid: device.firebaseUid,
-          fcmToken: device.fcmToken.substring(0, 20) + '...',
-          status: 'failed',
-          error: error.message,
-          notificationId: notification._id.toString()
-        });
-      }
+      await this.sendToSingleDevice(device, title, body, 'broadcast', sentBy, results);
     }
   }
 
