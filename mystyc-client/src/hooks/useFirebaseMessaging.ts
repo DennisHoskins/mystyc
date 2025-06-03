@@ -126,7 +126,7 @@ export function useFirebaseMessaging() {
       logger.log('[useFirebaseMessaging] Permission already granted and device ready, retrieving FCM token');
       requestPermission();
     }
-  }, [token, error, requestPermission, deviceData]);
+  }, [token, error, requestPermission, idToken, deviceData]);
 
   // Handle token refresh events
   useEffect(() => {

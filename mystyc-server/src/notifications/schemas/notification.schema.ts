@@ -9,6 +9,9 @@ export class Notification {
   @Prop({ index: true })
   deviceId?: string;
 
+  @Prop()
+  fcmToken?: string; // The actual FCM token used to send
+
   @Prop({ required: true })
   title: string;
 

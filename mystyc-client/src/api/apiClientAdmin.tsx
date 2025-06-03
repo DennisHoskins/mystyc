@@ -129,6 +129,14 @@ export const apiClientAdmin = {
     fetchAdminApi(`/admin/auth-events/${eventId}/device`, { method: 'GET', token }),
 
   // Notifications Management
+  getNotifications: (token: string, query?: Record<string, any>) => {
+    const params = query ? new URLSearchParams(query).toString() : '';
+    return fetchAdminApi(`/admin/notifications${params ? `?${params}` : ''}`, { method: 'GET', token });
+  },
+
+  getNotification: (token: string, notificationId: string) =>
+    fetchAdminApi(`/admin/notification/${notificationId}`, { method: 'GET', token }),
+
   sendTestNotification: (token: string, fcmToken: string) =>
     fetchAdminApi('/admin/notifications/test', { 
       method: 'POST', 

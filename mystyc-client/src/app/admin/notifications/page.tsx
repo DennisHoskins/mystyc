@@ -3,11 +3,14 @@
 import { useAuth } from '@/components/context/AuthContext';
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { Notification } from '@/interfaces/notification.interface';
+import { useAdminListPage } from '@/hooks/admin/useAdminListPage';
 import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
 import { useToast } from '@/hooks/useToast';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/admin/AdminListLayout';
+import TableNotifications from '@/components/admin/tables/AdminTableNotifications';
 import Button from '@/components/ui/Button';
 import Text from '@/components/ui/Text';
 
@@ -15,6 +18,10 @@ function NotificationsPage() {
   const { idToken } = useAuth();
   const { token } = useFirebaseMessaging();
   const { showToast } = useToast();
+  const { data: notifications, loading, error, refresh } = useAdminListPage<Notification>({
+    entityName: 'notifications',
+    fetcher: apiClientAdmin.getNotifications,
+  });
 
   const handleSendNotification = async () => {
     if (!token || !idToken) {
@@ -37,7 +44,7 @@ function NotificationsPage() {
     <AdminListLayout
       breadcrumbLabel="Notifications"
       title="Notifications"
-      subtitle="Manage system notifications"
+      subtitle="View and manage system notifications"
       action={
         <Button 
           onClick={handleSendNotification}
@@ -48,15 +55,23 @@ function NotificationsPage() {
         </Button>
       }
     >
-      {/* Placeholder for future notifications list */}
-      <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
-        <div className="text-center">
-          <Text className="text-gray-500 mb-2">No notifications stored yet</Text>
-          <Text variant="small" className="text-gray-400">
-            Notification history will appear here once server storage is implemented
-          </Text>
+      {notifications.length > 0 ? (
+        <TableNotifications
+          notifications={notifications}
+          loading={loading}
+          error={error}
+          onRefresh={refresh}
+        />
+      ) : (
+        <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
+          <div className="text-center">
+            <Text className="text-gray-500 mb-2">No notifications found</Text>
+            <Text variant="small" className="text-gray-400">
+              Sent notifications will appear here
+            </Text>
+          </div>
         </div>
-      </div>
+      )}
     </AdminListLayout>
   );
 }

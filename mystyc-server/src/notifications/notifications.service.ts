@@ -21,7 +21,7 @@ export class NotificationsService {
   async sendNotification(token: string, title: string, body: string) {
     try {
       const message = {
-        data: {
+        notification: {
           title,
           body,
         },
@@ -49,11 +49,14 @@ export class NotificationsService {
     title: string,
     body: string,
     type: 'test' | 'admin' | 'broadcast',
-    sentBy: string
+    sentBy: string,
+    deviceId?: string
   ): Promise<{ messageId: string; notificationId: string }> {
     // Create notification record
     const notification = await this.createNotificationRecord({
       firebaseUid: sentBy, // For test notifications, use admin's UID
+      deviceId,
+      fcmToken: token,
       title,
       body,
       type,
@@ -152,6 +155,7 @@ export class NotificationsService {
     const notification = await this.createNotificationRecord({
       firebaseUid: device.firebaseUid,
       deviceId: device.deviceId,
+      fcmToken: device.fcmToken,
       title,
       body,
       type,
@@ -168,6 +172,7 @@ export class NotificationsService {
       results.details.push({
         deviceId,
         firebaseUid: device.firebaseUid,
+        fcmToken: device.fcmToken.substring(0, 20) + '...',
         status: 'sent',
         messageId,
         notificationId: notification._id.toString()
@@ -180,6 +185,7 @@ export class NotificationsService {
       results.details.push({
         deviceId,
         firebaseUid: device.firebaseUid,
+        fcmToken: device.fcmToken.substring(0, 20) + '...',
         status: 'failed',
         error: error.message,
         notificationId: notification._id.toString()
@@ -219,6 +225,7 @@ export class NotificationsService {
       const notification = await this.createNotificationRecord({
         firebaseUid: device.firebaseUid,
         deviceId: device.deviceId,
+        fcmToken: device.fcmToken,
         title,
         body,
         type,
@@ -235,6 +242,7 @@ export class NotificationsService {
         results.details.push({
           deviceId: device.deviceId,
           firebaseUid: device.firebaseUid,
+          fcmToken: device.fcmToken.substring(0, 20) + '...',
           status: 'sent',
           messageId,
           notificationId: notification._id.toString()
@@ -247,6 +255,7 @@ export class NotificationsService {
         results.details.push({
           deviceId: device.deviceId,
           firebaseUid: device.firebaseUid,
+          fcmToken: device.fcmToken.substring(0, 20) + '...',
           status: 'failed',
           error: error.message,
           notificationId: notification._id.toString()
@@ -280,6 +289,7 @@ export class NotificationsService {
       const notification = await this.createNotificationRecord({
         firebaseUid: device.firebaseUid,
         deviceId: device.deviceId,
+        fcmToken: device.fcmToken,
         title,
         body,
         type: 'broadcast',
@@ -296,6 +306,7 @@ export class NotificationsService {
         results.details.push({
           deviceId: device.deviceId,
           firebaseUid: device.firebaseUid,
+          fcmToken: device.fcmToken.substring(0, 20) + '...',
           status: 'sent',
           messageId,
           notificationId: notification._id.toString()
@@ -308,6 +319,7 @@ export class NotificationsService {
         results.details.push({
           deviceId: device.deviceId,
           firebaseUid: device.firebaseUid,
+          fcmToken: device.fcmToken.substring(0, 20) + '...',
           status: 'failed',
           error: error.message,
           notificationId: notification._id.toString()
@@ -319,6 +331,7 @@ export class NotificationsService {
   private async createNotificationRecord(data: {
     firebaseUid: string;
     deviceId?: string;
+    fcmToken?: string;
     title: string;
     body: string;
     type: 'test' | 'admin' | 'broadcast';
@@ -383,11 +396,40 @@ export class NotificationsService {
     return notifications.map(notification => this.transformToNotification(notification));
   }
 
+  async findNotificationById(notificationId: string): Promise<NotificationInterface | null> {
+    logger.debug('Finding notification by ID', { notificationId }, 'NotificationsService');
+
+    try {
+      const notification = await this.notificationModel.findById(notificationId).exec();
+
+      if (!notification) {
+        logger.debug('Notification not found', { notificationId }, 'NotificationsService');
+        return null;
+      }
+
+      logger.debug('Notification found', {
+        notificationId,
+        type: notification.type,
+        status: notification.status
+      }, 'NotificationsService');
+
+      return this.transformToNotification(notification);
+    } catch (error) {
+      logger.error('Failed to find notification by ID', {
+        notificationId,
+        error: error.message
+      }, 'NotificationsService');
+
+      return null;
+    }
+  }
+
   private transformToNotification(doc: NotificationDocument): NotificationInterface {
     return {
       _id: doc._id.toString(),
       firebaseUid: doc.firebaseUid,
       deviceId: doc.deviceId,
+      fcmToken: doc.fcmToken,
       title: doc.title,
       body: doc.body,
       type: doc.type,

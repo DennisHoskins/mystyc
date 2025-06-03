@@ -363,16 +363,60 @@ export class AdminController {
   }
 
   // Notification management endpoints
+  @Get('notifications')
+  @Roles(UserRole.ADMIN)
+  async getAllNotifications(@Query() query: any) {
+    logger.info('Admin fetching notifications', { query }, 'AdminController');
+    
+    const filters: any = {};
+    
+    if (query.firebaseUid) filters.firebaseUid = query.firebaseUid;
+    if (query.deviceId) filters.deviceId = query.deviceId;
+    if (query.type) filters.type = query.type;
+    if (query.status) filters.status = query.status;
+    if (query.sentBy) filters.sentBy = query.sentBy;
+    
+    const notifications = await this.notificationsService.findNotifications(
+      filters,
+      query.limit || 50,
+      query.offset || 0
+    );
+    
+    logger.info('Admin notifications retrieved', { 
+      count: notifications.length,
+      filters
+    }, 'AdminController');
+    
+    return notifications;
+  }
+
+  @Get('notification/:notificationId')
+  @Roles(UserRole.ADMIN)
+  async getNotification(@Param('notificationId') notificationId: string) {
+    logger.info('Admin fetching notification by ID', { notificationId }, 'AdminController');
+    
+    const notification = await this.notificationsService.findNotificationById(notificationId);
+    
+    if (!notification) {
+      logger.warn('Notification not found', { notificationId }, 'AdminController');
+      throw new NotFoundException('Notification not found');
+    }
+
+    logger.info('Notification retrieved', { notificationId }, 'AdminController');
+    return notification;
+  }
+
   @Post('notifications/test')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   async sendTestNotification(
-    @Body() body: { token: string },
+    @Body() body: { token: string; deviceId?: string },
     @FirebaseUserDecorator() user: FirebaseUser
   ) {
     logger.info('Sending test notification', {
-      token: body.token.substring(0, 20) + '...'
+      token: body.token.substring(0, 20) + '...',
+      deviceId: body.deviceId
     }, 'AdminController');
 
     try {
@@ -382,7 +426,8 @@ export class AdminController {
         'Hello World',
         'This is a test notification from your server!',
         'test',
-        user.uid
+        user.uid,
+        body.deviceId
       );
 
       return {
