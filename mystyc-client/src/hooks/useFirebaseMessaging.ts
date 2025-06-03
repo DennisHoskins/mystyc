@@ -15,6 +15,36 @@ export function useFirebaseMessaging() {
     if (messaging) {
       const unsubscribe = onMessage(messaging, (payload) => {
         logger.log('Received foreground message:', payload);
+        
+        // Show notification for foreground messages (when app is open)
+        const title = payload.data?.title || payload.notification?.title || 'New Message';
+        const body = payload.data?.body || payload.notification?.body || 'You have a new message';
+        
+        // Create a visual notification even when app is in foreground
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try {
+            const notification = new Notification(title, {
+              body,
+              icon: '/favicon/favicon.ico',
+              badge: '/favicon/favicon.ico',
+              tag: 'mystyc-foreground',
+              requireInteraction: false,
+            });
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+              notification.close();
+            }, 5000);
+            
+            // Handle click
+            notification.onclick = () => {
+              window.focus();
+              notification.close();
+            };
+          } catch (err) {
+            logger.error('[useFirebaseMessaging] Error showing foreground notification:', err);
+          }
+        }
       });
       
       return () => unsubscribe();
@@ -62,9 +92,12 @@ export function useFirebaseMessaging() {
       }
 
       // Register service worker
+      const registration = await navigator.serviceWorker.register('/workers/notifications');
+      logger.log('[useFirebaseMessaging] Service worker registered:', registration);
+
       const fcmToken = await getToken(messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-        serviceWorkerRegistration: await navigator.serviceWorker.register('/workers/notifications')
+        serviceWorkerRegistration: registration
       });
 
       setToken(fcmToken);
@@ -89,7 +122,7 @@ export function useFirebaseMessaging() {
 
   // Auto-retrieve token if permission is already granted and we have device data
   useEffect(() => {
-    if (Notification.permission === 'granted' && !token && !error && deviceData) {
+    if (Notification.permission === 'granted' && !token && !error && deviceData && idToken) {
       logger.log('[useFirebaseMessaging] Permission already granted and device ready, retrieving FCM token');
       requestPermission();
     }

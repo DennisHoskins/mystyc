@@ -21,33 +21,43 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  loggerlog('Received background message:', payload);
-  loggerlog('Payload data:', payload.data);
-  loggerlog('Payload notification:', payload.notification);
+  console.log('Received background message:', payload);
+  console.log('Payload data:', payload.data);
+  console.log('Payload notification:', payload.notification);
   
-  const notificationTitle = payload.data?.title || 'New Message';
+  const notificationTitle = payload.data?.title || payload.notification?.title || 'New Message';
   const notificationOptions = {
-    body: payload.data?.body || 'You have a new message',
+    body: payload.data?.body || payload.notification?.body || 'You have a new message',
     icon: '/favicon/favicon.ico',
+    badge: '/favicon/favicon.ico',
+    tag: 'mystyc-notification',
+    requireInteraction: false,
     data: {
-      url: 'https://skull.international/'
+      url: 'https://skull.international/',
+      messageId: payload.messageId,
+      timestamp: Date.now()
     }
   };
 
-  loggerlog('Showing notification with:', notificationTitle, notificationOptions);
+  console.log('Showing notification with:', notificationTitle, notificationOptions);
   
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // Handle notification clicks
 self.addEventListener('notificationclick', function(event) {
-  loggerlog('Notification clicked');
+  console.log('Notification clicked:', event.notification);
   event.notification.close();
   
   // Open skull.international
   event.waitUntil(
     clients.openWindow('https://skull.international/')
   );
+});
+
+// Handle notification close
+self.addEventListener('notificationclose', function(event) {
+  console.log('Notification closed:', event.notification);
 });
 `;
 

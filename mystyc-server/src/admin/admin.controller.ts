@@ -376,15 +376,19 @@ export class AdminController {
     }, 'AdminController');
 
     try {
-      const result = await this.notificationsService.sendNotification(
+      // Use the new database-persisted method
+      const result = await this.notificationsService.sendDirectTokenNotification(
         body.token,
         'Hello World',
-        'This is a test notification from your server!'
+        'This is a test notification from your server!',
+        'test',
+        user.uid
       );
 
       return {
         success: true,
-        messageId: result
+        messageId: result.messageId,
+        notificationId: result.notificationId
       };
     } catch (error) {
       logger.error('Test notification failed', { error: error.message }, 'AdminController');
