@@ -60,7 +60,7 @@ export default function TransitionManager({ children }: Props) {
  }, [pathname, transition, setBusy]);
 
  return (
-    <div className={`flex-1 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}>
+    <div className={`flex flex-1 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}>
       {children}
     </div>
  );

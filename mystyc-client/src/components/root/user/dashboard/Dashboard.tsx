@@ -6,6 +6,7 @@ import { useAuth } from '@/components/context/AuthContext';
 import { useBusy } from '@/components/context/BusyContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 
+import PageContainer from '@/components/layout/PageContainer';
 import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
 
@@ -21,8 +22,8 @@ const Dashboard = () => {
   const birthday = formatDateForDisplay(user?.userProfile?.dateOfBirth);
   
   return (
-    <>
-      <Heading level={2} className="mt-8 text-center">Welcome, {fullName} 👋</Heading>
+    <PageContainer>
+    <Heading level={2} className="mt-8 text-center">Welcome, {fullName} 👋</Heading>
       <Text variant="muted" className="mt-2 text-center">Glad to have you back.</Text>
 
       <div className="mt-6 text-center">
@@ -37,7 +38,7 @@ const Dashboard = () => {
           </Text>
         )}
       </div>
-    </>
+    </PageContainer>
   );
 };
 

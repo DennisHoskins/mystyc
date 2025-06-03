@@ -54,7 +54,7 @@ export default function AnswersPage() {
         <div className="flex-1 overflow-y-auto bg-gray-100">
           <div
             ref={containerRef}
-            className="px-4 py-4 max-w-2xl w-full mx-auto space-y-6 h-full"
+            className="px-4 py-4 max-w-2xl w-full mx-auto space-y-6"
           >
             {messages.map((msg, idx) => (
               <div key={idx} className="space-y-2">
