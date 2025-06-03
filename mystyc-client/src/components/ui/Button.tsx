@@ -4,7 +4,7 @@ import { ButtonHTMLAttributes, ReactNode } from 'react';
 import clsx from 'clsx';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'ghost';
   size?: 'sm' | 'md';
   loading?: boolean;
   loadingContent?: ReactNode;
@@ -31,6 +31,7 @@ export default function Button({
   const variants = {
     primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-600',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus-visible:ring-gray-400',
+    ghost: 'bg-transparent text-gray-800 hover:bg-gray-100 focus-visible:ring-gray-400',
   };
 
   return (

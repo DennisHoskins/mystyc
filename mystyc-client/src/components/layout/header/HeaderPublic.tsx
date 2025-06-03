@@ -1,22 +1,54 @@
 'use client';
 
-import Link from 'next/link';
+import { useCustomRouter } from '@/hooks/useCustomRouter';
 import AppLogo from '@/components/layout/AppLogo';
+import Button from '@/components/ui/Button';
 
 export default function HeaderPublic() {
+  const router = useCustomRouter();
+
   return (
-    <header className="w-full bg-white border-b px-4 py-3">
-      <div className="mx-auto max-w-7xl flex items-center justify-between">
-        <Link href="/" className="flex items-center">
+    <header className="hidden md:flex w-full bg-white border-b px-4 py-3">
+      <div className="flex w-full items-center">
+        {/* Logo on the left */}
+        <button onClick={() => router.push('/')} className="flex items-center">
           <AppLogo orientation="horizontal" showText />
-        </Link>
-        <div className="space-x-4">
-          <Link href="/login" className="text-sm font-medium hover:underline">
+        </button>
+
+        {/* Centered nav links */}
+        <div className="flex flex-1 justify-center space-x-8">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/features')}
+            className="text-sm font-medium hover:underline"
+          >
+            Features
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/pricing')}
+            className="text-sm font-medium hover:underline"
+          >
+            Pricing
+          </Button>
+        </div>
+
+        {/* Login/Signup on the right */}
+        <div className="flex space-x-4">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/login')}
+            className="text-sm font-medium hover:underline"
+          >
             Login
-          </Link>
-          <Link href="/signup" className="text-sm font-medium hover:underline">
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/signup')}
+            className="text-sm font-medium hover:underline"
+          >
             Signup
-          </Link>
+          </Button>
         </div>
       </div>
     </header>

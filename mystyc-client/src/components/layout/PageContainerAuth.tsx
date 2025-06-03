@@ -8,7 +8,7 @@ type PageContainerAuthProps = {
 
 export default function PageContainerAuth({ children }: PageContainerAuthProps) {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex flex-col min-h-full justify-center items-center px-4">
       <div className="w-full max-w-md">
         <ErrorBoundary
           fallbackTitle="Page Error"
