@@ -19,19 +19,28 @@ export function useUserAPI() {
       logger.log('[useUserAPI] Cache miss - fetching from API...');
       const userProfile = await apiClient.getCurrentUser(token);
       logger.log('[useUserAPI] Complete user response:', userProfile);
-
-      setCachedUser(firebaseUser.uid, userProfile);
-
-      const fullUser: User = { firebaseUser, userProfile };
+      
+      const fullUser: User = {
+        firebaseUser: {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email ?? undefined,
+          displayName: firebaseUser.displayName ?? undefined,
+          photoURL: firebaseUser.photoURL ?? undefined,
+          emailVerified: firebaseUser.emailVerified
+        },
+        userProfile
+      };
+      
+      setCachedUser(firebaseUser.uid, fullUser);
       setUser(fullUser);
       return fullUser;
     } catch (err) {
       errorHandler.processError(err, {
         component: 'useUserAPI',
         action: 'fetchCompleteUser',
-        userId: firebaseUser.uid,
+        userId: firebaseUser.uid
       });
-
+      
       setUser(null);
       return null;
     }
@@ -47,82 +56,87 @@ export function useUserAPI() {
   ): Promise<User | null> => {
     try {
       logger.log('[useUserAPI] Fetching user with device registration...');
-      const userProfile = await apiClient.getCurrentUserWithDevice(
-        token,
-        deviceData,
-        authEventData
-      );
+      const userProfile = await apiClient.getCurrentUserWithDevice(token, deviceData, authEventData);
       logger.log('[useUserAPI] Complete user with device response:', userProfile);
-
-      setCachedUser(firebaseUser.uid, userProfile);
-      const fullUser: User = { firebaseUser, userProfile };
+      
+      const fullUser: User = {
+        firebaseUser: {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email ?? undefined,
+          displayName: firebaseUser.displayName ?? undefined,
+          photoURL: firebaseUser.photoURL ?? undefined,
+          emailVerified: firebaseUser.emailVerified
+        },
+        userProfile
+      };
+      
+      setCachedUser(firebaseUser.uid, fullUser);
       setUser(fullUser);
       return fullUser;
     } catch (err: any) {
+      // Handle device conflict errors gracefully
       if (err?.status === 409) {
-        logger.warn(
-          '[useUserAPI] Device hijacking detected, falling back to regular fetch'
-        );
+        logger.warn('[useUserAPI] Device hijacking detected, falling back to regular fetch');
         errorHandler.processError(err, {
           component: 'useUserAPI',
           action: 'fetchCompleteUserWithDevice-409',
-          userId: firebaseUser.uid,
+          userId: firebaseUser.uid
         });
-
+        
+        // Fall back to regular user fetch without device registration
         return await fetchCompleteUser(token, firebaseUser, setUser);
       }
-
+      
       if (err?.status === 404) {
-        logger.warn(
-          '[useUserAPI] Device not found, regenerating device ID and retrying'
-        );
+        logger.warn('[useUserAPI] Device not found, regenerating device ID and retrying');
         errorHandler.processError(err, {
           component: 'useUserAPI',
           action: 'fetchCompleteUserWithDevice-404',
-          userId: firebaseUser.uid,
+          userId: firebaseUser.uid
         });
-
+        
         try {
+          // Regenerate device ID and retry once
           const newDeviceId = regenerateDeviceId();
           const updatedDeviceData = { ...deviceData, deviceId: newDeviceId };
-
-          logger.log(
-            '[useUserAPI] Retrying with new device ID:',
-            newDeviceId
-          );
-          const userProfileRetry = await apiClient.getCurrentUserWithDevice(
-            token,
-            updatedDeviceData,
-            authEventData
-          );
-
-          setCachedUser(firebaseUser.uid, userProfileRetry);
+          
+          logger.log('[useUserAPI] Retrying with new device ID:', newDeviceId);
+          const userProfileRetry = await apiClient.getCurrentUserWithDevice(token, updatedDeviceData, authEventData);
+          
           const fullUserRetry: User = {
-            firebaseUser,
-            userProfile: userProfileRetry,
+            firebaseUser: {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email ?? undefined,
+              displayName: firebaseUser.displayName ?? undefined,
+              photoURL: firebaseUser.photoURL ?? undefined,
+              emailVerified: firebaseUser.emailVerified
+            },
+            userProfile: userProfileRetry
           };
+          
+          setCachedUser(firebaseUser.uid, fullUserRetry);
           setUser(fullUserRetry);
           return fullUserRetry;
         } catch (retryErr) {
-          logger.warn(
-            '[useUserAPI] Retry with new device ID failed, falling back to regular fetch'
-          );
+          logger.warn('[useUserAPI] Retry with new device ID failed, falling back to regular fetch');
           errorHandler.processError(retryErr, {
             component: 'useUserAPI',
             action: 'fetchCompleteUserWithDevice-404-retry',
-            userId: firebaseUser.uid,
+            userId: firebaseUser.uid
           });
-
+          
+          // Fall back to regular user fetch
           return await fetchCompleteUser(token, firebaseUser, setUser);
         }
       }
-
+      
+      // For all other errors, bubble up normally
       errorHandler.processError(err, {
         component: 'useUserAPI',
         action: 'fetchCompleteUserWithDevice',
-        userId: firebaseUser.uid,
+        userId: firebaseUser.uid
       });
-
+      
       setUser(null);
       return null;
     }
@@ -131,51 +145,61 @@ export function useUserAPI() {
   const updateUserProfile = async (
     token: string,
     firebaseUser: FirebaseAuthUser,
-    data: Partial<{
-      fullName?: string;
-      dateOfBirth?: string;
-      zodiacSign?: string;
-    }>,
+    data: Partial<{ fullName?: string; dateOfBirth?: string; zodiacSign?: string }>,
     setUser: (user: User | null) => void,
     isRefreshingToken: boolean
   ) => {
     if (isUpdatingProfile) throw new Error('Profile update already in progress');
-
+    
     while (isRefreshingToken) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
-
+    
     setIsUpdatingProfile(true);
     try {
       const updatedUserProfile = await apiClient.updateUserProfile(token, data);
-
+      
       try {
-        setCachedUser(firebaseUser.uid, updatedUserProfile);
         const fullUser: User = {
-          firebaseUser,
-          userProfile: updatedUserProfile,
+          firebaseUser: {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email ?? undefined,
+            displayName: firebaseUser.displayName ?? undefined,
+            photoURL: firebaseUser.photoURL ?? undefined,
+            emailVerified: firebaseUser.emailVerified
+          },
+          userProfile: updatedUserProfile
         };
+        
+        setCachedUser(firebaseUser.uid, fullUser);
         setUser(fullUser);
       } catch (cacheErr) {
         errorHandler.processError(cacheErr, {
           component: 'useUserAPI',
           action: 'updateUserProfile-cache',
-          userId: firebaseUser.uid,
+          userId: firebaseUser.uid
         });
-
+        
         const fullUser: User = {
-          firebaseUser,
-          userProfile: updatedUserProfile,
+          firebaseUser: {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email ?? undefined,
+            displayName: firebaseUser.displayName ?? undefined,
+            photoURL: firebaseUser.photoURL ?? undefined,
+            emailVerified: firebaseUser.emailVerified
+          },
+          userProfile: updatedUserProfile
         };
+        
         setUser(fullUser);
       }
     } catch (err) {
       errorHandler.processError(err, {
         component: 'useUserAPI',
         action: 'updateUserProfile',
-        userId: firebaseUser.uid,
+        userId: firebaseUser.uid
       });
-
+      
       throw err;
     } finally {
       setIsUpdatingProfile(false);
@@ -186,6 +210,6 @@ export function useUserAPI() {
     fetchCompleteUser,
     fetchCompleteUserWithDevice,
     updateUserProfile,
-    isUpdatingProfile,
+    isUpdatingProfile
   };
 }

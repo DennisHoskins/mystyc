@@ -3,13 +3,13 @@ import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 
 import { FirebaseUser } from '@/common/decorators/user.decorator';
+import { FirebaseService } from '@/auth/firebase.service';
 import { User } from '@/common/interfaces/user.interface';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { RegisterSessionDto } from './dto/register-session.dto';
 import { UserService } from './user.service';
 import { UserMapperUtil } from '@/util/user-mapper';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { RegisterSessionDto } from './dto/register-session.dto';
 import { createServiceLogger } from '@/util/logger';
-import { FirebaseService } from '@/auth/firebase.service';
 
 @Controller('users')
 export class UsersController {

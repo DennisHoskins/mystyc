@@ -12,7 +12,6 @@ import { AdminModule } from '@/admin/admin.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 
 import { AppController } from '@/app.controller';
-import { AppService } from '@/app.service';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { ThrottlerExceptionFilter } from '@/common/filters/throttler-exception.filter';
@@ -43,11 +42,6 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
   ],
   controllers: [AppController],
   providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
     {
       provide: APP_FILTER,
       useClass: ThrottlerExceptionFilter,

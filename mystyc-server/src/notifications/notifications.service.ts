@@ -5,9 +5,9 @@ import { Model } from 'mongoose';
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DeviceService } from '@/devices/device.service';
 import { UserProfileService } from '@/users/user-profile.service';
-import { SendNotificationDto } from './dto/send-notification.dto';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
+import { SendNotificationDto } from './dto/send-notification.dto';
 import { logger } from '@/util/logger';
 
 @Injectable()

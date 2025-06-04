@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
+import { AuthEventService } from '@/auth-events/auth-event.service';
 import { User } from '@/common/interfaces/user.interface';
 import { UserRole } from '@/common/enums/roles.enum';
 import { UserProfileService } from './user-profile.service';
 import { DeviceService } from '@/devices/device.service';
-import { AuthEventService } from '@/auth-events/auth-event.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterSessionDto } from './dto/register-session.dto';

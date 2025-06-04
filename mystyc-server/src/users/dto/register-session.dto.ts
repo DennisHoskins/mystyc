@@ -2,34 +2,7 @@ import { ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import { DeviceDto } from '@/devices/dto/device.dto';
-import {
-  ValidateDeviceId,
-  ValidatePlatform,
-  ValidateIpAddress,
-  ValidateClientTimestamp,
-  ValidateAuthEventType,
-  ValidateFirebaseUid
-} from '@/common/decorators/validation.decorators';
-
-export class AuthEventDto {
-  @ValidateFirebaseUid()
-  firebaseUid: string;
-
-  @ValidateDeviceId()
-  deviceId: string;
-
-  @ValidateIpAddress()
-  ip: string;
-
-  @ValidatePlatform()
-  platform: string;
-
-  @ValidateClientTimestamp()
-  clientTimestamp: string;
-
-  @ValidateAuthEventType()
-  type: 'login' | 'logout' | 'create';
-}
+import { AuthEventDto } from '@/auth-events/dto/auth-event.dto';
 
 export class RegisterSessionDto {
   @ValidateNested()

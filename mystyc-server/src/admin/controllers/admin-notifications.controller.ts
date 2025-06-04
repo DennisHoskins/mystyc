@@ -1,15 +1,9 @@
 import { Controller, Get, Post, Body, Param, Query, NotFoundException, UseGuards, UnauthorizedException } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
-import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
-import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
-import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
 import { DeviceService } from '@/devices/device.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { SendNotificationDto } from '@/notifications/dto/send-notification.dto';
 import { logger } from '@/util/logger';
 
 @Controller('admin/notifications')

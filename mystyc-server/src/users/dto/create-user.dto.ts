@@ -4,7 +4,6 @@ import {
   IsString, 
   IsArray, 
   IsEnum, 
-  IsDateString,
   MinLength,
   MaxLength,
   Matches,
@@ -17,6 +16,10 @@ import {
 import { Transform } from 'class-transformer';
 import sanitizeHtml from 'sanitize-html';
 import validator from 'validator';
+
+import {
+  ValidateFirebaseUid
+} from '@/common/decorators/validation.decorators';
 
 import { UserRole } from '@/common/enums/roles.enum';
 import { logger } from '@/util/logger';
@@ -67,10 +70,7 @@ export class IsValidZodiacSign implements ValidatorConstraintInterface {
 }
 
 export class CreateUserDto {
-  @IsString({ message: 'Firebase UID must be a string' })
-  @MinLength(1, { message: 'Firebase UID cannot be empty' })
-  @MaxLength(128, { message: 'Firebase UID too long' })
-  @Matches(/^[a-zA-Z0-9_-]+$/, { message: 'Firebase UID contains invalid characters' })
+  @ValidateFirebaseUid()
   firebaseUid: string;
 
   @IsOptional()
