@@ -44,7 +44,7 @@ export default function HeaderPublic() {
           </Button>
           <Button
             variant="ghost"
-            onClick={() => router.push('/signup')}
+            onClick={() => router.push('/register')}
             className="text-sm font-medium hover:underline"
           >
             Signup

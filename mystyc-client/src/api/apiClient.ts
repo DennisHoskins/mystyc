@@ -1,13 +1,13 @@
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
-import { UserProfile } from '@/interfaces/userProfile.interface';
+import { User } from '@/interfaces/user.interface';
 import { Device } from '@/interfaces/device.interface';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { RegisterSession } from '@/interfaces/registerSession.interface';
 
-//const API_BASE_URL = 'https://skull.international/api';
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://skull.international/api';
+//const API_BASE_URL = 'http://localhost:3001/api';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -91,8 +91,8 @@ export const apiClient = {
   registerSession: (
     idToken: string,
     dto: RegisterSession
-  ): Promise<UserProfile> =>
-    fetchApi<UserProfile>('/users/me', {
+  ): Promise<User> =>
+    fetchApi<User>('/users/me', {
       method: 'POST',
       token: idToken,
       body: dto,
@@ -109,8 +109,8 @@ export const apiClient = {
       body: { deviceId, fcmToken },
     }),    
 
-getCurrentUser: (idToken: string): Promise<UserProfile> =>
-    fetchApi<UserProfile>('/users/me', {
+getCurrentUser: (idToken: string): Promise<User> =>
+    fetchApi<User>('/users/me', {
       method: 'GET',
       token: idToken,
     }),
@@ -119,8 +119,8 @@ getCurrentUser: (idToken: string): Promise<UserProfile> =>
     idToken: string,
     deviceData: Device,
     authEventData: AuthEvent
-  ): Promise<UserProfile> =>
-    fetchApi<UserProfile>('/users/me', {
+  ): Promise<User> =>
+    fetchApi<User>('/users/me', {
       method: 'POST',
       token: idToken,
       body: { device: deviceData, authEvent: authEventData },
@@ -136,28 +136,12 @@ getCurrentUser: (idToken: string): Promise<UserProfile> =>
       body: dto,
     }),
 
-  resetPassword: (email: string): Promise<void> =>
-    fetchApi<void>('/users/reset-password', {
-      method: 'POST',
-      body: { email },
-    }),
-
-  updateOnboardingProfile: (
-    idToken: string,
-    profileData: any
-  ): Promise<UserProfile> =>
-    fetchApi<UserProfile>('/users/onboarding-profile', {
-      method: 'PUT',
-      token: idToken,
-      body: profileData,
-    }),
-    
   updateUserProfile: (
     idToken: string,
     data: UpdateUserProfileData
-  ): Promise<UserProfile> =>
-    fetchApi<UserProfile>('/users/profile', {
-      method: 'PUT',
+  ): Promise<User> =>
+    fetchApi<User>('/users/update-profile', {
+      method: 'PATCH',
       token: idToken,
       body: data,
     }),    

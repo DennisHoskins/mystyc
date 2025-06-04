@@ -17,23 +17,11 @@ export function useUserAPI() {
   ): Promise<User | null> => {
     try {
       logger.log('[useUserAPI] Cache miss - fetching from API...');
-      const userProfile = await apiClient.getCurrentUser(token);
-      logger.log('[useUserAPI] Complete user response:', userProfile);
-      
-      const fullUser: User = {
-        firebaseUser: {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email ?? undefined,
-          displayName: firebaseUser.displayName ?? undefined,
-          photoURL: firebaseUser.photoURL ?? undefined,
-          emailVerified: firebaseUser.emailVerified
-        },
-        userProfile
-      };
-      
-      setCachedUser(firebaseUser.uid, fullUser);
-      setUser(fullUser);
-      return fullUser;
+      const user = await apiClient.getCurrentUser(token);
+      logger.log('[useUserAPI] Complete user response:', user);
+      setCachedUser(user);
+      setUser(user);
+      return user;
     } catch (err) {
       errorHandler.processError(err, {
         component: 'useUserAPI',
@@ -56,23 +44,12 @@ export function useUserAPI() {
   ): Promise<User | null> => {
     try {
       logger.log('[useUserAPI] Fetching user with device registration...');
-      const userProfile = await apiClient.getCurrentUserWithDevice(token, deviceData, authEventData);
-      logger.log('[useUserAPI] Complete user with device response:', userProfile);
+      const user = await apiClient.getCurrentUserWithDevice(token, deviceData, authEventData);
+      logger.log('[useUserAPI] Complete user with device response:', user);
       
-      const fullUser: User = {
-        firebaseUser: {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email ?? undefined,
-          displayName: firebaseUser.displayName ?? undefined,
-          photoURL: firebaseUser.photoURL ?? undefined,
-          emailVerified: firebaseUser.emailVerified
-        },
-        userProfile
-      };
-      
-      setCachedUser(firebaseUser.uid, fullUser);
-      setUser(fullUser);
-      return fullUser;
+      setCachedUser(user);
+      setUser(user);
+      return user;
     } catch (err: any) {
       // Handle device conflict errors gracefully
       if (err?.status === 409) {
@@ -101,22 +78,10 @@ export function useUserAPI() {
           const updatedDeviceData = { ...deviceData, deviceId: newDeviceId };
           
           logger.log('[useUserAPI] Retrying with new device ID:', newDeviceId);
-          const userProfileRetry = await apiClient.getCurrentUserWithDevice(token, updatedDeviceData, authEventData);
-          
-          const fullUserRetry: User = {
-            firebaseUser: {
-              uid: firebaseUser.uid,
-              email: firebaseUser.email ?? undefined,
-              displayName: firebaseUser.displayName ?? undefined,
-              photoURL: firebaseUser.photoURL ?? undefined,
-              emailVerified: firebaseUser.emailVerified
-            },
-            userProfile: userProfileRetry
-          };
-          
-          setCachedUser(firebaseUser.uid, fullUserRetry);
-          setUser(fullUserRetry);
-          return fullUserRetry;
+          const userRetry = await apiClient.getCurrentUserWithDevice(token, updatedDeviceData, authEventData);
+          setCachedUser(userRetry);
+          setUser(userRetry);
+          return userRetry;
         } catch (retryErr) {
           logger.warn('[useUserAPI] Retry with new device ID failed, falling back to regular fetch');
           errorHandler.processError(retryErr, {
@@ -157,42 +122,9 @@ export function useUserAPI() {
     
     setIsUpdatingProfile(true);
     try {
-      const updatedUserProfile = await apiClient.updateUserProfile(token, data);
-      
-      try {
-        const fullUser: User = {
-          firebaseUser: {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email ?? undefined,
-            displayName: firebaseUser.displayName ?? undefined,
-            photoURL: firebaseUser.photoURL ?? undefined,
-            emailVerified: firebaseUser.emailVerified
-          },
-          userProfile: updatedUserProfile
-        };
-        
-        setCachedUser(firebaseUser.uid, fullUser);
-        setUser(fullUser);
-      } catch (cacheErr) {
-        errorHandler.processError(cacheErr, {
-          component: 'useUserAPI',
-          action: 'updateUserProfile-cache',
-          userId: firebaseUser.uid
-        });
-        
-        const fullUser: User = {
-          firebaseUser: {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email ?? undefined,
-            displayName: firebaseUser.displayName ?? undefined,
-            photoURL: firebaseUser.photoURL ?? undefined,
-            emailVerified: firebaseUser.emailVerified
-          },
-          userProfile: updatedUserProfile
-        };
-        
-        setUser(fullUser);
-      }
+      const updatedUser = await apiClient.updateUserProfile(token, data);
+      setCachedUser(updatedUser);
+      setUser(updatedUser);
     } catch (err) {
       errorHandler.processError(err, {
         component: 'useUserAPI',

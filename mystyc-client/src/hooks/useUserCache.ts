@@ -9,7 +9,7 @@ const CACHE_KEYS_STORAGE = 'mystyc_cache_keys';
 const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 interface CachedUser {
- data: User;
+ data: User; // User = { firebaseUser, userProfile }
  timestamp: number;
 }
 
@@ -59,7 +59,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
        // Update local cache
        const key = getUserCacheKey(event.data.firebaseUid);
        const cachedUser: CachedUser = {
-         data: event.data.userData,
+         data: event.data.userData, // User object { firebaseUser, userProfile }
          timestamp: Date.now()
        };
        
@@ -96,7 +96,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
          return null;
        }
        
-       return cachedUser.data;
+       return cachedUser.data; // Returns User object { firebaseUser, userProfile }
      }
    } catch (err) {
      errorHandler.processError(err, {
@@ -108,11 +108,11 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
    return null;
  };
 
- const setCachedUser = (firebaseUid: string, userData: User) => {
+ const setCachedUser = (user: User) => {
    try {
-     const key = getUserCacheKey(firebaseUid);
+     const key = getUserCacheKey(user.firebaseUser.uid);
      const cachedUser: CachedUser = {
-       data: userData,
+       data: user,
        timestamp: Date.now()
      };
      storage.session.setItem(key, JSON.stringify(cachedUser));
@@ -123,8 +123,8 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
      try {
        broadcastChannel.current.postMessage({
          type: 'USER_UPDATED',
-         firebaseUid,
-         userData,
+         firebaseUid: user.firebaseUser.uid,
+         user,
          senderId: tabId.current
        });
      } catch {
@@ -136,7 +136,7 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
      errorHandler.processError(err, {
        component: 'useUserCache',
        action: 'setCachedUser',
-       userId: firebaseUid
+       userId: user.firebaseUser.uid
      });
    }
  };
