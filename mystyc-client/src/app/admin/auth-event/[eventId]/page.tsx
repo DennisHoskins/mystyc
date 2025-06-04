@@ -22,7 +22,7 @@ function AuthEventDetailPage() {
       related: [
         {
           key: 'eventUser',
-          fetcher: async (token: string, eventId: string) => {
+          fetcher: async (eventId: string) => {
             const event = await apiClientAdmin.getAuthEvent(eventId);
             if (event?.firebaseUid) {
               return await apiClientAdmin.getUser(event.firebaseUid);

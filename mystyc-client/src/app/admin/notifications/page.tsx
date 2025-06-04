@@ -18,8 +18,7 @@ function NotificationsPage() {
   const { showToast } = useToast();
   const { data: notifications, loading, error, refresh } = useAdminListPage<Notification>({
     entityName: 'notifications',
-    fetcher: (query?: Record<string, any>) =>
-    apiClientAdmin.getNotifications(query),
+    fetcher: apiClientAdmin.getNotifications,
   });
 
   const handleSendNotification = async () => {

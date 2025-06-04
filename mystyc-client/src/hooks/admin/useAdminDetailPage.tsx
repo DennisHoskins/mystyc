@@ -8,10 +8,10 @@ import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { logger } from '@/util/logger';
 
 interface EntityFetcher<T> {
-  main: (token: string, id: string) => Promise<T>;
+  main: (id: string) => Promise<T>;
   related?: Array<{
     key: string;
-    fetcher: (token: string, id: string, ...args: any[]) => Promise<any>;
+    fetcher: (id: string, ...args: any[]) => Promise<any>;
     optional?: boolean;
     args?: any[];
   }>;
@@ -60,7 +60,7 @@ export function useAdminDetailPage<T>({
 
     try {
       // Fetch main entity
-      const mainEntity = await fetcher.main(idToken, entityId);
+      const mainEntity = await fetcher.main(entityId);
 
       if (!mainEntity) {
         throw new Error(`${entityName} not found`);
@@ -76,7 +76,7 @@ export function useAdminDetailPage<T>({
         for (const relatedFetcher of fetcher.related) {
           try {
             const args = relatedFetcher.args || [];
-            const result = await relatedFetcher.fetcher(idToken, entityId, ...args);
+            const result = await relatedFetcher.fetcher(entityId, ...args);
             relatedResults[relatedFetcher.key] = result;
             logger.log(`[useAdminDetailPage] ${relatedFetcher.key} loaded successfully`);
           } catch (relatedErr) {

@@ -59,7 +59,7 @@ export function useFirebaseMessaging() {
     }
 
     try {
-      await apiClient.updateFcmToken(idToken, deviceData.deviceId, fcmToken);
+      await apiClient.updateFcmToken(deviceData.deviceId, fcmToken);
       logger.log('[useFirebaseMessaging] FCM token updated on server successfully');
     } catch (err) {
       errorHandler.processError(err, {

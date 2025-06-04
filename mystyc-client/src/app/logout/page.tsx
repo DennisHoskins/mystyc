@@ -88,7 +88,7 @@ export default function LogoutPage() {
         };
 
         // Send logout event to server with real device data
-        await apiClient.logout(idTokenRef.current, {
+        await apiClient.logout({
           device: deviceDataRef.current,
           authEvent,
         });

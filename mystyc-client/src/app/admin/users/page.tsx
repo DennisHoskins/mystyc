@@ -2,14 +2,14 @@
 
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { UserProfile as User } from '@/interfaces/userProfile.interface';
+import { UserProfile } from '@/interfaces/userProfile.interface';
 import { useAdminListPage } from '@/hooks/admin/useAdminListPage';
 
 import AdminListLayout from '@/components/admin/AdminListLayout';
 import TableUsers from '@/components/admin/tables/AdminTableUsers';
 
 function UsersPage() {
-  const { data: users, loading, error, refresh } = useAdminListPage<User>({
+  const { data: users, loading, error, refresh } = useAdminListPage<UserProfile>({
     entityName: 'users',
     fetcher: apiClientAdmin.getUsers,
   });

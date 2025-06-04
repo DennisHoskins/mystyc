@@ -26,6 +26,7 @@ import { errorHandler } from '@/util/errorHandler';
 import { useUserCache } from '@/hooks/useUserCache';
 import { useUserAPI } from '@/hooks/useUserAPI';
 import { useDeviceInfo } from '@/hooks/useDeviceInfo';
+import { tokenStore } from '@/util/tokenStore';
 
 interface AuthContextType {
  firebaseUser: FirebaseAuthUser | null;
@@ -76,6 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
  const updateIdToken = useCallback(async (firebaseUser: FirebaseAuthUser | null) => {
    if (!firebaseUser) {
      setIdToken(null);
+     tokenStore.clearToken();
      setTokenRefreshFailed(false);
      return;
    }
@@ -91,6 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    try {
      const token = await firebaseUser.getIdToken(true);
      setIdToken(token);
+     tokenStore.setToken(token);
      setTokenRefreshFailed(false);
      setHasQuotaError(false);
      logger.log('[AuthContext] Token updated successfully');
@@ -103,6 +106,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
        
        // Clear all state immediately
        setIdToken(null);
+       tokenStore.clearToken();
        setTokenRefreshFailed(false);
        setHasQuotaError(false);
        setUser(null);
@@ -126,12 +130,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
        userId: firebaseUser.uid
      });
      
-     setIdToken(null);
-     setTokenRefreshFailed(true);
-   } finally {
-     setIsRefreshingToken(false);
-   }
- }, [isRefreshingToken, hasQuotaError, clearCachedUser, clearDeviceData]);
+      setIdToken(null);
+      tokenStore.clearToken();     
+      setTokenRefreshFailed(true);
+    } finally {
+      setIsRefreshingToken(false);
+    }
+  }, [isRefreshingToken, hasQuotaError, clearCachedUser, clearDeviceData]);
 
  const retryTokenRefresh = useCallback(async () => {
    if (firebaseUser) {
@@ -165,6 +170,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
        await updateIdToken(firebaseUser);
      } else if (!firebaseUser) {
        setIdToken(null);
+       tokenStore.clearToken();
        setTokenRefreshFailed(false);
      }
      
@@ -205,7 +211,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
      };
      
      fetchCompleteUserWithDevice(
-       idToken, 
        firebaseUser, 
        deviceData, 
        authEventData, 
@@ -275,6 +280,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
      
      await firebaseSignOut(auth);
      setIdToken(null);
+     tokenStore.clearToken();
      setUser(null);
      setTokenRefreshFailed(false);
      setHasQuotaError(false);
@@ -291,6 +297,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
      });
      
      setIdToken(null);
+     tokenStore.clearToken();
      setUser(null);
      setTokenRefreshFailed(false);
      setHasQuotaError(false);
@@ -317,7 +324,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    data: Partial<{ fullName?: string; dateOfBirth?: string; zodiacSign?: string }>
  ) => {
    if (!idToken || !firebaseUser) throw new Error('Not authenticated');
-   await updateUserProfile(idToken, firebaseUser, data, setUser, isRefreshingToken);
+   await updateUserProfile(firebaseUser, data, setUser, isRefreshingToken);
  };
 
  const value = {

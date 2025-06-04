@@ -5,6 +5,7 @@ import { User } from '@/interfaces/user.interface';
 import { Device } from '@/interfaces/device.interface';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { RegisterSession } from '@/interfaces/registerSession.interface';
+import { tokenStore } from '@/util/tokenStore';
 
 const API_BASE_URL = 'https://skull.international/api';
 //const API_BASE_URL = 'http://localhost:3001/api';
@@ -15,7 +16,6 @@ interface ApiOptions {
   method?: HttpMethod;
   body?: any;
   headers?: Record<string, string>;
-  token?: string;
 }
 
 interface UpdateUserProfileData {
@@ -28,13 +28,15 @@ export async function fetchApi<T = any>(
   endpoint: string,
   options: ApiOptions
 ): Promise<T> {
-  const { method = 'GET', body, headers = {}, token } = options;
+  const { method = 'GET', body, headers = {} } = options;
+  
+  const currentToken = tokenStore.getToken();
 
   const requestOptions: RequestInit = {
     method,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
       ...headers,
     },
   };
@@ -89,60 +91,49 @@ export async function fetchApi<T = any>(
 
 export const apiClient = {
   registerSession: (
-    idToken: string,
     dto: RegisterSession
   ): Promise<User> =>
     fetchApi<User>('/users/me', {
       method: 'POST',
-      token: idToken,
       body: dto,
     }),
 
  updateFcmToken: (
-    idToken: string,
     deviceId: string,
     fcmToken: string
   ): Promise<void> =>
     fetchApi<void>('/devices/notify-token', {
       method: 'POST',
-      token: idToken,
       body: { deviceId, fcmToken },
     }),    
 
-getCurrentUser: (idToken: string): Promise<User> =>
+getCurrentUser: (): Promise<User> =>
     fetchApi<User>('/users/me', {
       method: 'GET',
-      token: idToken,
     }),
 
   getCurrentUserWithDevice: (
-    idToken: string,
     deviceData: Device,
     authEventData: AuthEvent
   ): Promise<User> =>
     fetchApi<User>('/users/me', {
       method: 'POST',
-      token: idToken,
       body: { device: deviceData, authEvent: authEventData },
     }),    
 
   logout: (
-    idToken: string,
     dto: RegisterSession
   ): Promise<void> =>
     fetchApi<void>('/users/logout', {
       method: 'POST',
-      token: idToken,
       body: dto,
     }),
 
   updateUserProfile: (
-    idToken: string,
     data: UpdateUserProfileData
   ): Promise<User> =>
     fetchApi<User>('/users/update-profile', {
       method: 'PATCH',
-      token: idToken,
       body: data,
     }),    
 };

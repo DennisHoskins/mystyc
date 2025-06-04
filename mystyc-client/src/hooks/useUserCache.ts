@@ -120,17 +120,17 @@ export function useUserCache(onUserUpdate?: (userData: User) => void) {
      logger.log('[useUserCache] User data cached');
      
      // Broadcast to other tabs - check if channel is still open
-     try {
-       broadcastChannel.current.postMessage({
-         type: 'USER_UPDATED',
-         firebaseUid: user.firebaseUser.uid,
-         user,
-         senderId: tabId.current
-       });
-     } catch {
-       // Silently fail if broadcast fails - not critical for app functionality
-       logger.log('[useUserCache] Cross-tab broadcast failed - channel may be closed');
-     }
+    //  try {
+    //    broadcastChannel.current.postMessage({
+    //      type: 'USER_UPDATED',
+    //      firebaseUid: user.firebaseUser.uid,
+    //      user,
+    //      senderId: tabId.current
+    //    });
+    //  } catch {
+    //    // Silently fail if broadcast fails - not critical for app functionality
+    //    logger.log('[useUserCache] Cross-tab broadcast failed - channel may be closed');
+    //  }
      
    } catch (err) {
      errorHandler.processError(err, {

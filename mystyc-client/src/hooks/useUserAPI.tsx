@@ -11,13 +11,12 @@ export function useUserAPI() {
   const { setCachedUser } = useUserCache();
 
   const fetchCompleteUser = async (
-    token: string,
     firebaseUser: FirebaseAuthUser,
     setUser: (user: User | null) => void
   ): Promise<User | null> => {
     try {
       logger.log('[useUserAPI] Cache miss - fetching from API...');
-      const user = await apiClient.getCurrentUser(token);
+      const user = await apiClient.getCurrentUser();
       logger.log('[useUserAPI] Complete user response:', user);
       setCachedUser(user);
       setUser(user);
@@ -35,7 +34,6 @@ export function useUserAPI() {
   };
 
   const fetchCompleteUserWithDevice = async (
-    token: string,
     firebaseUser: FirebaseAuthUser,
     deviceData: Device,
     authEventData: AuthEvent,
@@ -44,9 +42,8 @@ export function useUserAPI() {
   ): Promise<User | null> => {
     try {
       logger.log('[useUserAPI] Fetching user with device registration...');
-      const user = await apiClient.getCurrentUserWithDevice(token, deviceData, authEventData);
+      const user = await apiClient.getCurrentUserWithDevice(deviceData, authEventData);
       logger.log('[useUserAPI] Complete user with device response:', user);
-      
       setCachedUser(user);
       setUser(user);
       return user;
@@ -61,7 +58,7 @@ export function useUserAPI() {
         });
         
         // Fall back to regular user fetch without device registration
-        return await fetchCompleteUser(token, firebaseUser, setUser);
+        return await fetchCompleteUser(firebaseUser, setUser);
       }
       
       if (err?.status === 404) {
@@ -78,7 +75,7 @@ export function useUserAPI() {
           const updatedDeviceData = { ...deviceData, deviceId: newDeviceId };
           
           logger.log('[useUserAPI] Retrying with new device ID:', newDeviceId);
-          const userRetry = await apiClient.getCurrentUserWithDevice(token, updatedDeviceData, authEventData);
+          const userRetry = await apiClient.getCurrentUserWithDevice(updatedDeviceData, authEventData);
           setCachedUser(userRetry);
           setUser(userRetry);
           return userRetry;
@@ -91,7 +88,7 @@ export function useUserAPI() {
           });
           
           // Fall back to regular user fetch
-          return await fetchCompleteUser(token, firebaseUser, setUser);
+          return await fetchCompleteUser(firebaseUser, setUser);
         }
       }
       
@@ -108,7 +105,6 @@ export function useUserAPI() {
   };
 
   const updateUserProfile = async (
-    token: string,
     firebaseUser: FirebaseAuthUser,
     data: Partial<{ fullName?: string; dateOfBirth?: string; zodiacSign?: string }>,
     setUser: (user: User | null) => void,
@@ -122,7 +118,7 @@ export function useUserAPI() {
     
     setIsUpdatingProfile(true);
     try {
-      const updatedUser = await apiClient.updateUserProfile(token, data);
+      const updatedUser = await apiClient.updateUserProfile(data);
       setCachedUser(updatedUser);
       setUser(updatedUser);
     } catch (err) {

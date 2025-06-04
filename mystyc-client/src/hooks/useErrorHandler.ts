@@ -49,7 +49,7 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
           clientTimestamp: new Date().toISOString(),
           type: 'logout',
         };
-        apiClient.logout(idToken, {
+        apiClient.logout({
           device: deviceData, 
           authEvent
         }).catch((err) =>
@@ -76,7 +76,7 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
           clientTimestamp: new Date().toISOString(),
           type: 'logout',
         };
-        apiClient.logout(idToken, { 
+        apiClient.logout({ 
           device: deviceData, 
           authEvent
         }).catch((err) =>

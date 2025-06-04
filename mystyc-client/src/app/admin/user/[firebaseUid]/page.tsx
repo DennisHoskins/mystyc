@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { withAdminAuth } from '@/auth/withAdminAuth';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { UserProfile } from '@/interfaces/userProfile.interface';
+import { User } from '@/interfaces/user.interface';
 import { Device } from '@/interfaces/device.interface';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
@@ -45,7 +45,7 @@ function UserDetailPage() {
     error,
     router,
     refetch
-  } = useAdminDetailPage<UserProfile>({
+  } = useAdminDetailPage<User>({
     entityName: 'User',
     paramKey: 'firebaseUid',
     fetcher
@@ -69,14 +69,16 @@ function UserDetailPage() {
     await refetch();
   };
 
+  const userProfile = user?.userProfile;
+
   return (
     <AdminDetailLayout
       breadcrumbs={[
         { label: 'Users', href: '/admin/users' },
-        { label: user ? (user.fullName || user.email) : 'User' }
+        { label: userProfile ? (userProfile.fullName || userProfile.email) : 'User' }
       ]}
-      title={user ? (user.fullName || user.email || 'User Details') : 'User Details'}
-      subtitle={user ? `User Profile • ${user.firebaseUid}` : 'User Profile'}
+      title={userProfile ? (userProfile.fullName || userProfile.email || 'User Details') : 'User Details'}
+      subtitle={userProfile ? `User Profile • ${userProfile.firebaseUid}` : 'User Profile'}
       loading={loading}
       error={error}
       loadingTitle="Loading..."
@@ -85,31 +87,31 @@ function UserDetailPage() {
       notFoundSubtitle="The requested user could not be found"
     >
       {/* User Information Card */}
-      {user && (
+      {user && userProfile && (
         <div className="bg-blue-50 rounded-lg border border-gray-200 p-6 shadow-sm">
           <Heading level={3} className="mb-6">User Information</Heading>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Firebase UID</Text>
-              <Text className="font-mono text-sm break-all">{user.firebaseUid}</Text>
+              <Text className="font-mono text-sm break-all">{user.firebaseUser.uid}</Text>
             </div>
             
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Email Address</Text>
-              <Text className="break-words">{user.email}</Text>
+              <Text className="break-words">{userProfile.email}</Text>
             </div>
             
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Full Name</Text>
-              <Text>{user.fullName || '—'}</Text>
+              <Text>{userProfile.fullName || '—'}</Text>
             </div>
             
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Date of Birth</Text>
               <Text>
-                {user.dateOfBirth 
-                  ? new Date(user.dateOfBirth).toLocaleDateString() 
+                {userProfile.dateOfBirth 
+                  ? new Date(userProfile.dateOfBirth).toLocaleDateString() 
                   : '—'
                 }
               </Text>
@@ -117,14 +119,14 @@ function UserDetailPage() {
             
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Zodiac Sign</Text>
-              <Text>{user.zodiacSign || '—'}</Text>
+              <Text>{userProfile.zodiacSign || '—'}</Text>
             </div>
             
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">User Roles</Text>
               <Text>
-                {user.roles && user.roles.length > 0 
-                  ? user.roles.join(', ') 
+                {userProfile.roles && userProfile.roles.length > 0 
+                  ? userProfile.roles.join(', ') 
                   : 'User'
                 }
               </Text>
@@ -132,12 +134,12 @@ function UserDetailPage() {
             
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Account Created</Text>
-              <Text>{new Date(user.createdAt).toLocaleString()}</Text>
+              <Text>{new Date(userProfile.createdAt).toLocaleString()}</Text>
             </div>
             
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Last Updated</Text>
-              <Text>{new Date(user.updatedAt).toLocaleString()}</Text>
+              <Text>{new Date(userProfile.updatedAt).toLocaleString()}</Text>
             </div>
           </div>
         </div>

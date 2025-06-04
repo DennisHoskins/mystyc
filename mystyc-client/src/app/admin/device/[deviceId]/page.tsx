@@ -31,7 +31,7 @@ function DeviceDetailPage() {
       related: [
         {
           key: 'deviceOwner',
-          fetcher: async (token: string, deviceId: string) => {
+          fetcher: async (deviceId: string) => {
             const device = await apiClientAdmin.getDevice(deviceId);
             if (device?.firebaseUid) {
               return await apiClientAdmin.getUser(device.firebaseUid);
@@ -42,7 +42,7 @@ function DeviceDetailPage() {
         },
         {
           key: 'authEvents',
-          fetcher: (token: string, deviceId: string) => 
+          fetcher: (deviceId: string) => 
             apiClientAdmin.getDeviceAuthEvents(deviceId, 50, 0),
           optional: true,
         },

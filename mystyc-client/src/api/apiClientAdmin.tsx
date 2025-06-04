@@ -1,12 +1,12 @@
 import { fetchApi } from './apiClient';
-import { UserProfile } from '@/interfaces/userProfile.interface';
+import { User, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
 
 export const apiClientAdmin = {
   // User Management
   getUsers: (): Promise<UserProfile[]> =>
     fetchApi('/admin/users', { method: 'GET' }),
 
-  getUser: (firebaseUid: string): Promise<UserProfile> =>
+  getUser: (firebaseUid: string): Promise<User> =>
     fetchApi(`/admin/user/${firebaseUid}`, { method: 'GET' }),
 
   promoteAdmin: (firebaseUid: string): Promise<void> =>
@@ -19,31 +19,31 @@ export const apiClientAdmin = {
     fetchApi(`/admin/user/${firebaseUid}/revoke-tokens`, { method: 'POST' }),
 
   // Device Management
-  getDevices: (query?: Record<string, any>): Promise<any> => {
+  getDevices: (query?: Record<string, any>): Promise<Device[]> => {
     const params = query ? `?${new URLSearchParams(query).toString()}` : '';
     return fetchApi(`/admin/devices${params}`, { method: 'GET' });
   },
 
-  getDevice: (deviceId: string): Promise<any> =>
+  getDevice: (deviceId: string): Promise<Device> =>
     fetchApi(`/admin/device/${deviceId}`, { method: 'GET' }),
 
   getUserDevices: (firebaseUid: string): Promise<any> =>
     fetchApi(`/admin/devices/${firebaseUid}`, { method: 'GET' }),
 
   // Auth Events Management
-  getAuthEvents: (query?: Record<string, any>): Promise<any> => {
+  getAuthEvents: (query?: Record<string, any>): Promise<AuthEvent[]> => {
     const params = query ? `?${new URLSearchParams(query).toString()}` : '';
     return fetchApi(`/admin/auth-events${params}`, { method: 'GET' });
   },
 
-  getAuthEvent: (eventId: string): Promise<any> =>
+  getAuthEvent: (eventId: string): Promise<AuthEvent> =>
     fetchApi(`/admin/auth-event/${eventId}`, { method: 'GET' }),
 
   getUserAuthEvents: (
     firebaseUid: string,
     limit?: number,
     offset?: number
-  ): Promise<any> => {
+  ): Promise<AuthEvent[]> => {
     const params = new URLSearchParams();
     if (limit != null) params.append('limit', limit.toString());
     if (offset != null) params.append('offset', offset.toString());
@@ -55,7 +55,7 @@ export const apiClientAdmin = {
     deviceId: string,
     limit?: number,
     offset?: number
-  ): Promise<any> => {
+  ): Promise<AuthEvent[]> => {
     const params = new URLSearchParams();
     if (limit != null) params.append('limit', limit.toString());
     if (offset != null) params.append('offset', offset.toString());
@@ -63,16 +63,16 @@ export const apiClientAdmin = {
     return fetchApi(`/admin/device/${deviceId}/auth-events${query}`, { method: 'GET' });
   },
 
-  getAuthEventDevice: (eventId: string): Promise<any> =>
-    fetchApi(`/admin/auth-events/${eventId}/device`, { method: 'GET' }),
+  getAuthEventDevice: (eventId: string): Promise<Device> =>
+    fetchApi(`/admin/auth-event/${eventId}/device`, { method: 'GET' }),
 
   // Notifications Management
-  getNotifications: (query?: Record<string, any>): Promise<any> => {
+  getNotifications: (query?: Record<string, any>): Promise<Notification[]> => {
     const params = query ? `?${new URLSearchParams(query).toString()}` : '';
     return fetchApi(`/admin/notifications${params}`, { method: 'GET' });
   },
 
-  getNotification: (notificationId: string): Promise<any> =>
+  getNotification: (notificationId: string): Promise<Notification> =>
     fetchApi(`/admin/notification/${notificationId}`, { method: 'GET' }),
 
   sendTestNotification: (): Promise<void> =>
