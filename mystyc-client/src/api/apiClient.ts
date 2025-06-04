@@ -4,8 +4,7 @@ import { logger } from '@/util/logger';
 import { User, Device, AuthEvent, RegisterSession } from '@/interfaces';
 import { tokenStore } from '@/util/tokenStore';
 
-const API_BASE_URL = 'https://skull.international/api';
-//const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
