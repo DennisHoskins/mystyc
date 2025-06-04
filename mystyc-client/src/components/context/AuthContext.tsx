@@ -9,6 +9,7 @@ import {
  useCallback,
  ReactNode,
 } from 'react';
+
 import {
  User as FirebaseAuthUser,
  signInWithEmailAndPassword,
@@ -17,6 +18,7 @@ import {
  sendPasswordResetEmail,
  onAuthStateChanged,
 } from 'firebase/auth';
+
 import { auth } from '@/lib/firebase';
 import { AuthEvent, User, Device } from '@/interfaces';
 import { logger } from '@/util/logger';

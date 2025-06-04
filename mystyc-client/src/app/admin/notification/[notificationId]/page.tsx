@@ -24,9 +24,9 @@ function NotificationDetailPage() {
         {
           key: 'notificationUser',
           fetcher: async (token: string, notificationId: string) => {
-            const notification = await apiClientAdmin.getNotification(token, notificationId);
+            const notification = await apiClientAdmin.getNotification(notificationId);
             if (notification?.firebaseUid) {
-              return await apiClientAdmin.getUser(token, notification.firebaseUid);
+              return await apiClientAdmin.getUser(notification.firebaseUid);
             }
             return null;
           },
@@ -35,9 +35,9 @@ function NotificationDetailPage() {
         {
           key: 'notificationDevice',
           fetcher: async (token: string, notificationId: string) => {
-            const notification = await apiClientAdmin.getNotification(token, notificationId);
+            const notification = await apiClientAdmin.getNotification(notificationId);
             if (notification?.deviceId) {
-              return await apiClientAdmin.getDevice(token, notification.deviceId);
+              return await apiClientAdmin.getDevice(notification.deviceId);
             }
             return null;
           },

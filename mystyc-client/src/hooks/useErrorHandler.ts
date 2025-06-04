@@ -49,8 +49,10 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
           clientTimestamp: new Date().toISOString(),
           type: 'logout',
         };
-        apiClient.logout(idToken, deviceData, authEvent)
-          .catch((err) =>
+        apiClient.logout(idToken, {
+          device: deviceData, 
+          authEvent
+        }).catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
               action: 'logoutTracking',
@@ -74,8 +76,10 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
           clientTimestamp: new Date().toISOString(),
           type: 'logout',
         };
-        apiClient.logout(idToken, deviceData, authEvent)
-          .catch((err) =>
+        apiClient.logout(idToken, { 
+          device: deviceData, 
+          authEvent
+        }).catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
               action: 'logoutTracking',

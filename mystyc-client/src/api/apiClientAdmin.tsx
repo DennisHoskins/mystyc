@@ -1,168 +1,100 @@
-import { errorHandler } from '@/util/errorHandler';
-import { logger } from '@/util/logger';
-
-const API_BASE_URL = 'https://skull.international/api';
-
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-
-interface ApiOptions {
-  method?: HttpMethod;
-  body?: any;
-  headers?: Record<string, string>;
-  token: string;
-}
-
-async function fetchAdminApi<T = any>(endpoint: string, options: ApiOptions): Promise<T> {
-  const { method = 'GET', body, headers = {}, token } = options;
-
-  const requestOptions: RequestInit = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...headers,
-    },
-  };
-
-  if (body) {
-    logger.log('Admin API request body:', JSON.stringify(body, null, 2));
-    requestOptions.body = JSON.stringify(body);
-  }
-
-  logger.log(`Admin API request: ${method} ${endpoint}`, requestOptions);
-  
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, requestOptions);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorMessage = `Admin API error: ${response.status}`;
-      logger.error('Admin API error response:', errorText);
-      
-      try {
-        const errorData = JSON.parse(errorText);
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      
-      const apiError = new Error(errorMessage);
-      (apiError as any).status = response.status;
-      (apiError as any).response = { status: response.status, data: errorText };
-      
-      errorHandler.processError(apiError, {
-        component: 'adminApiClient',
-        action: `${method} ${endpoint}`,
-        additional: { status: response.status }
-      });
-      
-      throw apiError;
-    }
-
-    const text = await response.text();
-    return text ? JSON.parse(text) : ({} as T);
-  } catch (error) {
-    errorHandler.processError(error, {
-      component: 'adminApiClient',
-      action: `${method} ${endpoint}`,
-      additional: { 
-        isOnline: navigator.onLine,
-        url: `${API_BASE_URL}${endpoint}`
-      }
-    });
-    
-    throw error;
-  }
-}
+import { fetchApi } from './apiClient';
+import { UserProfile } from '@/interfaces/userProfile.interface';
 
 export const apiClientAdmin = {
   // User Management
-  getUsers: (token: string) =>
-    fetchAdminApi('/admin/users', { method: 'GET', token }),
+  getUsers: (): Promise<UserProfile[]> =>
+    fetchApi('/admin/users', { method: 'GET' }),
 
-  getUser: (token: string, firebaseUid: string) =>
-    fetchAdminApi(`/admin/user/${firebaseUid}`, { method: 'GET', token }),  
-  
-  promoteAdmin: (token: string, firebaseUid: string) =>
-    fetchAdminApi(`/admin/user/${firebaseUid}/promote-admin`, { method: 'POST', token }),
-  
-  revokeAdmin: (token: string, firebaseUid: string) =>
-    fetchAdminApi(`/admin/user/${firebaseUid}/revoke-admin`, { method: 'PATCH', token }),
+  getUser: (firebaseUid: string): Promise<UserProfile> =>
+    fetchApi(`/admin/user/${firebaseUid}`, { method: 'GET' }),
 
-  revokeUserTokens: (token: string, firebaseUid: string) =>
-    fetchAdminApi(`/admin/user/${firebaseUid}/revoke-tokens`, { method: 'POST', token }),
+  promoteAdmin: (firebaseUid: string): Promise<void> =>
+    fetchApi(`/admin/user/${firebaseUid}/promote-admin`, { method: 'POST' }),
+
+  revokeAdmin: (firebaseUid: string): Promise<void> =>
+    fetchApi(`/admin/user/${firebaseUid}/revoke-admin`, { method: 'PATCH' }),
+
+  revokeUserTokens: (firebaseUid: string): Promise<void> =>
+    fetchApi(`/admin/user/${firebaseUid}/revoke-tokens`, { method: 'POST' }),
 
   // Device Management
-  getDevices: (token: string, query?: Record<string, any>) => {
-    const params = query ? new URLSearchParams(query).toString() : '';
-    return fetchAdminApi(`/admin/devices${params ? `?${params}` : ''}`, { method: 'GET', token });
+  getDevices: (query?: Record<string, any>): Promise<any> => {
+    const params = query ? `?${new URLSearchParams(query).toString()}` : '';
+    return fetchApi(`/admin/devices${params}`, { method: 'GET' });
   },
 
-  getDevice: (token: string, deviceId: string) =>
-    fetchAdminApi(`/admin/device/${deviceId}`, { method: 'GET', token }),
-  
-  getUserDevices: (token: string, firebaseUid: string) =>
-    fetchAdminApi(`/admin/devices/${firebaseUid}`, { method: 'GET', token }),
+  getDevice: (deviceId: string): Promise<any> =>
+    fetchApi(`/admin/device/${deviceId}`, { method: 'GET' }),
+
+  getUserDevices: (firebaseUid: string): Promise<any> =>
+    fetchApi(`/admin/devices/${firebaseUid}`, { method: 'GET' }),
 
   // Auth Events Management
-  getAuthEvents: (token: string, query?: Record<string, any>) => {
-    const params = query ? new URLSearchParams(query).toString() : '';
-    return fetchAdminApi(`/admin/auth-events${params ? `?${params}` : ''}`, { method: 'GET', token });
+  getAuthEvents: (query?: Record<string, any>): Promise<any> => {
+    const params = query ? `?${new URLSearchParams(query).toString()}` : '';
+    return fetchApi(`/admin/auth-events${params}`, { method: 'GET' });
   },
 
-  getAuthEvent: (token: string, eventId: string) =>
-    fetchAdminApi(`/admin/auth-event/${eventId}`, { method: 'GET', token }),
-  
-  getUserAuthEvents: (token: string, firebaseUid: string, limit?: number, offset?: number) => {
+  getAuthEvent: (eventId: string): Promise<any> =>
+    fetchApi(`/admin/auth-event/${eventId}`, { method: 'GET' }),
+
+  getUserAuthEvents: (
+    firebaseUid: string,
+    limit?: number,
+    offset?: number
+  ): Promise<any> => {
     const params = new URLSearchParams();
-    if (limit) params.append('limit', limit.toString());
-    if (offset) params.append('offset', offset.toString());
-    return fetchAdminApi(`/admin/auth-events/user/${firebaseUid}${params.toString() ? `?${params}` : ''}`, { method: 'GET', token });
+    if (limit != null) params.append('limit', limit.toString());
+    if (offset != null) params.append('offset', offset.toString());
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return fetchApi(`/admin/auth-events/user/${firebaseUid}${query}`, { method: 'GET' });
   },
 
-  getDeviceAuthEvents: (token: string, deviceId: string, limit?: number, offset?: number) => {
+  getDeviceAuthEvents: (
+    deviceId: string,
+    limit?: number,
+    offset?: number
+  ): Promise<any> => {
     const params = new URLSearchParams();
-    if (limit) params.append('limit', limit.toString());
-    if (offset) params.append('offset', offset.toString());
-    return fetchAdminApi(`/admin/device/${deviceId}/auth-events${params.toString() ? `?${params}` : ''}`, { method: 'GET', token });
+    if (limit != null) params.append('limit', limit.toString());
+    if (offset != null) params.append('offset', offset.toString());
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return fetchApi(`/admin/device/${deviceId}/auth-events${query}`, { method: 'GET' });
   },
 
-  getAuthEventDevice: (token: string, eventId: string) =>
-    fetchAdminApi(`/admin/auth-events/${eventId}/device`, { method: 'GET', token }),
+  getAuthEventDevice: (eventId: string): Promise<any> =>
+    fetchApi(`/admin/auth-events/${eventId}/device`, { method: 'GET' }),
 
   // Notifications Management
-  getNotifications: (token: string, query?: Record<string, any>) => {
-    const params = query ? new URLSearchParams(query).toString() : '';
-    return fetchAdminApi(`/admin/notifications${params ? `?${params}` : ''}`, { method: 'GET', token });
+  getNotifications: (query?: Record<string, any>): Promise<any> => {
+    const params = query ? `?${new URLSearchParams(query).toString()}` : '';
+    return fetchApi(`/admin/notifications${params}`, { method: 'GET' });
   },
 
-  getNotification: (token: string, notificationId: string) =>
-    fetchAdminApi(`/admin/notification/${notificationId}`, { method: 'GET', token }),
+  getNotification: (notificationId: string): Promise<any> =>
+    fetchApi(`/admin/notification/${notificationId}`, { method: 'GET' }),
 
-  sendTestNotification: (token: string, fcmToken: string) =>
-    fetchAdminApi('/admin/notifications/test', { 
-      method: 'POST', 
-      body: { token: fcmToken }, 
-      token 
-    }),
+  sendTestNotification: (): Promise<void> =>
+    fetchApi('/admin/notifications/test', { method: 'POST', body: {} }),
 
-  sendUserNotification: (token: string, firebaseUid: string) =>
-    fetchAdminApi('/admin/notifications/send', { 
-      method: 'POST', 
-      body: { 
+  sendUserNotification: (firebaseUid: string): Promise<void> =>
+    fetchApi('/admin/notifications/send', {
+      method: 'POST',
+      body: {
         firebaseUid,
         title: 'Admin Notification',
-        body: 'You have received a notification from an administrator'
-      }, 
-      token 
+        body: 'You have received a notification from an administrator',
+      },
     }),
 
-  sendDeviceNotification: (token: string, deviceId: string) =>
-    fetchAdminApi('/admin/notifications/send', { 
-      method: 'POST', 
-      body: { 
+  sendDeviceNotification: (deviceId: string): Promise<void> =>
+    fetchApi('/admin/notifications/send', {
+      method: 'POST',
+      body: {
         deviceId,
         title: 'Admin Notification',
-        body: 'You have received a notification from an administrator'
-      }, 
-      token 
+        body: 'You have received a notification from an administrator',
+      },
     }),
 };

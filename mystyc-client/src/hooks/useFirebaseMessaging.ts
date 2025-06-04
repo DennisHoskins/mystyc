@@ -15,12 +15,10 @@ export function useFirebaseMessaging() {
     if (messaging) {
       const unsubscribe = onMessage(messaging, (payload) => {
         logger.log('Received foreground message:', payload);
-        
-        // Show notification for foreground messages (when app is open)
+
         const title = payload.data?.title || payload.notification?.title || 'New Message';
         const body = payload.data?.body || payload.notification?.body || 'You have a new message';
-        
-        // Create a visual notification even when app is in foreground
+
         if ('Notification' in window && Notification.permission === 'granted') {
           try {
             const notification = new Notification(title, {
@@ -30,13 +28,11 @@ export function useFirebaseMessaging() {
               tag: 'mystyc-foreground',
               requireInteraction: false,
             });
-            
-            // Auto-close after 5 seconds
+
             setTimeout(() => {
               notification.close();
             }, 5000);
-            
-            // Handle click
+
             notification.onclick = () => {
               window.focus();
               notification.close();
@@ -46,7 +42,7 @@ export function useFirebaseMessaging() {
           }
         }
       });
-      
+
       return () => unsubscribe();
     }
   }, []);
@@ -74,24 +70,25 @@ export function useFirebaseMessaging() {
           hasToken: !!fcmToken
         }
       });
-      
-      // Don't throw - FCM token update failure shouldn't break the app
+
       logger.warn('[useFirebaseMessaging] Failed to update FCM token on server, continuing...');
     }
   }, [idToken, deviceData?.deviceId]);
 
-  const requestPermission = useCallback(async () => {
+  const requestPermissionAndToken = useCallback(async () => {
     try {
-      if (!messaging) {
-        throw new Error('Messaging not supported');
+      if (!messaging) throw new Error('Messaging not supported');
+
+      let permission = Notification.permission;
+
+      if (permission === 'default') {
+        permission = await Notification.requestPermission();
       }
 
-      const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
-        throw new Error('Notification permission denied');
+        throw new Error('Notification permission not granted');
       }
 
-      // Register service worker
       const registration = await navigator.serviceWorker.register('/workers/notifications');
       logger.log('[useFirebaseMessaging] Service worker registered:', registration);
 
@@ -103,40 +100,40 @@ export function useFirebaseMessaging() {
       setToken(fcmToken);
       logger.log('[useFirebaseMessaging] FCM Token received:', fcmToken);
 
-      // Update FCM token on server
       await updateFcmTokenOnServer(fcmToken);
-      
       return fcmToken;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(errorMessage);
-      
+
       errorHandler.processError(err, {
         component: 'useFirebaseMessaging',
-        action: 'requestPermission'
+        action: 'requestPermissionAndToken'
       });
-      
+
       logger.error('[useFirebaseMessaging] Error getting FCM token:', err);
     }
   }, [updateFcmTokenOnServer]);
 
-  // Auto-retrieve token if permission is already granted and we have device data
   useEffect(() => {
-    if (Notification.permission === 'granted' && !token && !error && deviceData && idToken) {
-      logger.log('[useFirebaseMessaging] Permission already granted and device ready, retrieving FCM token');
-      requestPermission();
-    }
-  }, [token, error, requestPermission, idToken, deviceData]);
+    const shouldAttempt = (
+      Notification.permission !== 'denied' &&
+      deviceData?.deviceId &&
+      idToken
+    );
 
-  // Handle token refresh events
+    if (!shouldAttempt) return;
+
+    requestPermissionAndToken();
+  }, [deviceData?.deviceId, idToken, requestPermissionAndToken]);
+
   useEffect(() => {
     if (!messaging || !token || !deviceData) return;
 
-    // Listen for token refresh
     const handleTokenRefresh = async () => {
       try {
         if (!messaging) return;
-        
+
         const registration = await navigator.serviceWorker.getRegistration('/workers/notifications');
         if (!registration) return;
 
@@ -155,16 +152,14 @@ export function useFirebaseMessaging() {
           component: 'useFirebaseMessaging',
           action: 'tokenRefresh'
         });
-        
+
         logger.warn('[useFirebaseMessaging] Token refresh failed:', err);
       }
     };
 
-    // Check for token refresh periodically (every 24 hours)
     const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
-    
     return () => clearInterval(refreshInterval);
   }, [token, idToken, updateFcmTokenOnServer, deviceData]);
 
-  return { token, error, requestPermission };
+  return { token, error, requestPermission: requestPermissionAndToken };
 }

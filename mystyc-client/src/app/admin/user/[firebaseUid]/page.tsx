@@ -30,7 +30,7 @@ function UserDetailPage() {
         {
           key: 'authEvents',
           fetcher: (token: string, firebaseUid: string) => 
-            apiClientAdmin.getUserAuthEvents(token, firebaseUid, 50, 0),
+            apiClientAdmin.getUserAuthEvents(firebaseUid, 50, 0),
           optional: true,
         },
       ],

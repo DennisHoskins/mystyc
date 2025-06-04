@@ -30,7 +30,7 @@ export default function AdminPanelDevice({ device, onViewDevice }: AdminPanelDev
     }
 
     try {
-      await apiClientAdmin.sendDeviceNotification(idToken, device.deviceId);
+      await apiClientAdmin.sendDeviceNotification(device.deviceId);
       showToast(`Notification sent to device ${device.deviceId}`);
     } catch (error) {
       logger.error('Error sending notification to device', { 

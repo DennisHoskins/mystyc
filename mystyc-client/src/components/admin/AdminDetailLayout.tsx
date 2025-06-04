@@ -3,11 +3,7 @@ import React from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
-
-interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
+import { BreadcrumbItem } from '../ui/Breadcrumbs';
 
 interface AdminDetailLayoutProps {
   breadcrumbs: BreadcrumbItem[];

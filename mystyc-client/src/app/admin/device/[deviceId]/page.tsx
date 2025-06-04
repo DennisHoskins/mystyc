@@ -32,9 +32,9 @@ function DeviceDetailPage() {
         {
           key: 'deviceOwner',
           fetcher: async (token: string, deviceId: string) => {
-            const device = await apiClientAdmin.getDevice(token, deviceId);
+            const device = await apiClientAdmin.getDevice(deviceId);
             if (device?.firebaseUid) {
-              return await apiClientAdmin.getUser(token, device.firebaseUid);
+              return await apiClientAdmin.getUser(device.firebaseUid);
             }
             return null;
           },
@@ -43,7 +43,7 @@ function DeviceDetailPage() {
         {
           key: 'authEvents',
           fetcher: (token: string, deviceId: string) => 
-            apiClientAdmin.getDeviceAuthEvents(token, deviceId, 50, 0),
+            apiClientAdmin.getDeviceAuthEvents(deviceId, 50, 0),
           optional: true,
         },
       ]
@@ -101,7 +101,7 @@ function DeviceDetailPage() {
     }
 
     try {
-      await apiClientAdmin.sendDeviceNotification(idToken, device.deviceId);
+      await apiClientAdmin.sendDeviceNotification(device.deviceId);
       showToast('Notification sent to device successfully');
     } catch (error) {
       logger.error('Error sending notification to device', { 

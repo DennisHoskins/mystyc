@@ -25,7 +25,7 @@ export default function AdminPanelUser({ user, onViewUser }: AdminPanelUserProps
     }
 
     try {
-      await apiClientAdmin.sendUserNotification(idToken, user.firebaseUid);
+      await apiClientAdmin.sendUserNotification(user.firebaseUid);
       showToast(`Notification sent to all devices for ${user.fullName || user.email}`);
     } catch (error) {
       logger.error('Error sending notification to user devices', { 

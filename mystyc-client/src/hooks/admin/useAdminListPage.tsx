@@ -7,7 +7,7 @@ import { logger } from '@/util/logger';
 
 interface UseAdminListPageOptions<T> {
   entityName: string;
-  fetcher: (token: string, query?: Record<string, any>) => Promise<T[]>;
+  fetcher: (query?: Record<string, any>) => Promise<T[]>;
   query?: Record<string, any>;
 }
 
@@ -40,7 +40,7 @@ export function useAdminListPage<T>({
     setError(null);
 
     try {
-      const result = await fetcher(idToken, query);
+      const result = await fetcher(query);
       setData(result);
       logger.log(`[useAdminListPage] ${entityName} list loaded successfully`);
     } catch (err: any) {

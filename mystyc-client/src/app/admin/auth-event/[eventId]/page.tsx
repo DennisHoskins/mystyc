@@ -23,9 +23,9 @@ function AuthEventDetailPage() {
         {
           key: 'eventUser',
           fetcher: async (token: string, eventId: string) => {
-            const event = await apiClientAdmin.getAuthEvent(token, eventId);
+            const event = await apiClientAdmin.getAuthEvent(eventId);
             if (event?.firebaseUid) {
-              return await apiClientAdmin.getUser(token, event.firebaseUid);
+              return await apiClientAdmin.getUser(event.firebaseUid);
             }
             return null;
           },

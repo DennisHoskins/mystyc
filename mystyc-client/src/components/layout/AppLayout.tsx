@@ -1,37 +1,43 @@
 'use client';
 
 import { useEffect } from 'react';
+
 import '@/app/globals.css';
+
+import { initializeGlobalErrorHandler } from '@/util/globalErrorHandler';
+
+import { useToast } from '@/hooks/useToast';
+import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
 
 import { AuthProvider, useAuth } from '@/components/context/AuthContext';
 import { BusyProvider } from '@/components/context/BusyContext';
 import { TransitionProvider } from '@/components/context/TransitionContext';
 import { ToastProvider } from '@/components/context/ToastContext';
 import { OfflineProvider, useOffline } from '@/components/context/OfflineContext';
-import { setConnectionErrorHandler } from '@/api/apiClient';
-import { initializeGlobalErrorHandler } from '@/util/globalErrorHandler';
 
 import TransitionManager from '@/components/layout/TransitionManager';
-import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import Header from '@/components/layout/header/Header';
 import Footer from '@/components/layout/footer/Footer';
+
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import ToastContainer from '@/components/ui/ToastContainer';
 import Button from '@/components/ui/Button';
 
-function TokenRefreshError({ onRetry, isOnline }: { onRetry: () => void; isOnline: boolean }) {
+function TokenRefreshError({
+  onRetry,
+  isOnline,
+}: {
+  onRetry: () => void;
+  isOnline: boolean;
+}) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
       <div className="text-center space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {isOnline ? 'Session Error' : 'No Internet Connection'}
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">Something went wrong</h1>
         <p className="text-gray-600 max-w-md">
-          {isOnline 
-            ? "We're having trouble maintaining your session. Please try again."
-            : "Check your network connection and try again."
-          }
+          Failed to refresh authentication token. {isOnline ? 'Please try again.' : 'Check your connection.'}
         </p>
-        <Button onClick={onRetry}>Retry</Button>
+        <Button onClick={onRetry}>Try Again</Button>
       </div>
     </div>
   );
@@ -54,18 +60,28 @@ function ConnectionError({ onRetry }: { onRetry: () => void }) {
 function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { ready, tokenRefreshFailed, retryTokenRefresh } = useAuth();
   const { isOnline, showConnectionError, triggerConnectionError, clearConnectionError } = useOffline();
-  
+
   useEffect(() => {
-    setConnectionErrorHandler(triggerConnectionError);
     initializeGlobalErrorHandler();
   }, [triggerConnectionError]);
+
+  const { showToast } = useToast();
+  const { requestPermission } = useFirebaseMessaging();
+
+  useEffect(() => {
+    if (typeof Notification !== 'undefined' && Notification.permission !== 'denied') {
+      requestPermission().catch((err) => {
+        showToast('FCM permission or token failed: ' + (err?.message || err));
+      });
+    }
+  }, [requestPermission, showToast]);
 
   if (!ready) return null;
   if (showConnectionError) return <ConnectionError onRetry={clearConnectionError} />;
   if (tokenRefreshFailed) return <TokenRefreshError onRetry={retryTokenRefresh} isOnline={isOnline} />;
-  
+
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       fallbackTitle="App Error"
       fallbackMessage="The app encountered an error. Please refresh the page."
     >
@@ -82,10 +98,10 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function App({ children }: { children: React.ReactNode }) {
   return (
     <BusyProvider>
-      <ErrorBoundary>
+      <ErrorBoundary fallbackTitle="App Error" fallbackMessage="Something unexpected happened">
         <ToastProvider>
           <TransitionProvider>
             <OfflineProvider>
