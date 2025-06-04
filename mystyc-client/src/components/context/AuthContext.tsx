@@ -21,12 +21,12 @@ import {
 
 import { auth } from '@/lib/firebase';
 import { AuthEvent, User, Device } from '@/interfaces';
-import { logger } from '@/util/logger';
-import { errorHandler } from '@/util/errorHandler';
-import { useUserCache } from '@/hooks/useUserCache';
-import { useUserAPI } from '@/hooks/useUserAPI';
-import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 import { tokenStore } from '@/util/tokenStore';
+import { useUserAPI } from '@/hooks/useUserAPI';
+import { useUserCache } from '@/hooks/useUserCache';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
+import { errorHandler } from '@/util/errorHandler';
+import { logger } from '@/util/logger';
 
 interface AuthContextType {
  firebaseUser: FirebaseAuthUser | null;

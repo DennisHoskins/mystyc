@@ -19,6 +19,13 @@ export class NotificationsService {
   ) {}
 
   async sendNotification(token: string, title: string, body: string) {
+
+      console.log("");
+      console.log("");
+      console.log('sendNotification fcmToken----> ', token);
+      console.log("");
+      console.log("");
+
     try {
       const message = {
         notification: {
@@ -62,6 +69,14 @@ export class NotificationsService {
       type,
       sentBy
     });
+
+      console.log("");
+      console.log("");
+      console.log('sendDirectTokenNotification->Device: ', deviceId);
+      console.log('sendDirectTokenNotification->fcmToken: ', token);
+      console.log("");
+      console.log("");
+
 
     try {
       const messageId = await this.sendNotification(token, title, body);
@@ -153,6 +168,13 @@ export class NotificationsService {
     });
 
     try {
+      console.log("");
+      console.log("");
+      console.log('sendToSingleDevice->Device: ', device.deviceId);
+      console.log('sendToSingleDevice->fcmToken: ', device.fcmToken);
+      console.log("");
+      console.log("");
+
       const messageId = await this.sendNotification(device.fcmToken, title, body);
       
       // Update notification as sent

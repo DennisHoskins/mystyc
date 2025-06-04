@@ -1,10 +1,7 @@
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
-import { User } from '@/interfaces/user.interface';
-import { Device } from '@/interfaces/device.interface';
-import { AuthEvent } from '@/interfaces/authEvent.interface';
-import { RegisterSession } from '@/interfaces/registerSession.interface';
+import { User, Device, AuthEvent, RegisterSession } from '@/interfaces';
 import { tokenStore } from '@/util/tokenStore';
 
 const API_BASE_URL = 'https://skull.international/api';

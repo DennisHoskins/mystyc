@@ -9,6 +9,7 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { DeviceService } from '@/devices/device.service';
 import { NotificationsService } from '@/notifications/notifications.service';
+import { TestNotificationDto } from '@/notifications/dto/test-notification.dto';
 import { SendNotificationDto } from '@/notifications/dto/send-notification.dto';
 import { logger } from '@/util/logger';
 
@@ -20,7 +21,7 @@ export class AdminNotificationsSendController {
     private readonly notificationsService: NotificationsService
   ) {}
 
-  private async validateDeviceForUser(user: FirebaseUser, token: string, deviceId?: string) {
+  private async validateDeviceForUser(user: FirebaseUser, deviceId?: string) {
     const adminDevices = await this.deviceService.findByFirebaseUid(user.uid);
     
     logger.info('Validating device for user', {
@@ -30,16 +31,14 @@ export class AdminNotificationsSendController {
         platform: d.platform,
         hasToken: !!d.fcmToken 
       })),
-      providedToken: token.substring(0, 20) + '...',
       providedDeviceId: deviceId
     }, 'AdminNotificationsSendController');
 
-    const matchingDevice = adminDevices.find(device => device.fcmToken === token);
+    const matchingDevice = adminDevices.find(device => device.deviceId === deviceId);
     
     if (!matchingDevice) {
-      logger.security('FCM token mismatch in test notification', {
+      logger.security('Unable to locate Device', {
         adminUid: user.uid,
-        providedToken: token.substring(0, 20) + '...',
         providedDeviceId: deviceId,
         adminDeviceIds: adminDevices.map(d => d.deviceId),
         severity: 'critical'
@@ -56,14 +55,15 @@ export class AdminNotificationsSendController {
   @Roles(UserRole.ADMIN)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   async sendTestNotification(
-    @Body() body: { token: string; deviceId?: string },
+    @Body() testNotificationDto: TestNotificationDto,
     @FirebaseUserDecorator() user: FirebaseUser
   ) {
-    const matchingDevice = await this.validateDeviceForUser(user, body.token, body.deviceId);
+
+    const matchingDevice = await this.validateDeviceForUser(user, testNotificationDto.deviceId);
 
     try {
       const result = await this.notificationsService.sendDirectTokenNotification(
-        body.token,
+        matchingDevice.fcmToken,
         'Hello World',
         'This is a test notification from your server!',
         'test',

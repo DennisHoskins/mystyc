@@ -75,16 +75,21 @@ export const apiClientAdmin = {
   getNotification: (notificationId: string): Promise<Notification> =>
     fetchApi(`/admin/notification/${notificationId}`, { method: 'GET' }),
 
-  sendTestNotification: (): Promise<void> =>
-    fetchApi('/admin/notifications/test', { method: 'POST', body: {} }),
+  sendTestNotification: (deviceId: string): Promise<void> =>
+    fetchApi('/admin/notifications/test', { 
+      method: 'POST', 
+      body: {
+        deviceId,
+      } 
+    }),
 
   sendUserNotification: (firebaseUid: string): Promise<void> =>
     fetchApi('/admin/notifications/send', {
       method: 'POST',
       body: {
         firebaseUid,
-        title: 'Admin Notification',
-        body: 'You have received a notification from an administrator',
+        title: 'You Win!',
+        body: 'You have received a notification!',
       },
     }),
 
@@ -93,8 +98,8 @@ export const apiClientAdmin = {
       method: 'POST',
       body: {
         deviceId,
-        title: 'Admin Notification',
-        body: 'You have received a notification from an administrator',
+        title: 'You Win!',
+        body: 'You have received a notification!',
       },
     }),
 };

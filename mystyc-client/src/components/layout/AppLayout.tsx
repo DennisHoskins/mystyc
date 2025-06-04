@@ -6,14 +6,13 @@ import '@/app/globals.css';
 
 import { initializeGlobalErrorHandler } from '@/util/globalErrorHandler';
 
-import { useToast } from '@/hooks/useToast';
 import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
 
-import { AuthProvider, useAuth } from '@/components/context/AuthContext';
 import { BusyProvider } from '@/components/context/BusyContext';
-import { TransitionProvider } from '@/components/context/TransitionContext';
 import { ToastProvider } from '@/components/context/ToastContext';
+import { TransitionProvider } from '@/components/context/TransitionContext';
 import { OfflineProvider, useOffline } from '@/components/context/OfflineContext';
+import { AuthProvider, useAuth } from '@/components/context/AuthContext';
 
 import TransitionManager from '@/components/layout/TransitionManager';
 import Header from '@/components/layout/header/Header';
@@ -60,21 +59,19 @@ function ConnectionError({ onRetry }: { onRetry: () => void }) {
 function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { ready, tokenRefreshFailed, retryTokenRefresh } = useAuth();
   const { isOnline, showConnectionError, triggerConnectionError, clearConnectionError } = useOffline();
+  const { shouldRequestPermission, requestPermission } = useFirebaseMessaging();
+
+  useEffect(() => {
+    if (!shouldRequestPermission) {
+      return;
+    }
+
+    requestPermission();
+  }, [shouldRequestPermission, requestPermission]);
 
   useEffect(() => {
     initializeGlobalErrorHandler();
   }, [triggerConnectionError]);
-
-  const { showToast } = useToast();
-  const { requestPermission } = useFirebaseMessaging();
-
-  useEffect(() => {
-    if (typeof Notification !== 'undefined' && Notification.permission !== 'denied') {
-      requestPermission().catch((err) => {
-        showToast('FCM permission or token failed: ' + (err?.message || err));
-      });
-    }
-  }, [requestPermission, showToast]);
 
   if (!ready) return null;
   if (showConnectionError) return <ConnectionError onRetry={clearConnectionError} />;

@@ -4,12 +4,26 @@ import { messaging } from '@/lib/firebase';
 import { useAuth } from '@/components/context/AuthContext';
 import { apiClient } from '@/api/apiClient';
 import { errorHandler } from '@/util/errorHandler';
+import { isUserOnboarded } from '@/auth/util';
 import { logger } from '@/util/logger';
 
 export function useFirebaseMessaging() {
-  const [token, setToken] = useState<string | null>(null);
+  const [fcmToken, setFcmToken] = useState<string | null>(null);
+  const [shouldRequestPermission, setShouldRequestPermission] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { idToken, deviceData } = useAuth();
+  const { idToken, user, deviceData } = useAuth();
+
+  useEffect(() => {
+    if (!user || !isUserOnboarded(user.userProfile)) {
+      return;
+    }
+
+    if (Notification.permission != "default") {
+      return;
+    }
+
+    setShouldRequestPermission(true);
+  }, [user, setShouldRequestPermission]);
 
   useEffect(() => {
     if (messaging) {
@@ -29,9 +43,9 @@ export function useFirebaseMessaging() {
               requireInteraction: false,
             });
 
-            setTimeout(() => {
-              notification.close();
-            }, 5000);
+            // setTimeout(() => {
+            //   notification.close();
+            // }, 5000);
 
             notification.onclick = () => {
               window.focus();
@@ -97,7 +111,7 @@ export function useFirebaseMessaging() {
         serviceWorkerRegistration: registration
       });
 
-      setToken(fcmToken);
+      setFcmToken(fcmToken);
       logger.log('[useFirebaseMessaging] FCM Token received:', fcmToken);
 
       await updateFcmTokenOnServer(fcmToken);
@@ -128,7 +142,7 @@ export function useFirebaseMessaging() {
   }, [deviceData?.deviceId, idToken, requestPermissionAndToken]);
 
   useEffect(() => {
-    if (!messaging || !token || !deviceData) return;
+    if (!messaging || !fcmToken || !deviceData) return;
 
     const handleTokenRefresh = async () => {
       try {
@@ -142,9 +156,9 @@ export function useFirebaseMessaging() {
           serviceWorkerRegistration: registration
         });
 
-        if (newToken && newToken !== token) {
+        if (newToken && newToken !== fcmToken) {
           logger.log('[useFirebaseMessaging] FCM token refreshed:', newToken);
-          setToken(newToken);
+          setFcmToken(newToken);
           await updateFcmTokenOnServer(newToken);
         }
       } catch (err) {
@@ -159,7 +173,7 @@ export function useFirebaseMessaging() {
 
     const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
     return () => clearInterval(refreshInterval);
-  }, [token, idToken, updateFcmTokenOnServer, deviceData]);
+  }, [fcmToken, idToken, updateFcmTokenOnServer, deviceData]);
 
-  return { token, error, requestPermission: requestPermissionAndToken };
+  return { shouldRequestPermission, fcmToken, error, requestPermission: requestPermissionAndToken };
 }
