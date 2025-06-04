@@ -1,3 +1,6 @@
+import { config } from 'dotenv';
+config();
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import helmet from 'helmet';
@@ -7,6 +10,7 @@ import csurf from 'csurf';
 
 import { AppModule } from '@/app.module';
 import { logger } from '@/util/logger';
+import mongoose from 'mongoose';
 
 async function bootstrap() {
   logger.info('Starting application bootstrap');
@@ -27,19 +31,19 @@ async function bootstrap() {
   app.use(cookieParser());
   logger.debug('Cookie parser configured');
   
-  // CSRF protection - only in production same-origin setup
-  if (process.env.NODE_ENV === 'production') {
-    app.use(csurf({ 
-      cookie: {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict'
-      }
-    }));
-    logger.debug('CSRF protection enabled');
-  } else {
-    logger.debug('CSRF protection disabled for development');
-  }
+  // // CSRF protection - only in production same-origin setup
+  // if (process.env.NODE_ENV === 'production') {
+  //   app.use(csurf({ 
+  //     cookie: {
+  //       httpOnly: true,
+  //       secure: true,
+  //       sameSite: 'strict'
+  //     }
+  //   }));
+  //   logger.debug('CSRF protection enabled');
+  // } else {
+  //   logger.debug('CSRF protection disabled for development');
+  // }
   
   // Request size limits
   app.use(express.json({ limit: '10kb' }));
@@ -84,11 +88,19 @@ async function bootstrap() {
   
   // Enable CORS
   app.enableCors({
-    origin: [
-      'http://localhost:3000',        // Development
-      'https://mystyc.app',           // Production same-origin
-      /^https:\/\/.*\.loca\.lt$/      // Localtunnel
-    ],
+    origin: process.env.NODE_ENV === 'production' 
+      ? [
+          'https://mystyc.app', 
+          'https://skull.international', 
+          'https://skull.international:3000', 
+          'http://skull.international:3000',
+          'http://localhost:3000', 
+          /^https:\/\/.*\.loca\.lt$/] 
+      : [
+          'http://localhost:3000',
+          'http://localhost:3002', 
+          /^https:\/\/.*\.loca\.lt$/
+        ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Authorization,X-CSRF-Token',
   });
@@ -102,6 +114,16 @@ async function bootstrap() {
   logger.info('Application started successfully', { 
     port,
     environment: process.env.NODE_ENV || 'development' 
+  });
+
+  // MongoDB connection logging
+  mongoose.connection.on('connected', () => {
+    logger.info('MongoDB connected');
+  });
+
+  mongoose.connection.on('error', (err) => {
+    logger.error('MongoDB connection error', { error: err.message });
+    process.exit(1);
   });
 }
 
