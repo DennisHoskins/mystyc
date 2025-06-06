@@ -9,6 +9,7 @@ import { Notification, NotificationDocument } from './schemas/notification.schem
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { logger } from '@/util/logger';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class NotificationsService {
@@ -18,21 +19,36 @@ export class NotificationsService {
     private readonly userProfileService: UserProfileService
   ) {}
 
-  async sendNotification(token: string, title: string, body: string) {
+  async sendNotification(token: string, title: string, body: string, url: string = "https://skull.international") {
 
-      console.log("");
-      console.log("");
-      console.log('sendNotification fcmToken----> ', token);
-      console.log("");
-      console.log("");
+    console.log("");
+    console.log("");
+    console.log('sendNotification fcmToken----> ', token);
+    console.log("");
+    console.log("");
 
     try {
-      const message = {
-        notification: {
+      const message: admin.messaging.Message = {
+        token,
+        data: { 
           title,
           body,
+          type: 'daily_horoscope', 
+          url: url 
         },
-        token,
+        android: { 
+          collapseKey: 'daily_horoscope', 
+          priority: 'high', 
+          ttl: 86_400_000 
+        },
+        apns: {
+          headers: {
+            'apns-push-type': 'background',
+            'apns-priority': '5',
+            'apns-expiration': `${Math.floor(Date.now()/1000)+86_400}`
+          },
+          payload: { aps: { 'content-available': 1 } }
+        }
       };
 
       const response = await firebaseAdmin.messaging().send(message);

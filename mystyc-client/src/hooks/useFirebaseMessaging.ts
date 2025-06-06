@@ -93,6 +93,10 @@ export function useFirebaseMessaging() {
     try {
       if (!messaging) throw new Error('Messaging not supported');
 
+      if ('serviceWorker' in navigator === false) {
+        throw new Error('Messaging Service not supported');
+      }
+
       let permission = Notification.permission;
 
       if (permission === 'default') {
@@ -103,8 +107,11 @@ export function useFirebaseMessaging() {
         throw new Error('Notification permission not granted');
       }
 
-      const registration = await navigator.serviceWorker.register('/workers/notifications');
-      logger.log('[useFirebaseMessaging] Service worker registered:', registration);
+      const swPath = '/firebase-sw.js';
+
+      const existing = await navigator.serviceWorker.getRegistration(swPath);
+      const registration = existing ?? await navigator.serviceWorker.register(swPath);
+      console.log('Service‑worker ready:', registration);
 
       const fcmToken = await getToken(messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
