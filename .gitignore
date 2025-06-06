@@ -73,3 +73,6 @@
 
 # Firebase
 **/FirebaseServiceAccountKey.json
+
+# Generated files
+mystyc-client/public/sw-env.js
