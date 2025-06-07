@@ -1,6 +1,6 @@
-import { DeviceDto } from '@/devices/dto/device.dto';
+import { Device } from './device.interface';
 
-export interface RegisterSession {
-  device: DeviceDto;
+export interface AuthEventLoginRegister {
+  device: Device;
   clientTimestamp: string;
 }

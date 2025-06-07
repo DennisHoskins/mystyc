@@ -1,4 +1,4 @@
-export interface RegisterSession {
+export interface AuthEventLogout {
   deviceId: string;
   clientTimestamp: string;
 }
