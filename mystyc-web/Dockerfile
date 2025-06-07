@@ -2,7 +2,7 @@
 FROM node:18-alpine
 
 # Create app directory
-WORKDIR /app
+WORKDIR /web
 
 # Copy package.json and install dependencies
 COPY package.json package-lock.json ./
