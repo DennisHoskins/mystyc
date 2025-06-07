@@ -142,7 +142,7 @@ export class NotificationsService {
     token: string, 
     title: string, 
     body: string, 
-    url: string = "https://skull.international"
+    url: string = "https://mystyc.app"
   ) {
     try {
       const message: admin.messaging.Message = {

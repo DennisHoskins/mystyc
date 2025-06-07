@@ -43,7 +43,6 @@ async function bootstrap() {
     origin: process.env.NODE_ENV === 'production' 
       ? [
           'https://mystyc.app', 
-          'https://skull.international', 
           'https://mystyc-client.loca.lt',
         ] 
       : [
