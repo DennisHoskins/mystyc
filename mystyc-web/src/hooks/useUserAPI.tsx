@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User as FirebaseAuthUser } from 'firebase/auth';
 import { apiClient } from '@/api/apiClient';
-import { User, Device, AuthEvent } from '@/interfaces';
+import { User, Device, AuthEventLoginRegister } from '@/interfaces';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 import { useUserCache } from './useUserCache';
@@ -36,13 +36,19 @@ export function useUserAPI() {
   const fetchCompleteUserWithDevice = async (
     firebaseUser: FirebaseAuthUser,
     deviceData: Device,
-    authEventData: AuthEvent,
+    authEventData: AuthEventLoginRegister,
     setUser: (user: User | null) => void,
     regenerateDeviceId: () => string
   ): Promise<User | null> => {
     try {
       logger.log('[useUserAPI] Fetching user with device registration...');
-      const user = await apiClient.registerSession(deviceData, authEventData);
+
+      const registerDTO: AuthEventLoginRegister = {
+        device: deviceData,
+        clientTimestamp: new Date().toISOString()
+      };
+
+      const user = await apiClient.registerSession(registerDTO);
       logger.log('[useUserAPI] Complete user with device response:', user);
       setCachedUser(user);
       setUser(user);
@@ -73,9 +79,14 @@ export function useUserAPI() {
           // Regenerate device ID and retry once
           const newDeviceId = regenerateDeviceId();
           const updatedDeviceData = { ...deviceData, deviceId: newDeviceId };
+
+          const updatedRegisterDTO: AuthEventLoginRegister = {
+            device: updatedDeviceData,
+            clientTimestamp: new Date().toISOString()
+          };
           
           logger.log('[useUserAPI] Retrying with new device ID:', newDeviceId);
-          const userRetry = await apiClient.registerSession(updatedDeviceData, authEventData);
+          const userRetry = await apiClient.registerSession(updatedRegisterDTO);
           setCachedUser(userRetry);
           setUser(userRetry);
           return userRetry;

@@ -20,7 +20,7 @@ import {
 } from 'firebase/auth';
 
 import { auth } from '@/lib/firebase';
-import { AuthEvent, User, Device } from '@/interfaces';
+import { User, Device, AuthEventLoginRegister } from '@/interfaces';
 import { tokenStore } from '@/util/tokenStore';
 import { useUserAPI } from '@/hooks/useUserAPI';
 import { useUserCache } from '@/hooks/useUserCache';
@@ -201,13 +201,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
      hasAttemptedDeviceRegistration.current = true;
      logger.log('[AuthContext] First auth - using device registration');
      
-     const authEventData: AuthEvent = {
-       firebaseUid: firebaseUser.uid,
-       deviceId: deviceData.deviceId,
-       ip: '127.0.0.1',
-       platform: deviceData.platform,
+     const authEventData: AuthEventLoginRegister = {
+       device: deviceData,
        clientTimestamp: new Date().toISOString(),
-       type: 'login'
      };
      
      fetchCompleteUserWithDevice(

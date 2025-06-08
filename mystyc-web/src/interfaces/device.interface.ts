@@ -8,5 +8,4 @@ export interface Device {
   userAgentParsed?: Record<string, any>;
   fcmToken?: string;
   appVersion?: string;
-  notificationReady?: boolean;
 }

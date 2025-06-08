@@ -26,7 +26,7 @@ export default function TableAuthEvents({
       id: 'summary',
       header: 'Summary',
       cell: ({ row }) => {
-        const { _id, clientTimestamp, type, deviceId, platform, firebaseUid } = row.original;
+        const { _id, clientTimestamp, type, deviceId, firebaseUid } = row.original;
         return (
           <div className="space-y-1">
             <div className="font-medium text-sm">
@@ -46,9 +46,6 @@ export default function TableAuthEvents({
               ) : (
                 new Date(clientTimestamp).toLocaleString()
               )}
-            </div>
-            <div className="text-gray-500 text-xs">
-              {platform || 'Unknown platform'}
             </div>
             <div className="text-sm">
               Device: <TableCellLink value={deviceId} prefix="/admin/device" />

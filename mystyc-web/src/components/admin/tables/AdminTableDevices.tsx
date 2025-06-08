@@ -26,7 +26,7 @@ export default function TableDevices({
       id: 'summary',
       header: 'Summary',
       cell: ({ row }) => {
-        const { deviceId, platform, appVersion, notificationReady } = row.original;
+        const { deviceId, platform, appVersion, fcmToken } = row.original;
         return (
           <div className="space-y-1">
             <div className="font-medium text-sm">
@@ -38,11 +38,11 @@ export default function TableDevices({
             </div>
             <div className="text-xs">
               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                notificationReady 
+                fcmToken 
                   ? 'bg-green-100 text-green-800' 
                   : 'bg-gray-100 text-gray-800'
               }`}>
-                {notificationReady ? 'Notifications Ready' : 'Not Ready'}
+                {fcmToken ? 'Notifications Ready' : 'Not Ready'}
               </span>
             </div>
           </div>

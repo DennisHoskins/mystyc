@@ -4,7 +4,7 @@ import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from './useCustomRouter';
 import { errorHandler, ErrorContext, ProcessedError } from '@/util/errorHandler';
 import { apiClient } from '@/api/apiClient';  // ← added import
-import type { AuthEvent } from '@/interfaces/authEvent.interface';
+import type { AuthEventLogout } from '@/interfaces/authEventLogout.interface';
 
 interface UseErrorHandlerOptions {
   component?: string;
@@ -41,18 +41,12 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
 
     if (processedError.isForceLogout) {
       if (deviceData && idToken && firebaseUser) {
-        const authEvent: AuthEvent = {
-          firebaseUid: firebaseUser.uid,
+        const authEvent: AuthEventLogout = {
           deviceId: deviceData.deviceId,
-          ip: '',
-          platform: deviceData.platform,
           clientTimestamp: new Date().toISOString(),
-          type: 'logout',
         };
-        apiClient.logout({
-          device: deviceData, 
-          authEvent
-        }).catch((err) =>
+        apiClient.logout(authEvent)
+          .catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
               action: 'logoutTracking',
@@ -68,18 +62,12 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
 
     if (processedError.code === '401') {
       if (deviceData && idToken && firebaseUser) {
-        const authEvent: AuthEvent = {
-          firebaseUid: firebaseUser.uid,
+        const authEvent: AuthEventLogout = {
           deviceId: deviceData.deviceId,
-          ip: '',
-          platform: deviceData.platform,
           clientTimestamp: new Date().toISOString(),
-          type: 'logout',
         };
-        apiClient.logout({ 
-          device: deviceData, 
-          authEvent
-        }).catch((err) =>
+        apiClient.logout(authEvent)
+          .catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
               action: 'logoutTracking',

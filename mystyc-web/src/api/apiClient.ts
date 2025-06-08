@@ -1,7 +1,7 @@
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
-import { User, Device, AuthEvent, RegisterSession } from '@/interfaces';
+import { AuthEventLoginRegister, AuthEventLogout, User, UpdateFcmToken } from '@/interfaces';
 import { tokenStore } from '@/util/tokenStore';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -87,21 +87,19 @@ export async function fetchApi<T = any>(
 
 export const apiClient = {
   registerSession: (
-    deviceData: Device,
-    authEventData: AuthEvent
+    dto: AuthEventLoginRegister
   ): Promise<User> =>
     fetchApi<User>('/users/me', {
       method: 'POST',
-      body: { device: deviceData, authEvent: authEventData },
+      body: dto,
     }),    
 
  updateFcmToken: (
-    deviceId: string,
-    fcmToken: string
+    dto: UpdateFcmToken
   ): Promise<void> =>
     fetchApi<void>('/devices/notify-token', {
       method: 'POST',
-      body: { deviceId, fcmToken },
+      body: dto,
     }),    
 
   getCurrentUser: (): Promise<User> =>
@@ -110,7 +108,7 @@ export const apiClient = {
     }),
 
   logout: (
-    dto: RegisterSession
+    dto: AuthEventLogout
   ): Promise<void> =>
     fetchApi<void>('/users/logout', {
       method: 'POST',
@@ -118,10 +116,10 @@ export const apiClient = {
     }),
 
   updateUserProfile: (
-    data: UpdateUserProfileData
+    dto: UpdateUserProfileData
   ): Promise<User> =>
     fetchApi<User>('/users/update-profile', {
       method: 'PATCH',
-      body: data,
+      body: dto,
     }),    
 };

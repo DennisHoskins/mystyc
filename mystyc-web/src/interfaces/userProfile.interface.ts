@@ -1,5 +1,3 @@
-import { UserRole } from './userRole.interface';
-
 export interface UserProfile {
   id: string; 
   firebaseUid: string;
@@ -7,7 +5,7 @@ export interface UserProfile {
   fullName?: string;
   dateOfBirth?: Date | null;
   zodiacSign?: string;
-  roles: UserRole[];
+  roles: string[];
   createdAt: Date;
   updatedAt: Date;
 }

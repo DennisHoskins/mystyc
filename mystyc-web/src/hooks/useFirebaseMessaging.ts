@@ -6,6 +6,7 @@ import { apiClient } from '@/api/apiClient';
 import { errorHandler } from '@/util/errorHandler';
 import { isUserOnboarded } from '@/auth/util';
 import { logger } from '@/util/logger';
+import { UpdateFcmToken } from '@/interfaces';
 
 export function useFirebaseMessaging() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
@@ -73,7 +74,12 @@ export function useFirebaseMessaging() {
     }
 
     try {
-      await apiClient.updateFcmToken(deviceData.deviceId, fcmToken);
+      const updateFcmToken: UpdateFcmToken = {
+        deviceId: deviceData.deviceId, 
+        fcmToken
+      }
+
+      await apiClient.updateFcmToken(updateFcmToken);
       logger.log('[useFirebaseMessaging] FCM token updated on server successfully');
     } catch (err) {
       errorHandler.processError(err, {

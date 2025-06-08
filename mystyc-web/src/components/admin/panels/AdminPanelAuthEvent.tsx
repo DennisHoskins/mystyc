@@ -28,11 +28,6 @@ export default function AdminPanelAuthEvent({ authEvent }: AdminPanelAuthEventPr
         </div>
         
         <div>
-          <Text variant="small" className="font-medium text-blue-600 mb-1">Platform</Text>
-          <Text className="text-blue-800">{authEvent.platform || '—'}</Text>
-        </div>
-        
-        <div>
           <Text variant="small" className="font-medium text-blue-600 mb-1">Device ID</Text>
           <Text className="text-blue-800 font-mono text-sm break-all">{authEvent.deviceId}</Text>
         </div>
