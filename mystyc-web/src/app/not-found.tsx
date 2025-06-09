@@ -10,6 +10,7 @@ import Heading from '@/components/ui/Heading';
 export default function NotFound() {
   return (
     <PageContainer>
+
       <div className="text-center">
         <Heading level={1} size="3xl" className="sm:text-5xl">
           Page Not Found
@@ -23,6 +24,7 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
+      
     </PageContainer>
   );
 }

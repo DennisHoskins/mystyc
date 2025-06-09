@@ -1,9 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useAuth } from '@/components/context/AuthContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useUserCache } from '@/hooks/useUserCache';
 
 import PageContainerAuth from '@/components/layout/PageContainerAuth';
 import FormLayout from '@/components/layout/FormLayout';
@@ -12,18 +9,9 @@ import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function ServerLogoutPage() {
-  const { signOut } = useAuth();
-  const { clearCachedUser } = useUserCache();
   const router = useCustomRouter();
 
-  // Ensure clean state on page load
-  useEffect(() => {
-    clearCachedUser();
-    signOut(true);
-  }, [signOut, clearCachedUser]);
-
   const handleLoginClick = () => {
-    // Clear any remaining state and redirect to fresh login
     router.replace('/login');
   };
 

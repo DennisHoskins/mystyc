@@ -1,13 +1,11 @@
 'use client';
 
-import { useAuth } from '@/components/context/AuthContext';
-import PublicRoot from '@/components/root/PublicRoot';
-import UserRoot from '@/components/root/UserRoot';
+import { useApp } from '@/components/context/AppContext';
+import Home from '@/app/(website)/home';
+import Mystyc from '@/app/(mystyc)/mystyc';
 
-export default function Page() {
-  const { firebaseUser, loading } = useAuth();
+export default function Root() {
+  const { app } = useApp();
 
-  if (loading) return null;
-
-  return firebaseUser ? <UserRoot /> : <PublicRoot />;
+  return app && app.user ? <Mystyc /> : <Home />;
 }

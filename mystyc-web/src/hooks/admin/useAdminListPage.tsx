@@ -1,14 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
 
-import { useAuth } from '@/components/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useBusy } from '@/components/context/BusyContext';
+import { AdminQuery } from '@/interfaces';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { logger } from '@/util/logger';
 
 interface UseAdminListPageOptions<T> {
   entityName: string;
-  fetcher: (query?: Record<string, any>) => Promise<T[]>;
-  query?: Record<string, any>;
+  fetcher: (
+    authToken: string,
+    query?: AdminQuery
+  ) => Promise<T[]>;
+  query?: AdminQuery;
 }
 
 interface UseAdminListPageReturn<T> {
@@ -23,7 +27,7 @@ export function useAdminListPage<T>({
   fetcher,
   query,
 }: UseAdminListPageOptions<T>): UseAdminListPageReturn<T> {
-  const { idToken } = useAuth();
+  const { authToken } = useAuth();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler();
   
@@ -32,7 +36,7 @@ export function useAdminListPage<T>({
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (!idToken) return;
+    if (!authToken) return;
 
     logger.log(`[useAdminListPage] Fetching ${entityName} list`);
     setBusy(true);
@@ -40,7 +44,7 @@ export function useAdminListPage<T>({
     setError(null);
 
     try {
-      const result = await fetcher(query);
+      const result = await fetcher(authToken, query);
       setData(result);
       logger.log(`[useAdminListPage] ${entityName} list loaded successfully`);
     } catch (err: any) {
@@ -52,7 +56,7 @@ export function useAdminListPage<T>({
       setBusy(false);
     }
   }, [
-    idToken,
+    authToken,
     entityName,
     fetcher,
     query,

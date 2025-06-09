@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
-import { useAuth } from '@/components/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
@@ -11,7 +11,11 @@ interface EntityFetcher<T> {
   main: (id: string) => Promise<T>;
   related?: Array<{
     key: string;
-    fetcher: (id: string, ...args: any[]) => Promise<any>;
+    fetcher: (
+      authToken: string, 
+      id: string, 
+      ...args: any[]
+    ) => Promise<any>;
     optional?: boolean;
     args?: any[];
   }>;
@@ -40,7 +44,7 @@ export function useAdminDetailPage<T>({
 }: UseAdminDetailPageOptions<T>): UseAdminDetailPageReturn<T> {
   const params = useParams();
   const entityId = params[paramKey] as string;
-  const { idToken } = useAuth();
+  const { authToken } = useAuth();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler();
   const router = useCustomRouter();
@@ -51,7 +55,7 @@ export function useAdminDetailPage<T>({
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (!idToken || !entityId) return;
+    if (!authToken || !entityId) return;
 
     logger.log(`[useAdminDetailPage] Fetching ${entityName} details for:`, entityId);
     setBusy(true);
@@ -76,7 +80,9 @@ export function useAdminDetailPage<T>({
         for (const relatedFetcher of fetcher.related) {
           try {
             const args = relatedFetcher.args || [];
-            const result = await relatedFetcher.fetcher(entityId, ...args);
+
+            const result = await relatedFetcher.fetcher(authToken, entityId, ...args);
+
             relatedResults[relatedFetcher.key] = result;
             logger.log(`[useAdminDetailPage] ${relatedFetcher.key} loaded successfully`);
           } catch (relatedErr) {
@@ -100,7 +106,7 @@ export function useAdminDetailPage<T>({
       setBusy(false);
     }
   }, [
-    idToken,
+    authToken,
     entityId,
     entityName,
     fetcher,

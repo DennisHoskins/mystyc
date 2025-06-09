@@ -1,7 +1,16 @@
 import type { Metadata } from 'next';
 import Head from 'next/head';
 
-import AppLayout from '@/components/layout/AppLayout';
+import { getApp } from '@/server/appManager';
+
+import { BusyProvider } from '@/components/context/BusyContext';
+import { TransitionProvider } from '@/components/context/TransitionContext';
+import { ToastProvider } from '@/components/context/ToastContext';
+
+import ToastContainer from '@/components/ui/ToastContainer';
+import HomeLayout from '@/app/(website)/layout';
+import { AppProvider } from '@/components/context/AppContext';
+import MystycLayout from '@/app/(mystyc)/layout';
 
 export const metadata: Metadata = {
   title: 'mystyc',
@@ -13,7 +22,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const app = await getApp();
+
   return (
     <html lang="en">
       <Head>
@@ -25,7 +36,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <AppLayout>{children}</AppLayout>
+        <ToastProvider>
+          <BusyProvider>
+            <TransitionProvider>
+              {app ? (
+                <AppProvider app={app}>
+                  <MystycLayout>{children}</MystycLayout>
+                </AppProvider>
+              ) : (
+                <HomeLayout>{children}</HomeLayout>
+              )}
+            </TransitionProvider>
+          </BusyProvider>
+           <ToastContainer />
+        </ToastProvider>
       </body>
     </html>
   );

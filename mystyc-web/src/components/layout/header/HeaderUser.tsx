@@ -1,16 +1,17 @@
 'use client';
 
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useAuth } from '@/components/context/AuthContext';
-import { isUserAdmin } from '@/auth/util';
+import { useApp } from '@/components/context/AppContext';
+import { useAuth } from '@/hooks/useAuth';
+import { isUserAdmin } from '@/util/util';
 import AppLogo from '@/components/layout/AppLogo';
 import Button from '@/components/ui/Button';
 
 /* Desktop navigation (md+): logo, centered links, admin logout on far right */
 function DesktopNav() {
   const router = useCustomRouter();
-  const { user } = useAuth();
-  const isAdmin = isUserAdmin(user?.userProfile);
+  const { app } = useApp();
+  const isAdmin = isUserAdmin(app?.user?.userProfile);
 
   return (
     <nav className="hidden md:flex w-full bg-white border-b sticky top-0 z-10 px-4 py-3">
@@ -63,8 +64,9 @@ function DesktopNav() {
 /* Mobile header (<md): logo and logout, scrollable header—no border */
 function MobileHeader() {
   const router = useCustomRouter();
-  const { signOut, user } = useAuth();
-  const isAdmin = isUserAdmin(user?.userProfile);
+  const { signOut } = useAuth();
+  const { app } = useApp();
+  const isAdmin = isUserAdmin(app?.user?.userProfile);
 
   return (
     <header className="md:hidden w-full bg-white px-4 py-3">

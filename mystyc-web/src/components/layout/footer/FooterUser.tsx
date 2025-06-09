@@ -1,16 +1,16 @@
 'use client';
 
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useAuth } from '@/components/context/AuthContext';
-import { isUserAdmin } from '@/auth/util';
+import { useApp } from '@/components/context/AppContext';
+import { isUserAdmin } from '@/util/util';
 
 /**
  * Fixed‐bottom mobile nav: visible only on <md
  */
 function MobileNav() {
   const router = useCustomRouter();
-  const { user } = useAuth();
-  const isAdmin = isUserAdmin(user?.userProfile);
+  const { app } = useApp();
+  const isAdmin = isUserAdmin(app?.user?.userProfile);
 
   return (
     <nav className="fixed bottom-0 left-0 w-full bg-white border-t md:hidden">
@@ -39,9 +39,9 @@ function MobileNav() {
  * Use plain buttons/text for consistent alignment
  */
 function DesktopFooter() {
-  const { user } = useAuth();
+  const { app } = useApp();
   const router = useCustomRouter();
-  const isAdmin = isUserAdmin(user?.userProfile);
+  const isAdmin = isUserAdmin(app?.user?.userProfile);
 
   return (
     <footer className="hidden md:flex w-full border-t bg-white px-4 py-3 text-sm text-gray-500">

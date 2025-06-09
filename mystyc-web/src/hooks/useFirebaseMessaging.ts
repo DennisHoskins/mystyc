@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
 import { messaging } from '@/lib/firebase';
-import { useAuth } from '@/components/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { apiClient } from '@/api/apiClient';
 import { errorHandler } from '@/util/errorHandler';
-import { isUserOnboarded } from '@/auth/util';
+import { isUserOnboarded } from '@/util/util';
 import { logger } from '@/util/logger';
 import { UpdateFcmToken } from '@/interfaces';
 
@@ -12,7 +12,8 @@ export function useFirebaseMessaging() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [shouldRequestPermission, setShouldRequestPermission] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { idToken, user, deviceData } = useAuth();
+  // const { authToken, user, deviceData } = useAuth();
+  const { authToken, user } = useAuth();
 
   useEffect(() => {
     if (!user || !isUserOnboarded(user.userProfile)) {
@@ -63,9 +64,13 @@ export function useFirebaseMessaging() {
   }, []);
 
   const updateFcmTokenOnServer = useCallback(async (fcmToken: string) => {
-    if (!idToken) {
+    if (!authToken) {
       logger.warn('[useFirebaseMessaging] No auth token available for FCM token update');
       return;
+    }
+
+    const deviceData = {
+      deviceId: ''
     }
 
     if (!deviceData?.deviceId) {
@@ -79,7 +84,7 @@ export function useFirebaseMessaging() {
         fcmToken
       }
 
-      await apiClient.updateFcmToken(updateFcmToken);
+      await apiClient.updateFcmToken(authToken, updateFcmToken);
       logger.log('[useFirebaseMessaging] FCM token updated on server successfully');
     } catch (err) {
       errorHandler.processError(err, {
@@ -93,7 +98,8 @@ export function useFirebaseMessaging() {
 
       logger.warn('[useFirebaseMessaging] Failed to update FCM token on server, continuing...');
     }
-  }, [idToken, deviceData?.deviceId]);
+  // }, [authToken, deviceData?.deviceId]);
+  }, [authToken]);
 
   const requestPermissionAndToken = useCallback(async () => {
     try {
@@ -145,17 +151,19 @@ export function useFirebaseMessaging() {
   useEffect(() => {
     const shouldAttempt = (
       Notification.permission !== 'denied' &&
-      deviceData?.deviceId &&
-      idToken
+//      deviceData?.deviceId &&
+      authToken
     );
 
     if (!shouldAttempt) return;
 
     requestPermissionAndToken();
-  }, [deviceData?.deviceId, idToken, requestPermissionAndToken]);
+  // }, [deviceData?.deviceId, authToken, requestPermissionAndToken]);
+  }, [authToken, requestPermissionAndToken]);
 
   useEffect(() => {
-    if (!messaging || !fcmToken || !deviceData) return;
+    // if (!messaging || !fcmToken || !deviceData) return;
+    if (!messaging || !fcmToken) return;
 
     const handleTokenRefresh = async () => {
       try {
@@ -186,7 +194,8 @@ export function useFirebaseMessaging() {
 
     const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
     return () => clearInterval(refreshInterval);
-  }, [fcmToken, idToken, updateFcmTokenOnServer, deviceData]);
+  // }, [fcmToken, authToken, updateFcmTokenOnServer, deviceData]);
+  }, [fcmToken, authToken, updateFcmTokenOnServer]);
 
   return { shouldRequestPermission, fcmToken, error, requestPermission: requestPermissionAndToken };
 }

@@ -2,13 +2,13 @@ import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
 import { AuthEventLoginRegister, AuthEventLogout, User, UpdateFcmToken } from '@/interfaces';
-import { tokenStore } from '@/util/tokenStore';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 interface ApiOptions {
+  authToken?: string;
   method?: HttpMethod;
   body?: any;
   headers?: Record<string, string>;
@@ -21,18 +21,17 @@ interface UpdateUserProfileData {
 }
 
 export async function fetchApi<T = any>(
+  authToken: string,
   endpoint: string,
   options: ApiOptions
 ): Promise<T> {
   const { method = 'GET', body, headers = {} } = options;
   
-  const currentToken = tokenStore.getToken();
-
   const requestOptions: RequestInit = {
     method,
     headers: {
       'Content-Type': 'application/json',
-      ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
       ...headers,
     },
   };
@@ -87,38 +86,56 @@ export async function fetchApi<T = any>(
 
 export const apiClient = {
   registerSession: (
+    authToken: string,
     dto: AuthEventLoginRegister
   ): Promise<User> =>
-    fetchApi<User>('/users/me', {
-      method: 'POST',
-      body: dto,
-    }),    
+    fetchApi<User>(
+      authToken,
+      '/users/me', 
+      {
+        method: 'POST',
+        body: dto,
+      }
+    ),    
 
  updateFcmToken: (
+    authToken: string,
     dto: UpdateFcmToken
   ): Promise<void> =>
-    fetchApi<void>('/devices/notify-token', {
+    fetchApi<void>(
+      authToken,
+      '/devices/notify-token', {
       method: 'POST',
       body: dto,
     }),    
 
-  getCurrentUser: (): Promise<User> =>
-    fetchApi<User>('/users/me', {
+  getCurrentUser: (
+    authToken: string,
+  ): Promise<User> =>
+    fetchApi<User>(
+      authToken,
+      '/users/me', {
       method: 'GET',
     }),
 
   logout: (
+    authToken: string,
     dto: AuthEventLogout
   ): Promise<void> =>
-    fetchApi<void>('/users/logout', {
+    fetchApi<void>(
+      authToken,
+      '/users/logout', {
       method: 'POST',
       body: dto,
     }),
 
   updateUserProfile: (
+    authToken: string,
     dto: UpdateUserProfileData
   ): Promise<User> =>
-    fetchApi<User>('/users/update-profile', {
+    fetchApi<User>(
+      authToken,
+      '/users/update-profile', {
       method: 'PATCH',
       body: dto,
     }),    

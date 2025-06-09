@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useToast } from './useToast';
-import { useAuth } from '@/components/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from './useCustomRouter';
 import { errorHandler, ErrorContext, ProcessedError } from '@/util/errorHandler';
 import { apiClient } from '@/api/apiClient';  // ← added import
@@ -15,7 +15,8 @@ interface UseErrorHandlerOptions {
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
   const { showToast } = useToast();
 
-  const { idToken, deviceData, firebaseUser, signOut } = useAuth();  // ← added deviceData, idToken, firebaseUser
+  // const { authToken, deviceData, firebaseUser, signOut } = useAuth();
+  const { authToken, firebaseUser, signOut } = useAuth();
   const routerRef = useRef(useCustomRouter());
   const signOutRef = useRef(signOut);
   const showToastRef = useRef(showToast);
@@ -37,15 +38,19 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
       ...context,
     };
 
+    const deviceData = {
+      deviceId: ""
+    }
+
     const processedError = errorHandler.processError(error, fullContext);
 
     if (processedError.isForceLogout) {
-      if (deviceData && idToken && firebaseUser) {
+      if (deviceData && authToken && firebaseUser) {
         const authEvent: AuthEventLogout = {
           deviceId: deviceData.deviceId,
           clientTimestamp: new Date().toISOString(),
         };
-        apiClient.logout(authEvent)
+        apiClient.logout(authToken, authEvent)
           .catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
@@ -55,18 +60,18 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
       }
 
       if (context?.action !== 'login' && context?.action !== 'register') {
-        signOutRef.current(true);
+        signOutRef.current();
         routerRef.current.replace('/login');
       }
     }
 
     if (processedError.code === '401') {
-      if (deviceData && idToken && firebaseUser) {
+      if (deviceData && authToken && firebaseUser) {
         const authEvent: AuthEventLogout = {
           deviceId: deviceData.deviceId,
           clientTimestamp: new Date().toISOString(),
         };
-        apiClient.logout(authEvent)
+        apiClient.logout(authToken, authEvent)
           .catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
@@ -75,7 +80,7 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
           );
       }
 
-      signOutRef.current(true);
+      signOutRef.current();
       routerRef.current.replace('/login');
     }
 
@@ -84,7 +89,8 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     return processedError;
-  }, [firebaseUser, idToken, deviceData]);
+  // }, [firebaseUser, authToken, deviceData]);
+  }, [firebaseUser, authToken]);
 
   const handleAuthError = useCallback((error: any) => {
     return handleError(error, { component: 'AuthHandler', action: 'auth' });
