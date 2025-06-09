@@ -4,8 +4,7 @@ import AdminPanel from './AdminPanel';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 import { Device } from '@/interfaces/device.interface';
-import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { useAuth } from '@/hooks/useAuth';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { useToast } from '@/hooks/useToast';
 import { logger } from '@/util/logger';
 
@@ -15,7 +14,6 @@ interface AdminPanelDeviceProps {
 }
 
 export default function AdminPanelDevice({ device, onViewDevice }: AdminPanelDeviceProps) {
-  const { authToken } = useAuth();
   const { showToast } = useToast();
 
   const handleSendNotification = async () => {
@@ -24,13 +22,8 @@ export default function AdminPanelDevice({ device, onViewDevice }: AdminPanelDev
       return;
     }
 
-    if (!authToken) {
-      showToast('Authentication required');
-      return;
-    }
-
     try {
-      await apiClientAdmin.sendDeviceNotification(authToken, device.deviceId);
+      await apiClientAdmin.sendDeviceNotification(device.deviceId);
       showToast(`Notification sent to device ${device.deviceId}`);
     } catch (error) {
       logger.error('Error sending notification to device', { 

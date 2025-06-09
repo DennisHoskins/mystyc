@@ -1,6 +1,6 @@
 'use client';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { Device } from '@/interfaces/device.interface';
 import { useAdminListPage } from '@/hooks/admin/useAdminListPage';
 import { AdminQuery } from '@/interfaces';
@@ -11,7 +11,7 @@ import TableDevices from '@/components/admin/tables/AdminTableDevices';
 function DevicesPage() {
   const { data: devices, loading, error, refresh } = useAdminListPage<Device>({
     entityName: 'devices',
-    fetcher: (authToken: string, query?: AdminQuery) => apiClientAdmin.getDevices(authToken, query),
+    fetcher: (query?: AdminQuery) => apiClientAdmin.getDevices(query),
   });
 
   return (

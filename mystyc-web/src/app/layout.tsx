@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Head from 'next/head';
 
+import '@/app/globals.css';
+
 import { getApp } from '@/server/appManager';
 import { getDeviceId } from '@/server/deviceManager';
 
@@ -41,16 +43,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ToastProvider>
           <BusyProvider>
             <TransitionProvider>
-              {app ? (
-                <AppProvider app={app} deviceId={deviceId}>
-                  <MystycLayout>{children}</MystycLayout>
-                </AppProvider>
-              ) : (
-                <HomeLayout>{children}</HomeLayout>
-              )}
+              <AppProvider app={app} deviceId={deviceId}>
+                <MystycLayout app={app}>{children}</MystycLayout>
+                <HomeLayout app={app}>{children}</HomeLayout>
+              </AppProvider>
             </TransitionProvider>
           </BusyProvider>
-           <ToastContainer />
+          <ToastContainer />
         </ToastProvider>
       </body>
     </html>

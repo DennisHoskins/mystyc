@@ -2,11 +2,10 @@
 
 import { useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { Notification } from '@/interfaces/notification.interface';
 import { Device } from '@/interfaces/device.interface';
 import { UserProfile } from '@/interfaces/userProfile.interface';
-import { useAuth } from '@/hooks/useAuth';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
 
 import AdminDetailLayout from '@/components/admin/AdminDetailLayout';
@@ -16,18 +15,17 @@ import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import Heading from '@/components/ui/Heading';
 
 function NotificationDetailPage() {
-  const { authToken } = useAuth();
 
   const fetcher = useMemo(
     () => ({
-      main: (notificationId: string) => apiClientAdmin.getNotification(authToken!, notificationId),
+      main: (notificationId: string) => apiClientAdmin.getNotification(notificationId),
       related: [
         {
           key: 'notificationUser',
           fetcher: async (notificationId: string) => {
-            const notification = await apiClientAdmin.getNotification(authToken!, notificationId);
+            const notification = await apiClientAdmin.getNotification(notificationId);
             if (notification?.firebaseUid) {
-              return await apiClientAdmin.getUser(authToken!, notification.firebaseUid);
+              return await apiClientAdmin.getUser(notification.firebaseUid);
             }
             return null;
           },
@@ -36,9 +34,9 @@ function NotificationDetailPage() {
         {
           key: 'notificationDevice',
           fetcher: async (notificationId: string) => {
-            const notification = await apiClientAdmin.getNotification(authToken!, notificationId);
+            const notification = await apiClientAdmin.getNotification(notificationId);
             if (notification?.deviceId) {
-              return await apiClientAdmin.getDevice(authToken!, notification.deviceId);
+              return await apiClientAdmin.getDevice(notification.deviceId);
             }
             return null;
           },
@@ -46,7 +44,7 @@ function NotificationDetailPage() {
         },
       ],
     }),
-    [authToken]
+    []
   );
 
   const {

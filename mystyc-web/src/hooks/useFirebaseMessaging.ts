@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
 
-import { messaging } from '@/api/apiFirebase';
-import { apiClient } from '@/api/apiClient';
+import { messaging } from '@/api/firebase/apiFirebase';
+import { apiClient } from '@/api/client/apiClient';
 
 import { UpdateFcmToken } from '@/interfaces';
 
@@ -72,11 +72,6 @@ export function useFirebaseMessaging() {
       return;
     }
 
-    if (!app.authToken) {
-      logger.warn('[useFirebaseMessaging] No auth token available for FCM token update');
-      return;
-    }
-
     if (!app.deviceId) {
       logger.warn('[useFirebaseMessaging] No device ID available for FCM token update');
       return;
@@ -88,7 +83,7 @@ export function useFirebaseMessaging() {
         fcmToken
       }
 
-      await apiClient.updateFcmToken(app.authToken, updateFcmToken);
+      await apiClient.updateFcmToken(updateFcmToken);
       logger.log('[useFirebaseMessaging] FCM token updated on server successfully');
     } catch (err) {
       errorHandler.processError(err, {
@@ -158,8 +153,7 @@ export function useFirebaseMessaging() {
 
     const shouldAttempt = (
       Notification.permission !== 'denied' &&
-      app.deviceId &&
-      app.authToken
+      app.deviceId
     );
 
     if (!shouldAttempt) return;

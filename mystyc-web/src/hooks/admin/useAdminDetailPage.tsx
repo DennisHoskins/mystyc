@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
-import { useAuth } from '@/hooks/useAuth';
 import { useBusy } from '@/components/context/BusyContext';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
@@ -12,7 +11,6 @@ interface EntityFetcher<T> {
   related?: Array<{
     key: string;
     fetcher: (
-      authToken: string, 
       id: string, 
       ...args: any[]
     ) => Promise<any>;
@@ -44,7 +42,6 @@ export function useAdminDetailPage<T>({
 }: UseAdminDetailPageOptions<T>): UseAdminDetailPageReturn<T> {
   const params = useParams();
   const entityId = params[paramKey] as string;
-  const { authToken } = useAuth();
   const { setBusy } = useBusy();
   const { handleError } = useErrorHandler();
   const router = useCustomRouter();
@@ -55,7 +52,7 @@ export function useAdminDetailPage<T>({
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (!authToken || !entityId) return;
+    if (!entityId) return;
 
     logger.log(`[useAdminDetailPage] Fetching ${entityName} details for:`, entityId);
     setBusy(true);
@@ -81,7 +78,7 @@ export function useAdminDetailPage<T>({
           try {
             const args = relatedFetcher.args || [];
 
-            const result = await relatedFetcher.fetcher(authToken, entityId, ...args);
+            const result = await relatedFetcher.fetcher(entityId, ...args);
 
             relatedResults[relatedFetcher.key] = result;
             logger.log(`[useAdminDetailPage] ${relatedFetcher.key} loaded successfully`);
@@ -106,7 +103,6 @@ export function useAdminDetailPage<T>({
       setBusy(false);
     }
   }, [
-    authToken,
     entityId,
     entityName,
     fetcher,

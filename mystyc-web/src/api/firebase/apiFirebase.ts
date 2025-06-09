@@ -14,10 +14,6 @@ import { Messaging, getMessaging } from 'firebase/messaging';
 
 import { errorHandler } from '@/util/errorHandler';
 
-console.log("!!!!!");
-console.log("!!!!!LOADING FIREBASE CONFIG");
-console.log("!!!!!");
-
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

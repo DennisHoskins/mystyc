@@ -1,6 +1,6 @@
 'use client';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { AuthEvent } from '@/interfaces/authEvent.interface';
 import { useAdminListPage } from '@/hooks/admin/useAdminListPage';
 import { AdminQuery } from '@/interfaces';
@@ -11,7 +11,7 @@ import TableAuthEvents from '@/components/admin/tables/AdminTableAuthEvents';
 function AuthEventsPage() {
   const { data: events, loading, error, refresh } = useAdminListPage<AuthEvent>({
     entityName: 'auth events',
-    fetcher: (authToken: string, query?: AdminQuery) => apiClientAdmin.getAuthEvents(authToken, query),
+    fetcher: (query?: AdminQuery) => apiClientAdmin.getAuthEvents(query),
   });
 
   return (

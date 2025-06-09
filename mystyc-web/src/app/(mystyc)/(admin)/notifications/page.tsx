@@ -1,6 +1,6 @@
 'use client';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { Notification } from '@/interfaces/notification.interface';
 import { useApp } from '@/components/context/AppContext';
 import { useAdminListPage } from '@/hooks/admin/useAdminListPage';
@@ -18,7 +18,7 @@ function NotificationsPage() {
   const { showToast } = useToast();
   const { data: notifications, loading, error, refresh } = useAdminListPage<Notification>({
     entityName: 'notifications',
-    fetcher: (authToken: string, query?: AdminQuery) => apiClientAdmin.getNotifications(authToken, query),
+    fetcher: (query?: AdminQuery) => apiClientAdmin.getNotifications(query),
   });
 
   if (!app) {
@@ -26,7 +26,7 @@ function NotificationsPage() {
   }
 
   const handleSendNotification = async () => {
-    if (!app || !app.authToken) {
+    if (!app) {
       return;
     }
 
@@ -41,10 +41,7 @@ function NotificationsPage() {
     }
 
     try {
-      await apiClientAdmin.sendTestNotification(
-        app.authToken,
-        deviceId
-      );
+      await apiClientAdmin.sendTestNotification(deviceId);
       showToast('Test notification sent successfully');
     } catch (error) {
       logger.error('Error sending notification', { 

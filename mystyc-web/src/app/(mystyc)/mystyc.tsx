@@ -16,5 +16,9 @@ export default function Mystyc() {
     }
   }, [app]);
 
+  if (!app) {
+    return null;
+  }
+
   return showOnboarding ? <OnboardingLayout /> : <Dashboard />;
 }

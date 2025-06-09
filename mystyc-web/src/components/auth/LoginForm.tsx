@@ -12,7 +12,7 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import { useBusy } from '@/components/context/BusyContext';
 
-export default function LoginForm({ deviceId }: { deviceId: string }) {
+export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ export default function LoginForm({ deviceId }: { deviceId: string }) {
     setBusy(true);
 
     try {
-      await signIn(deviceId, email, password);
+      await signIn(email, password);
     } catch (err: any) {
       handleAuthError(err);
       setLoading(false);

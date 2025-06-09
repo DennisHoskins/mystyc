@@ -2,10 +2,9 @@
 
 import { useEffect, useState, useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { User, UserProfile, Device, AuthEvent } from '@/interfaces';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
-import { useAuth } from '@/hooks/useAuth';
 import { useApp } from '@/components/context/AppContext';
 
 import AdminDetailLayout from '@/components/admin/AdminDetailLayout';
@@ -16,29 +15,28 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
 function UserDetailPage() {
-  const { authToken } = useAuth();
   const { app } = useApp();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
  
   const fetcher = useMemo(
     () => ({
-      main: (firebaseUid: string) => apiClientAdmin.getUser(authToken!, firebaseUid),
+      main: (firebaseUid: string) => apiClientAdmin.getUser(firebaseUid),
       related: [
         {
           key: 'devices',
           fetcher: (firebaseUid: string) =>
-            apiClientAdmin.getUserDevices(authToken!, firebaseUid),
+            apiClientAdmin.getUserDevices(firebaseUid),
           optional: true,
         },
         {
           key: 'authEvents',
           fetcher: (firebaseUid: string) => 
-            apiClientAdmin.getUserAuthEvents(authToken!, firebaseUid),
+            apiClientAdmin.getUserAuthEvents(firebaseUid),
           optional: true,
         },
       ],
     }),
-    [authToken]
+    []
   );
   
   const {

@@ -2,8 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { useAuth } from '@/hooks/useAuth';
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { AuthEvent, Device } from '@/interfaces';
 import { UserProfile } from '@/interfaces/userProfile.interface';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
@@ -15,19 +14,18 @@ import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
 import Heading from '@/components/ui/Heading';
 
 function AuthEventDetailPage() {
-  const { authToken } = useAuth();
 
   const fetcher = useMemo(
     () => (
       {
-      main: (eventId: string) => apiClientAdmin.getAuthEvent(authToken!, eventId),
+      main: (eventId: string) => apiClientAdmin.getAuthEvent(eventId),
       related: [
         {
           key: 'eventUser',
           fetcher: async (eventId: string) => {
-            const event = await apiClientAdmin.getAuthEvent(authToken!, eventId);
+            const event = await apiClientAdmin.getAuthEvent(eventId);
             if (event?.firebaseUid) {
-              return await apiClientAdmin.getUser(authToken!, event.firebaseUid);
+              return await apiClientAdmin.getUser(event.firebaseUid);
             }
             return null;
           },
@@ -40,7 +38,7 @@ function AuthEventDetailPage() {
         },
       ],
     }),
-    [authToken]
+    []
   );
 
   const {

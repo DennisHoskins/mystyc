@@ -4,8 +4,7 @@ import AdminPanel from './AdminPanel';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 import { UserProfile } from '@/interfaces/userProfile.interface';
-import { useAuth } from '@/hooks/useAuth';
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { useToast } from '@/hooks/useToast';
 import { logger } from '@/util/logger';
 
@@ -15,17 +14,11 @@ interface AdminPanelUserProps {
 }
 
 export default function AdminPanelUser({ user, onViewUser }: AdminPanelUserProps) {
-  const { authToken } = useAuth();
   const { showToast } = useToast();
 
   const handleSendNotification = async () => {
-    if (!authToken) {
-      showToast('Authentication required');
-      return;
-    }
-
     try {
-      await apiClientAdmin.sendUserNotification(authToken, user.firebaseUid);
+      await apiClientAdmin.sendUserNotification(user.firebaseUid);
       showToast(`Notification sent to all devices for ${user.fullName || user.email}`);
     } catch (error) {
       logger.error('Error sending notification to user devices', { 

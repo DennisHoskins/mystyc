@@ -3,7 +3,7 @@ import { useToast } from './useToast';
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from './useCustomRouter';
 import { errorHandler, ErrorContext, ProcessedError } from '@/util/errorHandler';
-import { apiClient } from '@/api/apiClient';  // ← added import
+import { apiClient } from '@/api/client/apiClient';  // ← added import
 import type { AuthEventLogout } from '@/interfaces/authEventLogout.interface';
 
 interface UseErrorHandlerOptions {
@@ -15,8 +15,7 @@ interface UseErrorHandlerOptions {
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
   const { showToast } = useToast();
 
-  // const { authToken, deviceData, firebaseUser, signOut } = useAuth();
-  const { authToken, firebaseUser, signOut } = useAuth();
+  const { firebaseUser, signOut } = useAuth();
   const routerRef = useRef(useCustomRouter());
   const signOutRef = useRef(signOut);
   const showToastRef = useRef(showToast);
@@ -45,12 +44,12 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     const processedError = errorHandler.processError(error, fullContext);
 
     if (processedError.isForceLogout) {
-      if (deviceData && authToken && firebaseUser) {
+      if (deviceData && firebaseUser) {
         const authEvent: AuthEventLogout = {
           deviceId: deviceData.deviceId,
           clientTimestamp: new Date().toISOString(),
         };
-        apiClient.logout(authToken, authEvent)
+        apiClient.logout(authEvent)
           .catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
@@ -66,12 +65,12 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     if (processedError.code === '401') {
-      if (deviceData && authToken && firebaseUser) {
+      if (deviceData && firebaseUser) {
         const authEvent: AuthEventLogout = {
           deviceId: deviceData.deviceId,
           clientTimestamp: new Date().toISOString(),
         };
-        apiClient.logout(authToken, authEvent)
+        apiClient.logout(authEvent)
           .catch((err) =>
             errorHandler.processError(err, {
               component: 'useErrorHandler',
@@ -89,8 +88,7 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     return processedError;
-  // }, [firebaseUser, authToken, deviceData]);
-  }, [firebaseUser, authToken]);
+  }, [firebaseUser]);
 
   const handleAuthError = useCallback((error: any) => {
     return handleError(error, { component: 'AuthHandler', action: 'auth' });

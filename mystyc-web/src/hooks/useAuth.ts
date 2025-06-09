@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 
-import { apiFirebase } from '@/api/apiFirebase';
+import { apiFirebase } from '@/api/firebase/apiFirebase';
 import { useFirebase } from '@/hooks/useFirebase';
 import { useUser } from '@/hooks/useUser';
 import { useApp } from '@/components/context/AppContext';
@@ -12,7 +12,7 @@ export function useAuth() {
  const { fetchCompleteUserWithDevice, clearUser } = useUser();
  const { app } = useApp();
   
- const signIn = useCallback(async (deviceFingerprint: string, email: string, password: string) => {
+ const signIn = useCallback(async (email: string, password: string) => {
    const firebaseUser = await apiFirebase.signIn(email, password);
    const user = await fetchCompleteUserWithDevice(firebaseUser);
    return user;
@@ -23,7 +23,7 @@ export function useAuth() {
    await clearUser();
  }, [clearUser]);
  
- const register = useCallback(async (deviceFingerprint: string, email: string, password: string) => {
+ const register = useCallback(async (email: string, password: string) => {
    const firebaseUser = await apiFirebase.register(email, password);
    const user = await fetchCompleteUserWithDevice(firebaseUser);
    return user;
@@ -40,7 +40,6 @@ export function useAuth() {
    resetPassword,
    firebaseUser,
    user: app?.user,
-   authToken: app?.authToken,
    loading: !app
  };
 }

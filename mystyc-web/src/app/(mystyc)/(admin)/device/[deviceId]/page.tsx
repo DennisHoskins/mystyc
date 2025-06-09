@@ -2,9 +2,8 @@
 
 import { useState, useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 
-import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
 
@@ -23,19 +22,18 @@ import Button from '@/components/ui/Button';
 function DeviceDetailPage() {
   const [authEventsLoading, setAuthEventsLoading] = useState(false);
   const [authEventsError, setAuthEventsError] = useState<string | null>(null);
-  const { authToken } = useAuth();
   const { showToast } = useToast();
 
   const fetcher = useMemo(
     () => ({
-      main: (deviceId: string) => apiClientAdmin.getDevice(authToken!, deviceId),
+      main: (deviceId: string) => apiClientAdmin.getDevice(deviceId),
       related: [
         {
           key: 'deviceOwner',
           fetcher: async (deviceId: string) => {
-            const device = await apiClientAdmin.getDevice(authToken!, deviceId);
+            const device = await apiClientAdmin.getDevice(deviceId);
             if (device?.firebaseUid) {
-              return await apiClientAdmin.getUser(authToken!, device.firebaseUid);
+              return await apiClientAdmin.getUser(device.firebaseUid);
             }
             return null;
           },
@@ -44,12 +42,12 @@ function DeviceDetailPage() {
         {
           key: 'authEvents',
           fetcher: (deviceId: string) => 
-            apiClientAdmin.getDeviceAuthEvents(authToken!, deviceId),
+            apiClientAdmin.getDeviceAuthEvents(deviceId),
           optional: true,
         },
       ]
     }),
-    [authToken]
+    []
   );
 
   const {
@@ -96,13 +94,8 @@ function DeviceDetailPage() {
       return;
     }
 
-    if (!authToken) {
-      showToast('Authentication required');
-      return;
-    }
-
     try {
-      await apiClientAdmin.sendDeviceNotification(authToken, device.deviceId);
+      await apiClientAdmin.sendDeviceNotification(device.deviceId);
       showToast('Notification sent to device successfully');
     } catch (error) {
       logger.error('Error sending notification to device', { 
