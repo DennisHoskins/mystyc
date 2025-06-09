@@ -3,14 +3,14 @@ import { User as FirebaseAuthUser } from 'firebase/auth';
 import { apiClient } from '@/api/apiClient';
 import { App } from '@/interfaces/app.interface';
 import { useApp } from '@/components/context/AppContext';
-import { useServerSync } from '@/hooks/useServerSync';
-import { User, Device, AuthEventLoginRegister } from '@/interfaces';
+import { User, AuthEventLoginRegister } from '@/interfaces';
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
+import getDevice from '@/util/getDeviceFingerprint';
+import { syncApp, clearApp } from '@/server/syncServer';
 
 export function useUser() {
   const { app, setApp } = useApp();
-  const { syncToServer } = useServerSync();
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
   const fetchCompleteUser = useCallback(async (firebaseUser: FirebaseAuthUser): Promise<User | null> => {
@@ -24,8 +24,8 @@ export function useUser() {
       
       const newAppState = { ...app, user };
       setApp(newAppState);
-      await syncToServer(newAppState);
-      
+
+      await syncApp(newAppState);
       return user;
     } catch (err) {
       errorHandler.processError(err, {
@@ -36,21 +36,26 @@ export function useUser() {
       
       const newAppState = { ...app, user: null };
       setApp(newAppState);
-      await syncToServer(newAppState);
+      await syncApp(newAppState);
       return null;
     }
-  }, [app, setApp, syncToServer]);
+ }, [app, setApp, syncApp]);
 
   const fetchCompleteUserWithDevice = useCallback(async (
-    firebaseUser: FirebaseAuthUser,
-    deviceData: Device
+    firebaseUser: FirebaseAuthUser
   ): Promise<User | null> => {
     if (!app || !app.authToken) {
       return null;
     }
 
+    if (!app.deviceId) {
+      return null;
+    }
+
     try {
       logger.log('[useUser] Fetching user with device registration...');
+
+      const deviceData = getDevice(firebaseUser.uid, app.deviceId);
 
       const registerDTO: AuthEventLoginRegister = {
         device: deviceData,
@@ -64,12 +69,14 @@ export function useUser() {
       
       const newAppState: App = { 
         authToken: app.authToken,
+        deviceId: app.deviceId,
         user: user,
         fcmToken: null
       };
 
       setApp(newAppState);
-      await syncToServer(newAppState);
+
+      await syncApp(newAppState);
       
       return user;
     } catch (err: any) {
@@ -87,10 +94,10 @@ export function useUser() {
       
       const newAppState = { ...app, user: null };
       setApp(newAppState);
-      await syncToServer(newAppState);
+      await syncApp(newAppState);
       return null;
     }
-  }, [app, setApp, syncToServer, fetchCompleteUser]);
+  }, [app, setApp, syncApp, fetchCompleteUser]);
 
   const clearUser = useCallback(async (): Promise<void> => {
     if (!app) {
@@ -99,11 +106,12 @@ export function useUser() {
     try {
       const newAppState = { 
         authToken: app.authToken,
+        deviceId: null,
         user: null,
         fcmToken: app.fcmToken
       };
       setApp(newAppState);
-      await syncToServer(newAppState);
+      await clearApp();
       
       logger.log('[useUser] User cleared and synced successfully');
     } catch (err) {
@@ -113,7 +121,7 @@ export function useUser() {
       });
       throw err;
     }
-  }, [app, setApp, syncToServer]);
+  }, [app, setApp, syncApp, clearApp]);
 
   const updateProfile = useCallback(async (
     data: Partial<{ fullName?: string; dateOfBirth?: string; zodiacSign?: string }>
@@ -133,12 +141,13 @@ export function useUser() {
       
       const newAppState: App = { 
         authToken: app.authToken,
+        deviceId: app.deviceId,
         user: updatedUser,
         fcmToken: null
       };
 
       setApp(newAppState);
-      await syncToServer(newAppState);
+      await syncApp(newAppState);
     } catch (err) {
       errorHandler.processError(err, {
         component: 'useUser',
@@ -148,7 +157,7 @@ export function useUser() {
     } finally {
       setIsUpdatingProfile(false);
     }
-  }, [app, setApp, syncToServer, isUpdatingProfile]);
+  }, [app, setApp, syncApp, isUpdatingProfile]);
 
   return {
     fetchCompleteUser,

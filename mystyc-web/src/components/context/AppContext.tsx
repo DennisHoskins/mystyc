@@ -1,39 +1,49 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { App } from '@/interfaces/app.interface';
 
 interface AppContextType {
   app: App | null;
-  setApp: (app: App) => void;
+  setApp: (app: App | null) => void;
+  deviceId: string | null;
+  setDeviceId: (deviceId: string | null) => void;
 }
 
-const AppContext = createContext<AppContextType>({
-  app: { authToken: null, user: null, fcmToken: null },
-  setApp: () => {},
-});
+const AppContext = createContext<AppContextType | undefined>(undefined);
 
-interface AppProviderProps {
-  app: App | null;
-  children: ReactNode;
+export function AppProvider({ 
+  app,
+  deviceId, 
+  children 
+}: { 
+  app: App | null; 
+  deviceId: string | null; 
+  children: ReactNode 
+}) {
+  const [thisApp, setApp] = useState<App | null>(app);
+  const [thisDeviceId, setDeviceId] = useState<string | null>(deviceId);
+
+  useEffect(() => {
+    setApp(app);
+  }, [app]);
+
+  useEffect(() => {
+    setDeviceId(deviceId);
+  }, [deviceId]);
+
+  return (
+    <AppContext.Provider value={{ 
+      app: thisApp, setApp,
+      deviceId: thisDeviceId, setDeviceId 
+    }}>
+      {children}
+    </AppContext.Provider>
+  );
 }
 
-export function AppProvider({ app, children }: AppProviderProps) {
-  const [thisApp, setApp] = useState<App>(app || { authToken: null, user: null, fcmToken: null });
-
-  const value = {
-    app: thisApp,
-    setApp: setApp,
-  };
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+export function useApp(): AppContextType {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error('useApp must be used inside AppProvider');
+  return ctx;
 }
-
-export const useApp = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
-  return context;
-};

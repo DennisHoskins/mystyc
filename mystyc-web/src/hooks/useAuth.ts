@@ -6,7 +6,6 @@ import { apiFirebase } from '@/api/apiFirebase';
 import { useFirebase } from '@/hooks/useFirebase';
 import { useUser } from '@/hooks/useUser';
 import { useApp } from '@/components/context/AppContext';
-import { collectDeviceFingerprint } from '@/util/deviceFingerprint';
 
 export function useAuth() {
  const { firebaseUser } = useFirebase();
@@ -15,9 +14,8 @@ export function useAuth() {
   
  const signIn = useCallback(async (deviceFingerprint: string, email: string, password: string) => {
    const firebaseUser = await apiFirebase.signIn(email, password);
-   const device = collectDeviceFingerprint(firebaseUser.uid, deviceFingerprint);
-   await fetchCompleteUserWithDevice(firebaseUser, device);
-   return firebaseUser;
+   const user = await fetchCompleteUserWithDevice(firebaseUser);
+   return user;
  }, [fetchCompleteUserWithDevice]);
  
  const signOut = useCallback(async () => {
@@ -27,9 +25,8 @@ export function useAuth() {
  
  const register = useCallback(async (deviceFingerprint: string, email: string, password: string) => {
    const firebaseUser = await apiFirebase.register(email, password);
-   const device = collectDeviceFingerprint(firebaseUser.uid, deviceFingerprint);
-   await fetchCompleteUserWithDevice(firebaseUser, device);
-   return firebaseUser;
+   const user = await fetchCompleteUserWithDevice(firebaseUser);
+   return user;
  }, [fetchCompleteUserWithDevice]);
  
  const resetPassword = useCallback(async (email: string) => {

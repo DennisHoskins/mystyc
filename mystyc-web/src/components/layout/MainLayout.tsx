@@ -97,32 +97,32 @@
 // export default async function MainLayout({ children }: { children: React.ReactNode }) {
 
 //   return (
-//     <BusyProvider>
-//       <ErrorBoundary fallbackTitle="App Error" fallbackMessage="Something unexpected happened">
-//         <ToastProvider>
-//           <TransitionProvider>
-//             <OfflineProvider>
-//               <LayoutWrapper>
+    // <BusyProvider>
+    //   <ErrorBoundary fallbackTitle="App Error" fallbackMessage="Something unexpected happened">
+    //     <ToastProvider>
+    //       <TransitionProvider>
+    //         <OfflineProvider>
+    //           <LayoutWrapper>
 
-//                 {app ? (
-
-
-//                     <MystycLayout>{children}</MystycLayout>
-//                   ) : (
+    //             {app ? (
 
 
-//                     <WebsiteLayout>{children}</WebsiteLayout>
+    //                 <MystycLayout>{children}</MystycLayout>
+    //               ) : (
+
+
+    //                 <WebsiteLayout>{children}</WebsiteLayout>
 
                     
-//                   )
-//                 }
+    //               )
+    //             }
 
-//               </LayoutWrapper>
-//             </OfflineProvider>
-//           </TransitionProvider>
-//           <ToastContainer />
-//         </ToastProvider>
-//       </ErrorBoundary>
-//     </BusyProvider>
+    //           </LayoutWrapper>
+    //         </OfflineProvider>
+    //       </TransitionProvider>
+    //       <ToastContainer />
+    //     </ToastProvider>
+    //   </ErrorBoundary>
+    // </BusyProvider>
 //   );
 // }

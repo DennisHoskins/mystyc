@@ -2,8 +2,7 @@
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces/notification.interface';
-import { useAuth } from '@/hooks/useAuth';
-import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
+import { useApp } from '@/components/context/AppContext';
 import { useAdminListPage } from '@/hooks/admin/useAdminListPage';
 import { useToast } from '@/hooks/useToast';
 import { AdminQuery } from '@/interfaces';
@@ -15,20 +14,23 @@ import Button from '@/components/ui/Button';
 import Text from '@/components/ui/Text';
 
 function NotificationsPage() {
-  const { authToken } = useAuth();
-  const { fcmToken } = useFirebaseMessaging();
+  const { app } = useApp();
   const { showToast } = useToast();
   const { data: notifications, loading, error, refresh } = useAdminListPage<Notification>({
     entityName: 'notifications',
     fetcher: (authToken: string, query?: AdminQuery) => apiClientAdmin.getNotifications(authToken, query),
   });
 
+  if (!app) {
+    return;
+  }
+
   const handleSendNotification = async () => {
-    if (!authToken) {
+    if (!app || !app.authToken) {
       return;
     }
 
-    if (!fcmToken) {
+    if (!app.fcmToken) {
       showToast('Notifications not available - please enable them first');
       return;
     }
@@ -40,7 +42,7 @@ function NotificationsPage() {
 
     try {
       await apiClientAdmin.sendTestNotification(
-        authToken,
+        app.authToken,
         deviceId
       );
       showToast('Test notification sent successfully');
@@ -60,7 +62,7 @@ function NotificationsPage() {
       action={
         <Button 
           onClick={handleSendNotification}
-          disabled={!fcmToken}
+          disabled={!app.fcmToken}
           variant="primary"
         >
           Send Test Notification

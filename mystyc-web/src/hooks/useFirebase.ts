@@ -5,12 +5,11 @@ import { User as FirebaseAuthUser } from 'firebase/auth';
 
 import { apiFirebase } from '@/api/apiFirebase';
 import { useApp } from '@/components/context/AppContext';
-import { useServerSync } from '@/hooks/useServerSync';
+import { syncApp, clearApp } from '@/server/syncServer';
 import { logger } from '@/util/logger';
 
 export function useFirebase() {
   const { app, setApp } = useApp();
-  const { syncToServer } = useServerSync();
   const [firebaseUser, setFirebaseUser] = useState<FirebaseAuthUser | null>(null);
   const [tokenRefreshFailed, setTokenRefreshFailed] = useState(false);
   const [isRefreshingToken, setIsRefreshingToken] = useState(false);
@@ -24,11 +23,12 @@ export function useFirebase() {
     if (!firebaseUser) {
       const newAppState = { 
         authToken: null,
+        deviceId: null,
         user: app.user,
         fcmToken: app.fcmToken
       };
       setApp(newAppState);
-      await syncToServer(newAppState);
+      await syncApp(newAppState);
       setTokenRefreshFailed(false);
       return;
     }
@@ -45,7 +45,7 @@ export function useFirebase() {
       const token = await apiFirebase.getIdToken(firebaseUser, true);
       const newAppState = { ...app, authToken: token };
       setApp(newAppState);
-      await syncToServer(newAppState);
+      await syncApp(newAppState);
       setTokenRefreshFailed(false);
       setHasQuotaError(false);
       logger.log('[useFirebase] Token updated successfully');
@@ -57,9 +57,14 @@ export function useFirebase() {
         logger.log('[useFirebase] Token revoked - killing auth flow');
         
         // Clear all state immediately
-        const clearedState = { authToken: null, user: null, fcmToken: null };
+        const clearedState = { 
+          authToken: null, 
+          deviceId: null,
+          user: null, 
+          fcmToken: null 
+        };
         setApp(clearedState);
-        await syncToServer(clearedState);
+        await clearApp();
         
         // Force redirect to server logout page
         window.location.href = '/server-logout';
@@ -74,12 +79,12 @@ export function useFirebase() {
       
       const newAppState = { ...app, authToken: null };
       setApp(newAppState);
-      await syncToServer(newAppState);
+      await syncApp(newAppState);
       setTokenRefreshFailed(true);
     } finally {
       setIsRefreshingToken(false);
     }
-  }, [isRefreshingToken, hasQuotaError, app, setApp, syncToServer]);
+  }, [isRefreshingToken, hasQuotaError, app, setApp, syncApp]);
 
   const retryTokenRefresh = useCallback(async () => {
     if (firebaseUser) {
@@ -104,9 +109,14 @@ export function useFirebase() {
       if (firebaseUser && !app?.authToken) {
         await updateIdToken(firebaseUser);
       } else if (!firebaseUser) {
-        const clearedState = { authToken: null, user: null, fcmToken: null };
+        const clearedState = { 
+          authToken: null, 
+          deviceId: null,
+          user: null, 
+          fcmToken: null 
+        };
         setApp(clearedState);
-        await syncToServer(clearedState);
+        clearApp();
         setTokenRefreshFailed(false);
       }
       
@@ -117,7 +127,7 @@ export function useFirebase() {
       logger.log('[useFirebase] Cleaning up onAuthStateChanged listener');
       unsubscribe();
     };
-  }, [updateIdToken, app, setApp, syncToServer]);
+  }, [updateIdToken, app, setApp, syncApp, clearApp]);
 
   return {
     firebaseUser,

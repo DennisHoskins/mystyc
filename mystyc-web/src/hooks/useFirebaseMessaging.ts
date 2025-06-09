@@ -1,22 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
-import { messaging } from '@/lib/firebase';
-import { useAuth } from '@/hooks/useAuth';
+
+import { messaging } from '@/api/apiFirebase';
 import { apiClient } from '@/api/apiClient';
+
+import { UpdateFcmToken } from '@/interfaces';
+
+import { useApp } from '@/components/context/AppContext';
+
 import { errorHandler } from '@/util/errorHandler';
+
 import { isUserOnboarded } from '@/util/util';
 import { logger } from '@/util/logger';
-import { UpdateFcmToken } from '@/interfaces';
 
 export function useFirebaseMessaging() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [shouldRequestPermission, setShouldRequestPermission] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  // const { authToken, user, deviceData } = useAuth();
-  const { authToken, user } = useAuth();
+  const { app } = useApp();
 
   useEffect(() => {
-    if (!user || !isUserOnboarded(user.userProfile)) {
+    if (!app || !app.user || !isUserOnboarded(app.user.userProfile)) {
       return;
     }
 
@@ -25,7 +29,7 @@ export function useFirebaseMessaging() {
     }
 
     setShouldRequestPermission(true);
-  }, [user, setShouldRequestPermission]);
+  }, [app, setShouldRequestPermission]);
 
   useEffect(() => {
     if (messaging) {
@@ -45,9 +49,9 @@ export function useFirebaseMessaging() {
               requireInteraction: false,
             });
 
-            // setTimeout(() => {
-            //   notification.close();
-            // }, 5000);
+            setTimeout(() => {
+              notification.close();
+            }, 5000);
 
             notification.onclick = () => {
               window.focus();
@@ -64,42 +68,41 @@ export function useFirebaseMessaging() {
   }, []);
 
   const updateFcmTokenOnServer = useCallback(async (fcmToken: string) => {
-    if (!authToken) {
+    if (!app) {
+      return;
+    }
+
+    if (!app.authToken) {
       logger.warn('[useFirebaseMessaging] No auth token available for FCM token update');
       return;
     }
 
-    const deviceData = {
-      deviceId: ''
-    }
-
-    if (!deviceData?.deviceId) {
+    if (!app.deviceId) {
       logger.warn('[useFirebaseMessaging] No device ID available for FCM token update');
       return;
     }
 
     try {
       const updateFcmToken: UpdateFcmToken = {
-        deviceId: deviceData.deviceId, 
+        deviceId: app.deviceId, 
         fcmToken
       }
 
-      await apiClient.updateFcmToken(authToken, updateFcmToken);
+      await apiClient.updateFcmToken(app.authToken, updateFcmToken);
       logger.log('[useFirebaseMessaging] FCM token updated on server successfully');
     } catch (err) {
       errorHandler.processError(err, {
         component: 'useFirebaseMessaging',
         action: 'updateFcmToken',
         additional: { 
-          deviceId: deviceData.deviceId,
+          deviceId: app.deviceId,
           hasToken: !!fcmToken
         }
       });
 
       logger.warn('[useFirebaseMessaging] Failed to update FCM token on server, continuing...');
     }
-  // }, [authToken, deviceData?.deviceId]);
-  }, [authToken]);
+  }, [app]);
 
   const requestPermissionAndToken = useCallback(async () => {
     try {
@@ -149,21 +152,23 @@ export function useFirebaseMessaging() {
   }, [updateFcmTokenOnServer]);
 
   useEffect(() => {
+    if (!app || !app.deviceId) {
+      return;
+    }
+
     const shouldAttempt = (
       Notification.permission !== 'denied' &&
-//      deviceData?.deviceId &&
-      authToken
+      app.deviceId &&
+      app.authToken
     );
 
     if (!shouldAttempt) return;
 
     requestPermissionAndToken();
-  // }, [deviceData?.deviceId, authToken, requestPermissionAndToken]);
-  }, [authToken, requestPermissionAndToken]);
-
+  }, [app, requestPermissionAndToken]);
+  
   useEffect(() => {
-    // if (!messaging || !fcmToken || !deviceData) return;
-    if (!messaging || !fcmToken) return;
+    if (!messaging || !fcmToken || !app || !app.deviceId) return;
 
     const handleTokenRefresh = async () => {
       try {
@@ -194,8 +199,7 @@ export function useFirebaseMessaging() {
 
     const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
     return () => clearInterval(refreshInterval);
-  // }, [fcmToken, authToken, updateFcmTokenOnServer, deviceData]);
-  }, [fcmToken, authToken, updateFcmTokenOnServer]);
+  }, [fcmToken, app, updateFcmTokenOnServer]);
 
   return { shouldRequestPermission, fcmToken, error, requestPermission: requestPermissionAndToken };
 }

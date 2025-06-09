@@ -3,19 +3,18 @@ import { App } from '@/interfaces/app.interface';
 
 const APP_STATE_COOKIE_KEY = 'mystyc_app_state';
 
-
 export async function getApp(): Promise<App> {
  try {
    const cookieStore = await cookies();
    const appCookie = cookieStore.get(APP_STATE_COOKIE_KEY);
    
    if (!appCookie?.value) {
-     return { authToken: null, user: null, fcmToken: null };
+     return { authToken: null, deviceId: null, user: null, fcmToken: null };
    }
 
    return JSON.parse(appCookie.value);
  } catch {
-   return { authToken: null, user: null, fcmToken: null };
+   return { authToken: null, deviceId: null, user: null, fcmToken: null };
  }
 }
 
@@ -34,7 +33,7 @@ export async function setApp(app: App): Promise<void> {
  }
 }
 
-export async function clearAppState(): Promise<void> {
+export async function clearApp(): Promise<void> {
  try {
    const cookieStore = await cookies();
    cookieStore.delete(APP_STATE_COOKIE_KEY);

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Head from 'next/head';
 
 import { getApp } from '@/server/appManager';
+import { getDeviceId } from '@/server/deviceManager';
 
 import { BusyProvider } from '@/components/context/BusyContext';
 import { TransitionProvider } from '@/components/context/TransitionContext';
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const app = await getApp();
+  const deviceId = await getDeviceId();
 
   return (
     <html lang="en">
@@ -40,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <BusyProvider>
             <TransitionProvider>
               {app ? (
-                <AppProvider app={app}>
+                <AppProvider app={app} deviceId={deviceId}>
                   <MystycLayout>{children}</MystycLayout>
                 </AppProvider>
               ) : (
