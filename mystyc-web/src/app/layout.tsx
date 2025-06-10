@@ -11,9 +11,7 @@ import { TransitionProvider } from '@/components/context/TransitionContext';
 import { ToastProvider } from '@/components/context/ToastContext';
 
 import ToastContainer from '@/components/ui/ToastContainer';
-import HomeLayout from '@/app/(website)/layout';
 import { AppProvider } from '@/components/context/AppContext';
-import MystycLayout from '@/app/(mystyc)/layout';
 
 export const metadata: Metadata = {
   title: 'mystyc',
@@ -28,6 +26,9 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const app = await getApp();
   const deviceId = await getDeviceId();
+
+  console.log("app", app);
+  console.log("deviceId", deviceId);
 
   return (
     <html lang="en">
@@ -44,8 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <BusyProvider>
             <TransitionProvider>
               <AppProvider app={app} deviceId={deviceId}>
-                <MystycLayout app={app}>{children}</MystycLayout>
-                <HomeLayout app={app}>{children}</HomeLayout>
+                {children}
               </AppProvider>
             </TransitionProvider>
           </BusyProvider>

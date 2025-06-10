@@ -39,20 +39,17 @@ export function useUser() {
  }, [app, setApp]);
 
   const fetchCompleteUserWithDevice = useCallback(async (
-    firebaseUser: FirebaseAuthUser
+    firebaseUser: FirebaseAuthUser,
+    deviceId: string
   ): Promise<User | null> => {
-    if (!app) {
-      return null;
-    }
-
-    if (!app.deviceId) {
+    if (!deviceId) {
       return null;
     }
 
     try {
       logger.log('[useUser] Fetching user with device registration...');
 
-      const deviceData = getDevice(firebaseUser.uid, app.deviceId);
+      const deviceData = getDevice(firebaseUser.uid, deviceId);
 
       const registerDTO: AuthEventLoginRegister = {
         device: deviceData,
@@ -62,7 +59,7 @@ export function useUser() {
       const user = await apiClient.registerSession(registerDTO);
       
       const newAppState: App = { 
-        deviceId: app.deviceId,
+        deviceId: deviceId,
         user: user,
         fcmToken: null
       };
@@ -82,8 +79,7 @@ export function useUser() {
         userId: firebaseUser.uid
       });
       
-      const newAppState = { ...app, user: null };
-      setApp(newAppState);
+      setApp(null);
       return null;
     }
   }, [app, setApp, fetchCompleteUser]);

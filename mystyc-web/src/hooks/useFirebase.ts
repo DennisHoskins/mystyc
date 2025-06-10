@@ -17,6 +17,7 @@ export function useFirebase() {
  const [loading, setLoading] = useState(true);
 
  const updateIdToken = useCallback(async (firebaseUser: FirebaseAuthUser | null) => {
+
    if (!firebaseUser) {
      const newAppState = { 
        deviceId: null,
@@ -47,7 +48,13 @@ export function useFirebase() {
      logger.log('[useFirebase] Token updated successfully');
    } catch (err: any) {
      logger.log('[useFirebase] Token update error:', err.message);
-     
+
+    if (err?.status === 404) {
+      logger.error('[useFirebase] API endpoint not found - stopping token refresh');
+      setTokenRefreshFailed(true);
+      return;
+    }
+
      // Handle revoked tokens - kill auth entirely
      if (err.code === 'auth/id-token-revoked') {
        logger.log('[useFirebase] Token revoked - killing auth flow');
@@ -75,9 +82,11 @@ export function useFirebase() {
    } finally {
      setIsRefreshingToken(false);
    }
- }, [isRefreshingToken, hasQuotaError, setApp]);
+ }, [isRefreshingToken, hasQuotaError]);
 
  const retryTokenRefresh = useCallback(async () => {
+  return;
+
    if (firebaseUser) {
      setHasQuotaError(false);
      await updateIdToken(firebaseUser);
@@ -86,6 +95,9 @@ export function useFirebase() {
 
  // Auth state listener
  useEffect(() => {
+
+  return;
+
    logger.log('[useFirebase] Setting up onAuthStateChanged listener');
    
    const unsubscribe = apiFirebase.onAuthStateChanged(async (firebaseUser) => {
@@ -117,7 +129,7 @@ export function useFirebase() {
      logger.log('[useFirebase] Cleaning up onAuthStateChanged listener');
      unsubscribe();
    };
- }, [updateIdToken, setApp]);
+ }, [updateIdToken]);
 
  return {
    firebaseUser,

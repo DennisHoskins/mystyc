@@ -12,7 +12,7 @@ import Button from '@/components/ui/Button';
 import TextInput from '@/components/ui/form/TextInput';
 import { useBusy } from '@/components/context/BusyContext';
 
-export default function RegisterPage() {
+export default function RegisterPage({ deviceId }: { deviceId: string }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ export default function RegisterPage() {
     setBusy(true);
 
     try {
-      await register(email, password);
+      await register(email, password, deviceId);
     } catch (err: any) {
       handleAuthError(err);
       setLoading(false);
