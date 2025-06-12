@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import PageContainer from '@/components/layout/PageContainer';
+
+import { useApp } from '@/components/context/AppContext';
 import Heading from '@/components/ui/Heading';
 import Button from '@/components/ui/Button';
 import TextInput from '@/components/ui/form/TextInput';
@@ -12,6 +13,7 @@ interface Message {
 }
 
 export default function AnswersPage() {
+  const { app } = useApp();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,8 +32,12 @@ export default function AnswersPage() {
     setInput('');
   };
 
+  if (!app || !app.user) {
+    return null;
+  }
+
   return (
-    <PageContainer>
+    <>
       <div className="flex flex-col h-full">
         <div className="px-4 py-4 text-center">
           <Heading level={2}>Ask the AI anything</Heading>
@@ -72,6 +78,6 @@ export default function AnswersPage() {
           </div>
         </div>
       </div>
-    </PageContainer>
+    </>
   );
 }

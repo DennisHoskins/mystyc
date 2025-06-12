@@ -19,6 +19,7 @@ import { Transform } from 'class-transformer';
 
 import {
   IsValidDeviceId,
+  IsValidDeviceName,
   IsValidFCMToken,
   IsValidFirebaseToken,
   IsValidFirebaseUid,
@@ -38,6 +39,7 @@ import {
 
 import {
   SanitizeDeviceId,
+  SanitizeDeviceName,
   SanitizePlatform,
   SanitizeTimezone,
   SanitizeLanguage,
@@ -48,7 +50,6 @@ import {
   SanitizeFirebaseToken,
   SanitizeIpAddress,
   SanitizeText,
-  SanitizeQueryParam,
   SanitizeDateParam
 } from './sanitization.decorators';
 
@@ -63,6 +64,20 @@ export function ValidateDeviceId() {
     MaxLength(64, { message: 'Device ID too long (max 64 characters)' }),
     Validate(IsValidDeviceId),
     SanitizeDeviceId()
+  );
+}
+
+/**
+ * Complete device Name validation with sanitization
+ */
+export function ValidateDeviceName() {
+  return applyDecorators(
+    IsString({ message: 'Device Name must be a string' }),
+    IsNotEmpty({ message: 'Device Name cannot be empty' }),
+    MinLength(8, { message: 'Device Name too short (min 8 characters)' }),
+    MaxLength(64, { message: 'Device Name too long (max 64 characters)' }),
+    Validate(IsValidDeviceName),
+    SanitizeDeviceName()
   );
 }
 

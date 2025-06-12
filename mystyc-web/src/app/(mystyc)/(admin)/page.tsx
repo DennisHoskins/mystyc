@@ -1,6 +1,5 @@
 'use client';
 
-import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import List from '@/components/ui/list/List';
@@ -9,7 +8,7 @@ import ListItemButton from '@/components/ui/list/ListItemButton';
 
 function AdminPage() {
   return (
-    <PageContainer>
+    <>
       <AdminBreadcrumbs />
       <AdminHeader
         title="Admin Dashboard"
@@ -47,7 +46,7 @@ function AdminPage() {
           </ListItem>
         </List>
       </div>
-    </PageContainer>
+    </>
   );
 }
 

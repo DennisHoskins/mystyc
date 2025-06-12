@@ -120,6 +120,20 @@ export class SanitizationUtil {
   }
 
   /**
+   * Sanitizes device Name with security logging and length constraints
+   * @param value - Device Name to sanitize
+   * @param options - Optional sanitization configuration
+   * @returns string - Sanitized device Name
+   */
+  static sanitizeDeviceName(value: string, options: Partial<SanitizationOptions> = {}): string {
+    return this.sanitizeText(value, {
+      fieldName: 'deviceName',
+      maxLength: 64,
+      ...options
+    });
+  }
+
+  /**
    * Sanitizes platform identifier with lowercase normalization
    * @param value - Platform name to sanitize
    * @param options - Optional sanitization configuration

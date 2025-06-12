@@ -31,6 +31,31 @@ export class IsValidDeviceId implements ValidatorConstraintInterface {
   }
 }
 
+@ValidatorConstraint({ name: 'validDeviceId', async: false })
+export class IsValidDeviceName implements ValidatorConstraintInterface {
+  validate(deviceName: string, args: ValidationArguments) {
+    if (!deviceName) return false;
+    
+    const validFormat = /^[a-zA-Z0-9_\-\s\(\)]{8,64}$/.test(deviceName);
+    
+    const suspiciousPatterns = [
+      /\.\./,
+      /[<>'"]/,
+      /javascript:/i,
+      /data:/i,
+      /vbscript:/i
+    ];
+    
+    const hasSuspiciousContent = suspiciousPatterns.some(pattern => pattern.test(deviceName));
+    
+    return validFormat && !hasSuspiciousContent;
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    return 'Device ID must be 8-64 characters of letters, numbers, underscore, or dash only';
+  }
+}
+
 @ValidatorConstraint({ name: 'validFCMToken', async: false })
 export class IsValidFCMToken implements ValidatorConstraintInterface {
   validate(token: string, args: ValidationArguments) {

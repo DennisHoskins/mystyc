@@ -166,6 +166,7 @@ export class DeviceService {
         {
           firebaseUid,
           deviceId: deviceDto.deviceId,
+          deviceName: deviceDto.deviceName,
           platform: deviceDto.platform,
           fcmToken: null, // FCM token added later via separate endpoint
           appVersion: deviceDto.appVersion,
@@ -351,6 +352,7 @@ export class DeviceService {
     return {
       firebaseUid: doc.firebaseUid,
       deviceId: doc.deviceId,
+      deviceName: doc.deviceName,
       platform: doc.platform,
       timezone: doc.timezone,
       language: doc.language,

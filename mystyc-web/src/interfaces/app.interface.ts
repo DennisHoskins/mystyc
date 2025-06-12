@@ -1,7 +1,5 @@
-import { User } from '@/interfaces';
+import { AppUser } from '@/interfaces/appUser.interface';
 
 export interface App {
- deviceId: string | null;
- user: User | null;
- fcmToken: string | null;
+ user: AppUser | null;
 }

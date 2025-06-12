@@ -1,10 +1,10 @@
 import { useCallback, useRef } from 'react';
-import { useToast } from './useToast';
+//import { useToast } from './useToast';
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from './useCustomRouter';
 import { errorHandler, ErrorContext, ProcessedError } from '@/util/errorHandler';
-import { apiClient } from '@/api/client/apiClient';  // ← added import
-import type { AuthEventLogout } from '@/interfaces/authEventLogout.interface';
+// import { apiClient } from '@/api/client/apiClient';  // ← added import
+// import type { AuthEventLogout } from '@/interfaces/authEventLogout.interface';
 
 interface UseErrorHandlerOptions {
   component?: string;
@@ -13,17 +13,17 @@ interface UseErrorHandlerOptions {
 }
 
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
-  const { showToast } = useToast();
+//  const { showToast } = useToast();
 
-  const { firebaseUser, signOut } = useAuth();
+  const { signOut } = useAuth();
   const routerRef = useRef(useCustomRouter());
   const signOutRef = useRef(signOut);
-  const showToastRef = useRef(showToast);
+//  const showToastRef = useRef(showToast);
   const optionsRef = useRef(options);
 
   // keep refs in sync
   signOutRef.current = signOut;
-  showToastRef.current = showToast;
+//  showToastRef.current = showToast;
   optionsRef.current = options;
 
   const handleError = useCallback((
@@ -44,19 +44,19 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     const processedError = errorHandler.processError(error, fullContext);
 
     if (processedError.isForceLogout) {
-      if (deviceData && firebaseUser) {
-        const authEvent: AuthEventLogout = {
-          deviceId: deviceData.deviceId,
-          clientTimestamp: new Date().toISOString(),
-        };
-        apiClient.logout(authEvent)
-          .catch((err) =>
-            errorHandler.processError(err, {
-              component: 'useErrorHandler',
-              action: 'logoutTracking',
-            })
-          );
-      }
+      // if (deviceData) {
+      //   const authEvent: AuthEventLogout = {
+      //     deviceId: deviceData.deviceId,
+      //     clientTimestamp: new Date().toISOString(),
+      //   };
+      //   apiClient.logout(authEvent)
+      //     .catch((err) =>
+      //       errorHandler.processError(err, {
+      //         component: 'useErrorHandler',
+      //         action: 'logoutTracking',
+      //       })
+      //     );
+      // }
 
       if (context?.action !== 'login' && context?.action !== 'register') {
         signOutRef.current();
@@ -65,18 +65,18 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     if (processedError.code === '401') {
-      if (deviceData && firebaseUser) {
-        const authEvent: AuthEventLogout = {
-          deviceId: deviceData.deviceId,
-          clientTimestamp: new Date().toISOString(),
-        };
-        apiClient.logout(authEvent)
-          .catch((err) =>
-            errorHandler.processError(err, {
-              component: 'useErrorHandler',
-              action: 'logoutTracking',
-            })
-          );
+      if (deviceData) {
+        // const authEvent: AuthEventLogout = {
+        //   deviceId: deviceData.deviceId,
+        //   clientTimestamp: new Date().toISOString(),
+        // };
+        // apiClient.logout(authEvent)
+        //   .catch((err) =>
+        //     errorHandler.processError(err, {
+        //       component: 'useErrorHandler',
+        //       action: 'logoutTracking',
+        //     })
+        //   );
       }
 
       signOutRef.current();
@@ -84,11 +84,11 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     }
 
     if ((currentOptions.showToast !== false) && processedError.shouldToast) {
-      showToastRef.current(processedError.message);
+//      showToastRef.current(processedError.message);
     }
 
     return processedError;
-  }, [firebaseUser]);
+  }, []);
 
   const handleAuthError = useCallback((error: any) => {
     return handleError(error, { component: 'AuthHandler', action: 'auth' });

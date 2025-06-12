@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UserRole } from '@/common/enums/roles.enum';
+import { Device } from '@/common/interfaces/device.interface';
 import { UserProfileService } from './user-profile.service';
 import { DeviceService } from '@/devices/device.service';
 import { AuthEventService } from '@/auth-events/auth-event.service';
@@ -37,14 +38,14 @@ export class UserService {
     }, 'UserService');
 
     try {
-      // Get or create user profile
-      const { user, isNewUser } = await this.getOrCreateUser(firebaseUser);
-
       // Register/update device
       const device = await this.deviceService.upsertDevice(
         firebaseUser.uid,
         loginRegisterDto.device
       );
+
+      // Get or create user profile
+      const { user, isNewUser } = await this.getOrCreateUser(firebaseUser, device);
 
       const type: 'create' | 'login' = isNewUser ? 'create' : 'login';
 
@@ -143,7 +144,10 @@ export class UserService {
    * @param firebaseUser - Firebase authentication user object
    * @returns Promise<User> - User object with firebase user and profile data
    */
-  async getOrCreateUser(firebaseUser: FirebaseUser): Promise<{ user: User; isNewUser: boolean }> {
+  async getOrCreateUser(
+    firebaseUser: FirebaseUser,
+    device: Device
+  ): Promise<{ user: User; isNewUser: boolean }> {
     logger.debug('Getting or creating user', { firebaseUid: firebaseUser.uid });
 
     const userProfile = await this.userProfileService.findByFirebaseUid(firebaseUser.uid);
@@ -155,7 +159,7 @@ export class UserService {
       });
 
       return {
-        user: { firebaseUser, userProfile }, 
+        user: { firebaseUser, userProfile, device }, 
         isNewUser: false
       };
     }
@@ -180,7 +184,7 @@ export class UserService {
       });
 
       return {
-        user: { firebaseUser, userProfile: newUserProfile }, 
+        user: { firebaseUser, userProfile: newUserProfile, device }, 
         isNewUser: true
       };
     } catch(error) {
@@ -214,7 +218,7 @@ export class UserService {
         profileId: userProfile.id,
       });
 
-      return { firebaseUser, userProfile };
+      return { firebaseUser, userProfile, device: null };
     } catch(error) {
       logger.error('User lookup failed', { 
         firebaseUid: firebaseUser.uid,

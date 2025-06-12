@@ -1,24 +1,31 @@
 'use client';
 
-import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useState, useEffect } from 'react';
 
-import PageContainerAuth from '@/components/layout/PageContainerAuth';
+import { useAuth } from '@/hooks/useAuth';
+import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useBusy } from '@/components/context/BusyContext';
+import { useApp } from '@/components/context/AppContext';
+
 import FormLayout from '@/components/layout/FormLayout';
 import FormLink from '@/components/form/FormLink';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
-import { useBusy } from '@/components/context/BusyContext';
 
-export default function LoginForm({ deviceId }: { deviceId: string }) {
+export default function LoginForm() {
+  const router = useCustomRouter();
+  const { isBusy, setBusy } = useBusy();
+  const { signIn } = useAuth();
+  const { app, setUser } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
-  const { setBusy } = useBusy();
+
+  useEffect(() => {
+    if ((app && app.user) && !isBusy) router.replace('/');
+  }, [app, isBusy, router]);
 
   const { handleAuthError } = useErrorHandler({
     component: 'LoginPage',
@@ -32,20 +39,25 @@ export default function LoginForm({ deviceId }: { deviceId: string }) {
     e.preventDefault();
     
     setError('');
-    setLoading(true);
     setBusy(true);
 
     try {
-      await signIn(email, password, deviceId);
+      const user = await signIn(email, password);
+      if (!user) {
+        throw new Error('Login failed: no user returned');
+      }
+
+      setUser(user);
+
+      router.push("/");
     } catch (err: any) {
       handleAuthError(err);
-      setLoading(false);
       setBusy(false);
     }
   };
 
   return (
-    <PageContainerAuth>
+    <>
       <FormLayout
         subtitle="Sign in to continue your journey..."
         error={error}
@@ -74,7 +86,7 @@ export default function LoginForm({ deviceId }: { deviceId: string }) {
 
           <Button
             type="submit"
-            loading={loading}
+            loading={isBusy}
             loadingContent="Signing In..."
             className="w-full"
           >
@@ -91,6 +103,6 @@ export default function LoginForm({ deviceId }: { deviceId: string }) {
           </p>
         </Form>
       </FormLayout>
-    </PageContainerAuth>
+    </>
   );
 }

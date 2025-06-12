@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
+import { useApp } from '@/components/context/AppContext';
+import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useBusy } from '@/components/context/BusyContext'
 
-import PageContainerAuth from '@/components/layout/PageContainerAuth';
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/layout/FormLayout';
 import FormLink from '@/components/form/FormLink';
@@ -13,11 +15,18 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function PasswordResetPage() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const router = useCustomRouter();
+  const { setBusy } = useBusy();
   const { resetPassword } = useAuth();
+  const { app }  = useApp();
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [isBusy, setIsBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (app && app.user) router.replace('/');
+  }, [app, router]);  
 
   const { handleAuthError } = useErrorHandler({
     component: 'PasswordResetPage',
@@ -32,7 +41,8 @@ export default function PasswordResetPage() {
     
     setError('');
     setMessage('');
-    setLoading(true);
+    setBusy(true);
+    setIsBusy(true);
 
     try {
       await resetPassword(email);
@@ -40,12 +50,13 @@ export default function PasswordResetPage() {
     } catch (err: any) {
       handleAuthError(err);
     } finally {
-      setLoading(false);
+      setIsBusy(false);
+      setBusy(false);
     }
   };
 
   return (
-    <PageContainerAuth>
+    <>
       <FormLayout
         subtitle="Reset your password"
         error={error}
@@ -65,7 +76,7 @@ export default function PasswordResetPage() {
 
           <Button
             type="submit"
-            loading={loading}
+            loading={isBusy}
             loadingContent="Sending Reset Email..."
             className="w-full"
           >
@@ -82,6 +93,6 @@ export default function PasswordResetPage() {
           </p>
         </Form>
       </FormLayout>
-    </PageContainerAuth>
+    </>
   );
 }

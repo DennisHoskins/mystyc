@@ -18,13 +18,15 @@ export default function FormLayout({
   children,
 }: FormLayoutProps) {
   return (
-    <div className="text-center">
+    <div className="w-full max-w-md text-center">
       <AppLogo scale={1.2} subheading={subtitle} />
 
       {error && <FormError message={error} />}
       {success && <FormSuccess message={success} />}
 
-      <div className="mt-8 space-y-6 text-left">{children}</div>
+      <div className="mt-8 space-y-6">
+        {children}
+      </div>
     </div>
   );
 }

@@ -10,6 +10,9 @@ export class Device {
   deviceId: string;
 
   @Prop({ required: true })
+  deviceName: string;
+
+  @Prop({ required: true })
   platform: string;
 
   @Prop()

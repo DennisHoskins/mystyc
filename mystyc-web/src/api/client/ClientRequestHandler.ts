@@ -1,6 +1,8 @@
 import { errorHandler } from '@/util/errorHandler';
 import { logger } from '@/util/logger';
 
+const serverRoot: string = '/api/server/';
+
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 interface RequestOptions {
@@ -43,10 +45,10 @@ export class ClientRequestHandler {
       requestOptions.body = JSON.stringify(body);
     }
 
-    logger.log(`API request: ${method} ${endpoint}`, requestOptions);
+    logger.log(`API request: ${method} ${serverRoot + endpoint}`, requestOptions);
 
     try {
-      const response = await fetch(endpoint, requestOptions);
+      const response = await fetch(serverRoot + endpoint, requestOptions);
 
       if (!response.ok) {
         const errorText = await response.text();

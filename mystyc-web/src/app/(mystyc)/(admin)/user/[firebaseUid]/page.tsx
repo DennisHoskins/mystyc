@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 import { apiClientAdmin } from '@/api/client/apiClientAdmin';
 import { User, UserProfile, Device, AuthEvent } from '@/interfaces';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
-import { useApp } from '@/components/context/AppContext';
 
 import AdminDetailLayout from '@/components/admin/AdminDetailLayout';
 import AdminPanelDevice from '@/components/admin/panels/AdminPanelDevice';
@@ -15,8 +14,8 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
 function UserDetailPage() {
-  const { app } = useApp();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  // const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userProfile] = useState<UserProfile | null>(null);
  
   const fetcher = useMemo(
     () => ({
@@ -70,14 +69,6 @@ function UserDetailPage() {
     await refetch();
   };
 
-  useEffect(() => {
-    if (!app?.user || !app?.user.userProfile) {
-      return;
-    }
-
-    setUserProfile(app?.user.userProfile);
-  }, [app?.user])
-
   return (
     <AdminDetailLayout
       breadcrumbs={[
@@ -101,7 +92,7 @@ function UserDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <Text variant="small" className="font-medium text-gray-500 mb-1">Firebase UID</Text>
-              <Text className="font-mono text-sm break-all">{app?.user?.firebaseUser.uid}</Text>
+              <Text className="font-mono text-sm break-all">${userProfile.firebaseUid}</Text>
             </div>
             
             <div>

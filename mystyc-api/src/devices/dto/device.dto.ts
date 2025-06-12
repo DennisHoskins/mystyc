@@ -1,5 +1,6 @@
 import {
   ValidateDeviceId,
+  ValidateDeviceName,
   ValidateFcmTokenOptional,
   ValidatePlatform,
   ValidateTimezone,
@@ -15,6 +16,9 @@ export class DeviceDto {
 
   @ValidateDeviceId()
   deviceId: string;
+
+  @ValidateDeviceName()
+  deviceName: string;
 
   @ValidateFcmTokenOptional()
   fcmToken?: string;

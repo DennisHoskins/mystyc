@@ -54,9 +54,43 @@ export default function getDevice(firebaseUid: string, deviceId: string): Device
     }
   }
 
+const getName = (): string => {
+  // Get first 8 chars of deviceId for uniqueness
+  const deviceSuffix = deviceId.slice(0, 8);
+
+  if (typeof window === 'undefined') return `Unknown Device (${deviceSuffix})`;
+
+  const platform = getPlatform();
+  const userAgent = navigator.userAgent;
+
+  // Browser detection
+  let browser = 'Browser';
+  if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) browser = 'Chrome';
+  else if (userAgent.includes('Firefox')) browser = 'Firefox';
+  else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) browser = 'Safari';
+  else if (userAgent.includes('Edg')) browser = 'Edge';
+ 
+  // Platform-specific naming
+  switch (platform) {
+    case 'android':
+      return `Android ${browser} (${deviceSuffix})`;
+    case 'ios':
+      return userAgent.includes('iPad') ? `iPad ${browser} (${deviceSuffix})` : `iPhone ${browser} (${deviceSuffix})`;
+    case 'macos':
+      return `Mac ${browser} (${deviceSuffix})`;
+    case 'windows':
+      return `Windows ${browser} (${deviceSuffix})`;
+    case 'linux':
+      return `Linux ${browser} (${deviceSuffix})`;
+    default:
+      return `${browser} Device (${deviceSuffix})`;
+    }
+  };
+
   return {
     firebaseUid,
     deviceId,
+    deviceName: getName(),
     platform: getPlatform(),
     timezone: getTimezone(), 
     language: getLanguage(),

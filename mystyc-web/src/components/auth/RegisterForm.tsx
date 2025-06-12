@@ -1,24 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 import { useAuth } from '@/hooks/useAuth';
+import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
-
-import PageContainerAuth from '@/components/layout/PageContainerAuth';
-import FormLayout from '@/components/layout/FormLayout';
-import Form from '@/components/ui/form/Form';
-import FormLink from '@/components/form/FormLink';
-import Button from '@/components/ui/Button';
-import TextInput from '@/components/ui/form/TextInput';
 import { useBusy } from '@/components/context/BusyContext';
+import { useApp } from '@/components/context/AppContext';
 
-export default function RegisterPage({ deviceId }: { deviceId: string }) {
+import FormLayout from '@/components/layout/FormLayout';
+import FormLink from '@/components/form/FormLink';
+import Form from '@/components/ui/form/Form';
+import TextInput from '@/components/ui/form/TextInput';
+import Button from '@/components/ui/Button';
+
+export default function RegisterForm() {
+  const router = useCustomRouter();
+  const { setBusy } = useBusy();
+  const { register } = useAuth();
+  const { app, setUser } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
-  const { setBusy } = useBusy();
+
+  useEffect(() => {
+    if ((app && app.user) && !isBusy) router.replace('/');
+  }, [app, isBusy, router]);  
 
   const { handleAuthError } = useErrorHandler({
     component: 'RegisterPage',
@@ -32,20 +40,27 @@ export default function RegisterPage({ deviceId }: { deviceId: string }) {
     e.preventDefault();
     
     setError('');
-    setLoading(true);
+    setIsBusy(true);
     setBusy(true);
 
     try {
-      await register(email, password, deviceId);
+      const user = await register(email, password);
+      if (!user) {
+        throw new Error('Register failed: no user returned');
+      }
+
+      setUser(user);
+
+      router.push("/");
     } catch (err: any) {
       handleAuthError(err);
-      setLoading(false);
+      setIsBusy(false);
       setBusy(false);
     }
   };
 
   return (
-    <PageContainerAuth>
+    <>
       <FormLayout
         subtitle="Create an account to begin your journey..."
         error={error}
@@ -74,7 +89,7 @@ export default function RegisterPage({ deviceId }: { deviceId: string }) {
 
           <Button
             type="submit"
-            loading={loading}
+            loading={isBusy}
             loadingContent="Creating Account..."
             className="w-full"
           >
@@ -91,6 +106,6 @@ export default function RegisterPage({ deviceId }: { deviceId: string }) {
           </p>
         </Form>
       </FormLayout>
-    </PageContainerAuth>
+    </>
   );
 }

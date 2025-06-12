@@ -46,6 +46,18 @@ export const SanitizeDeviceId = (fieldName: string = 'deviceId') =>
   });
 
 /**
+ * Device Name sanitization
+ */
+export const SanitizeDeviceName = (fieldName: string = 'deviceName') =>
+  Transform(({ value, obj }) => {
+    if (!value) return value;
+    return SanitizationUtil.sanitizeDeviceName(value, {
+      fieldName,
+      firebaseUid: obj?.firebaseUid
+    });
+  });
+
+/**
  * Platform sanitization with auto-lowercase
  */
 export const SanitizePlatform = (fieldName: string = 'platform') =>

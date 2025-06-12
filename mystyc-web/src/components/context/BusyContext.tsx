@@ -13,6 +13,7 @@ import { logger } from '@/util/logger';
 import Working from '@/components/ui/Working';
 
 type BusyContextType = {
+  isBusy: boolean;
   setBusy: (state: boolean, delayMs?: number) => void;
 };
 
@@ -28,7 +29,7 @@ export function BusyProvider({ children }: { children: ReactNode }) {
     setBusy(currentBusy => {
       if (state && currentBusy) {
         logger.log('[BusyProvider] Already busy, ignoring');
-        return currentBusy; // No change
+        return currentBusy;
       }
       
       // Only update delay when state actually changes
@@ -41,7 +42,7 @@ export function BusyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <BusyContext.Provider value={{ setBusy: setBusyWithDelay }}>
+    <BusyContext.Provider value={{ isBusy: busy, setBusy: setBusyWithDelay }}>
       <Working show={busy} delayMs={delayMs} />
       {children}
     </BusyContext.Provider>
@@ -51,5 +52,8 @@ export function BusyProvider({ children }: { children: ReactNode }) {
 export function useBusy() {
   const context = useContext(BusyContext);
   if (!context) throw new Error('useBusy must be used within BusyProvider');
-  return context;
+  return {
+    isBusy: context.isBusy,
+    setBusy: context.setBusy
+  };
 }

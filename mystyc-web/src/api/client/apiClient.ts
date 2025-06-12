@@ -1,71 +1,102 @@
 import { ClientRequestHandler } from './ClientRequestHandler';
-import { AuthEventLoginRegister, AuthEventLogout, User, UserProfileUpdate, UpdateFcmToken } from '@/interfaces';
+// import { AuthEventLoginRegister, AuthEventLogout, User, UserProfileUpdate, UpdateFcmToken } from '@/interfaces';
+import { AuthEventLoginRegister, AuthEventLogout, User, Device } from '@/interfaces';
+
+import { authCache } from '@/util/authCache';
 
 export const apiClient = {
-  registerSession: (dto: AuthEventLoginRegister): Promise<User> =>
-    ClientRequestHandler.makeRequest<User>(
-      '/api/server/auth', 
+
+  registerSession: (
+    firebaseUid: string, 
+    device: Device, 
+    authToken: string
+  ): Promise<User> => {
+    const registerDTO: AuthEventLoginRegister = {
+      firebaseUid,
+      device,
+      clientTimestamp: new Date().toISOString()
+    };
+
+    return ClientRequestHandler.makeRequest<User>(
+      `/users/me`, 
       {
         method: 'POST',
         action: 'registerSession',
-        data: dto
+        data: registerDTO,
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }        
       }
-    ),    
+    )
+  },
 
-  refreshToken: (
-    firebaseToken: string
-  ): Promise<void> =>
-    ClientRequestHandler.makeRequest<void>(
-      '/api/server/auth', 
-      {
-        method: 'POST',
-        action: 'refreshToken',
-        data: { firebaseToken }
-      }
-    ),
+  // updateFcmToken: (fcmToken: string): Promise<void> => {
+  //   const firebaseUid = authCache.getFirebaseUid();
+
+  //   const updateFcmTokenDTO: UpdateFcmToken = {
+  //     firebaseUid: firebaseUid,
+  //     deviceId: authCache.getDeviceFingerprint(),
+  //     fcmToken: fcmToken,
+  //   }
+
+  //   return ClientRequestHandler.makeRequest<void>(
+  //     `${serverRoot}auth`, 
+  //     {
+  //       method: 'POST',
+  //       action: 'refreshToken',
+  //       data: updateFcmTokenDTO
+  //     }
+  //   )
+  // },
   
-  logout: (
-    dto: AuthEventLogout
-  ): Promise<void> =>
-    ClientRequestHandler.makeRequest<void>(
-      '/api/server/user', 
+  logout: (): Promise<void> => {
+    const firebaseUid = authCache.getFirebaseUid();
+    if (!firebaseUid) {
+      throw new Error("No user logged in");
+    }
+
+    const logoutDto: AuthEventLogout = {
+      firebaseUid: firebaseUid,
+      deviceId: authCache.getDeviceFingerprint(),
+      clientTimestamp: new Date().toISOString()
+    }
+   
+    return ClientRequestHandler.makeRequest<void>(
+      `/users/logout`, 
       {
         method: 'POST',
         action: 'logout',
-        data: dto
+        data: logoutDto
       }
-    ),
+    )
+  },
 
-  updateFcmToken: (
-    dto: UpdateFcmToken
-  ): Promise<void> =>
-    ClientRequestHandler.makeRequest<void>(
-      '/api/server/user', 
-      {
-        method: 'POST',
-        action: 'updateFcmToken',
-        data: dto
-      }
-    ),    
+  // getCurrentUser: (): Promise<User> =>
 
-  getCurrentUser: (): Promise<User> =>
-    ClientRequestHandler.makeRequest<User>(
-      '/api/server/user', 
-      {
-        method: 'GET',
-        action: 'getCurrentUser'
-      }
-    ),
 
-  updateUserProfile: (
-    dto: UserProfileUpdate
-  ): Promise<User> =>
-    ClientRequestHandler.makeRequest<User>(
-      '/api/server/user', 
-      {
-        method: 'PATCH',
-        action: 'updateUserProfile',
-        data: dto
-      }
-    ),    
+  //   ClientRequestHandler.makeRequest<User>(
+  //     `${serverRoot}user`, 
+  //     {
+  //       method: 'GET',
+  //       action: 'getCurrentUser'
+  //     }
+  //   ),
+
+  // updateUserProfile: (): Promise<User> => {
+  //   const firebaseUid = authCache.getFirebaseUid();
+
+  //   const updateUserProfileDTO: UserProfileUpdate = {
+  //     firebaseUid: firebaseUid,
+  //     deviceId: authCache.getDeviceFingerprint(),
+  // }
+
+  //   return ClientRequestHandler.makeRequest<User>(
+  //     `${serverRoot}auth`, 
+  //     {
+  //       method: 'PATCH',
+  //       action: 'updateUserProfile',
+  //       data: updateUserProfileDTO
+  //     }
+  //   )
+  // }
 };

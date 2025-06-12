@@ -1,6 +1,5 @@
 import React from 'react';
 
-import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 
@@ -22,7 +21,7 @@ export default function AdminListLayout({
   action,
 }: AdminListLayoutProps) {
   return (
-    <PageContainer>
+    <>
       <div className={`space-y-6 pb-6 ${className}`}>
         <AdminBreadcrumbs items={[{ label: breadcrumbLabel }]} />
         
@@ -35,6 +34,6 @@ export default function AdminListLayout({
           {children}
         </div>
       </div>
-    </PageContainer>
+    </>
   );
 }

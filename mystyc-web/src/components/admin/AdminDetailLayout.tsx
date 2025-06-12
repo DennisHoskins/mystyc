@@ -1,6 +1,5 @@
 import React from 'react';
 
-import PageContainer from '@/components/layout/PageContainer';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import { BreadcrumbItem } from '../ui/Breadcrumbs';
@@ -34,7 +33,7 @@ export default function AdminDetailLayout({
 }: AdminDetailLayoutProps) {
   if (loading) {
     return (
-      <PageContainer>
+      <>
         <div className="space-y-8 pb-6">
           <AdminBreadcrumbs items={[
             ...breadcrumbs.slice(0, -1),
@@ -42,13 +41,13 @@ export default function AdminDetailLayout({
           ]} />
           <AdminHeader title={loadingTitle} subtitle={loadingSubtitle} />
         </div>
-      </PageContainer>
+      </>
     );
   }
 
   if (error) {
     return (
-      <PageContainer>
+      <>
         <div className="space-y-8 pb-6">
           <AdminBreadcrumbs items={[
             ...breadcrumbs.slice(0, -1),
@@ -57,12 +56,12 @@ export default function AdminDetailLayout({
           <AdminHeader title={notFoundTitle} subtitle={notFoundSubtitle} />
           <div className="text-center text-red-600 mt-4">{error}</div>
         </div>
-      </PageContainer>
+      </>
     );
   }
 
   return (
-    <PageContainer>
+    <>
       <div className="space-y-8 pb-6">
         <AdminBreadcrumbs items={breadcrumbs} />
         <div className="flex items-center justify-between">
@@ -71,6 +70,6 @@ export default function AdminDetailLayout({
         </div>
         {children}
       </div>
-    </PageContainer>
+    </>
   );
 }

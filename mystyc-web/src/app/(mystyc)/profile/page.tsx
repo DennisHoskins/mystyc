@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+// import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import { useApp } from '@/components/context/AppContext';
 import { useBusy } from '@/components/context/BusyContext';
-import { useToast } from '@/hooks/useToast';
+//import { useToast } from '@/hooks/useToast';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { formatDateForInput } from '@/util/dateTime';
+// import { formatDateForInput } from '@/util/dateTime';
 import { errorHandler } from '@/util/errorHandler';
 
-import PageContainer from '@/components/layout/PageContainer';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import FormLabel from '@/components/ui/form/FormLabel';
@@ -21,22 +21,23 @@ function EditProfilePage() {
   const { app } = useApp();
 //  const { updateOnboardingProfile } = useAuth();
   const { setBusy } = useBusy();
-  const { showToast } = useToast();
+//  const { showToast } = useToast();
   const [fullName, setFullName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-  const [zodiacSign, setZodiacSign] = useState('');
+  // const [zodiacSign, setZodiacSign] = useState('');
+  const [zodiacSign] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const user = app?.user;
+  // const user = uid;
 
-  useEffect(() => {
-    if (user?.userProfile) {
-      setFullName(user.userProfile.fullName || '');
-      setZodiacSign(user.userProfile.zodiacSign || '');
-      setDateOfBirth(formatDateForInput(user.userProfile.dateOfBirth));
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user?.userProfile) {
+  //     setFullName(user.userProfile.fullName || '');
+  //     setZodiacSign(user.userProfile.zodiacSign || '');
+  //     setDateOfBirth(formatDateForInput(user.userProfile.dateOfBirth));
+  //   }
+  // }, [user]);
 
   const handleSave = useCallback(async () => {
     setError(null);
@@ -48,7 +49,7 @@ function EditProfilePage() {
 
     try {
 //      await Promise.all([minDelay, update]);
-      showToast('Profile updated');
+//      showToast('Profile updated');
     } catch (e) {
       setError('Failed to update profile. Please try again.');
       errorHandler.processError(e, {
@@ -62,14 +63,19 @@ function EditProfilePage() {
     }
 //  }, [fullName, dateOfBirth, zodiacSign, updateOnboardingProfile, setBusy, showToast]);
   // }, [fullName, dateOfBirth, zodiacSign, setBusy, showToast]);
-  }, [setBusy, showToast]);
+//  }, [setBusy, showToast]);
+  }, [setBusy, ]);
 
   const handleCancel = useCallback(() => {
     router.push('/');
   }, [router]);
 
+  if (!app || !app.user) {
+    return null;
+  }
+
   return (
-    <PageContainer>
+    <>
       <Heading level={2} className="mt-8 text-center">Edit Your Profile</Heading>
 
       <div className="mt-6 max-w-md mx-auto space-y-6">
@@ -127,7 +133,7 @@ function EditProfilePage() {
           </Button>
         </div>
       </div>
-    </PageContainer>
+    </>
   );
 }
 

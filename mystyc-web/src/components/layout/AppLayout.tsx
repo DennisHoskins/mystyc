@@ -126,3 +126,23 @@
     // </BusyProvider>
 //   );
 // }
+
+
+'use client'
+
+import { BusyProvider } from '@/components/context/BusyContext';
+import { AppProvider } from '@/components/context/AppContext';
+import PageWrapper from './PageWrapper';
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+
+  return (
+    <BusyProvider>
+      <AppProvider>
+        <PageWrapper>
+          {children}
+        </PageWrapper>
+      </AppProvider>
+    </BusyProvider>
+  );
+}

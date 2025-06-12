@@ -3,15 +3,7 @@ import Head from 'next/head';
 
 import '@/app/globals.css';
 
-import { getApp } from '@/server/appManager';
-import { getDeviceId } from '@/server/deviceManager';
-
-import { BusyProvider } from '@/components/context/BusyContext';
-import { TransitionProvider } from '@/components/context/TransitionContext';
-import { ToastProvider } from '@/components/context/ToastContext';
-
-import ToastContainer from '@/components/ui/ToastContainer';
-import { AppProvider } from '@/components/context/AppContext';
+import AppLayout from '@/components/layout/AppLayout';
 
 export const metadata: Metadata = {
   title: 'mystyc',
@@ -24,12 +16,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const app = await getApp();
-  const deviceId = await getDeviceId();
-
-  console.log("app", app);
-  console.log("deviceId", deviceId);
-
   return (
     <html lang="en">
       <Head>
@@ -41,16 +27,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <ToastProvider>
-          <BusyProvider>
-            <TransitionProvider>
-              <AppProvider app={app} deviceId={deviceId}>
-                {children}
-              </AppProvider>
-            </TransitionProvider>
-          </BusyProvider>
-          <ToastContainer />
-        </ToastProvider>
+        <AppLayout>
+          {children}
+        </AppLayout>
       </body>
     </html>
   );

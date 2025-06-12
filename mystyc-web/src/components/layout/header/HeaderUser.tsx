@@ -1,9 +1,8 @@
 'use client';
 
+import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useApp } from '@/components/context/AppContext';
-import { useAuth } from '@/hooks/useAuth';
-import { isUserAdmin } from '@/util/util';
 import AppLogo from '@/components/layout/AppLogo';
 import Button from '@/components/ui/Button';
 
@@ -11,7 +10,10 @@ import Button from '@/components/ui/Button';
 function DesktopNav() {
   const router = useCustomRouter();
   const { app } = useApp();
-  const isAdmin = isUserAdmin(app?.user?.userProfile);
+
+  if (!app || !app.user) {
+    return;
+  }
 
   return (
     <nav className="hidden md:flex w-full bg-white border-b sticky top-0 z-10 px-4 py-3">
@@ -46,8 +48,7 @@ function DesktopNav() {
           </Button>
         </div>
 
-        {/* Admin logout on the far right */}
-        {isAdmin && (
+        {app.user.isAdmin && (
           <Button
             variant="ghost"
             onClick={() => router.push('/logout')}
@@ -66,7 +67,10 @@ function MobileHeader() {
   const router = useCustomRouter();
   const { signOut } = useAuth();
   const { app } = useApp();
-  const isAdmin = isUserAdmin(app?.user?.userProfile);
+
+  if (!app || !app.user) {
+    return;
+  }
 
   return (
     <header className="md:hidden w-full bg-white px-4 py-3">
@@ -74,7 +78,7 @@ function MobileHeader() {
         <button onClick={() => router.push('/')} className="flex items-center">
           <AppLogo orientation="horizontal" showText />
         </button>
-        {isAdmin && (
+        {app.user.isAdmin && (
           <Button
             variant="ghost"
             size="sm"

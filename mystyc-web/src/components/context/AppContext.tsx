@@ -1,45 +1,42 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { App } from '@/interfaces/app.interface';
+import { AppUser } from '@/interfaces/appUser.interface';
+import { User } from '@/interfaces/user.interface';
 
 interface AppContextType {
   app: App | null;
   setApp: (app: App | null) => void;
-  deviceId: string | null;
-  setDeviceId: (deviceId: string | null) => void;
+  setUser: (user: User | null) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export function AppProvider({ 
-  app,
-  deviceId, 
-  children 
-}: { 
-  app: App | null; 
-  deviceId: string | null; 
-  children: ReactNode 
-}) {
-  const [thisApp, setApp] = useState<App | null>(app);
-  const [thisDeviceId, setDeviceId] = useState<string | null>(deviceId);
+export function AppProvider({ children }: { children: ReactNode }) {
+  const [app, setApp] = useState<App | null>(null);
 
-  useEffect(() => {
-    setApp(app);
-  }, [app]);
+  const transformUserToAppUser = (user: User): AppUser => ({
+    ...user,
+    isAdmin: user.userProfile.roles.includes("admin"),
+    isOnboard: user.userProfile.zodiacSign != null
+  });
 
-  useEffect(() => {
-    setDeviceId(deviceId);
-  }, [deviceId]);
+  const handleSetUser = (user: User | null) => {
+    const appUser = user ? transformUserToAppUser(user) : null;
+    setApp(prev => prev ? { ...prev, user: appUser } : appUser ? { user: appUser } : null);
+  };
 
   return (
     <AppContext.Provider value={{ 
-      app: thisApp, setApp,
-      deviceId: thisDeviceId, setDeviceId 
+      app, 
+      setApp, 
+      setUser: handleSetUser 
     }}>
       {children}
     </AppContext.Provider>
   );
+ 
 }
 
 export function useApp(): AppContextType {
