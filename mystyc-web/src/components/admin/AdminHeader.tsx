@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';

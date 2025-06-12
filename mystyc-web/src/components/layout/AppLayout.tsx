@@ -128,20 +128,25 @@
 // }
 
 
-'use client'
+'use client';
 
 import { BusyProvider } from '@/components/context/BusyContext';
 import { AppProvider } from '@/components/context/AppContext';
-import PageWrapper from './PageWrapper';
+
+import Header from './header/Header';
+import MainWrapper from '@/components/layout/MainWrapper';
+import Footer from './footer/Footer';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <BusyProvider>
       <AppProvider>
-        <PageWrapper>
-          {children}
-        </PageWrapper>
+        <Header />
+          <MainWrapper>
+            {children}
+          </MainWrapper>              
+        <Footer />
       </AppProvider>
     </BusyProvider>
   );

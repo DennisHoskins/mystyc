@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 import AdminHeader from '@/components/admin/AdminHeader';

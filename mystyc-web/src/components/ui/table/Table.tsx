@@ -1,4 +1,3 @@
-// mystyc-client/src/components/ui/table/Table.tsx
 'use client';
 
 import { forwardRef, HTMLAttributes } from 'react';

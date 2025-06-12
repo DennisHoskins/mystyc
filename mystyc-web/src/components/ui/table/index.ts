@@ -1,4 +1,3 @@
-// mystyc-client/src/components/ui/table/index.ts// mystyc-client/src/components/ui/table/index.ts
 export { default as Table } from './Table';
 export { default as TableCaption } from './TableCaption';
 export { default as TableHeader } from './TableHeader';

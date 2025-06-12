@@ -8,7 +8,7 @@ export default function HeaderPublic() {
   const router = useCustomRouter();
 
   return (
-    <header className="hidden md:flex w-full bg-white border-b px-4 py-3">
+    <header className="hidden md:flex w-full bg-white px-4 py-3">
       <div className="flex w-full items-center">
         {/* Logo on the left */}
         <button onClick={() => router.push('/')} className="flex items-center">

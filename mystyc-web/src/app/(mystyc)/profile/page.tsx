@@ -75,7 +75,8 @@ function EditProfilePage() {
   }
 
   return (
-    <>
+    <div className="w-full max-w-md">
+
       <Heading level={2} className="mt-8 text-center">Edit Your Profile</Heading>
 
       <div className="mt-6 max-w-md mx-auto space-y-6">
@@ -133,7 +134,7 @@ function EditProfilePage() {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

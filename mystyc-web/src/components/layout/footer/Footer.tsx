@@ -1,3 +1,5 @@
+'use client';
+
 import { useApp } from '@/components/context/AppContext';
 import FooterPublic from './FooterPublic';
 import FooterUser from './FooterUser';

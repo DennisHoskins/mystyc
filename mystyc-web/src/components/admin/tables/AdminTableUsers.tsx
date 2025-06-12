@@ -1,4 +1,3 @@
-// mystyc-client/src/components/admin/tables/TableUsers.tsx
 'use client';
 
 import { UserProfile as User } from '@/interfaces/userProfile.interface';

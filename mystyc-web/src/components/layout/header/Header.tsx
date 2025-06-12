@@ -1,3 +1,5 @@
+'use client';
+
 import { useApp } from '@/components/context/AppContext';
 import HeaderPublic from './HeaderPublic';
 import HeaderUser from './HeaderUser';

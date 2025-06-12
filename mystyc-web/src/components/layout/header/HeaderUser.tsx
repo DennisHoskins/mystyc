@@ -16,7 +16,7 @@ function DesktopNav() {
   }
 
   return (
-    <nav className="hidden md:flex w-full bg-white border-b sticky top-0 z-10 px-4 py-3">
+    <nav className="hidden md:flex w-full bg-white sticky top-0 z-10 px-4 py-3">
       <div className="flex w-full items-center">
         {/* Logo on the far left */}
         <button onClick={() => router.push('/')} className="flex items-center">
