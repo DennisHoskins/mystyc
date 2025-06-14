@@ -26,7 +26,6 @@ export async function middleware(request: NextRequest) {
       `https://${host}`,
       `http://${host}`,
       'https://mystyc.app',
-      'https://mystyc-client.loca.lt'
     ];
     
     if (pathname.startsWith('/api/server') || pathname.startsWith('/(mystyc)')) {
