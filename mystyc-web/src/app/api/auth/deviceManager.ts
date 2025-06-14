@@ -1,14 +1,56 @@
 import { NextRequest } from 'next/server';
 import { Device } from '@/interfaces/device.interface';
+import { generateDeviceId } from '../keyManager';
 
+/**
+ * Extract device fingerprint from request headers and TLS data
+ */
+export function extractDeviceFingerprint(request: NextRequest): string {
+  const userAgent = request.headers.get('user-agent') || 'unknown';
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  const acceptEncoding = request.headers.get('accept-encoding') || '';
+  
+  // TODO: Extract TLS fingerprint data when available
+  // For now, use normalized User-Agent as primary identifier
+  const normalizedUA = normalizeUserAgent(userAgent);
+  
+  // Combine stable request characteristics
+  const fingerprint = [
+    normalizedUA,
+    acceptLanguage,
+    acceptEncoding,
+  ].join('|');
+  
+  return fingerprint;
+}
+
+/**
+ * Normalize User-Agent to focus on stable characteristics
+ */
+function normalizeUserAgent(userAgent: string): string {
+  // Strip version numbers but keep major browser and OS info
+  return userAgent
+    .replace(/\d+\.\d+\.\d+(\.\d+)?/g, 'X') // Replace version numbers with X
+    .replace(/Chrome\/X/g, 'Chrome')
+    .replace(/Firefox\/X/g, 'Firefox')
+    .replace(/Safari\/X/g, 'Safari')
+    .replace(/Edge\/X/g, 'Edge');
+}
+
+/**
+ * Build device object with deterministic ID from fingerprint
+ */
 export function buildDevice(
-  deviceId: string,
   deviceInfo: { 
     timezone: string,
     language: string 
   },
   request: NextRequest
 ): Device {
+  
+  // Extract fingerprint and generate deterministic deviceId
+  const fingerprint = extractDeviceFingerprint(request);
+  const deviceId = generateDeviceId(fingerprint);
   
   // Get platform from User-Agent
   const getPlatform = (userAgent: string): string => {

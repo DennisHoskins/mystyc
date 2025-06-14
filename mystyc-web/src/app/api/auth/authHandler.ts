@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { v4 as uuidv4 } from 'uuid';
 
-import { buildDevice } from './deviceBuilder';
+import { buildDevice } from './deviceManager';
+import { generateSessionId } from '../keyManager';
 import { authTokenManager } from '../authTokenManager';
 import { sessionManager } from '../sessionManager';
 import { User } from '@/interfaces/user.interface';
@@ -44,12 +43,11 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
       );
     }
 
-    // Generate device ID (new device or reuse existing)
-    const cookieStore = await cookies();
-    const deviceId = cookieStore.get('deviceId')?.value || uuidv4();
+    // Build device with deterministic ID from fingerprint
+    const device = buildDevice(deviceInfo, request);
 
-    // Gather full device info
-    const fullDevice = buildDevice(deviceId, deviceInfo, request);
+    // Generate session ID tied to device and user
+    const sessionId = generateSessionId(device.deviceId, validation.decoded.uid);
 
     // Call Nest backend to register session
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`, {
@@ -60,7 +58,7 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
       },
       body: JSON.stringify({
         firebaseUid: validation.decoded.uid,
-        device: fullDevice,
+        device: device,
         clientTimestamp
       })
     });
@@ -85,11 +83,12 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
     // Get User object from Nest
     const user: User = await nestResponse.json();
 
-    // Create session in Redis
+    // Create session in Redis with the generated sessionId
     await sessionManager.createSession(
       validation.decoded.uid,
-      deviceId,
-      idToken
+      device.deviceId,
+      idToken,
+      sessionId
     );
 
     // Return User object to client

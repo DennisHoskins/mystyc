@@ -1,6 +1,11 @@
 import { createClient } from 'redis';
 import { cookies } from 'next/headers';
-import { v4 as uuidv4 } from 'uuid';
+import { 
+  getSessionCookieName, 
+  getDeviceCookieName, 
+  encryptCookieValue, 
+  decryptCookieValue 
+} from './keyManager';
 
 // Create Redis client
 const redis = createClient({
@@ -10,41 +15,36 @@ const redis = createClient({
 // Connect to Redis (only connect once)
 let isConnected = false;
 async function ensureConnection() {
-  if (!isConnected) {
+  if (!isConnected && !redis.isOpen) {
     await redis.connect();
     isConnected = true;
   }
-}
-
-// 30 days in seconds timeout
-const SESSION_TTL = 30 * 24 * 60 * 60; 
+} 
 
 export const sessionManager = {
 
   async createSession(
     uid: string,
     deviceId: string, 
-    idToken: string
+    idToken: string,
+    sessionId: string
   ): Promise<string> {
     await ensureConnection();
     
-    const sessionId = uuidv4();
-    
     const tokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::token`;
-    await redis.setEx(tokenKey, SESSION_TTL, idToken);
+    await redis.set(tokenKey, idToken);
 
-    // Set httpOnly cookies
+    // Set httpOnly cookies with environment-appropriate names and encryption
     const cookieStore = await cookies();
     
-    cookieStore.set('sessionId', sessionId, {
+    cookieStore.set(getSessionCookieName(), encryptCookieValue(sessionId), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: SESSION_TTL,
       path: '/'
     });
 
-    cookieStore.set('deviceId', deviceId, {
+    cookieStore.set(getDeviceCookieName(), encryptCookieValue(deviceId), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -58,8 +58,16 @@ export const sessionManager = {
     await ensureConnection();
     
     const cookieStore = await cookies();
-    const sessionId = cookieStore.get('sessionId')?.value;
-    const deviceId = cookieStore.get('deviceId')?.value;
+    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
+    const encryptedDeviceId = cookieStore.get(getDeviceCookieName())?.value;
+    
+    if (!encryptedSessionId || !encryptedDeviceId) {
+      return null;
+    }
+    
+    // Decrypt the cookie values
+    const sessionId = decryptCookieValue(encryptedSessionId);
+    const deviceId = decryptCookieValue(encryptedDeviceId);
     
     if (!sessionId || !deviceId) {
       return null;
@@ -93,9 +101,11 @@ export const sessionManager = {
     await ensureConnection();
     
     const cookieStore = await cookies();
-    const sessionId = cookieStore.get('sessionId')?.value;
+    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
     
-    if (sessionId) {
+    if (encryptedSessionId) {
+      const sessionId = decryptCookieValue(encryptedSessionId);
+      
       // Delete all keys for this session
       const pattern = `mystyc::${sessionId}::*`;
       const keys = await redis.keys(pattern);
@@ -104,7 +114,8 @@ export const sessionManager = {
         await redis.del(keys);
       }
       
-      cookieStore.delete('sessionId');
+      cookieStore.delete(getSessionCookieName());
+      cookieStore.delete(getDeviceCookieName());
     }
   },
 
@@ -112,9 +123,10 @@ export const sessionManager = {
     await ensureConnection();
     
     const cookieStore = await cookies();
-    const sessionId = cookieStore.get('sessionId')?.value;
+    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
     
-    if (sessionId) {
+    if (encryptedSessionId) {
+      const sessionId = decryptCookieValue(encryptedSessionId);
       console.log('Clearing session data only (no cookies)', { sessionId: sessionId.substring(0, 8) });
       
       // Delete all keys for this session from Redis only

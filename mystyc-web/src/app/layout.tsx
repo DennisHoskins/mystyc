@@ -6,6 +6,8 @@ import '@/app/globals.css';
 import { getCurrentUser } from '@/server/getCurrentUser';
 import AppLayout from '@/components/layout/AppLayout';
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'mystyc',
   description: 'Get to know yourself better',

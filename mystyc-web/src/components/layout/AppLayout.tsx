@@ -140,7 +140,7 @@ import Footer from './footer/Footer';
 
 interface AppLayoutProps {
   children: React.ReactNode;
-  user?: User | null;
+  user: User | null;
 }
 
 export default function AppLayout({ children, user }: AppLayoutProps) {
