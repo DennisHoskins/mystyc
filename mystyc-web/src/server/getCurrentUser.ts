@@ -14,7 +14,7 @@ export async function getCurrentUser(): Promise<User | null> {
     }
 
     // Validate the token is still good
-    const validation = await authTokenManager.validateToken(session.token);
+    const validation = await authTokenManager.validateToken(session.authToken);
     if (!validation.valid) {
       console.log('Session token invalid');
       await forceLogout('Invalid session token');
@@ -25,7 +25,7 @@ export async function getCurrentUser(): Promise<User | null> {
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`, {
       method: 'GET',
       headers: {
-        'Authorization': authTokenManager.createAuthHeader(session.token),
+        'Authorization': authTokenManager.createAuthHeader(session.authToken),
       },
     });
 

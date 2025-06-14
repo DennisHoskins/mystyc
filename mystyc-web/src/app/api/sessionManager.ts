@@ -4,8 +4,12 @@ import {
   getSessionCookieName, 
   getDeviceCookieName, 
   encryptCookieValue, 
-  decryptCookieValue 
+  decryptCookieValue,
+  validateSessionId 
 } from './keyManager';
+import { logger } from '@/util/logger';
+
+import { IdTokens } from './authTokenManager';
 
 // Create Redis client
 const redis = createClient({
@@ -18,6 +22,7 @@ async function ensureConnection() {
   if (!isConnected && !redis.isOpen) {
     await redis.connect();
     isConnected = true;
+    logger.log('[sessionManager] Redis connected');
   }
 } 
 
@@ -26,13 +31,20 @@ export const sessionManager = {
   async createSession(
     uid: string,
     deviceId: string, 
-    idToken: string,
+    idTokens: IdTokens,
     sessionId: string
   ): Promise<string> {
     await ensureConnection();
     
-    const tokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::token`;
-    await redis.set(tokenKey, idToken);
+    logger.log('[sessionManager] Creating session for uid:', uid, 'device:', deviceId.substring(0, 8));
+    
+    const authTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenAuth`;
+    await redis.set(authTokenKey, idTokens.authToken);
+    logger.log('[sessionManager] Auth token stored in Redis');
+
+    const refreshTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
+    await redis.set(refreshTokenKey, idTokens.refreshToken);
+    logger.log('[sessionManager] Refresh token stored in Redis');
 
     // Set httpOnly cookies with environment-appropriate names and encryption
     const cookieStore = await cookies();
@@ -50,18 +62,28 @@ export const sessionManager = {
       sameSite: 'strict',
       path: '/'
     });
-
+    
+    logger.log('[sessionManager] Session cookies set');
     return sessionId;
   },
 
-  async getCurrentSession(): Promise<{ token: string; sessionId: string; deviceId: string; uid: string } | null> {
+  async getCurrentSession(): Promise<{ 
+    authToken: string; 
+    refreshToken: string; 
+    sessionId: string; 
+    deviceId: string; 
+    uid: string 
+  } | null> {
     await ensureConnection();
+    
+    logger.log('[sessionManager] Getting current session');
     
     const cookieStore = await cookies();
     const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
     const encryptedDeviceId = cookieStore.get(getDeviceCookieName())?.value;
     
     if (!encryptedSessionId || !encryptedDeviceId) {
+      logger.log('[sessionManager] No session cookies found');
       return null;
     }
     
@@ -70,35 +92,83 @@ export const sessionManager = {
     const deviceId = decryptCookieValue(encryptedDeviceId);
     
     if (!sessionId || !deviceId) {
+      logger.error('[sessionManager] Failed to decrypt cookies');
       return null;
     }
     
-    // Get the token for this session
-    const pattern = `mystyc::${sessionId}::${deviceId}::*::token`;
-    const keys = await redis.keys(pattern);
+    logger.log('[sessionManager] Session ID:', sessionId.substring(0, 8), 'Device ID:', deviceId.substring(0, 8));
     
-    if (keys.length === 0) {
+    // Get the auth token for this session
+    const patternAuth = `mystyc::${sessionId}::${deviceId}::*::tokenAuth`;
+    const keysAuth = await redis.keys(patternAuth);
+    
+    if (keysAuth.length === 0) {
+      logger.error('[sessionManager] No auth token found in Redis');
+      return null;
+    }
+
+    const authKey = keysAuth[0];
+    
+    const authToken = await redis.get(authKey);
+    if (!authToken) {
+      logger.error('[sessionManager] Auth token value is null');
       return null;
     }
     
-    const token = await redis.get(keys[0]);
-    if (!token) {
+    // Extract uid from the key: mystyc::{sessionId}::{deviceId}::{uid}::tokenAuth
+    const uid = authKey.split('::')[3];
+    logger.log('[sessionManager] Extracted UID:', uid);
+
+    // Make sure session cookie matches deviceId and uid
+    if (!validateSessionId(sessionId, deviceId, uid)) {
+      logger.error('[sessionManager] Session validation failed - possible tampering');
+      await this.clearSession();
+      return null;
+    }
+
+    // Get the refresh token for this session
+    const refreshKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
+    
+    const refreshToken = await redis.get(refreshKey);
+    if (!refreshToken) {
+      logger.error('[sessionManager] Refresh token value is null');
       return null;
     }
     
-    // Extract uid from the key: mystyc::{sessionId}::{deviceId}::{uid}::token
-    const uid = keys[0].split('::')[3];
-    
+    logger.log('[sessionManager] Session retrieved successfully');
     return {
-      token,
+      authToken,
+      refreshToken,
       sessionId,
       deviceId,
       uid
     };
   },
 
+  async updateSession(
+    sessionId: string,
+    deviceId: string,
+    uid: string,
+    authToken: string,
+    refreshToken: string
+  ) {
+    await ensureConnection();
+    
+    logger.log('[sessionManager] Updating session tokens for uid:', uid);
+    
+    const authTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenAuth`;
+    await redis.set(authTokenKey, authToken);
+    logger.log('[sessionManager] Auth token updated');
+
+    const refreshTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
+    await redis.set(refreshTokenKey, refreshToken);
+    logger.log('[sessionManager] Refresh token updated');
+  },
+
   async clearSession(): Promise<void> {
     await ensureConnection();
+    
+    logger.log('[sessionManager] Clearing session');
     
     const cookieStore = await cookies();
     const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
@@ -112,31 +182,12 @@ export const sessionManager = {
       
       if (keys.length > 0) {
         await redis.del(keys);
+        logger.log('[sessionManager] Deleted', keys.length, 'Redis keys');
       }
       
       cookieStore.delete(getSessionCookieName());
       cookieStore.delete(getDeviceCookieName());
+      logger.log('[sessionManager] Session cookies cleared');
     }
-  },
-
-  async clearSessionDataOnly(): Promise<void> {
-    await ensureConnection();
-    
-    const cookieStore = await cookies();
-    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
-    
-    if (encryptedSessionId) {
-      const sessionId = decryptCookieValue(encryptedSessionId);
-      console.log('Clearing session data only (no cookies)', { sessionId: sessionId.substring(0, 8) });
-      
-      // Delete all keys for this session from Redis only
-      const pattern = `mystyc::${sessionId}::*`;
-      const keys = await redis.keys(pattern);
-      
-      if (keys.length > 0) {
-        await redis.del(keys);
-        console.log(`Cleared ${keys.length} session keys from Redis`);
-      }
-    }
-  }  
+  }
 };

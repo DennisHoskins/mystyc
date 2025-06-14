@@ -1,5 +1,6 @@
 import 'server-only';
-import { createHash, createCipher, createDecipher } from 'crypto';
+import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { logger } from '@/util/logger';
 
 const DEVICE_SESSION_SALT = process.env.DEVICE_SESSION_SALT;
 const COOKIE_ENCRYPTION_KEY = process.env.COOKIE_ENCRYPTION_KEY;
@@ -24,13 +25,18 @@ if (!DEVICE_COOKIE_SEED) {
 
 const isDev = process.env.NODE_ENV === 'development';
 
+// Create a 32-byte key from the environment variable
+const ENCRYPTION_KEY = createHash('sha256').update(COOKIE_ENCRYPTION_KEY!).digest();
+
 /**
  * Generate a deterministic device ID from a device fingerprint
  */
 export function generateDeviceId(fingerprint: string): string {
   const hash = createHash('sha256');
   hash.update(fingerprint + DEVICE_SESSION_SALT);
-  return hash.digest('hex');
+  const deviceId = hash.digest('hex');
+  logger.log('[keyManager] Generated device ID:', deviceId.substring(0, 8));
+  return deviceId;
 }
 
 /**
@@ -39,7 +45,9 @@ export function generateDeviceId(fingerprint: string): string {
 export function generateSessionId(deviceId: string, firebaseUid: string): string {
   const hash = createHash('sha256');
   hash.update(deviceId + firebaseUid + DEVICE_SESSION_SALT);
-  return hash.digest('hex');
+  const sessionId = hash.digest('hex');
+  logger.log('[keyManager] Generated session ID for device:', deviceId.substring(0, 8), 'uid:', firebaseUid);
+  return sessionId;
 }
 
 /**
@@ -51,7 +59,12 @@ export function validateSessionId(
   firebaseUid: string
 ): boolean {
   const expectedSessionId = generateSessionId(deviceId, firebaseUid);
-  return sessionId === expectedSessionId;
+  const isValid = sessionId === expectedSessionId;
+  if (!isValid) {
+    logger.error('[keyManager] Session validation failed - possible tampering');
+    logger.log('[keyManager] Expected:', expectedSessionId.substring(0, 8), 'Got:', sessionId.substring(0, 8));
+  }
+  return isValid;
 }
 
 /**
@@ -64,7 +77,9 @@ export function getSessionCookieName(): string {
   
   const hash = createHash('sha256');
   hash.update(SESSION_COOKIE_SEED!);
-  return '_mst_' + hash.digest('hex').substring(0, 8);
+  const cookieName = '_mst_' + hash.digest('hex').substring(0, 8);
+  logger.log('[keyManager] Session cookie name:', cookieName);
+  return cookieName;
 }
 
 /**
@@ -77,7 +92,9 @@ export function getDeviceCookieName(): string {
   
   const hash = createHash('sha256');
   hash.update(DEVICE_COOKIE_SEED!);
-  return '_mst_' + hash.digest('hex').substring(0, 8);
+  const cookieName = '_mst_' + hash.digest('hex').substring(0, 8);
+  logger.log('[keyManager] Device cookie name:', cookieName);
+  return cookieName;
 }
 
 /**
@@ -88,10 +105,17 @@ export function encryptCookieValue(value: string): string {
     return value;
   }
   
-  const cipher = createCipher('aes-256-cbc', COOKIE_ENCRYPTION_KEY!);
+  logger.log('[keyManager] Encrypting cookie value');
+  const iv = randomBytes(16);
+  const cipher = createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+  
   let encrypted = cipher.update(value, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  return encrypted;
+  
+  // Prepend IV to encrypted value
+  const result = iv.toString('hex') + ':' + encrypted;
+  logger.log('[keyManager] Cookie encrypted successfully');
+  return result;
 }
 
 /**
@@ -103,12 +127,26 @@ export function decryptCookieValue(encryptedValue: string): string {
   }
   
   try {
-    const decipher = createDecipher('aes-256-cbc', COOKIE_ENCRYPTION_KEY!);
-    let decrypted = decipher.update(encryptedValue, 'hex', 'utf8');
+    logger.log('[keyManager] Decrypting cookie value');
+    
+    // Extract IV and encrypted data
+    const parts = encryptedValue.split(':');
+    if (parts.length !== 2) {
+      throw new Error('Invalid encrypted value format');
+    }
+    
+    const iv = Buffer.from(parts[0], 'hex');
+    const encrypted = parts[1];
+    
+    const decipher = createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+    
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
+    
+    logger.log('[keyManager] Cookie decrypted successfully');
     return decrypted;
   } catch (error) {
-    console.error('Failed to decrypt cookie value:', error);
+    logger.error('[keyManager] Failed to decrypt cookie value:', error);
     return '';
   }
 }

@@ -3,6 +3,7 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getAuth, DecodedIdToken } from 'firebase-admin/auth';
 import { firebaseAuth } from './firebaseAuth';
 import { sessionManager } from './sessionManager';
+import { logger } from '@/util/logger';
 
 // Initialize Firebase Admin SDK
 const firebaseAdminApp = getApps().find(app => app.name === 'firebase-admin-app') || 
@@ -23,6 +24,12 @@ export interface TokenValidationResult {
   error?: string;
 }
 
+export interface IdTokens {
+  uid: string,
+  authToken: string;
+  refreshToken: string;
+}
+
 export interface TokenWithFallback {
   token: string;
   isRefreshed: boolean;
@@ -38,13 +45,14 @@ export const authTokenManager = {
     try {
       const decoded = await adminAuth.verifyIdToken(idToken, checkRevoked);
       
+      logger.log('[authTokenManager] Token validated successfully for uid:', decoded.uid);
       return {
         valid: true,
         decoded,
         uid: decoded.uid
       };
     } catch (error: any) {
-      console.error('Token validation failed:', error.code || error.message);
+      logger.error('[authTokenManager] Token validation failed:', error.code || error.message);
       
       return {
         valid: false,
@@ -56,15 +64,24 @@ export const authTokenManager = {
   /**
    * Get fresh token for login/register (always fresh)
    */
-  async getFreshToken(email: string, password: string, isRegister = false): Promise<string> {
+  async getFreshTokens(email: string, password: string, isRegister = false): Promise<IdTokens> {
     try {
+      logger.log('[authTokenManager] Getting fresh tokens for:', email, 'isRegister:', isRegister);
+      
       const firebaseUser = isRegister 
         ? await firebaseAuth.register(email, password)
         : await firebaseAuth.signIn(email, password);
       
-      return await firebaseAuth.getIdToken(firebaseUser, true); // Force refresh
+      const authToken = await firebaseAuth.getIdToken(firebaseUser, true);
+      logger.log('[authTokenManager] Fresh tokens obtained for uid:', firebaseUser.uid);
+      
+      return {
+        uid: firebaseUser.uid,
+        authToken: authToken,
+        refreshToken: firebaseUser.refreshToken
+      }
     } catch (error: any) {
-      console.error('Fresh token generation failed:', error);
+      logger.error('[authTokenManager] Fresh token generation failed:', error);
       
       // Map Firebase codes to your codes
       const errorMap: Record<string, { code: number; message: string }> = {
@@ -87,18 +104,22 @@ export const authTokenManager = {
    * Returns current token or refreshed token if expired
    */
   async getTokenWithFallback(): Promise<TokenWithFallback | null> {
+    logger.log('[authTokenManager] Getting token with fallback refresh');
+    
     const session = await sessionManager.getCurrentSession();
     
     if (!session) {
+      logger.log('[authTokenManager] No session found');
       return null;
     }
 
     // First validate current token
-    const validation = await this.validateToken(session.token);
+    const validation = await this.validateToken(session.authToken);
     
     if (validation.valid) {
+      logger.log('[authTokenManager] Current token is valid');
       return {
-        token: session.token,
+        token: session.authToken,
         isRefreshed: false
       };
     }
@@ -106,20 +127,48 @@ export const authTokenManager = {
     // Token is expired/invalid, try to refresh
     if (validation.error === 'auth/id-token-expired') {
       try {
-        // Use refresh token if available, otherwise force refresh via Firebase
-        // Note: This would require storing refresh token or re-authenticating
-        // For now, we'll clear the session and require re-login
-        console.warn('Token expired, clearing session');
-        await sessionManager.clearSession();
-        return null;
+        logger.log('[authTokenManager] Token expired, attempting refresh');
+        
+        const response = await fetch(
+          `https://securetoken.googleapis.com/v1/token?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `grant_type=refresh_token&refresh_token=${session.refreshToken}`
+          }
+        );
+
+        if (!response.ok) {
+          logger.error('[authTokenManager] Token refresh failed with status:', response.status);
+          throw new Error('Token refresh failed');
+        }
+
+        const data = await response.json();
+        logger.log('[authTokenManager] Token refreshed successfully');
+        
+        // Update tokens in Redis
+        await sessionManager.updateSession(
+          session.sessionId,
+          session.deviceId,
+          session.uid,
+          data.id_token,
+          data.refresh_token
+        );
+        logger.log('[authTokenManager] Updated tokens in Redis');
+
+        return {
+          token: data.id_token,
+          isRefreshed: true
+        };
       } catch (error) {
-        console.error('Token refresh failed:', error);
+        logger.error('[authTokenManager] Token refresh failed:', error);
         await sessionManager.clearSession();
         return null;
       }
     }
 
     // Token is invalid for other reasons
+    logger.error('[authTokenManager] Token invalid for reason:', validation.error);
     await sessionManager.clearSession();
     return null;
   },
