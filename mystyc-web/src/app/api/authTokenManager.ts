@@ -53,6 +53,9 @@ export const authTokenManager = {
       };
     } catch (error: any) {
       logger.error('[authTokenManager] Token validation failed:', error.code || error.message);
+
+      // clear session if token auth fails
+      sessionManager.clearSession();
       
       return {
         valid: false,

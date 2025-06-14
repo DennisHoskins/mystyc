@@ -167,27 +167,30 @@ export const sessionManager = {
 
   async clearSession(): Promise<void> {
     await ensureConnection();
-    
-    logger.log('[sessionManager] Clearing session');
-    
+
     const cookieStore = await cookies();
-    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
-    
+
+    const cookieKeySession = getSessionCookieName();
+    const encryptedSessionId = cookieStore.get(cookieKeySession)?.value;
+
+    logger.log('[sessionManager] Clearing session', cookieKeySession);
+
     if (encryptedSessionId) {
       const sessionId = decryptCookieValue(encryptedSessionId);
-      
       // Delete all keys for this session
       const pattern = `mystyc::${sessionId}::*`;
       const keys = await redis.keys(pattern);
-      
       if (keys.length > 0) {
         await redis.del(keys);
         logger.log('[sessionManager] Deleted', keys.length, 'Redis keys');
       }
-      
-      cookieStore.delete(getSessionCookieName());
-      cookieStore.delete(getDeviceCookieName());
-      logger.log('[sessionManager] Session cookies cleared');
     }
+    cookieStore.delete(cookieKeySession);
+
+    const cookieKeyDevice = getDeviceCookieName();
+    logger.log('[sessionManager] Clearing device', cookieKeyDevice);
+    cookieStore.delete(cookieKeyDevice);
+
+    logger.log('[sessionManager] Session cookies cleared');
   }
 };

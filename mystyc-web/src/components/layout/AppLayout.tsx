@@ -144,6 +144,9 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, user }: AppLayoutProps) {
+
+  console.log("User====", user);
+
   return (
     <BusyProvider>
       <AppProvider user={user}>

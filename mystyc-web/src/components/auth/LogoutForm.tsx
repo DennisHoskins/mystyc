@@ -1,6 +1,7 @@
+// src/components/auth/LogoutForm.tsx
 'use client'
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
@@ -16,97 +17,74 @@ export default function LogoutPage() {
   const { signOut } = useAuth();
   const { app, setUser } = useApp();
   const { isBusy } = useBusy();
-  const [ isLogout, setIsLogout ] = useState(false);
+
   const [error, setError] = useState('');
   const [startCountdown, setStartCountdown] = useState(false);
   const [count, setCount] = useState(5);
   const [hasStartedLogout, setHasStartedLogout] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const noUser = !app || !app.user;
+
+  // redirect immediately when no user
   useEffect(() => {
-    if ((!app || !app.user) && !isLogout) {
-      router.replace('/');
-    }
-  }, [app, isLogout, router]);  
+    if (noUser && !hasStartedLogout) router.replace('/');
+  }, [noUser, hasStartedLogout, router]);
 
-  // Handle logout on first render
-  if (!hasStartedLogout) {
-    setHasStartedLogout(true);
-    (async () => {
-      await logout();
-    })();
-  }
+  if (noUser && !hasStartedLogout) return null;   // no flash
 
-  async function logout() {
+  const logout = useCallback(async () => {
     try {
       await signOut();
-      setIsLogout(true);
       setUser(null);
       setStartCountdown(true);
-    } catch(err: any) {
+    } catch (err: any) {
       console.error('Logout error:', err);
-      
-      switch (err.code) {
-        case 500:
-          setError('Server error. Please try again.');
-          break;
-        default:
-          setError('Logout failed. Please try again.');
-      }
+      setError(err.code === 500 ? 'Server error. Please try again.' : 'Logout failed. Please try again.');
     }
-  }
+  }, [signOut, setUser]);
 
+  // run logout once
   useEffect(() => {
-    if (!startCountdown) {
-      return;
+    if (!hasStartedLogout) {
+      setHasStartedLogout(true);
+      logout();
     }
-    
+  }, [hasStartedLogout, logout]);
+
+  // countdown
+  useEffect(() => {
+    if (!startCountdown) return;
+
     timerRef.current = setInterval(() => {
-      setCount((c) => {
-        if (c <= 1) {
-          clearInterval(timerRef.current!);
-          return 0;
-        }
-        return c - 1;
-      })
+      setCount(c => (c <= 1 ? 0 : c - 1));
     }, 1000);
+
+    return () => clearInterval(timerRef.current!);
   }, [startCountdown]);
 
   useEffect(() => {
-    if (count === 0) {
-      router.push('/');
-    }
+    if (count === 0) router.push('/');
   }, [count, router]);
 
   const handleHomeClick = () => {
-    if (timerRef.current) {
-    clearInterval(timerRef.current);
-    }
+    if (timerRef.current) clearInterval(timerRef.current);
     router.push('/');
-  }
+  };
 
   return (
-    <FormLayout
-      subtitle="Sign in to continue your journey..."
-      error={error}
-    >
-    <Text>
-      Thanks for using mystyc! We hope to see you again soon.
-    </Text>
+    <FormLayout subtitle="Sign in to continue your journey..." error={error}>
+      <Text>Thanks for using mystyc! We hope to see you again soon.</Text>
 
-    <Button 
-      loading={isBusy}
-      onClick={handleHomeClick}
-      className="w-full"
-    >
-      Home
-    </Button>
-     
-    {!error &&
-      <Text variant="small">
-        Redirecting automatically in {count} second{count !== 1 ? 's' : ''}...
-      </Text>
-    }
+      <Button loading={isBusy} onClick={handleHomeClick} className="w-full">
+        Home
+      </Button>
+
+      {!error && (
+        <Text variant="small">
+          Redirecting automatically in {count} second{count !== 1 ? 's' : ''}...
+        </Text>
+      )}
     </FormLayout>
   );
 }
