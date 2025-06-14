@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/client/apiClientAdmin';
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 
 import { useToast } from '@/hooks/useToast';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
@@ -28,17 +28,6 @@ function DeviceDetailPage() {
     () => ({
       main: (deviceId: string) => apiClientAdmin.getDevice(deviceId),
       related: [
-        {
-          key: 'deviceOwner',
-          fetcher: async (deviceId: string) => {
-            const device = await apiClientAdmin.getDevice(deviceId);
-            if (device?.firebaseUid) {
-              return await apiClientAdmin.getUser(device.firebaseUid);
-            }
-            return null;
-          },
-          optional: true,
-        },
         {
           key: 'authEvents',
           fetcher: (deviceId: string) => 

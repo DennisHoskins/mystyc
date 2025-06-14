@@ -89,8 +89,6 @@ export class UsersController {
       const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
       
       const user = await this.userService.getUser(firebaseUser);
-
-      // need to add device id to DTO
       
       this.logger.debug('Current user retrieved successfully', { uid: firebaseUser.uid });
       return user;

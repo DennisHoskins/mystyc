@@ -1,5 +1,4 @@
 export interface Device {
-  firebaseUid: string;
   deviceId: string;
   deviceName: string;
   platform: string;

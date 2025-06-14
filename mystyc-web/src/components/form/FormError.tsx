@@ -10,7 +10,7 @@ export default function FormError({ message }: FormErrorProps) {
   if (!message) return null;
 
   return (
-    <div className="rounded-md bg-red-50 p-4">
+    <div className="rounded-md bg-red-50 mt-4 p-4">
       <Text variant="small" className="text-red-700">
         {message}
       </Text>

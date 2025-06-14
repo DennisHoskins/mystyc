@@ -6,7 +6,7 @@ import AdminPanel from './AdminPanel';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 import { Device } from '@/interfaces/device.interface';
-import { apiClientAdmin } from '@/api/client/apiClientAdmin';
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { useToast } from '@/hooks/useToast';
 import { logger } from '@/util/logger';
 

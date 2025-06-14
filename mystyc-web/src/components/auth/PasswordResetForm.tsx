@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useApp } from '@/components/context/AppContext';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useBusy } from '@/components/context/BusyContext'
 
 import Form from '@/components/ui/form/Form';
@@ -16,25 +15,16 @@ import Button from '@/components/ui/Button';
 
 export default function PasswordResetPage() {
   const router = useCustomRouter();
-  const { setBusy } = useBusy();
+  const { isBusy, setBusy } = useBusy();
   const { resetPassword } = useAuth();
   const { app }  = useApp();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (app && app.user) router.replace('/');
-  }, [app, router]);  
-
-  const { handleAuthError } = useErrorHandler({
-    component: 'PasswordResetPage',
-    showToast: false,
-    onError: (processedError) => {
-      setError(processedError.message);
-    }
-  });
+    if ((app && app.user) && !isBusy) router.replace('/');
+  }, [app, isBusy, router]);  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,15 +32,22 @@ export default function PasswordResetPage() {
     setError('');
     setMessage('');
     setBusy(true);
-    setIsBusy(true);
 
     try {
       await resetPassword(email);
       setMessage('Check your email for a password reset link.');
+      setBusy(false);
     } catch (err: any) {
-      handleAuthError(err);
-    } finally {
-      setIsBusy(false);
+      console.error('Password reset error:', err);
+      
+      switch (err.code) {
+        case 500:
+          setError('Server error. Please try again.');
+          break;
+        default:
+          setError('Password reset failed. Please try again.');
+      }
+
       setBusy(false);
     }
   };

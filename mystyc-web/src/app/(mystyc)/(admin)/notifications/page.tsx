@@ -1,6 +1,6 @@
 'use client';
 
-// import { apiClientAdmin } from '@/api/client/apiClientAdmin';
+// import { apiClientAdmin } from '@/api/apiClientAdmin';
 // import { Notification } from '@/interfaces/notification.interface';
 // import { useApp } from '@/components/context/AppContext';
 // import { useAdminListPage } from '@/hooks/admin/useAdminListPage';

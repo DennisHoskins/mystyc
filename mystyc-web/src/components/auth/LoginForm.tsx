@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useBusy } from '@/components/context/BusyContext';
 import { useApp } from '@/components/context/AppContext';
 
@@ -27,14 +26,6 @@ export default function LoginForm() {
     if ((app && app.user) && !isBusy) router.replace('/');
   }, [app, isBusy, router]);
 
-  const { handleAuthError } = useErrorHandler({
-    component: 'LoginPage',
-    showToast: false,
-    onError: (processedError) => {
-      setError(processedError.message);
-    }
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -51,7 +42,16 @@ export default function LoginForm() {
 
       router.push("/");
     } catch (err: any) {
-      handleAuthError(err);
+      console.error('Login error:', err);
+      
+      switch (err.code) {
+        case 500:
+          setError('Server error. Please try again.');
+          break;
+        default:
+          setError('Login failed. Please try again.');
+      }
+
       setBusy(false);
     }
   };

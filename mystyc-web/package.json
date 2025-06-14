@@ -16,12 +16,14 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.3.1",
     "firebase": "^11.8.0",
+    "firebase-admin": "^13.4.0",
     "ioredis": "^5.6.1",
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "redis": "^5.5.6",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

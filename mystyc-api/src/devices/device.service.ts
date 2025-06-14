@@ -38,7 +38,6 @@ export class DeviceService {
       logger.debug('Device found', {
         id,
         deviceId: device.deviceId,
-        firebaseUid: device.firebaseUid
       }, 'DeviceService');
 
       return this.transformToDevice(device);
@@ -350,7 +349,6 @@ export class DeviceService {
    */
   private transformToDevice(doc: DeviceDocument): DeviceInterface {
     return {
-      firebaseUid: doc.firebaseUid,
       deviceId: doc.deviceId,
       deviceName: doc.deviceName,
       platform: doc.platform,

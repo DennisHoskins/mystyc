@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useBusy } from '@/components/context/BusyContext';
 import { useApp } from '@/components/context/AppContext';
 
@@ -16,31 +15,21 @@ import Button from '@/components/ui/Button';
 
 export default function RegisterForm() {
   const router = useCustomRouter();
-  const { setBusy } = useBusy();
+  const { isBusy, setBusy } = useBusy();
   const { register } = useAuth();
   const { app, setUser } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if ((app && app.user) && !isBusy) router.replace('/');
   }, [app, isBusy, router]);  
 
-  const { handleAuthError } = useErrorHandler({
-    component: 'RegisterPage',
-    showToast: false,
-    onError: (processedError) => {
-      setError(processedError.message);
-    }
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     setError('');
-    setIsBusy(true);
     setBusy(true);
 
     try {
@@ -53,8 +42,16 @@ export default function RegisterForm() {
 
       router.push("/");
     } catch (err: any) {
-      handleAuthError(err);
-      setIsBusy(false);
+      console.error('Registration error:', err);
+      
+      switch (err.code) {
+        case 500:
+          setError('Server error. Please try again.');
+          break;
+        default:
+          setError('Registration failed. Please try again.');
+      }
+
       setBusy(false);
     }
   };

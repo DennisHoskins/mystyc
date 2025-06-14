@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useBusy } from '@/components/context/BusyContext';
 import { useApp } from '@/components/context/AppContext';
 
@@ -24,19 +23,11 @@ export default function LogoutPage() {
   const [hasStartedLogout, setHasStartedLogout] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { handleAuthError } = useErrorHandler({
-    component: 'LoginPage',
-    showToast: false,
-    onError: (processedError) => {
-      setError(processedError.message);
-    }
-  });
-
   useEffect(() => {
     if ((!app || !app.user) && !isLogout) {
       router.replace('/');
     }
-  }, [app, router]);  
+  }, [app, isLogout, router]);  
 
   // Handle logout on first render
   if (!hasStartedLogout) {
@@ -53,7 +44,15 @@ export default function LogoutPage() {
       setUser(null);
       setStartCountdown(true);
     } catch(err: any) {
-      handleAuthError(err);
+      console.error('Logout error:', err);
+      
+      switch (err.code) {
+        case 500:
+          setError('Server error. Please try again.');
+          break;
+        default:
+          setError('Logout failed. Please try again.');
+      }
     }
   }
 

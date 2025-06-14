@@ -96,5 +96,7 @@ export default function OnboardingLayout() {
   //     <StepComponent onNext={handleNext} onBack={handleBack} />
   //   </div>
   // );
-  return <></>
+  return <>
+      Onboarding
+  </>
 }

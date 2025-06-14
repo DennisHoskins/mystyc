@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/client/apiClientAdmin';
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { User, UserProfile, Device, AuthEvent } from '@/interfaces';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
 

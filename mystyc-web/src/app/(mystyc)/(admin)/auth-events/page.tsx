@@ -1,6 +1,6 @@
 'use client';
 
-// import { apiClientAdmin } from '@/api/client/apiClientAdmin';
+// import { apiClientAdmin } from '@/api/apiClientAdmin';
 // import { AuthEvent } from '@/interfaces/authEvent.interface';
 // import { useAdminListPage } from '@/hooks/admin/useAdminListPage';
 // import { AdminQuery } from '@/interfaces';

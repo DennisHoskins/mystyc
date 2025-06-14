@@ -1,16 +1,14 @@
 'use client'
 
-import { useApp } from '@/components/context/AppContext';
+import { User } from '@/interfaces/user.interface';
 
 import Mystyc from '@/app/(mystyc)/mystyc';
 import Home from '@/app/(website)/home';
 
-export default function Root() {
-  const { app } = useApp();
-
+export default function Root({user}: { user: User | null }) {
   return (
     <>
-      {app && app.user ? (
+      {user ? (
         <Mystyc />
       ) : (
         <Home />

@@ -132,21 +132,26 @@
 
 import { BusyProvider } from '@/components/context/BusyContext';
 import { AppProvider } from '@/components/context/AppContext';
+import { User } from '@/interfaces/user.interface';
 
 import Header from './header/Header';
 import MainWrapper from '@/components/layout/MainWrapper';
 import Footer from './footer/Footer';
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+interface AppLayoutProps {
+  children: React.ReactNode;
+  user?: User | null;
+}
 
+export default function AppLayout({ children, user }: AppLayoutProps) {
   return (
     <BusyProvider>
-      <AppProvider>
-        <Header />
-          <MainWrapper>
-            {children}
-          </MainWrapper>              
-        <Footer />
+      <AppProvider user={user}>
+        <Header user={user} />
+        <MainWrapper>
+          {children}
+        </MainWrapper>              
+        <Footer user={user} />
       </AppProvider>
     </BusyProvider>
   );

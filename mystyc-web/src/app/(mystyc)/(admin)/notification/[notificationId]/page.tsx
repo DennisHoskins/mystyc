@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/client/apiClientAdmin';
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces/notification.interface';
 import { Device } from '@/interfaces/device.interface';
 import { UserProfile } from '@/interfaces/userProfile.interface';

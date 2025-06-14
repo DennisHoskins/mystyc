@@ -3,6 +3,7 @@ import Head from 'next/head';
 
 import '@/app/globals.css';
 
+import { getCurrentUser } from '@/server/getCurrentUser';
 import AppLayout from '@/components/layout/AppLayout';
 
 export const metadata: Metadata = {
@@ -16,6 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="en">
       <Head>
@@ -27,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <AppLayout>
+        <AppLayout user={user}>
           {children}
         </AppLayout>
       </body>

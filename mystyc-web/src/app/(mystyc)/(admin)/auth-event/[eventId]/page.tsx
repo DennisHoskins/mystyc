@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/client/apiClientAdmin';
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent, Device } from '@/interfaces';
 import { UserProfile } from '@/interfaces/userProfile.interface';
 import { useAdminDetailPage } from '@/hooks/admin/useAdminDetailPage';
