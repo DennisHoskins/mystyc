@@ -1,14 +1,28 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+
+import { useEffect } from 'react';
+
+import { useCustomRouter } from '@/hooks/useCustomRouter';
 
 import FormLayout from '@/components/layout/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function ServerLogoutPage() {
-  const router = useRouter();
+  const router = useCustomRouter();
 
+  useEffect(() => {
+    const logout = async () => {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'x-source': 'client-cleanup' },
+      });
+    };
+    
+    logout();
+  }, []);
+  
   const handleHomeClick = () => {
     router.replace("/");
   };

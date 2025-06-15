@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 import Head from 'next/head';
 
 import '@/app/globals.css';
 
-import { getCurrentUser } from '@/server/getCurrentUser';
+import { getUser } from '@/server/getUser';
 import AppLayout from '@/components/layout/AppLayout';
 
 export const dynamic = 'force-dynamic'
@@ -20,22 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  let user = null;
-  const error = null;
-  
-  try {
-    user = await getCurrentUser();
-  } catch (err) {
-    console.log(err);
-
-    await fetch('/api/auth/logout', {
-      method: 'POST',
-      headers: { 'x-source': 'client-cleanup' },
-    });
-
-    //redirect('/server-logout');
-    user = null;
-  }
+  const user = await getUser();
 
   return (
     <html lang="en">
@@ -48,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <AppLayout user={user} error={error}>
+        <AppLayout user={user}>
           {children}
         </AppLayout>
       </body>
