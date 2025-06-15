@@ -31,8 +31,6 @@ export default function LogoutPage() {
     if (noUser && !hasStartedLogout) router.replace('/');
   }, [noUser, hasStartedLogout, router]);
 
-  if (noUser && !hasStartedLogout) return null;   // no flash
-
   const logout = useCallback(async () => {
     try {
       await signOut();
@@ -71,6 +69,8 @@ export default function LogoutPage() {
     if (timerRef.current) clearInterval(timerRef.current);
     router.push('/');
   };
+
+  if (noUser && !hasStartedLogout) return null;
 
   return (
     <FormLayout subtitle="Sign in to continue your journey..." error={error}>

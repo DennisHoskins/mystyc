@@ -1,5 +1,5 @@
 import 'server-only';
-import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { randomBytes, createHash, createCipheriv, createDecipheriv } from 'crypto'
 import { logger } from '@/util/logger';
 
 const DEVICE_SESSION_SALT = process.env.DEVICE_SESSION_SALT;
@@ -43,28 +43,28 @@ export function generateDeviceId(fingerprint: string): string {
  * Generate a session ID from device ID and Firebase UID
  */
 export function generateSessionId(deviceId: string, firebaseUid: string): string {
-  const hash = createHash('sha256');
-  hash.update(deviceId + firebaseUid + DEVICE_SESSION_SALT);
-  const sessionId = hash.digest('hex');
-  logger.log('[keyManager] Generated session ID for device:', deviceId.substring(0, 8), 'uid:', firebaseUid);
-  return sessionId;
+  const nonce = randomBytes(16).toString('hex');
+  const h   = createHash('sha256');
+  h.update(nonce + deviceId + firebaseUid + DEVICE_SESSION_SALT);
+  const mac = h.digest('hex').slice(0, 16);
+  return nonce + mac;
 }
 
 /**
  * Validate that a session ID matches the expected device ID and Firebase UID
  */
 export function validateSessionId(
-  sessionId: string, 
-  deviceId: string, 
+  id: string,
+  deviceId: string,
   firebaseUid: string
 ): boolean {
-  const expectedSessionId = generateSessionId(deviceId, firebaseUid);
-  const isValid = sessionId === expectedSessionId;
-  if (!isValid) {
-    logger.error('[keyManager] Session validation failed - possible tampering');
-    logger.log('[keyManager] Expected:', expectedSessionId.substring(0, 8), 'Got:', sessionId.substring(0, 8));
-  }
-  return isValid;
+  if (id.length !== 48) return false;
+  const nonce = id.slice(0, 32);
+  const mac   = id.slice(32);
+
+  const h = createHash('sha256');
+  h.update(nonce + deviceId + firebaseUid + DEVICE_SESSION_SALT);
+  return mac === h.digest('hex').slice(0, 16);
 }
 
 /**

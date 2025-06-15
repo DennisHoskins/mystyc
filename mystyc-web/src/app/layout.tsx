@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <AppLayout user={user}>
+        <AppLayout key={user?.firebaseUser?.uid ?? 'guest'}  user={user}>
           {children}
         </AppLayout>
       </body>
