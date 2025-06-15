@@ -7,8 +7,8 @@ async function doLogout(request: NextRequest) {
   const source    = request.headers.get('x-source')  || 'unknown';
   console.log('Logout initiated', { source, userAgent });
 
-  await sessionManager.clearSession();
-  await firebaseAuth.signOut();
+  await sessionManager.clearSession();   // Redis + cookies
+  await firebaseAuth.signOut();          // Firebase
 
   console.log('Logout completed successfully');
 }

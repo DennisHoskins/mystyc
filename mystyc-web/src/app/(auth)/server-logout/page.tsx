@@ -1,5 +1,6 @@
 import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
 
-export default function ServerLogoutPage() {
+export default async function ServerLogoutPage() {
   return <ServerLogoutForm />
 }
+

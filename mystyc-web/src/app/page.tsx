@@ -1,9 +1,10 @@
+'use client';
+
+import { useApp } from '@/components/context/AppContext';
 import RootPage from '@/components/layout/RootPage';
 
-import { getCurrentUser } from '@/server/getCurrentUser';
+export default function Page() {
+  const { app } = useApp();
 
-export default async function Page() {
-  const user = await getCurrentUser();
-
-  return <RootPage user={user} />
+  return <RootPage user={app?.user || null} />
 }

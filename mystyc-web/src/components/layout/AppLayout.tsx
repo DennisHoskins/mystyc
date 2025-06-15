@@ -137,24 +137,23 @@ import { User } from '@/interfaces/user.interface';
 import Header from './header/Header';
 import MainWrapper from '@/components/layout/MainWrapper';
 import Footer from './footer/Footer';
+import ServerLogoutPage from '../auth/ServerLogoutForm';
 
 interface AppLayoutProps {
   children: React.ReactNode;
   user: User | null;
+  error: string | null;
 }
 
-export default function AppLayout({ children, user }: AppLayoutProps) {
-
-  console.log("User====", user);
-
+export default function AppLayout({ children, user, error }: AppLayoutProps) {
   return (
     <BusyProvider>
       <AppProvider user={user}>
-        <Header user={user} />
-        <MainWrapper>
-          {children}
-        </MainWrapper>              
-        <Footer user={user} />
+            <Header user={user} />
+            <MainWrapper>
+              {error ? <ServerLogoutPage /> : children}
+            </MainWrapper>              
+            <Footer user={user} />
       </AppProvider>
     </BusyProvider>
   );

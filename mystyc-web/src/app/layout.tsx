@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import Head from 'next/head';
 
 import '@/app/globals.css';
@@ -19,7 +20,22 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser();
+  let user = null;
+  const error = null;
+  
+  try {
+    user = await getCurrentUser();
+  } catch (err) {
+    console.log(err);
+
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: { 'x-source': 'client-cleanup' },
+    });
+
+    //redirect('/server-logout');
+    user = null;
+  }
 
   return (
     <html lang="en">
@@ -32,7 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <AppLayout key={user?.firebaseUser?.uid ?? 'guest'}  user={user}>
+        <AppLayout user={user} error={error}>
           {children}
         </AppLayout>
       </body>

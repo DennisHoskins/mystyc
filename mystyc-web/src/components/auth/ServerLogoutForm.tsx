@@ -1,24 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
-
-import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useApp } from '@/components/context/AppContext';
+import { useRouter } from 'next/navigation';
 
 import FormLayout from '@/components/layout/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function ServerLogoutPage() {
-  const router = useCustomRouter();
-  const { app } = useApp();
+  const router = useRouter();
 
-  useEffect(() => {
-    if (app && app.user) router.replace('/');
-  }, [app, router]);
-
-  const handleLoginClick = () => {
-    router.push('/login');
+  const handleHomeClick = () => {
+    router.replace("/");
   };
 
   return (
@@ -31,10 +23,10 @@ export default function ServerLogoutPage() {
         </Text>
         <div className="space-y-4">
           <Button 
-            onClick={handleLoginClick}
+            onClick={handleHomeClick}
             className="w-full"
           >
-            Sign In Again
+            Home
           </Button>
         </div>
       </FormLayout>
