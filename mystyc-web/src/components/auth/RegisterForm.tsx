@@ -31,7 +31,7 @@ export default function RegisterForm() {
       return;
     }
     setIsReady(true);
-  }, []);
+  }, [isReady]);
 
   // redirect when fully initialized and user exists
   useEffect(() => {

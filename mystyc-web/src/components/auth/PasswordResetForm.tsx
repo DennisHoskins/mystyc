@@ -30,7 +30,7 @@ export default function PasswordResetPage() {
       return;
     }
     setIsReady(true);
-  }, []);
+  }, [isReady]);
 
   // redirect when fully initialized and user exists
   useEffect(() => {

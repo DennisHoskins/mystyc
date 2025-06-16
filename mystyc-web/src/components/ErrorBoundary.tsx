@@ -1,0 +1,38 @@
+'use client';
+
+import { Component, ErrorInfo, ReactNode } from 'react';
+import { useAppStore } from '@/store/appStore';
+
+interface Props {
+  children: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): State {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+    
+    // Set global error and clear busy state
+    const store = useAppStore.getState();
+    store.clearBusy();
+    store.setGlobalError(true);
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;

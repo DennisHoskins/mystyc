@@ -34,7 +34,7 @@ export default function Offline() {
         </Button>
 
         <Text variant="small">
-          We'll automatically reconnect when your connection is restored.
+          We&apos;ll automatically reconnect when your connection is restored.
         </Text>
       </div>
     </div>

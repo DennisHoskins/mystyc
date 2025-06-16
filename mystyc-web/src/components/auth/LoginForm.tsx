@@ -30,7 +30,7 @@ export default function LoginForm() {
       return;
     }
     setIsReady(true);
-  }, []);
+  }, [isReady]);
 
   // Redirect when fully initialized and user exists
   useEffect(() => {

@@ -6,6 +6,7 @@ import '@/app/globals.css';
 import { getUser } from '@/server/getUser';
 import { createUserStore } from '@/store/userStore'
 import AppContext from '@/components/context/AppContext';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,9 +35,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <AppContext user={user}>
-          {children}
-        </AppContext>
+        <ErrorBoundary>
+          <AppContext user={user}>
+            {children}
+          </AppContext>
+        </ErrorBoundary>
       </body>
     </html>
   );

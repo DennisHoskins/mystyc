@@ -8,6 +8,7 @@ import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
 import Transition from '@/components/Transition';
 import Layout from '@/components/layout/Layout';
+import GlobalError from '@/components/GlobalError';
 import Offline from '@/components/Offline';
 import Working from '@/components/Working';
 
@@ -20,9 +21,10 @@ interface AppContextProps {
 
 export default function AppContext({ children, user }: AppContextProps) {
   const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
+  const isGlobalError = useAppStore((state) => state.isGlobalError);
   const setOnline = useAppStore((state) => state.setOnline);  
   const isOnline = useAppStore((state) => state.isOnline);
-
+  
   if (!storeRef.current) {
     storeRef.current = createUserStore(user);
   }
@@ -43,12 +45,16 @@ export default function AppContext({ children, user }: AppContextProps) {
       window.removeEventListener('offline', handleOffline);
     };
   }, [setOnline]);  
-  
+
   return (
     <UserStoreContext.Provider value={storeRef.current}>
       <Transition>
         <Layout>
-          {isOnline ? children : <Offline />}
+          {
+            isGlobalError ? <GlobalError /> :
+            !isOnline ? <Offline /> :
+            children
+          }
         </Layout>
       </Transition>
       <Working />

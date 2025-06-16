@@ -57,3 +57,23 @@ export const createUserStore = (serverUser: ServerUser | null) => {
     clearUser: () => set({ user: null, authenticated: false })
   }));
 };
+
+export const useUserStore = create<UserState>((set) => ({
+  // Default state
+  user: null,
+  authenticated: false,
+  initialized: false,
+
+  // Actions
+  setUser: (user: User | null) => set({ 
+    user: user ? transformUserToAppUser(user) : null 
+  }),
+  setAuthenticated: (authenticated: boolean) => set({ authenticated }),
+  clearUser: () => set({ user: null, authenticated: false }),
+  
+  // Initialize from server user
+  initializeUser: (serverUser: ServerUser | null) => {
+    const initialState = getInitialState(serverUser);
+    set(initialState);
+  }
+}));
