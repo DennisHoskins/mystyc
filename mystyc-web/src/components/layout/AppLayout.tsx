@@ -1,30 +1,17 @@
 'use client';
 
-import { ServerUser } from '@/server/getUser';
+import AppHeader from './header/AppHeader';
+import MainWrapper from '@/components/layout/LayoutWrapper';
+import AppFooter from './footer/AppFooter';
 
-import { BusyProvider } from '@/components/context/BusyContext';
-import { AppProvider } from '@/components/context/AppContext';
-
-import Header from './header/Header';
-import MainWrapper from '@/components/layout/MainWrapper';
-import Footer from './footer/Footer';
-import ServerLogoutPage from '../auth/ServerLogoutForm';
-
-interface AppLayoutProps {
-  children: React.ReactNode;
-  user: ServerUser | null;
-}
-
-export default function AppLayout({ children, user }: AppLayoutProps) {
+export default function AppUserLayout({ children }: { children: React.ReactNode }) {
   return (
-    <BusyProvider>
-      <AppProvider user={user && user.user}>
-        <Header user={user && user.user} />
-        <MainWrapper>
-          {(user && !user.user && user.authenticated) ? <ServerLogoutPage /> : children}
-        </MainWrapper>              
-        <Footer user={user && user.user} />
-      </AppProvider>
-    </BusyProvider>
+    <>
+      <AppHeader />
+      <MainWrapper>
+        {children}
+      </MainWrapper>
+      <AppFooter />
+    </>
   );
 }

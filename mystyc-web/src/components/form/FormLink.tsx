@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 type FormLinkProps = {
   href: string;
@@ -10,7 +10,7 @@ type FormLinkProps = {
 };
 
 export default function FormLink({ href, children, className }: FormLinkProps) {
-  const router = useCustomRouter();
+  const router = useTransitionRouter();
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();

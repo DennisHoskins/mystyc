@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from 'react';
 
-import { useApp } from '@/components/context/AppContext';
 import Heading from '@/components/ui/Heading';
 import Button from '@/components/ui/Button';
 import TextInput from '@/components/ui/form/TextInput';
@@ -13,7 +12,6 @@ interface Message {
 }
 
 export default function AnswersPage() {
-  const { app } = useApp();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,10 +29,6 @@ export default function AnswersPage() {
     setMessages((prev) => [...prev, { question, answer }]);
     setInput('');
   };
-
-  if (!app || !app.user) {
-    return null;
-  }
 
   return (
     <>

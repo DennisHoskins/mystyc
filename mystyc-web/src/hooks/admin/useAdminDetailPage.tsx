@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useBusy } from '@/components/context/BusyContext';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+//import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 
 interface EntityFetcher<T> {
@@ -31,7 +31,7 @@ interface UseAdminDetailPageReturn<T> {
   relatedData: Record<string, any>;
   loading: boolean;
   error: string | null;
-  router: ReturnType<typeof useCustomRouter>;
+  router: ReturnType<typeof useTransitionRouter>;
   refetch: () => Promise<void>;
 }
 
@@ -43,8 +43,8 @@ export function useAdminDetailPage<T>({
   const params = useParams();
   const entityId = params[paramKey] as string;
   const { setBusy } = useBusy();
-  const { handleError } = useErrorHandler();
-  const router = useCustomRouter();
+  //const { handleError } = useErrorHandler();
+  const router = useTransitionRouter();
 
   const [entity, setEntity] = useState<T | null>(null);
   const [relatedData, setRelatedData] = useState<Record<string, any>>({});
@@ -96,7 +96,7 @@ export function useAdminDetailPage<T>({
       }
     } catch (err: any) {
       logger.error(`[useAdminDetailPage] Failed to load ${entityName} details:`, err);
-      handleError(err);
+//      handleError(err);
       setError(err.message || `Failed to load ${entityName} details`);
     } finally {
       setLoading(false);
@@ -109,7 +109,7 @@ export function useAdminDetailPage<T>({
     setBusy,
     setLoading,
     setError,
-    handleError,
+//    handleError,
   ]);
 
   useEffect(() => {

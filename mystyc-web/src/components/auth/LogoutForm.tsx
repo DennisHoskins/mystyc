@@ -1,76 +1,95 @@
-// src/components/auth/LogoutForm.tsx
-'use client'
+'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { useInitialized, useUser, useClearUser } from '@/components/context/AppContext';
 import { useBusy } from '@/components/context/BusyContext';
-import { useApp } from '@/components/context/AppContext';
 
 import FormLayout from '@/components/layout/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function LogoutPage() {
-  const router = useCustomRouter();
+  const router = useTransitionRouter();
+  const user = useUser();
+  const initialized = useInitialized();
+  const clearUser = useClearUser();
   const { signOut } = useAuth();
-  const { app, setUser } = useApp();
   const { isBusy } = useBusy();
 
-  const [error, setError] = useState('');
+  const [isReady, setIsReady] = useState(false);
+  const [isLogout, setIsLogout] = useState(false);
+  const [started, setStarted] = useState(false);
   const [startCountdown, setStartCountdown] = useState(false);
   const [count, setCount] = useState(5);
-  const [hasStartedLogout, setHasStartedLogout] = useState(false);
+  const [error, setError] = useState('');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const noUser = !app || !app.user;
-
-  // redirect immediately when no user
+  // mount guard
   useEffect(() => {
-    if (noUser && !hasStartedLogout) router.replace('/');
-  }, [noUser, hasStartedLogout, router]);
+    setIsReady(true);
+    setIsLogout(user != null);
+  }, [user]);
 
-  const logout = useCallback(async () => {
-    try {
-      await signOut();
-      setUser(null);
-      setStartCountdown(true);
-    } catch (err: any) {
-      console.error('Logout error:', err);
-      setError(err.code === 500 ? 'Server error. Please try again.' : 'Logout failed. Please try again.');
-    }
-  }, [signOut, setUser]);
-
-  // run logout once
+  // logout and start redirect timer
   useEffect(() => {
-    if (!hasStartedLogout) {
-      setHasStartedLogout(true);
-      logout();
+    if (!isReady || !initialized || started) {
+      return;
     }
-  }, [hasStartedLogout, logout]);
 
-  // countdown
+    setStarted(true);
+
+    if (!user) {
+      router.replace('/');
+      return;
+    }
+
+    signOut()
+      .then(() => {
+        clearUser();
+        setStartCountdown(true);
+      })
+      .catch((err: any) => {
+        console.error('Logout error:', err);
+        setError(
+          err.code === 500
+            ? 'Server error. Please try again.'
+            : 'Logout failed. Please try again.'
+        );
+        router.replace('/');
+      });
+  }, [isReady, initialized, started, user, router, signOut, clearUser]);
+
+  // countdown timer
   useEffect(() => {
     if (!startCountdown) return;
-
     timerRef.current = setInterval(() => {
       setCount(c => (c <= 1 ? 0 : c - 1));
     }, 1000);
-
-    return () => clearInterval(timerRef.current!);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [startCountdown]);
 
+  // when countdown hits zero, redirect
   useEffect(() => {
-    if (count === 0) router.push('/');
+    if (count === 0) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      router.replace('/');
+    }
   }, [count, router]);
 
   const handleHomeClick = () => {
     if (timerRef.current) clearInterval(timerRef.current);
-    router.push('/');
+    router.replace('/');
   };
 
-  if (noUser && !hasStartedLogout) return null;
+  // Prevent any render until after mount, and bail if not logged in
+  if (!isLogout || !isReady || !initialized || (!user && !started)) {
+    return null;
+  }
 
   return (
     <FormLayout subtitle="Sign in to continue your journey..." error={error}>

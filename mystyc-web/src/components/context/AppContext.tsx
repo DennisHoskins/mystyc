@@ -1,65 +1,88 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useRef } from 'react';
+import { useStore } from 'zustand';
+import { ServerUser } from '@/server/getUser';
+import { createUserStore, UserState } from '@/store/userStore';
+import { BusyProvider } from '@/components/context/BusyContext';
+import Transition from '@/components/Transition';
+import LayoutManager from '@/components/layout/LayoutManager';
 
-import { createContext, useContext, ReactNode } from 'react';
-import { App } from '@/interfaces/app.interface';
-import { AppUser } from '@/interfaces/appUser.interface';
-import { User } from '@/interfaces/user.interface';
-import { useBusy } from '@/components/context/BusyContext';
+console.log("UserStoreContext")
+const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
 
-interface AppContextType {
-  app: App | null;
-  setApp: (app: App | null) => void;
-  setUser: (user: User | null) => void;
+interface AppContextProps {
+  children: React.ReactNode;
+  user: ServerUser | null;
 }
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+export default function AppContext({ children, user }: AppContextProps) {
+  const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
 
-interface AppProviderProps {
-  children: ReactNode;
-  user?: User | null;
-}
-
-const transformUserToAppUser = (user: User): AppUser => ({
-  ...user,
-  isAdmin: user.userProfile.roles.includes("admin"),
-  isOnboard: user.userProfile.zodiacSign != null
-});
-
-export function AppProvider({ children, user }: AppProviderProps) {
-  const [app, setApp] = useState<App | null>(null);
-  const { setBusy } = useBusy();
-
-  const handleSetUser = useCallback((user: User | null | undefined) => {
-    const appUser = user ? transformUserToAppUser(user) : null;
-    setApp(prev => prev ? { ...prev, user: appUser } : appUser ? { user: appUser } : null);
-  }, []);
-
-  useEffect(() => {
-    // Set busy during hydration
-    setBusy(true);
-    
-    // Set initial user from server
-    handleSetUser(user);
-    
-    // Mark hydration complete
-    setBusy(false);
-  }, [user, handleSetUser, setBusy]);
-
+  console.log("AppContext")
+  
+  if (!storeRef.current) {
+    storeRef.current = createUserStore(user);
+  }
+  
   return (
-    <AppContext.Provider value={{ 
-      app, 
-      setApp, 
-      setUser: handleSetUser
-    }}>
-      {children}
-    </AppContext.Provider>
+    <UserStoreContext.Provider value={storeRef.current}>
+      <BusyProvider>
+        <Transition>
+          <LayoutManager>
+            {children}
+          </LayoutManager>
+        </Transition>
+      </BusyProvider>
+    </UserStoreContext.Provider>
   );
 }
 
-export function useApp(): AppContextType {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useApp must be used inside AppProvider');
-  return ctx;
-}
+// Export the hooks with proper typing
+export const useUser = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useUser must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => state.user);
+};
+
+export const useUserProfile = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useUserProfile must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => state.user?.userProfile || null);
+};
+
+export const useAuthenticated = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useAuthenticated must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => state.authenticated);
+};
+
+export const useIsLoggedIn = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useIsLoggedIn must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => !!state.user);
+};
+
+export const useInitialized = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useInitialized must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => state.initialized);
+};
+
+export const useSetUser = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useSetUser must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => state.setUser);
+};
+
+export const useClearUser = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useClearUser must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => state.clearUser);
+};
+
+export const useSetAuthenticated = () => {
+  const store = useContext(UserStoreContext);
+  if (!store) throw new Error('useSetAuthenticated must be used within UserStoreProvider');
+  return useStore(store, (state: UserState) => state.setAuthenticated);
+};

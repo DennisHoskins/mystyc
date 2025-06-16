@@ -4,9 +4,8 @@ import Head from 'next/head';
 import '@/app/globals.css';
 
 import { getUser } from '@/server/getUser';
-import AppLayout from '@/components/layout/AppLayout';
-
-export const dynamic = 'force-dynamic'
+import { createUserStore } from '@/store/userStore'
+import AppContext from '@/components/context/AppContext';
 
 export const metadata: Metadata = {
   title: 'mystyc',
@@ -20,6 +19,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
+  createUserStore(user);
 
   return (
     <html lang="en">
@@ -32,9 +32,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <body>
-        <AppLayout user={user}>
+        <AppContext user={user}>
           {children}
-        </AppLayout>
+        </AppContext>
       </body>
     </html>
   );

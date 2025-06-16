@@ -1,19 +1,17 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useApp } from '@/components/context/AppContext';
-import AppLogo from '@/components/layout/AppLogo';
+import { useUser } from '@/components/context/AppContext';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import AppLogo from '@/components/AppLogo';
 import Button from '@/components/ui/Button';
+
 
 /* Desktop navigation (md+): logo, centered links, admin logout on far right */
 function DesktopNav() {
-  const router = useCustomRouter();
-  const { app } = useApp();
-
-  if (!app || !app.user) {
-    return;
-  }
+  const router = useTransitionRouter();
+  const user = useUser();
+  if (!user) return;
 
   return (
     <nav className="hidden md:flex w-full bg-white sticky top-0 z-10 px-4 py-3">
@@ -48,7 +46,7 @@ function DesktopNav() {
           </Button>
         </div>
 
-        {app.user.isAdmin && (
+        {user.isAdmin && (
           <Button
             variant="ghost"
             onClick={() => router.push('/logout')}
@@ -64,13 +62,10 @@ function DesktopNav() {
 
 /* Mobile header (<md): logo and logout, scrollable header—no border */
 function MobileHeader() {
-  const router = useCustomRouter();
+  const router = useTransitionRouter();
   const { signOut } = useAuth();
-  const { app } = useApp();
-
-  if (!app || !app.user) {
-    return;
-  }
+  const user = useUser();
+  if (!user) return;
 
   return (
     <header className="md:hidden w-full bg-white px-4 py-3">
@@ -78,7 +73,7 @@ function MobileHeader() {
         <button onClick={() => router.push('/')} className="flex items-center">
           <AppLogo orientation="horizontal" showText />
         </button>
-        {app.user.isAdmin && (
+        {user.isAdmin && (
           <Button
             variant="ghost"
             size="sm"
@@ -92,7 +87,7 @@ function MobileHeader() {
   );
 }
 
-export default function HeaderUser() {
+export default function AppHeader() {
   return (
     <>
       <MobileHeader />

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 interface TableCellLinkProps {
   value: string;
@@ -14,7 +14,7 @@ export default function TableCellLink({
   prefix,
   children,
 }: TableCellLinkProps) {
-  const router = useCustomRouter();
+  const router = useTransitionRouter();
   return (
     <button
       type="button"

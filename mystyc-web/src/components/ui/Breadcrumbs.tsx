@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 export interface BreadcrumbItem {
   label: string;
@@ -20,7 +20,7 @@ export default function Breadcrumbs({
   separator = '/', 
   className = '' 
 }: BreadcrumbsProps) {
-  const router = useCustomRouter();
+  const router = useTransitionRouter();
 
   const handleClick = (item: BreadcrumbItem, e: React.MouseEvent) => {
     e.preventDefault();

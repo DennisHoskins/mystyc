@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 interface ListItemButtonProps {
   label: string;
@@ -20,7 +20,7 @@ export default function ListItemButton({
   onClick,
   className = '',
 }: ListItemButtonProps) {
-  const router = useCustomRouter();
+  const router = useTransitionRouter();
   const baseClasses =
     'block w-full p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
   const combinedClasses = `${baseClasses} ${className}`;

@@ -2,7 +2,7 @@
 
 // import { useState } from 'react';
 // // import { useAuth } from '@/hooks/useAuth';
-// import { useCustomRouter } from '@/hooks/useCustomRouter';
+// import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 // import { useErrorHandler } from '@/hooks/useErrorHandler';
 // import { logger } from '@/util/logger';
 
@@ -11,7 +11,7 @@
 // import FormError from '@/components/form/FormError';
 
 export default function OnboardingComplete() {
-  // const router = useCustomRouter();
+  // const router = useTransitionRouter();
   // // const { updateOnboardingProfile } = useAuth();
   // const [loading, setLoading] = useState(false);
   // const [error, setError] = useState<string | null>(null);

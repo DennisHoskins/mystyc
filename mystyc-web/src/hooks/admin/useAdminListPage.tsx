@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 
 import { useBusy } from '@/components/context/BusyContext';
 import { AdminQuery } from '@/interfaces';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
+//import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { logger } from '@/util/logger';
 
 interface UseAdminListPageOptions<T> {
@@ -26,7 +26,7 @@ export function useAdminListPage<T>({
   query,
 }: UseAdminListPageOptions<T>): UseAdminListPageReturn<T> {
   const { setBusy } = useBusy();
-  const { handleError } = useErrorHandler();
+//  const { handleError } = useErrorHandler();
   
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +44,7 @@ export function useAdminListPage<T>({
       logger.log(`[useAdminListPage] ${entityName} list loaded successfully`);
     } catch (err: any) {
       logger.error(`[useAdminListPage] Failed to load ${entityName} list:`, err);
-      handleError(err);
+//      handleError(err);
       setError(err.message || `Failed to load ${entityName}`);
     } finally {
       setLoading(false);
@@ -57,7 +57,7 @@ export function useAdminListPage<T>({
     setBusy,
     setLoading,
     setError,
-    handleError,
+//    handleError,
   ]);
 
   useEffect(() => {

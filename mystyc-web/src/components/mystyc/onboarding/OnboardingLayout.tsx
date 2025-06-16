@@ -3,7 +3,7 @@
 // import { useEffect, useState, useCallback } from 'react';
 // import { useApp } from '@/components/context/AppContext';
 // import { useBusy } from '@/components/context/BusyContext';
-// import { useCustomRouter } from '@/hooks/useCustomRouter';
+// import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 // import { storage } from '@/util/storage';
 // import { logger } from '@/util/logger';
 
@@ -23,7 +23,7 @@
 
 export default function OnboardingLayout() {
   // const { setBusy } = useBusy();
-  // const router = useCustomRouter();
+  // const router = useTransitionRouter();
   // const { app } = useApp();
   // const [introShown, setIntroShown] = useState<string | null>(null);
   // const [isStorageLoading, setIsStorageLoading] = useState(true);

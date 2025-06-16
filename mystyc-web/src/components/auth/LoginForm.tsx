@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
 import { useAuth } from '@/hooks/useAuth';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
 import { useBusy } from '@/components/context/BusyContext';
-import { useApp } from '@/components/context/AppContext';
+import { useInitialized, useUser, useSetUser } from '@/components/context/AppContext';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 import FormLayout from '@/components/layout/FormLayout';
 import FormLink from '@/components/form/FormLink';
@@ -14,95 +13,95 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function LoginForm() {
-  const router = useCustomRouter();
+  const user = useUser();
+  const setUser = useSetUser();
+  const initialized = useInitialized();
+  const router = useTransitionRouter();
   const { isBusy, setBusy } = useBusy();
   const { signIn } = useAuth();
-  const { app, setUser } = useApp();
+
+  const [isReady, setIsReady] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  // mount guard
   useEffect(() => {
-    if ((app && app.user) && !isBusy) router.replace('/');
-  }, [app, isBusy, router]);
+    setIsReady(true);
+  }, []);
+
+  // Redirect when fully initialized and user exists
+  useEffect(() => {
+    if (initialized && user) {
+      router.replace('/');
+    }
+  }, [initialized, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     setError('');
     setBusy(true);
 
     try {
-      const user = await signIn(email, password);
-      if (!user) {
-        throw new Error('Login failed: no user returned');
-      }
-
-      setUser(user);
-
-      router.push("/");
+      const u = await signIn(email, password);
+      if (!u) throw new Error('no user returned');
+      setUser(u);
+      // effect will redirect on next render
     } catch (err: any) {
-      console.error('Login error:', err);
-      
-      switch (err.code) {
-        case 500:
-          setError('Server error. Please try again.');
-          break;
-        default:
-          setError('Login failed. Please try again.');
-      }
-
+      setError(
+        err.code === 500
+          ? 'Server error. Please try again.'
+          : 'Login failed. Please try again.'
+      );
       setBusy(false);
     }
   };
 
+  // Prevent any render until after mount, and bail if not initialized or already logged in
+  if (!isReady || !initialized || user) {
+    return null;
+  }
+
   return (
-    <>
-      <FormLayout
-        subtitle="Sign in to continue your journey..."
-        error={error}
-      >
-        <Form onSubmit={handleSubmit}>
-          <TextInput
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <TextInput
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <Button
-            type="submit"
-            loading={isBusy}
-            loadingContent="Signing In..."
-            className="w-full"
-          >
-            Sign In
-          </Button>
-
-          <p className="text-center text-sm mt-2 text-gray-600">
-            <span className="block">
-              <FormLink href="/password-reset">Forgot your password?</FormLink>
-            </span>
-            <span className="block mt-1">
-              Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
-            </span>
-          </p>
-        </Form>
-      </FormLayout>
-    </>
+    <FormLayout subtitle="Sign in to continue your journey..." error={error}>
+      <Form onSubmit={handleSubmit}>
+        <TextInput
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Email address"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+        />
+        <TextInput
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+        />
+        <Button
+          type="submit"
+          loading={isBusy}
+          loadingContent="Signing In..."
+          className="w-full"
+        >
+          Sign In
+        </Button>
+        <p className="text-center text-sm mt-2 text-gray-600">
+          <span className="block">
+            <FormLink href="/password-reset">Forgot your password?</FormLink>
+          </span>
+          <span className="block mt-1">
+            Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
+          </span>
+        </p>
+      </Form>
+    </FormLayout>
   );
 }

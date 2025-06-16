@@ -1,18 +1,12 @@
 'use client';
 
-import { useApp } from '@/components/context/AppContext';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function Pricing() {
-  const router = useCustomRouter();
-  const { app } = useApp();
-
-  if (app && app.user) {
-    return null;
-  }
+  const router = useTransitionRouter();
 
   return (
     <>

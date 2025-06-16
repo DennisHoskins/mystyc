@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useApp } from '@/components/context/AppContext';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
-import { useBusy } from '@/components/context/BusyContext'
+import { useUser, useInitialized } from '@/components/context/AppContext';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { useBusy } from '@/components/context/BusyContext';
 
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/layout/FormLayout';
@@ -14,21 +14,32 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function PasswordResetPage() {
-  const router = useCustomRouter();
+  const router = useTransitionRouter();
+  const user = useUser();
+  const initialized = useInitialized();
   const { isBusy, setBusy } = useBusy();
   const { resetPassword } = useAuth();
-  const { app }  = useApp();
+
+  const [isReady, setIsReady] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  // mount guard
   useEffect(() => {
-    if ((app && app.user) && !isBusy) router.replace('/');
-  }, [app, isBusy, router]);  
+    setIsReady(true);
+  }, []);
+
+  // redirect when fully initialized and user exists
+  useEffect(() => {
+    if (initialized && user) {
+      router.replace('/');
+    }
+  }, [initialized, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setError('');
     setMessage('');
     setBusy(true);
@@ -39,7 +50,7 @@ export default function PasswordResetPage() {
       setBusy(false);
     } catch (err: any) {
       console.error('Password reset error:', err);
-      
+
       switch (err.code) {
         case 500:
           setError('Server error. Please try again.');
@@ -52,44 +63,47 @@ export default function PasswordResetPage() {
     }
   };
 
+  // Prevent any render until after mount, and bail if not initialized or already logged in
+  if (!isReady || !initialized || user) {
+    return null;
+  }
+
   return (
-    <>
-      <FormLayout
-        subtitle="Reset your password"
-        error={error}
-        success={message}
-      >
-        <Form onSubmit={handleSubmit}>
-          <TextInput
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <FormLayout
+      subtitle="Reset your password"
+      error={error}
+      success={message}
+    >
+      <Form onSubmit={handleSubmit}>
+        <TextInput
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-          <Button
-            type="submit"
-            loading={isBusy}
-            loadingContent="Sending Reset Email..."
-            className="w-full"
-          >
-            Send Reset Email
-          </Button>
+        <Button
+          type="submit"
+          loading={isBusy}
+          loadingContent="Sending Reset Email..."
+          className="w-full"
+        >
+          Send Reset Email
+        </Button>
 
-          <p className="text-center text-sm mt-2 text-gray-600">
-            <span className="block">
-              Remember your password? <FormLink href="/login">Sign In</FormLink>
-            </span>
-            <span className="block mt-1">
-              Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
-            </span>
-          </p>
-        </Form>
-      </FormLayout>
-    </>
+        <p className="text-center text-sm mt-2 text-gray-600">
+          <span className="block">
+            Remember your password? <FormLink href="/login">Sign In</FormLink>
+          </span>
+          <span className="block mt-1">
+            Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
+          </span>
+        </p>
+      </Form>
+    </FormLayout>
   );
 }

@@ -1,11 +1,11 @@
 'use client';
 
-import { useCustomRouter } from '@/hooks/useCustomRouter';
-import AppLogo from '@/components/layout/AppLogo';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import AppLogo from '@/components/AppLogo';
 import Button from '@/components/ui/Button';
 
-export default function HeaderPublic() {
-  const router = useCustomRouter();
+export default function WebsiteHeader() {
+  const router = useTransitionRouter();
 
   return (
     <header className="hidden md:flex w-full bg-white px-4 py-3">

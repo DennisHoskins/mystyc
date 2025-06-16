@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { useApp } from '@/components/context/AppContext';
+import { useUser } from '@/components/context/AppContext';
 import { useBusy } from '@/components/context/BusyContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -10,19 +10,19 @@ import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
 
 const Dashboard = () => {
-  const { app } = useApp();
+  const user = useUser();
   const { setBusy } = useBusy();
 
   useEffect(() => {
       setBusy(false);
   }, [setBusy]);
 
-  if (!app || !app.user) {
+  if (!user) {
     return;
   }
 
-  const fullName = app.user.userProfile?.fullName || app.user.firebaseUser?.displayName || 'User';
-  const birthday = formatDateForDisplay(app.user.userProfile?.dateOfBirth);
+  const fullName = user.userProfile?.fullName || user.firebaseUser?.displayName || 'User';
+  const birthday = formatDateForDisplay(user.userProfile?.dateOfBirth);
   
   return (
     <>
@@ -35,9 +35,9 @@ const Dashboard = () => {
             🎂 <strong>Birthday:</strong> {birthday}
           </Text>
         )}
-        {app.user.userProfile?.zodiacSign && (
+        {user.userProfile?.zodiacSign && (
           <Text className="mt-2">
-            🔮 <strong>Zodiac Sign:</strong> {app.user.userProfile.zodiacSign}
+            🔮 <strong>Zodiac Sign:</strong> {user.userProfile.zodiacSign}
           </Text>
         )}
       </div>

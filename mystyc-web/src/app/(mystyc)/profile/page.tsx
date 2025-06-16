@@ -3,12 +3,11 @@
 // import { useEffect, useState, useCallback } from 'react';
 import { useState, useCallback } from 'react';
 
-import { useApp } from '@/components/context/AppContext';
 import { useBusy } from '@/components/context/BusyContext';
 //import { useToast } from '@/hooks/useToast';
-import { useCustomRouter } from '@/hooks/useCustomRouter';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 // import { formatDateForInput } from '@/util/dateTime';
-import { errorHandler } from '@/util/errorHandler';
+//import { errorHandler } from '@/util/errorHandler';
 
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
@@ -17,8 +16,7 @@ import FormError from '@/components/form/FormError';
 import Heading from '@/components/ui/Heading';
 
 function EditProfilePage() {
-  const router = useCustomRouter();
-  const { app } = useApp();
+  const router = useTransitionRouter();
 //  const { updateOnboardingProfile } = useAuth();
   const { setBusy } = useBusy();
 //  const { showToast } = useToast();
@@ -51,11 +49,12 @@ function EditProfilePage() {
 //      await Promise.all([minDelay, update]);
 //      showToast('Profile updated');
     } catch (e) {
+      console.log(e);
       setError('Failed to update profile. Please try again.');
-      errorHandler.processError(e, {
-        component: 'EditProfilePage',
-        action: 'profile-update'
-      });      
+      // errorHandler.processError(e, {
+      //   component: 'EditProfilePage',
+      //   action: 'profile-update'
+      // });      
       setBusy(false);
     } finally {
       setBusy(false);
@@ -69,10 +68,6 @@ function EditProfilePage() {
   const handleCancel = useCallback(() => {
     router.push('/');
   }, [router]);
-
-  if (!app || !app.user) {
-    return null;
-  }
 
   return (
     <div className="w-full max-w-md">
