@@ -1,5 +1,12 @@
 import { create } from 'zustand';
 
+interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info';
+  timestamp: number;
+}
+
 export interface AppState {
   // State
   isOnline: boolean;
@@ -7,6 +14,7 @@ export interface AppState {
   isGlobalError: boolean;
   isLoggedOutByServer: boolean;
   busyTimer: NodeJS.Timeout | null;
+  toasts: Toast[];
 
   // Actions
   setOnline: (isOnline: boolean) => void;
@@ -14,6 +22,8 @@ export interface AppState {
   clearBusy: () => void;
   setGlobalError: (isGlobalError: boolean) => void;
   setLoggedOutByServer: (isLoggedOutByServer: boolean) => void;
+  showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  hideToast: (id: string) => void;
   clearAppState: () => void;
 }
 
@@ -23,6 +33,7 @@ const initialState = {
   isGlobalError: false,
   isLoggedOutByServer: false,
   busyTimer: null,
+  toasts: [],
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -65,6 +76,30 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   setGlobalError: (isGlobalError: boolean) => set({ isGlobalError }),
   setLoggedOutByServer: (isLoggedOutByServer: boolean) => set({ isLoggedOutByServer }),
+  
+  showToast: (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const toast: Toast = {
+      id: Math.random().toString(36).substr(2, 9),
+      message,
+      type,
+      timestamp: Date.now()
+    };
+    
+    set((state) => ({
+      toasts: [...state.toasts, toast]
+    }));
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      get().hideToast(toast.id);
+    }, 5000);
+  },
+  
+  hideToast: (id: string) => {
+    set((state) => ({
+      toasts: state.toasts.filter(toast => toast.id !== id)
+    }));
+  },
   
   clearAppState: () => {
     const state = get();

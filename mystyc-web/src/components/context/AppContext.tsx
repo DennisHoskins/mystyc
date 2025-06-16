@@ -11,6 +11,7 @@ import Layout from '@/components/layout/Layout';
 import GlobalError from '@/components/GlobalError';
 import Offline from '@/components/Offline';
 import Working from '@/components/Working';
+import Toast from '@/components/Toast';
 
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
 
@@ -58,6 +59,7 @@ export default function AppContext({ children, user }: AppContextProps) {
         </Layout>
       </Transition>
       <Working />
+      <Toast />
     </UserStoreContext.Provider>
   );
 }
@@ -130,4 +132,8 @@ export const useBusy = () => {
     isBusy,
     setBusy
   };
+};
+
+export const useToast = () => {
+  return useAppStore((state) => state.showToast);
 };
