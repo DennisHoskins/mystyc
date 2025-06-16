@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
 
 import { ServerUser } from '@/server/getUser';
@@ -8,6 +8,7 @@ import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
 import Transition from '@/components/Transition';
 import Layout from '@/components/layout/Layout';
+import Offline from '@/components/Offline';
 import Working from '@/components/Working';
 
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
@@ -19,16 +20,35 @@ interface AppContextProps {
 
 export default function AppContext({ children, user }: AppContextProps) {
   const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
-  
+  const setOnline = useAppStore((state) => state.setOnline);  
+  const isOnline = useAppStore((state) => state.isOnline);
+
   if (!storeRef.current) {
     storeRef.current = createUserStore(user);
   }
+
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+
+    // Set initial state
+    setOnline(navigator.onLine);
+
+    // Listen for changes
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [setOnline]);  
   
   return (
     <UserStoreContext.Provider value={storeRef.current}>
       <Transition>
         <Layout>
-          {children}
+          {isOnline ? children : <Offline />}
         </Layout>
       </Transition>
       <Working />
