@@ -7,6 +7,8 @@ import { getUser } from '@/server/getUser';
 import { createUserStore } from '@/store/userStore'
 import AppContext from '@/components/context/AppContext';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'mystyc',
   description: 'Get to know yourself better',

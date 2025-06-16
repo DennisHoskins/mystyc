@@ -10,18 +10,12 @@ import WebsiteLayout from './WebsiteLayout';
 import AppLayout from './AppLayout';
 import ServerLogoutForm from '../auth/ServerLogoutForm';
 
-interface LayoutManagerProps {
-  children: React.ReactNode;
-}
-
-export default function LayoutManager({ children }: LayoutManagerProps) {
+export default function Layout({ children }: { children: React.ReactNode; }) {
   const user = useUser();
   const clearUser = useClearUser();
   const authenticated = useAuthenticated();
   const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
   const path = usePathname();
-
-  console.log("LayoutManager", path, user, authenticated);
 
   // Handle server logout scenario
   useEffect(() => {
@@ -39,22 +33,16 @@ export default function LayoutManager({ children }: LayoutManagerProps) {
     }
   }, [user, authenticated, clearUser, setLoggedOutByServer]);
 
-  // Don't render anything while logout is in progress
-  if (!user && authenticated) {
-    return null;
-  }
+  // Determine what to render inside layout
+  const getContent = () => {
+    if (!user && authenticated) return null;
+    if (isLoggedOutByServer) return <ServerLogoutForm />;
+    return children;
+  };
 
-  if (path === '/logout') {
-    return <WebsiteLayout>{children}</WebsiteLayout>;
-  }
+  // Determine layout type
+  const isAppLayout = user && !isLoggedOutByServer && path !== '/logout';
+  const Layout = isAppLayout ? AppLayout : WebsiteLayout;
 
-  if (isLoggedOutByServer) {
-    return <WebsiteLayout><ServerLogoutForm /></WebsiteLayout>;
-  }
- 
-  return user ? (
-    <AppLayout>{children}</AppLayout>
-  ) : (
-    <WebsiteLayout>{children}</WebsiteLayout>
-  );
+  return <Layout>{getContent()}</Layout>;
 }

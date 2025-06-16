@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useClearUser } from '@/components/context/AppContext';
 import { useAppStore } from '@/store/appStore';
 
-import FormLayout from '@/components/layout/FormLayout';
+import FormLayout from '@/components/form/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
@@ -29,7 +28,7 @@ export default function ServerLogoutForm() {
       return;
     }
     router.replace('/');
-  }, [isLoggedOutByServer]);
+  }, [isLoggedOutByServer, router]);
 
   const handleHomeClick = () => {
     setLoggedOutByServer(false);

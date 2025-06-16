@@ -7,7 +7,7 @@ import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useInitialized, useUser, useClearUser } from '@/components/context/AppContext';
 import { useBusy } from '@/components/context/BusyContext';
 
-import FormLayout from '@/components/layout/FormLayout';
+import FormLayout from '@/components/form/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 

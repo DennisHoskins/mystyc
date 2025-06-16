@@ -6,7 +6,7 @@ import { useBusy } from '@/components/context/BusyContext';
 import { useInitialized, useUser, useSetUser } from '@/components/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-import FormLayout from '@/components/layout/FormLayout';
+import FormLayout from '@/components/form/FormLayout';
 import FormLink from '@/components/form/FormLink';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';

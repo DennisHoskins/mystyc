@@ -6,7 +6,7 @@ import { ServerUser } from '@/server/getUser';
 import { createUserStore, UserState } from '@/store/userStore';
 import { BusyProvider } from '@/components/context/BusyContext';
 import Transition from '@/components/Transition';
-import LayoutManager from '@/components/layout/LayoutManager';
+import Layout from '@/components/layout/Layout';
 
 console.log("UserStoreContext")
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
@@ -29,9 +29,9 @@ export default function AppContext({ children, user }: AppContextProps) {
     <UserStoreContext.Provider value={storeRef.current}>
       <BusyProvider>
         <Transition>
-          <LayoutManager>
+          <Layout>
             {children}
-          </LayoutManager>
+          </Layout>
         </Transition>
       </BusyProvider>
     </UserStoreContext.Provider>

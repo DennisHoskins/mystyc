@@ -8,7 +8,7 @@ import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useBusy } from '@/components/context/BusyContext';
 
 import Form from '@/components/ui/form/Form';
-import FormLayout from '@/components/layout/FormLayout';
+import FormLayout from '@/components/form/FormLayout';
 import FormLink from '@/components/form/FormLink';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';

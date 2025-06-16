@@ -1,16 +1,16 @@
 'use client';
 
 import AppHeader from './header/AppHeader';
-import MainWrapper from '@/components/layout/LayoutWrapper';
+import Main from '@/components/Main';
 import AppFooter from './footer/AppFooter';
 
 export default function AppUserLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppHeader />
-      <MainWrapper>
+      <Main>
         {children}
-      </MainWrapper>
+      </Main>
       <AppFooter />
     </>
   );
