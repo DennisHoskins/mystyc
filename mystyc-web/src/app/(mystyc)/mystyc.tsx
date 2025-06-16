@@ -1,7 +1,6 @@
 'use client';
 
-import { useUser } from '@/components/context/AppContext';
-import { useBusy } from '@/components/context/BusyContext';
+import { useUser, useBusy } from '@/components/context/AppContext';
 import Dashboard from '@/components/mystyc/dashboard/Dashboard';
 import OnboardingLayout from '@/components/mystyc/onboarding/OnboardingLayout';
 import { useEffect } from 'react';

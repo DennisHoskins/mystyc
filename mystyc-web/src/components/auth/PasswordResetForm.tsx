@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useUser, useInitialized } from '@/components/context/AppContext';
+import { useUser, useInitialized, useBusy } from '@/components/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useBusy } from '@/components/context/BusyContext';
 
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/form/FormLayout';
@@ -27,6 +26,9 @@ export default function PasswordResetPage() {
 
   // mount guard
   useEffect(() => {
+    if (isReady) {
+      return;
+    }
     setIsReady(true);
   }, []);
 

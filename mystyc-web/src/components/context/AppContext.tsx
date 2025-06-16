@@ -2,13 +2,14 @@
 
 import { createContext, useContext, useRef } from 'react';
 import { useStore } from 'zustand';
+
 import { ServerUser } from '@/server/getUser';
 import { createUserStore, UserState } from '@/store/userStore';
-import { BusyProvider } from '@/components/context/BusyContext';
+import { useAppStore } from '@/store/appStore';
 import Transition from '@/components/Transition';
 import Layout from '@/components/layout/Layout';
+import Working from '@/components/Working';
 
-console.log("UserStoreContext")
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
 
 interface AppContextProps {
@@ -18,8 +19,6 @@ interface AppContextProps {
 
 export default function AppContext({ children, user }: AppContextProps) {
   const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
-
-  console.log("AppContext")
   
   if (!storeRef.current) {
     storeRef.current = createUserStore(user);
@@ -27,18 +26,17 @@ export default function AppContext({ children, user }: AppContextProps) {
   
   return (
     <UserStoreContext.Provider value={storeRef.current}>
-      <BusyProvider>
-        <Transition>
-          <Layout>
-            {children}
-          </Layout>
-        </Transition>
-      </BusyProvider>
+      <Transition>
+        <Layout>
+          {children}
+        </Layout>
+      </Transition>
+      <Working />
     </UserStoreContext.Provider>
   );
 }
 
-// Export the hooks with proper typing
+// Export hooks with proper typing
 export const useUser = () => {
   const store = useContext(UserStoreContext);
   if (!store) throw new Error('useUser must be used within UserStoreProvider');
@@ -85,4 +83,25 @@ export const useSetAuthenticated = () => {
   const store = useContext(UserStoreContext);
   if (!store) throw new Error('useSetAuthenticated must be used within UserStoreProvider');
   return useStore(store, (state: UserState) => state.setAuthenticated);
+};
+
+export const useBusy = () => {
+  const setBusyStore = useAppStore((state) => state.setBusy);
+  const clearBusy = useAppStore((state) => state.clearBusy);
+  const isBusy = useAppStore((state) => state.isBusy);
+
+  const setBusy = (state: boolean | number = true) => {
+    if (state === false) {
+      clearBusy();
+    } else if (state === true) {
+      setBusyStore(); // immediate
+    } else {
+      setBusyStore(state); // delay in ms
+    }
+  };
+
+  return {
+    isBusy,
+    setBusy
+  };
 };

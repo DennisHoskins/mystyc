@@ -4,8 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useInitialized, useUser, useClearUser } from '@/components/context/AppContext';
-import { useBusy } from '@/components/context/BusyContext';
+import { useInitialized, useUser, useClearUser, useBusy } from '@/components/context/AppContext';
 
 import FormLayout from '@/components/form/FormLayout';
 import Text from '@/components/ui/Text';
@@ -29,9 +28,12 @@ export default function LogoutPage() {
 
   // mount guard
   useEffect(() => {
+    if (isReady) {
+      return;
+    }
     setIsReady(true);
     setIsLogout(user != null);
-  }, [user]);
+  }, [user, isReady]);
 
   // logout and start redirect timer
   useEffect(() => {
@@ -86,8 +88,8 @@ export default function LogoutPage() {
     router.replace('/');
   };
 
-  // Prevent any render until after mount, and bail if not logged in
-  if (!isLogout || !isReady || !initialized || (!user && !started)) {
+  // Prevent any render until after mount
+  if (!isLogout || !isReady || !initialized) {
     return null;
   }
 

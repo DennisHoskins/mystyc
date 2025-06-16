@@ -3,7 +3,7 @@
 // import { useEffect, useState, useCallback } from 'react';
 import { useState, useCallback } from 'react';
 
-import { useBusy } from '@/components/context/BusyContext';
+import { useBusy } from '@/components/context/AppContext';
 //import { useToast } from '@/hooks/useToast';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 // import { formatDateForInput } from '@/util/dateTime';
@@ -40,7 +40,7 @@ function EditProfilePage() {
   const handleSave = useCallback(async () => {
     setError(null);
     setLoading(true);
-    setBusy(true, 0);
+    setBusy(true);
 
 //    const minDelay = new Promise((resolve) => setTimeout(resolve, 1500));
 //    const update = updateOnboardingProfile({ fullName, dateOfBirth, zodiacSign });

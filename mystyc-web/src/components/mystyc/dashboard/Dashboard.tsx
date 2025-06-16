@@ -2,8 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { useUser } from '@/components/context/AppContext';
-import { useBusy } from '@/components/context/BusyContext';
+import { useUser, useBusy } from '@/components/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 
 import Text from '@/components/ui/Text';

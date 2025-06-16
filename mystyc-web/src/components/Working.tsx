@@ -1,42 +1,31 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
+import { useAppStore } from '@/store/appStore';
 import IconEye from '@/components/icons/IconEye';
 
-interface WorkingProps {
-  show: boolean;
-  delayMs?: number;
-}
-
-export default function Working({ show, delayMs = 0 }: WorkingProps) {
+export default function Working() {
+  const isBusy = useAppStore((state) => state.isBusy);
   const [visible, setVisible] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    let delayTimeout: NodeJS.Timeout;
+    let fadeTimeout: NodeJS.Timeout;
 
-    if (show) {
-      if (delayMs > 0) {
-        delayTimeout = setTimeout(() => {
-          setVisible(true);
-          setFadeOut(false);
-        }, delayMs);
-      } else {
-        setVisible(true);
-        setFadeOut(false);
-      }
+    if (isBusy) {
+      setVisible(true);
+      setFadeOut(false);
     } else if (visible) {
       setFadeOut(true);
-      delayTimeout = setTimeout(() => {
+      fadeTimeout = setTimeout(() => {
         setVisible(false);
       }, 300);
     }
 
     return () => {
-      clearTimeout(delayTimeout);
+      clearTimeout(fadeTimeout);
     };
-  }, [show, delayMs, visible]);
+  }, [isBusy, visible]);
 
   if (!visible) return null;
 

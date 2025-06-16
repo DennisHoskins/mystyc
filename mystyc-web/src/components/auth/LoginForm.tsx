@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useBusy } from '@/components/context/BusyContext';
-import { useInitialized, useUser, useSetUser } from '@/components/context/AppContext';
+import { useInitialized, useUser, useSetUser, useBusy } from '@/components/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 import FormLayout from '@/components/form/FormLayout';
@@ -27,6 +26,9 @@ export default function LoginForm() {
 
   // mount guard
   useEffect(() => {
+    if (isReady) {
+      return;
+    }
     setIsReady(true);
   }, []);
 
@@ -45,8 +47,8 @@ export default function LoginForm() {
     try {
       const u = await signIn(email, password);
       if (!u) throw new Error('no user returned');
+
       setUser(u);
-      // effect will redirect on next render
     } catch (err: any) {
       setError(
         err.code === 500

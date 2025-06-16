@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useBusy } from '@/components/context/BusyContext';
-import { useInitialized, useUser, useSetUser } from '@/components/context/AppContext';
+import { useInitialized, useUser, useSetUser, useBusy } from '@/components/context/AppContext';
 
 import FormLayout from '@/components/form/FormLayout';
 import FormLink from '@/components/form/FormLink';
@@ -28,6 +27,9 @@ export default function RegisterForm() {
 
   // mount guard
   useEffect(() => {
+    if (isReady) {
+      return;
+    }
     setIsReady(true);
   }, []);
 
