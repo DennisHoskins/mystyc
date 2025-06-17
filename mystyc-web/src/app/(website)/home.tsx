@@ -1,5 +1,6 @@
 'use client';
 
+import { useUser } from '@/components/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
@@ -7,6 +8,11 @@ import Button from '@/components/ui/Button';
 
 export default function Home() {
   const router = useTransitionRouter();
+  const user = useUser();
+
+  if (user) {
+    return null;
+  }
 
   return (
     <>

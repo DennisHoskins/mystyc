@@ -1,0 +1,27 @@
+.transitionWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-height: 100%;
+  transition: opacity 1s ease-in-out;
+}
+
+/* Transition states */
+.transitionOut {
+  opacity: 0;
+}
+
+.transitionIn {
+  opacity: 1;
+}
+
+/* Initial state - visible by default */
+.idle {
+  opacity: 1;
+}
+
+/* During transition - prevent interaction */
+.transitioning {
+  pointer-events: none;
+}

@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useAppStore } from '@/store/appStore';
-
 import FormLayout from '@/components/form/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
@@ -12,29 +10,28 @@ import Button from '@/components/ui/Button';
 export default function ServerLogoutForm() {
   const router = useTransitionRouter();
   const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
-
   const [isReady, setIsReady] = useState(false);
 
-  // mount guard
+  // Initialize component
   useEffect(() => {
-    if (isReady) {
-      return;
-    }
+    if (isReady) return;
     setIsReady(true);
-  }, [isReady, isLoggedOutByServer]);
+  }, [isReady]);
 
+  // Redirect if not in server logout state
   useEffect(() => {
-    if (isLoggedOutByServer) {
+    if (!isReady || isLoggedOutByServer) {
       return;
     }
+    
     router.replace('/');
-  }, [isLoggedOutByServer, router]);
+  }, [isReady, isLoggedOutByServer, router]);
 
   const handleHomeClick = () => {
     setLoggedOutByServer(false);
+    router.replace('/');
   };
 
-  // Prevent any render until after mount, and bail if not logged in
   if (!isReady || !isLoggedOutByServer) {
     return null;
   }
@@ -45,11 +42,10 @@ export default function ServerLogoutForm() {
         Your session was ended by an administrator. This may have been done to resolve
         account issues or for security reasons.
       </Text>
-      <div className="space-y-4">
-        <Button onClick={handleHomeClick} className="w-full">
-          Home
-        </Button>
-      </div>
+      
+      <Button onClick={handleHomeClick} className="w-full">
+        Home
+      </Button>
     </FormLayout>
   );
 }

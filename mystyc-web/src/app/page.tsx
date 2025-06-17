@@ -1,11 +1,18 @@
 'use client';
 
-import { useUser } from '@/components/context/AppContext';
-import Home from '@/app/(website)/home';
-import Mystyc from '@/app/(mystyc)/mystyc';
+import { useEffect } from 'react';
+import { useUser, useBusy, useAuthenticated } from '@/components/context/AppContext';
+import Mystyc from './(mystyc)/mystyc';
+import Home from './(website)/home';
 
 export default function Page() {
   const user = useUser();
+  const authenticated = useAuthenticated();
+  const { setBusy } = useBusy();
 
-  return user ? <Mystyc /> : <Home />;
+  useEffect(() => {
+    setBusy(false);
+  }, [])
+
+  return <>{ (user) ? <Mystyc /> : (!user && authenticated) ? null : <Home /> }</>
 }

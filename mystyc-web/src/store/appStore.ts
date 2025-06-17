@@ -12,6 +12,7 @@ export interface AppState {
   isOnline: boolean;
   isBusy: boolean;
   isGlobalError: boolean;
+  isLoggedOut: boolean;
   isLoggedOutByServer: boolean;
   busyTimer: NodeJS.Timeout | null;
   toasts: Toast[];
@@ -21,6 +22,7 @@ export interface AppState {
   setBusy: (delayMs?: number) => void;
   clearBusy: () => void;
   setGlobalError: (isGlobalError: boolean) => void;
+  setLoggedOut: (isLogged: boolean) => void;
   setLoggedOutByServer: (isLoggedOutByServer: boolean) => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   hideToast: (id: string) => void;
@@ -31,6 +33,7 @@ const initialState = {
   isOnline: true,
   isBusy: false,
   isGlobalError: false,
+  isLoggedOut: false,
   isLoggedOutByServer: false,
   busyTimer: null,
   toasts: [],
@@ -75,6 +78,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   
   setGlobalError: (isGlobalError: boolean) => set({ isGlobalError }),
+  setLoggedOut: (isLoggedOut: boolean) => set({ isLoggedOut }),
   setLoggedOutByServer: (isLoggedOutByServer: boolean) => set({ isLoggedOutByServer }),
   
   showToast: (message: string, type: 'success' | 'error' | 'info' = 'info') => {

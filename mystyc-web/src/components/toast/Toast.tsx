@@ -2,6 +2,7 @@
 
 import { useAppStore } from '@/store/appStore';
 import Text from '@/components/ui/Text';
+import styles from './Toast.module.css';
 
 export default function Toast() {
   const toasts = useAppStore((state) => state.toasts);
@@ -15,7 +16,8 @@ export default function Toast() {
         <div
           key={toast.id}
           className={`
-            p-4 rounded-lg shadow-lg min-w-80 max-w-md animate-toast-in
+            ${styles.animateToastIn}
+            p-4 rounded-lg shadow-lg min-w-80 max-w-md
             ${toast.type === 'success' ? 'bg-green-50 border border-green-200' : ''}
             ${toast.type === 'error' ? 'bg-red-50 border border-red-200' : ''}
             ${toast.type === 'info' ? 'bg-blue-50 border border-blue-200' : ''}

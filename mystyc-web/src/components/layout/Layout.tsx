@@ -1,23 +1,24 @@
 'use client';
 
-import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import { useUser, useClearUser, useAuthenticated } from '@/components/context/AppContext';
 import { useAppStore } from '@/store/appStore';
-
+import Transition, { TransitionRef } from '@/components/transition/Transition';
 import WebsiteLayout from './WebsiteLayout';
 import AppLayout from './AppLayout';
-import ServerLogoutForm from '../auth/ServerLogoutForm';
 
-export default function Layout({ children }: { children: React.ReactNode; }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();
   const clearUser = useClearUser();
   const authenticated = useAuthenticated();
-  const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
-  const path = usePathname();
+  const { isLoggedOutByServer, setLoggedOutByServer, isLoggedOut, setLoggedOut, showToast } = useAppStore();
+  const transitionRef = useRef<TransitionRef>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const isWebsite = !user;
+  const content = isWebsite ? (<WebsiteLayout>{children}</WebsiteLayout>) : (<AppLayout>{children}</AppLayout>);  
 
-  // Handle server logout scenario
+  // Handle server logout
   useEffect(() => {
     if (!user && authenticated) {
       const logout = async () => {
@@ -33,16 +34,33 @@ export default function Layout({ children }: { children: React.ReactNode; }) {
     }
   }, [user, authenticated, clearUser, setLoggedOutByServer]);
 
-  // Determine what to render inside layout
-  const getContent = () => {
-    if (!user && authenticated) return null;
-    if (isLoggedOutByServer) return <ServerLogoutForm />;
-    return children;
-  };
+  useEffect(() => {
+    if (!isLoggedOut) {
+      return;
+    }
+    showToast("You have been Signed Out", "success");
+    setLoggedOut(false);
+  }, [isLoggedOut]);
 
-  // Determine layout type
-  const isAppLayout = user && !isLoggedOutByServer && path !== '/logout';
-  const Layout = isAppLayout ? AppLayout : WebsiteLayout;
+  useEffect(() => {
+    const doTransition = async () => {
+      if (transitionRef.current) {
+        setIsTransitioning(true);
+        await transitionRef.current.transition(content);
+        setIsTransitioning(false);
+      }
+    };
+  
+    doTransition();
+  }, [isWebsite, isLoggedOutByServer]);
 
-  return <Layout>{getContent()}</Layout>;
+  if (isTransitioning) {
+    return;
+  }
+
+  return (
+    <Transition ref={transitionRef}>
+      {content}
+    </Transition>
+  );  
 }

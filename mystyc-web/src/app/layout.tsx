@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Head from 'next/head';
 
-import '@/app/globals.css';
+import '@/styles/globals.css';
 
 import { getUser } from '@/server/getUser';
 import { createUserStore } from '@/store/userStore'

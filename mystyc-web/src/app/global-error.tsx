@@ -1,6 +1,6 @@
 'use client';
 
-import '@/app/globals.css';
+import '@/styles/globals.css';
 
 import AppContext from '@/components/context/AppContext';
 import GlobalError from '@/components/GlobalError';

@@ -6,12 +6,11 @@ import { useStore } from 'zustand';
 import { ServerUser } from '@/server/getUser';
 import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
-import Transition from '@/components/Transition';
 import Layout from '@/components/layout/Layout';
 import GlobalError from '@/components/GlobalError';
 import Offline from '@/components/Offline';
-import Working from '@/components/Working';
-import Toast from '@/components/Toast';
+import Working from '@/components/working/Working';
+import Toast from '@/components/toast/Toast';
 
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
 
@@ -49,15 +48,13 @@ export default function AppContext({ children, user }: AppContextProps) {
 
   return (
     <UserStoreContext.Provider value={storeRef.current}>
-      <Transition>
-        <Layout>
-          {
-            isGlobalError ? <GlobalError /> :
-            !isOnline ? <Offline /> :
-            children
-          }
-        </Layout>
-      </Transition>
+      <Layout>
+        {
+          isGlobalError ? <GlobalError /> :
+          !isOnline ? <Offline /> :
+          children
+        }
+      </Layout>
       <Working />
       <Toast />
     </UserStoreContext.Provider>
