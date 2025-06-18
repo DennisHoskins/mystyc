@@ -1,20 +1,9 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(4px);
-}
-
 .icon {
   color: black;
   filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1));
 }
 
-.animate-ping-soft {
+.animatePingSoft {
   animation: ping-soft 1.2s cubic-bezier(0, 0.25, 0.75, 1) infinite;
 }
 
@@ -28,4 +17,3 @@
     opacity: 0.25;
   }
 }
-

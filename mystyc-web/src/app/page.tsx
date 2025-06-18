@@ -12,7 +12,7 @@ export default function Page() {
 
   useEffect(() => {
     setBusy(false);
-  }, [])
+  }, [setBusy])
 
   return <>{ (user) ? <Mystyc /> : (!user && authenticated) ? null : <Home /> }</>
 }

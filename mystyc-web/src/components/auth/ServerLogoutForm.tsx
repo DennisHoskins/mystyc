@@ -14,7 +14,9 @@ export default function ServerLogoutForm() {
 
   // Initialize component
   useEffect(() => {
-    if (isReady) return;
+    if (isReady) {
+      return;
+    }
     setIsReady(true);
   }, [isReady]);
 
@@ -27,9 +29,8 @@ export default function ServerLogoutForm() {
     router.replace('/');
   }, [isReady, isLoggedOutByServer, router]);
 
-  const handleHomeClick = () => {
+  const handleClick = () => {
     setLoggedOutByServer(false);
-    router.replace('/');
   };
 
   if (!isReady || !isLoggedOutByServer) {
@@ -43,8 +44,8 @@ export default function ServerLogoutForm() {
         account issues or for security reasons.
       </Text>
       
-      <Button onClick={handleHomeClick} className="w-full">
-        Home
+      <Button onClick={handleClick} className="w-full">
+        OK
       </Button>
     </FormLayout>
   );

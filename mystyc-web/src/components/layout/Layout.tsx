@@ -1,22 +1,49 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 import { useUser, useClearUser, useAuthenticated } from '@/components/context/AppContext';
 import { useAppStore } from '@/store/appStore';
-import Transition, { TransitionRef } from '@/components/transition/Transition';
-import WebsiteLayout from './WebsiteLayout';
-import AppLayout from './AppLayout';
+import StateTransition, { StateTransitionRef } from '@/components/transition/StateTransition';
+import Modal from '@/components/modal/Modal';
+import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
+
+import WebsiteHeader from './header/WebsiteHeader';
+import AppHeader from './header/AppHeader';
+import Main from '@/components/Main';
+import WebsiteFooter from './footer/WebsiteFooter';
+import AppFooter from './footer/AppFooter';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();
   const clearUser = useClearUser();
   const authenticated = useAuthenticated();
-  const { isLoggedOutByServer, setLoggedOutByServer, isLoggedOut, setLoggedOut, showToast } = useAppStore();
-  const transitionRef = useRef<TransitionRef>(null);
+  const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
+  const transitionRef = useRef<StateTransitionRef>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isInitialMount, setIsInitialMount] = useState(true);
+  const wasServerLogout = useRef(false);
   const isWebsite = !user;
-  const content = isWebsite ? (<WebsiteLayout>{children}</WebsiteLayout>) : (<AppLayout>{children}</AppLayout>);  
+  const content = useMemo(() => 
+    isWebsite ? (
+      <>
+        <WebsiteHeader />
+        <Main>
+          {children}
+        </Main>
+        <WebsiteFooter />
+      </>
+    ) : (
+      <>
+        <AppHeader />
+        <Main>
+          {children}
+        </Main>
+        <AppFooter />
+      </>
+    ),
+    [isWebsite, children]
+  );  
 
   // Handle server logout
   useEffect(() => {
@@ -30,37 +57,45 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       };
 
       setLoggedOutByServer(true);
+      wasServerLogout.current = true;
       logout();
+      
+      // Redirect to home if on a protected page
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
     }
   }, [user, authenticated, clearUser, setLoggedOutByServer]);
 
   useEffect(() => {
-    if (!isLoggedOut) {
-      return;
-    }
-    showToast("You have been Signed Out", "success");
-    setLoggedOut(false);
-  }, [isLoggedOut]);
-
-  useEffect(() => {
     const doTransition = async () => {
-      if (transitionRef.current) {
+      if (transitionRef.current && !isInitialMount) {
         setIsTransitioning(true);
         await transitionRef.current.transition(content);
         setIsTransitioning(false);
       }
     };
   
-    doTransition();
-  }, [isWebsite, isLoggedOutByServer]);
+    if (isInitialMount) {
+      setIsInitialMount(false);
+    } else {
+      doTransition();
+    }
+  }, [isWebsite, isInitialMount, content]);
 
   if (isTransitioning) {
     return;
   }
 
   return (
-    <Transition ref={transitionRef}>
-      {content}
-    </Transition>
+    <>
+      <StateTransition ref={transitionRef}>
+        {content}
+      </StateTransition>
+      
+      <Modal isOpen={isLoggedOutByServer}>
+        <ServerLogoutForm />
+      </Modal>
+    </>
   );  
 }

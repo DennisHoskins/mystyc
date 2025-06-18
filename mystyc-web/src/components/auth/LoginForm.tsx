@@ -44,9 +44,6 @@ export default function LoginForm() {
     setError('');
     setBusy(true);
 
-
-    console.log("--->LOGIN<----");
-
     try {
       const u = await signIn(email, password);
       if (!u) throw new Error('no user returned');
