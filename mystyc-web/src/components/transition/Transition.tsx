@@ -14,12 +14,14 @@ const Transition = forwardRef<TransitionRef, { children: ReactNode }>(
       console.log("transitionOut->fade out");
       setIsVisible(false);
       await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log("transitionOut->fade out complete");
     };
 
     const transitionIn = async (): Promise<void> => {
       console.log("transitionIn->fade in");
-      setIsVisible(true);
       await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsVisible(true);
+      console.log("transitionIn->fade in complete");
     };
 
     useImperativeHandle(ref, () => ({

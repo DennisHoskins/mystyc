@@ -3,7 +3,6 @@
 import '@/styles/globals.css';
 
 import AppContext from '@/components/context/AppContext';
-import { TransitionProvider } from '@/components/context/TransitionContext';
 import GlobalError from '@/components/GlobalError';
 
 export default function GlobalErrorPage() {
@@ -19,7 +18,9 @@ export default function GlobalErrorPage() {
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body>
-        <GlobalError />
+        <AppContext user={null}>
+          <GlobalError />
+        </AppContext>
       </body>
     </html>
   );

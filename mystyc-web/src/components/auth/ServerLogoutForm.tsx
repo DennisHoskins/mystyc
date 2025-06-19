@@ -26,7 +26,7 @@ export default function ServerLogoutForm() {
       return;
     }
     
-    router.replace('/');
+    router.replace('/', false);
   }, [isReady, isLoggedOutByServer, router]);
 
   const handleClick = () => {

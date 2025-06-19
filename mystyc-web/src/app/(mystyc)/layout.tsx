@@ -14,7 +14,7 @@ export default function MystycLayout({
 
   useEffect(() => {
     if (!user) {
-      router.replace('/');
+      router.replace('/', false);
     }
   }, [user, router]);
 

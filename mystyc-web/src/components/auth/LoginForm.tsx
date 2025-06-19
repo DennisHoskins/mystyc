@@ -20,29 +20,40 @@ export default function LoginForm() {
   const { signIn } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   // mount guard
   useEffect(() => {
+    if (!initialized) {
+      return;
+    }
     if (isReady) {
       return;
     }
     setIsReady(true);
-  }, [isReady]);
+    setIsLogin(user == null)
+  }, [initialized, isReady, isLogin, user]);
 
   // Redirect when fully initialized and user exists
   useEffect(() => {
     if (initialized && user) {
-      router.replace('/');
+      router.replace('/', !isLogin);
     }
-  }, [initialized, user, router]);
+  }, [initialized, user, isLogin, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setBusy(true);
+
+    console.log("");
+    console.log("");
+    console.log("LOGIN");
+    console.log("");
+    console.log("");
 
     try {
       const u = await signIn(email, password);

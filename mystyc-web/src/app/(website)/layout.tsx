@@ -14,7 +14,7 @@ export default function HomeLayout({
 
   useEffect(() => {
     if (user) {
-      router.replace('/');
+      router.replace('/', false);
     }
   }, [user, router]);
 

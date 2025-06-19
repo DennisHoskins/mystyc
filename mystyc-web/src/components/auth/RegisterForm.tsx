@@ -21,24 +21,29 @@ export default function RegisterForm() {
   const { register } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
+  const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   // mount guard
   useEffect(() => {
+    if (!initialized) {
+      return;
+    }
     if (isReady) {
       return;
     }
     setIsReady(true);
-  }, [isReady]);
+    setIsRegister(user == null)
+  }, [initialized, isReady, isRegister, user]);
 
   // redirect when fully initialized and user exists
   useEffect(() => {
     if (initialized && user) {
-      router.replace('/');
+      router.replace('/', !isRegister);
     }
-  }, [initialized, user, router]);
+  }, [initialized, user, isRegister, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

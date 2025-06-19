@@ -26,14 +26,14 @@ const StateTransition = forwardRef<StateTransitionRef, { children: React.ReactNo
 
         if (transitionRef.current) {
           setStateTransitioning(true);
-          console.log("--------->out")
+          console.log("STATE--------->out")
           await transitionRef.current.transitionOut();
-          console.log("<--------swap------->")
+          console.log("STATE<--------swap------->")
           setContent(children);
-          console.log("<--------wait------->")
+          console.log("STATE<--------wait------->")
           await new Promise(resolve => setTimeout(resolve, 1000));
           await transitionRef.current.transitionIn();
-          console.log("<---------in")
+          console.log("STATE<---------in")
           setStateTransitioning(false);
         }
       };

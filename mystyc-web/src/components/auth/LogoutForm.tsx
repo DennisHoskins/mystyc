@@ -19,24 +19,33 @@ export default function LogoutPage() {
 
   // mount guard
   useEffect(() => {
+    if (!initialized) {
+      return;
+    }
     if (isReady) {
       return;
     }
     setIsReady(true);
     setIsLogout(user != null);
-  }, [isReady, user]);
+  }, [initialized, isReady, user]);
 
   // Redirect when fully initialized and user is cleared
   useEffect(() => {
     if (initialized && !user) {
-      router.replace('/');
+      router.replace('/', !isLogout);
     }
-  }, [initialized, user, router]);
+  }, [initialized, user, isLogout, router]);
   
   useEffect(() => {
     if (!user || !isLogout) {
       return;
     }
+
+    console.log("");
+    console.log("");
+    console.log("LOGOUT");
+    console.log("");
+    console.log("");
 
     signOut()
       .then(() => {
