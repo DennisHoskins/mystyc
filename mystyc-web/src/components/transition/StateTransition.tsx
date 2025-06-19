@@ -1,61 +1,50 @@
-import { useState, useImperativeHandle, forwardRef, ReactNode } from 'react';
-import styles from './Transition.module.css';
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import Transition, { type TransitionRef } from './Transition';
+import { useTransitions } from '@/components/context/TransitionContext';
 
-export interface StateTransitionRef {
-  transition: (newContent: ReactNode) => Promise<void>;
-  transitionOut: () => Promise<void>;
-  transitionIn: () => Promise<void>;
-  transitionWait: () => Promise<void>;
-}
+export type StateTransitionRef = TransitionRef;
 
-const StateTransition = forwardRef<StateTransitionRef, { children: ReactNode }>(
+const StateTransition = forwardRef<StateTransitionRef, { children: React.ReactNode }>(
   ({ children }, ref) => {
     const [content, setContent] = useState(children);
-    const [isVisible, setIsVisible] = useState(true);
-
-    const transitionOut = async (): Promise<void> => {
-      console.log("transitionOut->fade out");
-      setIsVisible(false);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    };
-
-    const transitionIn = async (): Promise<void> => {
-      console.log("transitionIn->fade in");
-      setContent(children);
-      setIsVisible(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    };
-
-    const transitionWait = async (): Promise<void> => {
-      console.log("transitionWait->wait");
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    };
-
-    const transition = async (newContent: ReactNode): Promise<void> => {
-      await transitionOut();
-      
-      console.log("transition->swap content");
-      setContent(newContent);
-      
-      await transitionWait();
-      
-      await transitionIn();
-    };
+    const transitionRef = useRef<TransitionRef>(null);
+    const isInitialMount = useRef(true);
+    const { setStateTransitioning } = useTransitions();
 
     useImperativeHandle(ref, () => ({
-      transition,
-      transitionOut,
-      transitionIn,
-      transitionWait
+      transitionOut: () => transitionRef.current?.transitionOut() || Promise.resolve(),
+      transitionIn: () => transitionRef.current?.transitionIn() || Promise.resolve(),
     }));
 
+    useEffect(() => {
+      const doTransition = async () => {
+        if (isInitialMount.current) {
+          isInitialMount.current = false;
+          setContent(children);
+          return;
+        }
+
+        if (transitionRef.current) {
+          setStateTransitioning(true);
+          console.log("--------->out")
+          await transitionRef.current.transitionOut();
+          console.log("<--------swap------->")
+          setContent(children);
+          console.log("<--------wait------->")
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          await transitionRef.current.transitionIn();
+          console.log("<---------in")
+          setStateTransitioning(false);
+        }
+      };
+
+      doTransition();
+    }, [children, setStateTransitioning]);
+
     return (
-      <div 
-        className={styles.transitionWrapper}
-        style={{ opacity: isVisible ? 1 : 0 }}
-      >
+      <Transition ref={transitionRef}>
         {content}
-      </div>
+      </Transition>
     );
   }
 );

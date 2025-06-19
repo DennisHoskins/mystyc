@@ -1,20 +1,38 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-
-//
-//todo: get page content and swap Main, update URL to match
-//
+import { useTransitions } from '@/components/context/TransitionContext';
 
 export function useTransitionRouter() {
   const router = useRouter();
+  const { pageTransitionRef, isStateTransitioning } = useTransitions();
 
-  const push = (href: string) => {
-    router.push(href);
+  const push = async (href: string, transition: boolean = true) => {
+    if (isStateTransitioning) {
+      router.push(href);
+      return;
+    }
+    
+    if (transition && pageTransitionRef.current) {
+      await pageTransitionRef.current.transitionOut();
+      router.push(href);
+    } else {
+      router.push(href);
+    }
   };
 
-  const replace = (href: string) => {
-    router.replace(href);
+  const replace = async (href: string, transition: boolean = true) => {
+    if (isStateTransitioning) {
+      router.replace(href);
+      return;
+    }
+    
+    if (transition && pageTransitionRef.current) {
+      await pageTransitionRef.current.transitionOut();
+      router.replace(href);
+    } else {
+      router.replace(href);
+    }
   };
 
   return {
