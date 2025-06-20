@@ -1,12 +1,16 @@
 'use client';
 
-import { createContext, useContext, useRef, useMemo, ReactNode } from 'react';
+import { 
+  createContext, 
+  useContext, 
+  useRef, 
+  useMemo, 
+  ReactNode 
+} from 'react';
+
 import type { TransitionRef } from '@/components/transition/Transition';
 
 interface RefHandles {
-  //
-  // TODO: if there is trouble I changed this
-  //
   stateTransitionRef: React.RefObject<TransitionRef | null>;
   pageTransitionRef:  React.RefObject<TransitionRef | null>;
 }

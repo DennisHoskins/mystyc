@@ -8,9 +8,11 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import Transition, { TransitionRef } from './Transition';
+
 import { useTransitions } from '@/components/context/TransitionContext';
+import Transition, { TransitionRef } from './Transition';
 import { useAppStore } from '@/store/appStore';
+import { logger } from '@/util/logger';
 
 export type StateTransitionRef = TransitionRef;
 
@@ -20,45 +22,41 @@ const StateTransition = forwardRef<
 >(({ children, isWebsite }, ref) => {
   const { stateTransitionRef } = useTransitions();
   const setStateTransitioning = useAppStore((s) => s.setStateTransitioning);
-
-  const [content, setContent] = useState(children);
+  const isStateTransitioning = useAppStore((s) => s.isStateTransitioning);
   const transitionRef = useRef<TransitionRef>(null);
   const prevFlag = useRef(isWebsite);
+  const [content, setContent] = useState(children);
 
   useImperativeHandle(ref, () => transitionRef.current!);
   useImperativeHandle(stateTransitionRef, () => transitionRef.current!);
 
   useEffect(() => {
-    setContent(children);
-  }, [children]);
-
-  useEffect(() => {
     if (prevFlag.current === isWebsite) return;
     prevFlag.current = isWebsite;
+    setStateTransitioning(true);
 
     (async () => {
-
-console.log('');
-console.log('STATE out');
-
-      setStateTransitioning(true);
+      logger.log('[STATE TRANSITION] out');
       await transitionRef.current!.transitionOut();
-
-console.log('STATE swap');
-
-// console.log('STATE wait 250ms');
-//       await new Promise((r) => setTimeout(r, 250));
-
-      await transitionRef.current!.transitionIn();
-
-  console.log('STATE in');
-  console.log('');
-  
-      setStateTransitioning(false);
     })();
   }, [children, isWebsite, setStateTransitioning]);
 
-  return <Transition ref={transitionRef}>{content}</Transition>;
+  useEffect(() => {
+    if (!isStateTransitioning) {
+      return;
+    }
+
+    logger.log('[STATE TRANSITION] swap');
+    setContent(children);
+
+    (async () => {
+      await transitionRef.current!.transitionIn();
+      logger.log('[STATE TRANSITION] in');
+      setStateTransitioning(false);
+    })();
+  }, [children, isStateTransitioning, setStateTransitioning]);
+
+  return <Transition ref={transitionRef} transition={"transition-state"}>{content}</Transition>;
 });
 
 StateTransition.displayName = 'StateTransition';

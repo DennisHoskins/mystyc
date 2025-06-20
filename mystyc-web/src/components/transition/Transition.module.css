@@ -1,27 +1,25 @@
 .transitionWrapper {
+  --transition-duration: 0.1s;
   display: flex;
   flex-direction: column;
   flex: 1;
   width: 100%;
   min-height: 100%;
-  /* transition: opacity 1s ease-in-out; */
 }
 
-/* Transition states */
-.transitionOut {
-  opacity: 0;
-}
+.transition-state-out { animation: fade-out var(--transition-duration) ease-in-out forwards; }
+.transition-state-in { animation: fade-in var(--transition-duration) ease-in-out forwards; }
 
-.transitionIn {
-  opacity: 1;
-}
+.transition-page-out { animation: fade-out var(--transition-duration) ease-in-out forwards; }
+.transition-page-in { animation: fade-in var(--transition-duration) ease-in-out forwards; }
 
-/* Initial state - visible by default */
-.idle {
-  opacity: 1;
-}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+} 
 
-/* During transition - prevent interaction */
-.transitioning {
-  pointer-events: none;
-}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+} 
+

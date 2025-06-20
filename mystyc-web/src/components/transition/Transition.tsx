@@ -1,37 +1,49 @@
 'use client';
 
-import { useState, useImperativeHandle, forwardRef, ReactNode } from 'react';
+import { ReactNode, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import styles from './Transition.module.css';
+import { logger } from '@/util/logger';
 
 export interface TransitionRef {
   transitionOut: () => Promise<void>;
   transitionIn: () => Promise<void>;
 }
 
-const Transition = forwardRef<TransitionRef, { children: ReactNode }>(
-  ({ children }, ref) => {
-    const [isVisible, setIsVisible] = useState(true);
+const Transition = forwardRef<TransitionRef, { children: ReactNode, transition: string }>(
+  ({ children, transition }, ref) => {
+    const [transitionName, setTransitionName] = useState('');
+    const transitionRef = useRef<HTMLDivElement>(null);
 
     const transitionOut = async (): Promise<void> => {
+      logger.log("[TRANSITION]: transitionOut->fade out");
+      setTransitionName(`${transition}-out`);
 
-console.log("TRANSITION: transitionOut->fade out");
-
-      setIsVisible(false);
-      await new Promise(resolve => setTimeout(resolve, 250));
-
-console.log("TRANSITION: transitionOut->fade out complete");
-
+      await new Promise<void>(resolve => {      
+        const node = transitionRef.current;
+        if (!node) return resolve();
+        const onEnd = () => {
+          node.removeEventListener('animationend', onEnd);
+          logger.log("[TRANSITION]: transitionOut->fade out complete");
+          resolve();
+        };
+        node.addEventListener('animationend', onEnd);
+      });
     };
 
     const transitionIn = async (): Promise<void> => {
+      logger.log("[TRANSITION]: transitionIn->fade in");
+      setTransitionName(`${transition}-in`);
 
-console.log("TRANSITION: transitionIn->fade in");
-
-      await new Promise(resolve => setTimeout(resolve, 250));
-      setIsVisible(true);
-
-console.log("TRANSITION: transitionIn->fade in complete");
-
+      await new Promise<void>(resolve => {      
+        const node = transitionRef.current;
+        if (!node) return resolve();
+        const onEnd = () => {
+          node.removeEventListener('animationend', onEnd);
+          logger.log("[TRANSITION]: transitionIn->fade in complete");
+          resolve();
+        };
+        node.addEventListener('animationend', onEnd);
+      });
     };
 
     useImperativeHandle(ref, () => ({
@@ -41,8 +53,8 @@ console.log("TRANSITION: transitionIn->fade in complete");
 
     return (
       <div 
-        className={styles.transitionWrapper}
-        style={{ opacity: isVisible ? 1 : 0 }}
+        ref={transitionRef}
+        className={`${styles.transitionWrapper} ${styles[transitionName]}`}
       >
         {children}
       </div>
@@ -51,5 +63,4 @@ console.log("TRANSITION: transitionIn->fade in complete");
 );
 
 Transition.displayName = 'Transition';
-
 export default Transition;
