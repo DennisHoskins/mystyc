@@ -1,54 +1,58 @@
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import Transition, { type TransitionRef } from './Transition';
+'use client';
+
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  ReactNode,
+} from 'react';
+import Transition, { TransitionRef } from './Transition';
 import { useTransitions } from '@/components/context/TransitionContext';
+import { useAppStore } from '@/store/appStore';
 
 export type StateTransitionRef = TransitionRef;
 
-const StateTransition = forwardRef<StateTransitionRef, { children: React.ReactNode }>(
-  ({ children }, ref) => {
-    const [content, setContent] = useState(children);
-    const transitionRef = useRef<TransitionRef>(null);
-    const isInitialMount = useRef(true);
-    const { setStateTransitioning } = useTransitions();
+const StateTransition = forwardRef<
+  StateTransitionRef,
+  { children: ReactNode; isWebsite: boolean }
+>(({ children, isWebsite }, ref) => {
+  const { stateTransitionRef } = useTransitions();
+  const setStateTransitioning = useAppStore((s) => s.setStateTransitioning);
 
-    useImperativeHandle(ref, () => ({
-      transitionOut: () => transitionRef.current?.transitionOut() || Promise.resolve(),
-      transitionIn: () => transitionRef.current?.transitionIn() || Promise.resolve(),
-    }));
+  const [content, setContent] = useState(children);
+  const transitionRef = useRef<TransitionRef>(null);
+  const prevFlag = useRef(isWebsite);
 
-    useEffect(() => {
-      const doTransition = async () => {
-        if (isInitialMount.current) {
-          isInitialMount.current = false;
-          setContent(children);
-          return;
-        }
+  useImperativeHandle(ref, () => transitionRef.current!);
+  useImperativeHandle(stateTransitionRef, () => transitionRef.current!);
 
-        if (transitionRef.current) {
-          setStateTransitioning(true);
-          console.log("STATE--------->out")
-          await transitionRef.current.transitionOut();
-          console.log("STATE<--------swap------->")
-          setContent(children);
-          console.log("STATE<--------wait------->")
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          await transitionRef.current.transitionIn();
-          console.log("STATE<---------in")
-          setStateTransitioning(false);
-        }
-      };
+  useEffect(() => {
+    setContent(children);
+  }, [children]);
 
-      doTransition();
-    }, [children, setStateTransitioning]);
+  useEffect(() => {
+    if (prevFlag.current === isWebsite) return;
+    prevFlag.current = isWebsite;
 
-    return (
-      <Transition ref={transitionRef}>
-        {content}
-      </Transition>
-    );
-  }
-);
+    (async () => {
+console.log('');
+console.log('STATE out');
+      setStateTransitioning(true);
+      await transitionRef.current!.transitionOut();
+console.log('STATE swap');
+// console.log('STATE wait 250ms');
+//       await new Promise((r) => setTimeout(r, 250));
+      await transitionRef.current!.transitionIn();
+  console.log('STATE in');
+  console.log('');
+      setStateTransitioning(false);
+    })();
+  }, [children, isWebsite, setStateTransitioning]);
+
+  return <Transition ref={transitionRef}>{content}</Transition>;
+});
 
 StateTransition.displayName = 'StateTransition';
-
 export default StateTransition;

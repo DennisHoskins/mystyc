@@ -11,17 +11,17 @@ const Transition = forwardRef<TransitionRef, { children: ReactNode }>(
     const [isVisible, setIsVisible] = useState(true);
 
     const transitionOut = async (): Promise<void> => {
-      console.log("transitionOut->fade out");
+console.log("transitionOut->fade out");
       setIsVisible(false);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log("transitionOut->fade out complete");
+      await new Promise(resolve => setTimeout(resolve, 250));
+console.log("transitionOut->fade out complete");
     };
 
     const transitionIn = async (): Promise<void> => {
-      console.log("transitionIn->fade in");
-      await new Promise(resolve => setTimeout(resolve, 1000));
+console.log("transitionIn->fade in");
+      await new Promise(resolve => setTimeout(resolve, 250));
       setIsVisible(true);
-      console.log("transitionIn->fade in complete");
+console.log("transitionIn->fade in complete");
     };
 
     useImperativeHandle(ref, () => ({

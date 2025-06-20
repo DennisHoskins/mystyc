@@ -1,37 +1,32 @@
 'use client';
 
-import { useState, createContext, useContext, useRef, ReactNode } from 'react';
-import type { StateTransitionRef } from '@/components/transition/StateTransition';
-import type { PageTransitionRef } from '@/components/transition/PageTransition';
+import { createContext, useContext, useRef, useMemo, ReactNode } from 'react';
+import type { TransitionRef } from '@/components/transition/Transition';
 
-interface TransitionContextValue {
-  stateTransitionRef: React.RefObject<StateTransitionRef | null>;
-  pageTransitionRef: React.RefObject<PageTransitionRef | null>;
-  isStateTransitioning: boolean;
-  setStateTransitioning: (value: boolean) => void;
+interface RefHandles {
+  stateTransitionRef: React.MutableRefObject<TransitionRef | null>;
+  pageTransitionRef:  React.MutableRefObject<TransitionRef | null>;
 }
 
-const TransitionContext = createContext<TransitionContextValue | null>(null);
-
-export const useTransitions = () => {
-  const context = useContext(TransitionContext);
-  if (!context) throw new Error('useTransitions must be used within TransitionProvider');
-  return context;
-};
+const TransitionContext = createContext<RefHandles>(null!);
 
 export function TransitionProvider({ children }: { children: ReactNode }) {
-  const stateTransitionRef = useRef<StateTransitionRef>(null);
-  const pageTransitionRef = useRef<PageTransitionRef>(null);
-  const [isStateTransitioning, setStateTransitioning] = useState(false);
+  const stateTransitionRef = useRef<TransitionRef>(null);
+  const pageTransitionRef  = useRef<TransitionRef>(null);
+
+  // memo the refs object so its identity never changes
+  const refs = useMemo(
+    () => ({ stateTransitionRef, pageTransitionRef }),
+    []
+  );
 
   return (
-    <TransitionContext.Provider value={{
-      stateTransitionRef,
-      pageTransitionRef,
-      isStateTransitioning,
-      setStateTransitioning
-    }}>
+    <TransitionContext.Provider value={refs}>
       {children}
     </TransitionContext.Provider>
   );
+}
+
+export function useTransitions() {
+  return useContext(TransitionContext);
 }

@@ -6,6 +6,7 @@ import { useStore } from 'zustand';
 import { ServerUser } from '@/server/getUser';
 import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
+
 import Layout from '@/components/layout/Layout';
 import GlobalError from '@/components/GlobalError';
 import Offline from '@/components/Offline';
@@ -119,9 +120,9 @@ export const useBusy = () => {
     if (state === false) {
       clearBusy();
     } else if (state === true) {
-      setBusyStore(); // immediate
+      setBusyStore();
     } else {
-      setBusyStore(state); // delay in ms
+      setBusyStore(state);
     }
   };
 
