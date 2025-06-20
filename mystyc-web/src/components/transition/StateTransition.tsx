@@ -37,16 +37,23 @@ const StateTransition = forwardRef<
     prevFlag.current = isWebsite;
 
     (async () => {
+
 console.log('');
 console.log('STATE out');
+
       setStateTransitioning(true);
       await transitionRef.current!.transitionOut();
+
 console.log('STATE swap');
+
 // console.log('STATE wait 250ms');
 //       await new Promise((r) => setTimeout(r, 250));
+
       await transitionRef.current!.transitionIn();
+
   console.log('STATE in');
   console.log('');
+  
       setStateTransitioning(false);
     })();
   }, [children, isWebsite, setStateTransitioning]);

@@ -13,6 +13,6 @@ const TableBody = forwardRef<
     {...props}
   />
 ));
-TableBody.displayName = 'TableBody';
 
+TableBody.displayName = 'TableBody';
 export default TableBody;

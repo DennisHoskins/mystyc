@@ -13,6 +13,6 @@ const TableCell = forwardRef<
     {...props}
   />
 ));
-TableCell.displayName = 'TableCell';
 
+TableCell.displayName = 'TableCell';
 export default TableCell;

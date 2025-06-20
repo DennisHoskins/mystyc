@@ -9,6 +9,6 @@ const TableHeader = forwardRef<
 >(({ className, ...props }, ref) => (
   <thead ref={ref} className={clsx('[&_tr]:border-b', className)} {...props} />
 ));
-TableHeader.displayName = 'TableHeader';
 
+TableHeader.displayName = 'TableHeader';
 export default TableHeader;

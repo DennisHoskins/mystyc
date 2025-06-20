@@ -16,6 +16,6 @@ const TableRow = forwardRef<
     {...props}
   />
 ));
-TableRow.displayName = 'TableRow';
 
+TableRow.displayName = 'TableRow';
 export default TableRow;

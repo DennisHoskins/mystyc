@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useImperativeHandle, forwardRef, ReactNode } from 'react';
 import styles from './Transition.module.css';
 
@@ -11,17 +13,25 @@ const Transition = forwardRef<TransitionRef, { children: ReactNode }>(
     const [isVisible, setIsVisible] = useState(true);
 
     const transitionOut = async (): Promise<void> => {
-console.log("transitionOut->fade out");
+
+console.log("TRANSITION: transitionOut->fade out");
+
       setIsVisible(false);
       await new Promise(resolve => setTimeout(resolve, 250));
-console.log("transitionOut->fade out complete");
+
+console.log("TRANSITION: transitionOut->fade out complete");
+
     };
 
     const transitionIn = async (): Promise<void> => {
-console.log("transitionIn->fade in");
+
+console.log("TRANSITION: transitionIn->fade in");
+
       await new Promise(resolve => setTimeout(resolve, 250));
       setIsVisible(true);
-console.log("transitionIn->fade in complete");
+
+console.log("TRANSITION: transitionIn->fade in complete");
+
     };
 
     useImperativeHandle(ref, () => ({

@@ -27,12 +27,16 @@ export function useTransitionRouter() {
     transition = true
   ) => {
     if (href === path) {
-console.log('Skipping transition for same path');
+
+console.log('ROUTER: Skipping transition for same path');
+
       return;
     } 
 
     if (href === '/logout' || path === '/logout') {
-console.log('Skipping transition for logout');
+
+console.log('ROUTER: Skipping transition for logout');
+
       router[method](href);
       return;
     }
@@ -41,23 +45,32 @@ console.log('Skipping transition for logout');
       if (href == "/login" || path == "/login" || 
           href == "register" || path == "/register" || 
           href == "/password-reset" || path == "/password-reset") {
-console.log('Redirecting to home from auth page');
+
+console.log('ROUTER: Redirecting to home from auth page');
+
         router.replace("/");
         return;
       }
     }
 
-    if (href === path || !transition) {
+    if (!transition) {
+
+console.log('ROUTER: No transition', method, href);
+
       router[method](href);
       return;
     }
 
     if (isStateT) {
-console.log('Waiting for state to finish...');
+
+console.log('ROUTER: Waiting for state to finish...');
+
       await new Promise<void>((res) => {
         const unsub = useAppStore.subscribe((st) => {
           if (!st.isStateTransitioning) {
-console.log('State transition done');
+
+console.log('ROUTER: State transition done');
+
             unsub();
             res();
           }
@@ -66,7 +79,8 @@ console.log('State transition done');
     }
 
 console.log('');
-console.log('PAGE out');
+console.log('ROUTER: out');
+
     await pageTransitionRef.current?.transitionOut();
 
     setPageT(true);
@@ -79,12 +93,21 @@ console.log('PAGE out');
 
   useEffect(() => {
     if (path === '/logout') {
+
+console.log('ROUTER: /logout bailout');
+
       return;
     }
     if (!isPageT || !swappingRef.current) {
+
+console.log('ROUTER: isPageT/swappingRef bailout');
+
       return;
     }
     if (lastPathRef.current === path) {
+
+console.log('ROUTER: lastPathRef === path bailout');
+
       return;
     }
 
@@ -92,12 +115,17 @@ console.log('PAGE out');
     lastPathRef.current = path;
 
     (async () => {
-console.log('PAGE swap', nextHref);
-// console.log('PAGE wait 250ms');
+
+console.log('ROUTER: swap', nextHref);
+
+// console.log('ROUTER: wait 250ms');
 // await new Promise((r) => setTimeout(r, 250));
+
       await pageTransitionRef.current?.transitionIn();
-console.log('PAGE in');
+
+console.log('ROUTER: in');
 console.log('');
+
       setPageT(false);
     })();
   }, [path, isPageT, nextHref]);

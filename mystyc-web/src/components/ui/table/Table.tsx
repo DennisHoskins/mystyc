@@ -15,6 +15,6 @@ const Table = forwardRef<
     />
   </div>
 ));
-Table.displayName = 'Table';
 
+Table.displayName = 'Table';
 export default Table;

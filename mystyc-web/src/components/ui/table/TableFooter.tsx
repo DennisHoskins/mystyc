@@ -16,6 +16,6 @@ const TableFooter = forwardRef<
     {...props}
   />
 ));
-TableFooter.displayName = 'TableFooter';
 
+TableFooter.displayName = 'TableFooter';
 export default TableFooter;

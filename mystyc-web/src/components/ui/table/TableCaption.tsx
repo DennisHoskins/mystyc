@@ -13,6 +13,6 @@ const TableCaption = forwardRef<
     {...props}
   />
 ));
-TableCaption.displayName = 'TableCaption';
 
+TableCaption.displayName = 'TableCaption';
 export default TableCaption;

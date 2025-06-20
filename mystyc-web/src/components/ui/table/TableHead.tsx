@@ -16,6 +16,6 @@ const TableHead = forwardRef<
     {...props}
   />
 ));
-TableHead.displayName = 'TableHead';
 
+TableHead.displayName = 'TableHead';
 export default TableHead;
