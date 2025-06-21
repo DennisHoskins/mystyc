@@ -1,66 +1,90 @@
 'use client';
 
 import {
-  forwardRef,
   useImperativeHandle,
   useRef,
+  useState,
   useEffect,
   ReactNode,
 } from 'react';
-import { usePathname } from 'next/navigation';
 import Transition, { TransitionRef } from './Transition';
 import { useTransitions } from '@/components/context/TransitionContext';
-import { useAppStore } from '@/store/appStore';
 import { logger } from '@/util/logger';
 
-export type PageTransitionRef = TransitionRef;
+export interface PageTransitionRef extends TransitionRef {
+  waitForContent: () => Promise<void>;
+}
 
-const PageTransition = forwardRef<PageTransitionRef, { children: ReactNode }>(
-  ({ children }, ref) => {
-    const { pageTransitionRef } = useTransitions();
-    const transitionRef = useRef<TransitionRef>(null);
-    const path = usePathname();
-    const setPageTransitioning = useAppStore((s) => s.setPageTransitioning);
-    const isPageTransitioning = useAppStore((s) => s.isPageTransitioning);
+export default function PageTransition({ 
+  pathname, 
+  children 
+}: { 
+  pathname: string; 
+  children: ReactNode;
+}) {
+  const { pageTransitionRef } = useTransitions();
+  const transitionRef = useRef<TransitionRef>(null);
+  const [currentChildren, setCurrentChildren] = useState(children);
+  const contentPromiseRef = useRef<{
+    resolve: () => void;
+    promise: Promise<void>;
+  } | null>(null);
 
-    const transitionOut = async (): Promise<void> => {
-      logger.log('[PAGE TRANSITION] out');
-      await transitionRef.current?.transitionOut();
-      setPageTransitioning(true);
-    };
+  useEffect(() => {
+    logger.log('[PAGE TRANSITION] pathname', pathname);
+  }, [pathname]);
 
-    useImperativeHandle(ref, () => ({
-      transitionOut,
-      transitionIn: transitionRef.current!.transitionIn,
-    }));
-    useImperativeHandle(pageTransitionRef, () => ({
-      transitionOut,
-      transitionIn: transitionRef.current!.transitionIn,
-    }));
-
-    useEffect(() => {
-      if (!isPageTransitioning) {
-        return;
+  useEffect(() => {
+    logger.log('[PAGE TRANSITION] useEffect - children changed?', children !== currentChildren);
+    if (children !== currentChildren) {
+      if (contentPromiseRef.current) {
+        logger.log('[PAGE TRANSITION] new content detected');
+        contentPromiseRef.current.resolve();
+        contentPromiseRef.current = null;
       }
+      setCurrentChildren(children);
+    }
+  }, [children, currentChildren]);
 
-      if (!transitionRef.current) {
-        logger.error('[PAGE TRANSITION] transitionRef is null');  
-        return;
-      } 
+  useEffect(() => {
+    return () => {
+      if (contentPromiseRef.current) {
+        logger.log('[PAGE TRANSITION] cleanup - resolving pending promise');
+        contentPromiseRef.current.resolve();
+        contentPromiseRef.current = null;
+      }
+    };
+  }, []);
 
+  useImperativeHandle(pageTransitionRef, () => ({
+    transitionOut: async () => {
+      logger.log('[PAGE TRANSITION] out');
+      return transitionRef.current?.transitionOut();
+    },
+    transitionIn: async () => {
       logger.log('[PAGE TRANSITION] in');
-      transitionRef.current
-        .transitionIn()
-        .then(() => setPageTransitioning(false));
-    }, [isPageTransitioning, setPageTransitioning]);
+      return transitionRef.current?.transitionIn();
+    },
+    waitForContent: () => {
+      logger.log('[PAGE TRANSITION] waiting for content');
+      
+      if (children !== currentChildren) {
+        logger.log('[PAGE TRANSITION] content already changed, resolving immediately');
+        setCurrentChildren(children);
+        return Promise.resolve();
+      }
+      
+      const promise = new Promise<void>((resolve) => {
+        contentPromiseRef.current = { resolve, promise: null! };
+      });
+      contentPromiseRef.current!.promise = promise;
+      return promise;
+    }
+  }));
 
-    return (
-      <Transition key={path} ref={transitionRef} transition="transition-page">
-        {children}
-      </Transition>
-    );
-  }
-);
-
-PageTransition.displayName = 'PageTransition';
-export default PageTransition;
+  return (
+    <Transition ref={transitionRef} transition="transition-page">
+      {children}
+    </Transition>
+  );
+}

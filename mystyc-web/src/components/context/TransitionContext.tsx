@@ -5,26 +5,27 @@ import {
   useContext, 
   useRef, 
   useMemo, 
+  RefObject,
   ReactNode 
 } from 'react';
 
-import type { TransitionRef } from '@/components/transition/Transition';
+import { PageTransitionRef } from '../transition/PageTransition';
 
-interface RefHandles {
-  stateTransitionRef: React.RefObject<TransitionRef | null>;
-  pageTransitionRef:  React.RefObject<TransitionRef | null>;
+interface TransitionContextType {
+  pageTransitionRef: RefObject<PageTransitionRef | null>;
 }
 
-const TransitionContext = createContext<RefHandles>(null!);
+const TransitionContext = createContext<TransitionContextType>(null!);
 
 export function TransitionProvider({ children }: { children: ReactNode }) {
-  const stateTransitionRef = useRef<TransitionRef>(null);
-  const pageTransitionRef  = useRef<TransitionRef>(null);
+  const pageTransitionRef = useRef<PageTransitionRef>(null);
 
-  const refs = useMemo(() => ({ stateTransitionRef, pageTransitionRef }), []);
+  const value = useMemo(() => ({ 
+    pageTransitionRef,
+  }), []);
 
   return (
-    <TransitionContext.Provider value={refs}>
+    <TransitionContext.Provider value={value}>
       {children}
     </TransitionContext.Provider>
   );

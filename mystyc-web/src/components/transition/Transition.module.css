@@ -1,5 +1,6 @@
 .transitionWrapper {
-  --transition-duration: 0.1s;
+  --transition-duration-state: 0.1s;
+  --transition-duration-page: 0.1s;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -7,11 +8,11 @@
   min-height: 100%;
 }
 
-.transition-state-out { animation: fade-out var(--transition-duration) ease-in-out forwards; }
-.transition-state-in { animation: fade-in var(--transition-duration) ease-in-out forwards; }
+.transition-state-out { animation: fade-out var(--transition-duration-state) ease-in-out forwards; }
+.transition-state-in { animation: fade-in var(--transition-duration-state) ease-in-out forwards; }
 
-.transition-page-out { animation: fade-out var(--transition-duration) ease-in-out forwards; }
-.transition-page-in { animation: fade-in var(--transition-duration) ease-in-out forwards; }
+.transition-page-out { animation: fade-out var(--transition-duration-page) ease-in-out forwards; }
+.transition-page-in { animation: fade-in var(--transition-duration-page) ease-in-out forwards; }
 
 @keyframes fade-out {
   from { opacity: 1; }

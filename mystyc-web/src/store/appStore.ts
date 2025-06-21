@@ -9,10 +9,6 @@ export interface AppState {
   busyTimer: NodeJS.Timeout | null;
   toasts: { id: string; message: string; type: 'success' | 'error' | 'info'; timestamp: number }[];
 
-  // Transition flags
-  isStateTransitioning: boolean;
-  isPageTransitioning: boolean;
-
   // Actions
   setOnline: (isOnline: boolean) => void;
   setBusy: (delayMs?: number) => void;
@@ -23,10 +19,6 @@ export interface AppState {
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   hideToast: (id: string) => void;
   clearAppState: () => void;
-
-  // Transition setters
-  setStateTransitioning: (v: boolean) => void;
-  setPageTransitioning: (v: boolean) => void;
 }
 
 const initialState = {
@@ -37,10 +29,6 @@ const initialState = {
   isLoggedOutByServer: false,
   busyTimer: null,
   toasts: [],
-
-  // Transition flags
-  isStateTransitioning: false,
-  isPageTransitioning: false,
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -76,8 +64,4 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (state.busyTimer) clearTimeout(state.busyTimer);
     set(initialState as any);
   },
-
-  // Transition setters
-  setStateTransitioning: (v) => set({ isStateTransitioning: v }),
-  setPageTransitioning: (v) => set({ isPageTransitioning: v }),
 }));

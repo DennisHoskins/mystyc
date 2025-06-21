@@ -18,10 +18,11 @@ export default function RegisterForm() {
   const user = useUser();
   const setUser = useSetUser();
   const initialized = useInitialized();
-  const { isBusy, setBusy } = useBusy();
+  const { setBusy } = useBusy();
   const { register } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
+  const [isWorking, setIsWorking] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,9 +49,11 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setError('');
-    setBusy(true);
+    setBusy(500);
+    setIsWorking(true);
+
+    logger.log("REGISTER");
 
     try {
       const user = await register(email, password);
@@ -59,7 +62,6 @@ export default function RegisterForm() {
       }
 
       setUser(user);
-      // effect will redirect on next render
     } catch (err: any) {
       logger.error('Registration error:', err);
 
@@ -72,6 +74,7 @@ export default function RegisterForm() {
       }
 
       setBusy(false);
+      setIsWorking(false);
     }
   };
 
@@ -109,7 +112,7 @@ export default function RegisterForm() {
 
         <Button
           type="submit"
-          loading={isBusy}
+          loading={isWorking}
           loadingContent="Creating Account..."
           className="w-full"
         >

@@ -1,63 +1,59 @@
 'use client';
 
-import React, {
-  forwardRef,
+import {
   useEffect,
-  useImperativeHandle,
   useRef,
   useState,
   ReactNode,
 } from 'react';
-
-import { useTransitions } from '@/components/context/TransitionContext';
 import Transition, { TransitionRef } from './Transition';
-import { useAppStore } from '@/store/appStore';
 import { logger } from '@/util/logger';
 
-export type StateTransitionRef = TransitionRef;
-
-const StateTransition = forwardRef<
-  StateTransitionRef,
-  { children: ReactNode; isWebsite: boolean }
->(({ children, isWebsite }, ref) => {
-  const { stateTransitionRef } = useTransitions();
-  const setStateTransitioning = useAppStore((s) => s.setStateTransitioning);
-  const isStateTransitioning = useAppStore((s) => s.isStateTransitioning);
+export default function StateTransition({ 
+  children, 
+  isWebsite 
+}: { 
+  children: ReactNode; 
+  isWebsite: boolean;
+}) {
   const transitionRef = useRef<TransitionRef>(null);
-  const prevFlag = useRef(isWebsite);
-  const [content, setContent] = useState(children);
-
-  useImperativeHandle(ref, () => transitionRef.current!);
-  useImperativeHandle(stateTransitionRef, () => transitionRef.current!);
+  const [currentChildren, setCurrentChildren] = useState(children);
+  const [displayedIsWebsite, setDisplayedIsWebsite] = useState(isWebsite);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (prevFlag.current === isWebsite) return;
-    prevFlag.current = isWebsite;
-    setStateTransitioning(true);
-
-    (async () => {
-      logger.log('[STATE TRANSITION] out');
-      await transitionRef.current!.transitionOut();
-    })();
-  }, [children, isWebsite, setStateTransitioning]);
-
-  useEffect(() => {
-    if (!isStateTransitioning) {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
       return;
     }
 
-    logger.log('[STATE TRANSITION] swap');
-    setContent(children);
+    if (isWebsite !== displayedIsWebsite) {
+      const doTransition = async () => {
+        logger.log('[STATE TRANSITION] isWebsite changed, fading out');
+        await transitionRef.current?.transitionOut();
+        
+        setDisplayedIsWebsite(isWebsite);
+        setCurrentChildren(children);
 
-    (async () => {
-      await transitionRef.current!.transitionIn();
-      logger.log('[STATE TRANSITION] in');
-      setStateTransitioning(false);
-    })();
-  }, [children, isStateTransitioning, setStateTransitioning]);
+        // fake a short delay so it feels like work
+        await new Promise(resolve => setTimeout(resolve, 250));
+        
+        logger.log('[STATE TRANSITION] fading in new content');
+        await transitionRef.current?.transitionIn();
+      };
+      doTransition();
+    }
+  }, [isWebsite, displayedIsWebsite, children]);
 
-  return <Transition ref={transitionRef} transition={"transition-state"}>{content}</Transition>;
-});
+  useEffect(() => {
+    if (isWebsite === displayedIsWebsite) {
+      setCurrentChildren(children);
+    }
+  }, [children, isWebsite, displayedIsWebsite]);
 
-StateTransition.displayName = 'StateTransition';
-export default StateTransition;
+  return (
+    <Transition ref={transitionRef} transition="transition-state">
+      {currentChildren}
+    </Transition>
+  );
+}

@@ -1,8 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useTransitions } from '@/components/context/TransitionContext';
-
+import { usePathname } from 'next/navigation';
 import StateTransition from '@/components/transition/StateTransition';
 import PageTransition from '@/components/transition/PageTransition';
 import WebsiteHeader from './header/WebsiteHeader';
@@ -13,25 +11,23 @@ import AppFooter from './footer/AppFooter';
 
 export default function LayoutInner({
   children,
-  isWebsite
+  isWebsite,
 }: {
   children: React.ReactNode;
   isWebsite: boolean;
 }) {
-  const { stateTransitionRef, pageTransitionRef } = useTransitions();
+  const pathname = usePathname();
 
-  return useMemo(() => {
-    const Header = isWebsite ? WebsiteHeader : AppHeader;
-    const Footer = isWebsite ? WebsiteFooter : AppFooter;
+  const Header = isWebsite ? WebsiteHeader : AppHeader;
+  const Footer = isWebsite ? WebsiteFooter : AppFooter;
 
-    return (
-      <StateTransition ref={stateTransitionRef} isWebsite={isWebsite}>
-        <Header />
-        <PageTransition ref={pageTransitionRef}>
-          <Main>{children}</Main>
-        </PageTransition>
-        <Footer />
-      </StateTransition>
-    );
-  }, [isWebsite, children, stateTransitionRef, pageTransitionRef]);
+  return (
+    <StateTransition isWebsite={isWebsite}>
+      <Header />
+      <PageTransition pathname={pathname}>
+        <Main>{children}</Main>
+      </PageTransition>
+      <Footer />
+    </StateTransition>
+  );
 }

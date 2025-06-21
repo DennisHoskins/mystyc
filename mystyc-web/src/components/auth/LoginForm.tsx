@@ -17,10 +17,11 @@ export default function LoginForm() {
   const setUser = useSetUser();
   const initialized = useInitialized();
   const router = useTransitionRouter();
-  const { isBusy, setBusy } = useBusy();
+  const { setBusy } = useBusy();
   const { signIn } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
+  const [isWorking, setIsWorking] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,7 +49,8 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setBusy(true);
+    setBusy(500);
+    setIsWorking(true);
 
     logger.log("LOGIN");
 
@@ -64,6 +66,7 @@ export default function LoginForm() {
           : 'Login failed. Please try again.'
       );
       setBusy(false);
+      setIsWorking(false);
     }
   };
 
@@ -97,7 +100,7 @@ export default function LoginForm() {
         />
         <Button
           type="submit"
-          loading={isBusy}
+          loading={isWorking}
           loadingContent="Signing In..."
           className="w-full"
         >

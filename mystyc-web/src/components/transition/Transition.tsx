@@ -1,6 +1,12 @@
 'use client';
 
-import { ReactNode, useState, useRef, useImperativeHandle, forwardRef } from 'react';
+import { 
+  ReactNode, 
+  useState, 
+  useRef, 
+  useImperativeHandle, 
+  forwardRef 
+} from 'react';
 import styles from './Transition.module.css';
 import { logger } from '@/util/logger';
 
@@ -36,7 +42,10 @@ const Transition = forwardRef<TransitionRef, { children: ReactNode, transition: 
 
       await new Promise<void>(resolve => {      
         const node = transitionRef.current;
-        if (!node) return resolve();
+        if (!node) {
+          logger.error("[TRANSITION]: transitionIn->fade in failed, node is null");
+          return resolve();
+        }
         const onEnd = () => {
           node.removeEventListener('animationend', onEnd);
           logger.log("[TRANSITION]: transitionIn->fade in complete");

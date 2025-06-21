@@ -12,9 +12,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();
   const clearUser = useClearUser();
   const authenticated = useAuthenticated();
-  const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
+  const isLoggedOutByServer = useAppStore((s) => s.isLoggedOutByServer);
+  const setLoggedOutByServer = useAppStore((s) => s.setLoggedOutByServer);
   const isWebsite = !user;
-
 
   useEffect(() => {
     if (!user && authenticated) {
@@ -35,7 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [user, authenticated, clearUser, setLoggedOutByServer]);
 
- return (
+  return (
     <>
       <TransitionProvider>
         <LayoutInner isWebsite={isWebsite}>
@@ -46,5 +46,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <ServerLogoutForm />
       </Modal>
     </>
- );  
+  );  
 }

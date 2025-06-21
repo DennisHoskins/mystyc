@@ -1,35 +1,34 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-
+import { useBusy } from '@/components/context/AppContext';
 import { useTransitions } from '@/components/context/TransitionContext';
 import { useUser } from '@/components/context/AppContext';
-import { useAppStore } from '@/store/appStore';
 import { logger } from '@/util/logger';
+import { useRef } from 'react';
 
 export function useTransitionRouter() {
   const router = useRouter();
   const path = usePathname();
   const user = useUser();
   const { pageTransitionRef } = useTransitions();
-
-  const isStateT = useAppStore((s) => s.isStateTransitioning);
+  const { setBusy } = useBusy();
+  const transitioningRef = useRef(false);
 
   const navigate = async (
     href: string,
     method: 'push' | 'replace',
     transition = true
   ) => {
+    if (transitioningRef.current) {
+      logger.log('[ROUTER]: Transition already in progress, ignoring');
+      return;
+    }
+
     if (href === path) {
       logger.log('[ROUTER]: Skipping transition for same path');
       return;
     } 
-
-    if (href === '/logout' || path === '/logout') {
-      logger.log('[ROUTER]: Skipping transition for logout');
-      router[method](href);
-      return;
-    }
 
     if (user) {
       if (href == "/login" || path == "/login" || 
@@ -41,20 +40,31 @@ export function useTransitionRouter() {
       }
     }
 
-    if (!transition) {
+    if (!transition || !pageTransitionRef.current) {
       logger.log('[ROUTER]: No transition', method, href);
       router[method](href);
       return;
     }
 
-    if (isStateT) {
-      logger.log('[ROUTER]: State transition in progress, skipping navigation');
-      return;
-    }
+    try {
+      transitioningRef.current = true;
+      setBusy(500);
 
-    logger.log('[ROUTER]: out', path, href);
-    await pageTransitionRef.current?.transitionOut();
-    router[method](href);
+      logger.log('[ROUTER]: Starting transition out', path, href);
+      await pageTransitionRef.current.transitionOut();
+      
+      logger.log('[ROUTER]: Navigating to', href);
+      router[method](href);
+      
+      logger.log('[ROUTER]: Waiting for content to mount');
+      await pageTransitionRef.current.waitForContent();
+      
+      logger.log('[ROUTER]: Content ready, fading in');
+      await pageTransitionRef.current.transitionIn();
+    } finally {
+      transitioningRef.current = false;
+      setBusy(false);
+    }
   };
 
   return {

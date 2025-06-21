@@ -17,10 +17,11 @@ export default function PasswordResetPage() {
   const router = useTransitionRouter();
   const user = useUser();
   const initialized = useInitialized();
-  const { isBusy, setBusy } = useBusy();
+  const { setBusy } = useBusy();
   const { resetPassword } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
+  const [isWorking, setIsWorking] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -41,10 +42,10 @@ export default function PasswordResetPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setError('');
     setMessage('');
-    setBusy(true);
+    setBusy(500);
+    setIsWorking(true);
 
     try {
       await resetPassword(email);
@@ -62,6 +63,7 @@ export default function PasswordResetPage() {
       }
 
       setBusy(false);
+      setIsWorking(false);
     }
   };
 
@@ -90,7 +92,7 @@ export default function PasswordResetPage() {
 
         <Button
           type="submit"
-          loading={isBusy}
+          loading={isWorking}
           loadingContent="Sending Reset Email..."
           className="w-full"
         >
