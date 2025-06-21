@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/appStore';
 import Overlay from '@/components/overlay/Overlay';
 import IconEye from '@/components/icons/IconEye';
-import fade from '@/styles/Fade.module.css';
 import styles from './Working.module.css';
 
 export default function Working() {
@@ -29,7 +28,7 @@ export default function Working() {
   if (!visible) return null;
 
   return (
-    <div className={fadingOut ? fade.fadeOut : fade.fadeIn}>
+    <div className={fadingOut ? styles.fadeOut : styles.fadeIn}>
       <Overlay>
         <IconEye className={`${styles.icon} ${styles.animatePingSoft} w-20 h-20`} />
       </Overlay>
