@@ -14,12 +14,16 @@ export default function AppFooter() {
         <span>
           © {new Date().getFullYear()} mystyc
           {user.isAdmin && (
-            <button
-              onClick={() => router.push('/admin')}
-              className="underline hover:text-gray-700"
-            >
-              Admin
-            </button>
+            <>
+              {' · '}
+              <a            
+                href="/admin"
+                onClick={() => router.push('/admin')}
+                className="ml-1 underline hover:text-gray-700"
+              >
+                Admin
+              </a>
+            </>
           )}
         </span>
       </div>

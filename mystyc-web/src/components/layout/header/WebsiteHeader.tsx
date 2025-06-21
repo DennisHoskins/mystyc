@@ -9,13 +9,11 @@ export default function WebsiteHeader() {
 
   return (
     <header className="hidden md:flex w-full bg-white px-4 py-3">
-      <div className="flex w-full items-center">
-        {/* Logo on the left */}
+      <nav className="flex w-full items-center">
         <button onClick={() => router.push('/')} className="flex items-center">
           <AppLogo orientation="horizontal" showText />
         </button>
 
-        {/* Centered nav links */}
         <div className="flex flex-1 justify-center space-x-8">
           <Button
             variant="ghost"
@@ -33,7 +31,6 @@ export default function WebsiteHeader() {
           </Button>
         </div>
 
-        {/* Login/Signup on the right */}
         <div className="flex space-x-4">
           <Button
             variant="ghost"
@@ -50,7 +47,7 @@ export default function WebsiteHeader() {
             Signup
           </Button>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }

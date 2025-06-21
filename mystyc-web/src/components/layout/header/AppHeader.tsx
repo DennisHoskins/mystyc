@@ -1,35 +1,20 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
-import { useUser } from '@/components/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import AppLogo from '@/components/AppLogo';
 import Button from '@/components/ui/Button';
 
-
-/* Desktop navigation (md+): logo, centered links, admin logout on far right */
-function DesktopNav() {
+export default function AppHeader() {
   const router = useTransitionRouter();
-  const user = useUser();
-  if (!user) return;
 
   return (
-    <nav className="hidden md:flex w-full bg-white sticky top-0 z-10 px-4 py-3">
-      <div className="flex w-full items-center">
-        {/* Logo on the far left */}
+    <header className="hidden md:flex w-full bg-white px-4 py-3">
+      <nav className="flex w-full items-center">
         <button onClick={() => router.push('/')} className="flex items-center">
-          <AppLogo orientation="horizontal" showText={false} />
+          <AppLogo orientation="horizontal" showText />
         </button>
 
-        {/* Centered nav links */}
-        <div className="flex flex-1 justify-center space-x-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/')}
-            className="text-sm font-medium hover:underline"
-          >
-            Home
-          </Button>
+        <div className="flex flex-1 justify-center space-x-8">
           <Button
             variant="ghost"
             onClick={() => router.push('/answers')}
@@ -46,52 +31,16 @@ function DesktopNav() {
           </Button>
         </div>
 
-        {user.isAdmin && (
+        <div className="flex space-x-4">
           <Button
             variant="ghost"
             onClick={() => router.push('/logout')}
-            className="text-sm text-red-600 hover:underline"
+            className="text-sm font-medium hover:underline"
           >
             Logout
           </Button>
-        )}
-      </div>
-    </nav>
-  );
-}
-
-/* Mobile header (<md): logo and logout, scrollable header—no border */
-function MobileHeader() {
-  const router = useTransitionRouter();
-  const { signOut } = useAuth();
-  const user = useUser();
-  if (!user) return;
-
-  return (
-    <header className="md:hidden w-full bg-white px-4 py-3">
-      <div className="mx-auto max-w-7xl flex items-center justify-between">
-        <button onClick={() => router.push('/')} className="flex items-center">
-          <AppLogo orientation="horizontal" showText />
-        </button>
-        {user.isAdmin && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => signOut()}
-          >
-            Logout
-          </Button>
-        )}
-      </div>
+        </div>
+      </nav>
     </header>
-  );
-}
-
-export default function AppHeader() {
-  return (
-    <>
-      <MobileHeader />
-      <DesktopNav />
-    </>
   );
 }
