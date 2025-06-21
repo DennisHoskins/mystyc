@@ -1,6 +1,7 @@
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { authTokenManager } from '@/app/api/authTokenManager';
 import { User } from '@/interfaces/user.interface';
+import { logger } from '@/util/logger';
 
 export type ServerUser = 
   | null  // logged out
@@ -15,7 +16,7 @@ export async function getUser(): Promise<ServerUser> {
     const session = await sessionManager.getCurrentSession();
     
     if (!session) {
-      console.log('No session found');
+      logger.log('No session found');
       return null;
     }
 
@@ -34,7 +35,7 @@ export async function getUser(): Promise<ServerUser> {
     });
 
     if (!nestResponse.ok) {
-      console.error('Failed to fetch user from Nest:', nestResponse.status);
+      logger.error('Failed to fetch user from Nest:', nestResponse.status);
       return { user: null, authenticated: true };
     }
 
@@ -42,7 +43,7 @@ export async function getUser(): Promise<ServerUser> {
     
     // Validate user object has required fields
     if (!user || !user.firebaseUser || !user.userProfile) {
-      console.error('Invalid user object returned from Nest');
+      logger.error('Invalid user object returned from Nest');
       return { user: null, authenticated: true };
     }
     
@@ -50,18 +51,18 @@ export async function getUser(): Promise<ServerUser> {
   } catch (err: any) {
     // Handle specific InvalidSessionError
     if (err instanceof InvalidSessionError) {
-      console.log('Session exists but corrupted:', err.message);
+      logger.log('Session exists but corrupted:', err.message);
       return { user: null, authenticated: true };
     }
     
     // If we found a session but got an error, it's corrupted
     if (sessionExists) {
-      console.log('Session exists but corrupted:', err.message);
+      logger.log('Session exists but corrupted:', err.message);
       return { user: null, authenticated: true };
     }
     
     // If no session was found and we got an error, treat as no session
-    console.log('No session found (with error):', err.message);
+    logger.log('No session found (with error):', err.message);
     return null;
   }
 }

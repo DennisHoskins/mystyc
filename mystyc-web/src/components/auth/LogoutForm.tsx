@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAppStore } from '@/store/appStore';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useInitialized, useUser, useClearUser} from '@/components/context/AppContext';
+import { logger } from '@/util/logger';
 
 export default function LogoutPage() {
   const router = useTransitionRouter();
@@ -41,11 +42,7 @@ export default function LogoutPage() {
       return;
     }
 
-    console.log("");
-    console.log("");
-    console.log("LOGOUT");
-    console.log("");
-    console.log("");
+    logger.log("LOGOUT");
 
     signOut()
       .then(() => {
@@ -53,7 +50,7 @@ export default function LogoutPage() {
         showToast("You have been Logged Out", "success");
       })
       .catch((err: any) => {
-        console.error('Logout error:', err);
+        logger.error('Logout error:', err);
       }).finally(() => {
         router.replace('/');
       });

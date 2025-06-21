@@ -11,6 +11,7 @@ import FormLayout from '@/components/form/FormLayout';
 import FormLink from '@/components/form/FormLink';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
+import { logger } from '@/util/logger';
 
 export default function PasswordResetPage() {
   const router = useTransitionRouter();
@@ -32,7 +33,6 @@ export default function PasswordResetPage() {
     setIsReady(true);
   }, [isReady]);
 
-  // redirect when fully initialized and user exists
   useEffect(() => {
     if (initialized && user) {
       router.replace('/');
@@ -51,7 +51,7 @@ export default function PasswordResetPage() {
       setMessage('Check your email for a password reset link.');
       setBusy(false);
     } catch (err: any) {
-      console.error('Password reset error:', err);
+      logger.error('Password reset error:', err);
 
       switch (err.code) {
         case 500:

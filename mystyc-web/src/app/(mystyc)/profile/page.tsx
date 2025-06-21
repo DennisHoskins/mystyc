@@ -8,6 +8,7 @@ import { useBusy } from '@/components/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 // import { formatDateForInput } from '@/util/dateTime';
 //import { errorHandler } from '@/util/errorHandler';
+import { logger } from '@/util/logger';
 
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
@@ -49,7 +50,7 @@ function EditProfilePage() {
 //      await Promise.all([minDelay, update]);
 //      showToast('Profile updated');
     } catch (e) {
-      console.log(e);
+      logger.log(e);
       setError('Failed to update profile. Please try again.');
       // errorHandler.processError(e, {
       //   component: 'EditProfilePage',

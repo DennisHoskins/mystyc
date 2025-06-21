@@ -122,7 +122,7 @@ export function useFirebaseMessaging() {
 
     //   const existing = await navigator.serviceWorker.getRegistration(swPath);
     //   const registration = existing ?? await navigator.serviceWorker.register(swPath);
-    //   console.log('Service‑worker ready:', registration);
+    //   logger.log('Service‑worker ready:', registration);
 
     //   const fcmToken = await getToken(messaging, {
     //     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,

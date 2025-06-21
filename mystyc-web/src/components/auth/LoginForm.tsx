@@ -10,6 +10,7 @@ import FormLink from '@/components/form/FormLink';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
+import { logger } from '@/util/logger';
 
 export default function LoginForm() {
   const user = useUser();
@@ -49,11 +50,7 @@ export default function LoginForm() {
     setError('');
     setBusy(true);
 
-    console.log("");
-    console.log("");
-    console.log("LOGIN");
-    console.log("");
-    console.log("");
+    logger.log("LOGIN");
 
     try {
       const u = await signIn(email, password);

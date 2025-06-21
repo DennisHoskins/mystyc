@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth';
 
 import { initializeApp } from 'firebase/app';
+import { logger } from '@/util/logger';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -27,7 +28,7 @@ export const firebaseAuth = {
       const result = await signInWithEmailAndPassword(auth, email, password);
       return result.user;
     } catch (err: any) {
-      console.error('Firebase signIn error:', err);
+    logger.error('Firebase signIn error:', err);
       throw err;
     }
   },
@@ -37,7 +38,7 @@ export const firebaseAuth = {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       return result.user;
     } catch (err: any) {
-      console.error('Firebase register error:', err);
+    logger.error('Firebase register error:', err);
       throw err;
     }
   },
@@ -46,7 +47,7 @@ export const firebaseAuth = {
     try {
       await sendPasswordResetEmail(auth, email);
     } catch (err: any) {
-      console.error('Firebase resetPassword error:', err);
+    logger.error('Firebase resetPassword error:', err);
       throw err;
     }
   },
@@ -55,7 +56,7 @@ export const firebaseAuth = {
     try {
       await signOut(auth);
     } catch (err: any) {
-      console.error('Firebase signOut error:', err);
+    logger.error('Firebase signOut error:', err);
       throw err;
     }
   },
@@ -64,7 +65,7 @@ export const firebaseAuth = {
     try {
       return await firebaseUser.getIdToken(forceRefresh);
     } catch (err: any) {
-      console.error('Firebase getIdToken error:', err);
+    logger.error('Firebase getIdToken error:', err);
       throw err;
     }
   }

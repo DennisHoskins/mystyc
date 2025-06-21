@@ -11,6 +11,7 @@ import FormLink from '@/components/form/FormLink';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
+import { logger } from '@/util/logger';
 
 export default function RegisterForm() {
   const router = useTransitionRouter();
@@ -60,7 +61,7 @@ export default function RegisterForm() {
       setUser(user);
       // effect will redirect on next render
     } catch (err: any) {
-      console.error('Registration error:', err);
+      logger.error('Registration error:', err);
 
       switch (err.code) {
         case 500:

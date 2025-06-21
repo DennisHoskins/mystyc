@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { firebaseAuth } from '@/app/api/firebaseAuth';
+import { logger } from '@/util/logger';
 
 interface ResetPasswordRequestBody {
   email: string;
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
 
   } catch (error: any) {
-    console.error('Password reset error:', error);
+    logger.error('Password reset error:', error);
 
     // Map Firebase errors like in authTokenManager
     const errorMap: Record<string, { code: number; message: string }> = {
