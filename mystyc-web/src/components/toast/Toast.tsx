@@ -10,35 +10,76 @@ export default function Toast() {
 
   if (toasts.length === 0) return null;
 
+  const icons = {
+    success: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    error: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    info: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    )
+  };
+
+  const colors = {
+    success: {
+      bg: 'bg-gradient-to-r from-emerald-500 to-green-600',
+      icon: 'text-white',
+      text: 'text-white',
+      close: 'text-white/70 hover:text-white'
+    },
+    error: {
+      bg: 'bg-gradient-to-r from-red-500 to-rose-600',
+      icon: 'text-white',
+      text: 'text-white',
+      close: 'text-white/70 hover:text-white'
+    },
+    info: {
+      bg: 'bg-gradient-to-r from-blue-500 to-indigo-600',
+      icon: 'text-white',
+      text: 'text-white',
+      close: 'text-white/70 hover:text-white'
+    }
+  };
+
   return (
-    <div className="fixed top-4 right-4 space-y-2 z-50">
+    <div className="fixed bottom-4 right-4 space-y-3 z-50">
       {toasts.map((toast) => (
         <div
           key={toast.id}
           className={`
             ${styles.animateToastIn}
-            p-4 rounded-lg shadow-lg min-w-80 max-w-md
-            ${toast.type === 'success' ? 'bg-green-50 border border-green-200' : ''}
-            ${toast.type === 'error' ? 'bg-red-50 border border-red-200' : ''}
-            ${toast.type === 'info' ? 'bg-blue-50 border border-blue-200' : ''}
+            ${colors[toast.type].bg}
+            p-4 rounded-xl shadow-2xl min-w-[320px] max-w-md
+            backdrop-blur-sm transform transition-all duration-300
+            hover:scale-[1.02] hover:shadow-3xl
           `}
         >
-          <div className="flex justify-between items-start">
+          <div className="flex items-start gap-3">
+            <div className={`${colors[toast.type].icon} flex-shrink-0 mt-0.5`}>
+              {icons[toast.type]}
+            </div>
             <Text 
               variant="small" 
-              className={`
-                ${toast.type === 'success' ? 'text-green-800' : ''}
-                ${toast.type === 'error' ? 'text-red-800' : ''}
-                ${toast.type === 'info' ? 'text-blue-800' : ''}
-              `}
+              className={`${colors[toast.type].text} flex-1 font-medium`}
             >
               {toast.message}
             </Text>
             <button
               onClick={() => hideToast(toast.id)}
-              className="ml-2 text-gray-400 hover:text-gray-600"
+              className={`${colors[toast.type].close} flex-shrink-0 transition-colors duration-200`}
+              aria-label="Close notification"
             >
-              ×
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
