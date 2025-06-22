@@ -5,8 +5,32 @@ import { generateDeviceId } from '../keyManager';
 /**
  * Extract device fingerprint from request headers and TLS data
  */
-export function extractDeviceFingerprint(request: NextRequest | Headers): string {
+export function extractDeviceFingerprint(request: NextRequest): string {
 
+  /*
+  // unify header access
+
+  // 1) composite header set by Apache
+  const composite = getH('x-device-fingerprint');
+  if (composite) return composite;
+
+  // 2) persistent cookie fallback (NextRequest.cookies if available)
+  if ('cookies' in request) {
+    const ck = request.cookies.get('fingerprint_id')?.value;
+    if (ck) return ck;
+  } else {
+    // Headers-only fallback: parse Cookie header
+    const cookieHeader = getH('cookie');
+    const match = cookieHeader.match(/(?:^|;\s*)fingerprint_id=([^;]+)/);
+    if (match) return match[1];
+  }
+
+  // 3) last-resort: UA + accept-language
+  const ua = normalizeUserAgent(getH('user-agent') || 'unknown');
+  const lang = getH('accept-language');
+  return [ua, lang].filter(Boolean).join('|');
+  */
+ 
   // Handle both NextRequest (has .headers property) and Headers (is headers directly)
   const headers = 'headers' in request ? request.headers : request;
 

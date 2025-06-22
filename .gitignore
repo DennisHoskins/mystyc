@@ -77,5 +77,8 @@
 # Firebase
 **/FirebaseServiceAccountKey.json
 
+# Redis
+**/redis.conf
+
 # Generated files
 mystyc-client/public/sw-env.js
