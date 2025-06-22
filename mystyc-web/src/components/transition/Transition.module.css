@@ -1,5 +1,5 @@
 .transitionWrapper {
-  --transition-duration-state: 0.1s;
+  --transition-duration-state: 0.25s;
   --transition-duration-page: 0.1s;
   display: flex;
   flex-direction: column;

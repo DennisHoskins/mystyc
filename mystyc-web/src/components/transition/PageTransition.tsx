@@ -7,8 +7,10 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
-import Transition, { TransitionRef } from './Transition';
+
+import { useUser } from '@/components/context/AppContext';
 import { useTransitions } from '@/components/context/TransitionContext';
+import Transition, { TransitionRef } from './Transition';
 import { logger } from '@/util/logger';
 
 export interface PageTransitionRef extends TransitionRef {
@@ -16,23 +18,22 @@ export interface PageTransitionRef extends TransitionRef {
 }
 
 export default function PageTransition({ 
-  pathname, 
   children 
 }: { 
-  pathname: string; 
   children: ReactNode;
 }) {
+  const user = useUser();
   const { pageTransitionRef } = useTransitions();
   const transitionRef = useRef<TransitionRef>(null);
   const [currentChildren, setCurrentChildren] = useState(children);
+  const isFirstRender = useRef(true);
+  const isWebsite = !user;
+  const [displayedIsWebsite, setDisplayedIsWebsite] = useState(isWebsite);
+  const [hidden, setHidden] = useState(false);
   const contentPromiseRef = useRef<{
     resolve: () => void;
     promise: Promise<void>;
   } | null>(null);
-
-  useEffect(() => {
-    logger.log('[PAGE TRANSITION] pathname', pathname);
-  }, [pathname]);
 
   useEffect(() => {
     logger.log('[PAGE TRANSITION] useEffect - children changed?', children !== currentChildren);
@@ -42,9 +43,22 @@ export default function PageTransition({
         contentPromiseRef.current.resolve();
         contentPromiseRef.current = null;
       }
+      setHidden(false);
       setCurrentChildren(children);
     }
   }, [children, currentChildren]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (isWebsite == displayedIsWebsite) {
+      return;
+    }
+    setHidden(!hidden)
+    setDisplayedIsWebsite(isWebsite);
+  }, [hidden, isWebsite, displayedIsWebsite]);
 
   useEffect(() => {
     return () => {
@@ -84,7 +98,7 @@ export default function PageTransition({
 
   return (
     <Transition ref={transitionRef} transition="transition-page">
-      {children}
+      {hidden ? null : children}
     </Transition>
   );
 }
