@@ -5,7 +5,6 @@ import { logger } from '@/util/logger';
 const DEVICE_SESSION_SALT = process.env.DEVICE_SESSION_SALT;
 const COOKIE_ENCRYPTION_KEY = process.env.COOKIE_ENCRYPTION_KEY;
 const SESSION_COOKIE_SEED = process.env.SESSION_COOKIE_SEED;
-const DEVICE_COOKIE_SEED = process.env.DEVICE_COOKIE_SEED;
 
 if (!DEVICE_SESSION_SALT) {
   throw new Error('DEVICE_SESSION_SALT environment variable is required');
@@ -17,10 +16,6 @@ if (!COOKIE_ENCRYPTION_KEY) {
 
 if (!SESSION_COOKIE_SEED) {
   throw new Error('SESSION_COOKIE_SEED environment variable is required');
-}
-
-if (!DEVICE_COOKIE_SEED) {
-  throw new Error('DEVICE_COOKIE_SEED environment variable is required');
 }
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -79,21 +74,6 @@ export function getSessionCookieName(): string {
   hash.update(SESSION_COOKIE_SEED!);
   const cookieName = '_mst_' + hash.digest('hex').substring(0, 8);
   logger.log('[keyManager] Session cookie name:', cookieName);
-  return cookieName;
-}
-
-/**
- * Get device cookie name (readable in dev, obfuscated in prod)
- */
-export function getDeviceCookieName(): string {
-  if (isDev) {
-    return 'deviceId';
-  }
-  
-  const hash = createHash('sha256');
-  hash.update(DEVICE_COOKIE_SEED!);
-  const cookieName = '_mst_' + hash.digest('hex').substring(0, 8);
-  logger.log('[keyManager] Device cookie name:', cookieName);
   return cookieName;
 }
 

@@ -22,6 +22,7 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
   const operation = isRegister ? 'Registration' : 'Login';
   
   try {
+    logger.log(``);
     logger.log(`[authHandler] ${operation} attempt started`);
     
     // Close any existing Firebase Auth sessions to ensure clean state

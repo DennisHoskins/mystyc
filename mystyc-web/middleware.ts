@@ -28,10 +28,8 @@ export async function middleware(request: NextRequest) {
       'https://mystyc.app',
     ];
     
-    if (pathname.startsWith('/api/server') || pathname.startsWith('/(mystyc)')) {
-      if (origin && !allowedOrigins.includes(origin)) {
-        return new Response('Forbidden', { status: 403 });
-      }
+    if (origin && !allowedOrigins.includes(origin)) {
+      return new Response('Forbidden', { status: 403 });
     }
   }
   
@@ -39,5 +37,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/server/:path*', '/(mystyc)/:path*']
+  matcher: ['/api/server/:path*']
 };

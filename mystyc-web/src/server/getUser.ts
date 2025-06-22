@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { authTokenManager } from '@/app/api/authTokenManager';
 import { User } from '@/interfaces/user.interface';
@@ -10,10 +11,17 @@ export type ServerUser =
 
 export async function getUser(): Promise<ServerUser> {
   let sessionExists = false;
-  
+
+  console.log("");
+  console.log("");
+  console.log("GET USER");
+  console.log("");
+  console.log("");
+
   try {
     // Get current session from Redis
-    const session = await sessionManager.getCurrentSession();
+    const headersList = await headers();
+    const session = await sessionManager.getCurrentSession(headersList);
     
     if (!session) {
       logger.log('No session found');
@@ -24,7 +32,10 @@ export async function getUser(): Promise<ServerUser> {
     sessionExists = true;
 
     // Validate the token is still good
-    await authTokenManager.validateToken(session.authToken);
+    const decoded = await authTokenManager.validateAndDecode(session.authToken);
+    if (!decoded) {
+      throw new Error('Invalid auth token');
+    }
 
     // Call Nest to get fresh user data
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`, {

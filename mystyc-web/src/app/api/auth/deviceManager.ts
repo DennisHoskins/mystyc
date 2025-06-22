@@ -5,22 +5,40 @@ import { generateDeviceId } from '../keyManager';
 /**
  * Extract device fingerprint from request headers and TLS data
  */
-export function extractDeviceFingerprint(request: NextRequest): string {
-  const userAgent = request.headers.get('user-agent') || 'unknown';
-  const acceptLanguage = request.headers.get('accept-language') || '';
-  const acceptEncoding = request.headers.get('accept-encoding') || '';
-  
+export function extractDeviceFingerprint(request: NextRequest | Headers): string {
+
+  // Handle both NextRequest (has .headers property) and Headers (is headers directly)
+  const headers = 'headers' in request ? request.headers : request;
+
+  // Determine if this is a Fetch‐style Headers with .get()
+  const isFetchHeaders = typeof (headers as Headers).get === 'function';
+
+  // Cast to unknown first, then to a plain‐object type, to satisfy TS
+  const plainHeaders = headers as unknown as Record<string, string | undefined>;
+
+  const userAgent = isFetchHeaders
+    ? (headers as Headers).get('user-agent') || 'unknown'
+    : plainHeaders['user-agent'] || 'unknown';
+
+  const acceptLanguage = isFetchHeaders
+    ? (headers as Headers).get('accept-language') || ''
+    : plainHeaders['accept-language'] || '';
+
+  const acceptEncoding = isFetchHeaders
+    ? (headers as Headers).get('accept-encoding') || ''
+    : plainHeaders['accept-encoding'] || '';
+
   // TODO: Extract TLS fingerprint data when available
   // For now, use normalized User-Agent as primary identifier
   const normalizedUA = normalizeUserAgent(userAgent);
-  
+
   // Combine stable request characteristics
   const fingerprint = [
     normalizedUA,
     acceptLanguage,
     acceptEncoding,
   ].join('|');
-  
+
   return fingerprint;
 }
 

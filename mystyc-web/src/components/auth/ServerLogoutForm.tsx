@@ -1,14 +1,17 @@
 'use client';
 
+//import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { useRouter } from 'next/navigation';
+
 import { useState, useEffect } from 'react';
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useAppStore } from '@/store/appStore';
 import FormLayout from '@/components/form/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function ServerLogoutForm() {
-  const router = useTransitionRouter();
+  // const router = useTransitionRouter();
+  const router = useRouter();
   const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
   const [isReady, setIsReady] = useState(false);
 
@@ -26,7 +29,8 @@ export default function ServerLogoutForm() {
       return;
     }
     
-    router.replace('/', false);
+    // router.replace('/', false);
+    router.replace('/');
   }, [isReady, isLoggedOutByServer, router]);
 
   const handleClick = () => {

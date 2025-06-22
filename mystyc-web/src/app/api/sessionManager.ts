@@ -1,11 +1,13 @@
 import { createClient } from 'redis';
 import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
+import { extractDeviceFingerprint } from './auth/deviceManager';
 import { 
   getSessionCookieName, 
-  getDeviceCookieName, 
   encryptCookieValue, 
   decryptCookieValue,
-  validateSessionId 
+  validateSessionId,
+  generateDeviceId 
 } from './keyManager';
 import { logger } from '@/util/logger';
 
@@ -54,7 +56,7 @@ export const sessionManager = {
     await redis.set(refreshTokenKey, idTokens.refreshToken);
     logger.log('[sessionManager] Refresh token stored in Redis');
 
-    // Set httpOnly cookies with environment-appropriate names and encryption
+    // Set httpOnly cookie for session only (remove device cookie)
     const cookieStore = await cookies();
 
     cookieStore.set(getSessionCookieName(), encryptCookieValue(sessionId), {
@@ -64,18 +66,11 @@ export const sessionManager = {
       path: '/'
     });
 
-    cookieStore.set(getDeviceCookieName(), encryptCookieValue(deviceId), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/'
-    });
-
-    logger.log('[sessionManager] Session cookies set');
+    logger.log('[sessionManager] Session cookie set');
     return sessionId;
   },
 
-  async getCurrentSession(): Promise<{ 
+  async getCurrentSession(request?: NextRequest | Headers): Promise<{ 
     authToken: string; 
     refreshToken: string; 
     sessionId: string; 
@@ -84,29 +79,38 @@ export const sessionManager = {
   } | null> {
     await ensureConnection();
 
+    logger.log('');
     logger.log('[sessionManager] Getting current session');
 
-    const cookieStore = await cookies();
-    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
-    const encryptedDeviceId = cookieStore.get(getDeviceCookieName())?.value;
-
-    if (!encryptedSessionId || !encryptedDeviceId) {
-      logger.log('[sessionManager] No session cookies found');
+    // Calculate deviceId from request
+    if (!request) {
+      logger.error('[sessionManager] No request provided for device calculation');
       return null;
     }
 
-    // Decrypt the cookie values
-    const sessionId = decryptCookieValue(encryptedSessionId);
-    const deviceId = decryptCookieValue(encryptedDeviceId);
+    const fingerprint = extractDeviceFingerprint(request);
+    const deviceId = generateDeviceId(fingerprint);
+    logger.log('[sessionManager] Calculated device ID:', deviceId.substring(0, 8));
 
-    if (!sessionId || !deviceId) {
-      logger.error('[sessionManager] Failed to decrypt cookies');
+    const cookieStore = await cookies();
+    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
+
+    if (!encryptedSessionId) {
+      logger.log('[sessionManager] No session cookie found');
+      return null;
+    }
+
+    // Decrypt the session cookie value
+    const sessionId = decryptCookieValue(encryptedSessionId);
+
+    if (!sessionId) {
+      logger.error('[sessionManager] Failed to decrypt session cookie');
       throw new InvalidSessionError('cookie decryption failed');
     }
 
     logger.log('[sessionManager] Session ID:', sessionId.substring(0, 8), 'Device ID:', deviceId.substring(0, 8));
 
-    // Get the auth token for this session
+    // Get the auth token for this session with calculated deviceId
     const patternAuth = `mystyc::${sessionId}::${deviceId}::*::tokenAuth`;
     const keysAuth = await redis.keys(patternAuth);
 
@@ -181,7 +185,7 @@ export const sessionManager = {
     const cookieKeySession = getSessionCookieName();
     const encryptedSessionId = cookieStore.get(cookieKeySession)?.value;
 
-    logger.log('[sessionManager] Clearing session', cookieKeySession);
+    logger.log('[sessionManager] Clearing session', cookieKeySession, encryptedSessionId);
 
     if (encryptedSessionId) {
       const sessionId = decryptCookieValue(encryptedSessionId);
@@ -194,10 +198,6 @@ export const sessionManager = {
     }
     cookieStore.delete(cookieKeySession);
 
-    const cookieKeyDevice = getDeviceCookieName();
-    logger.log('[sessionManager] Clearing device', cookieKeyDevice);
-    cookieStore.delete(cookieKeyDevice);
-
-    logger.log('[sessionManager] Session cookies cleared');
+    logger.log('[sessionManager] Session cookie cleared');
   }
 };
