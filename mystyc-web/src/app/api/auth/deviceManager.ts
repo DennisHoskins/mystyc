@@ -1,69 +1,43 @@
 import { NextRequest } from 'next/server';
+import { createHash } from 'crypto';
 import { Device } from '@/interfaces/device.interface';
 import { generateDeviceId } from '../keyManager';
 
 /**
  * Extract device fingerprint from request headers and TLS data
  */
-export function extractDeviceFingerprint(request: NextRequest): string {
+export function extractDeviceFingerprint(request: NextRequest | Headers): string {
+  // Normalize to always work with Headers object
+  const headers = request instanceof Headers 
+    ? request 
+    : (request as NextRequest).headers;
 
-  /*
-  // unify header access
+  // Check for TLS fingerprint from Apache (production)
+  const tlsFingerprint = headers.get('x-tls-fingerprint');
 
-  // 1) composite header set by Apache
-  const composite = getH('x-device-fingerprint');
-  if (composite) return composite;
-
-  // 2) persistent cookie fallback (NextRequest.cookies if available)
-  if ('cookies' in request) {
-    const ck = request.cookies.get('fingerprint_id')?.value;
-    if (ck) return ck;
-  } else {
-    // Headers-only fallback: parse Cookie header
-    const cookieHeader = getH('cookie');
-    const match = cookieHeader.match(/(?:^|;\s*)fingerprint_id=([^;]+)/);
-    if (match) return match[1];
+  if (tlsFingerprint) {
+    // Production: Use TLS fingerprint from Apache
+    return tlsFingerprint;
   }
 
-  // 3) last-resort: UA + accept-language
-  const ua = normalizeUserAgent(getH('user-agent') || 'unknown');
-  const lang = getH('accept-language');
-  return [ua, lang].filter(Boolean).join('|');
-  */
- 
-  // Handle both NextRequest (has .headers property) and Headers (is headers directly)
-  const headers = 'headers' in request ? request.headers : request;
-
-  // Determine if this is a Fetch‐style Headers with .get()
-  const isFetchHeaders = typeof (headers as Headers).get === 'function';
-
-  // Cast to unknown first, then to a plain‐object type, to satisfy TS
-  const plainHeaders = headers as unknown as Record<string, string | undefined>;
-
-  const userAgent = isFetchHeaders
-    ? (headers as Headers).get('user-agent') || 'unknown'
-    : plainHeaders['user-agent'] || 'unknown';
-
-  const acceptLanguage = isFetchHeaders
-    ? (headers as Headers).get('accept-language') || ''
-    : plainHeaders['accept-language'] || '';
-
-  const acceptEncoding = isFetchHeaders
-    ? (headers as Headers).get('accept-encoding') || ''
-    : plainHeaders['accept-encoding'] || '';
-
-  // TODO: Extract TLS fingerprint data when available
-  // For now, use normalized User-Agent as primary identifier
+  // Development: Use UA-based fingerprint with dev- prefix
+  const userAgent = headers.get('user-agent') || 'unknown';
+  const acceptLanguage = headers.get('accept-language') || '';
+  const acceptEncoding = headers.get('accept-encoding') || '';
   const normalizedUA = normalizeUserAgent(userAgent);
 
-  // Combine stable request characteristics
   const fingerprint = [
     normalizedUA,
     acceptLanguage,
     acceptEncoding,
   ].join('|');
 
-  return fingerprint;
+  // Hash it to get consistent length
+  const hash = createHash('sha256');
+  hash.update(fingerprint);
+  const hashedFingerprint = hash.digest('hex');
+
+  return 'dev-' + hashedFingerprint;
 }
 
 /**

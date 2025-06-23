@@ -27,6 +27,14 @@ const ENCRYPTION_KEY = createHash('sha256').update(COOKIE_ENCRYPTION_KEY!).diges
  * Generate a deterministic device ID from a device fingerprint
  */
 export function generateDeviceId(fingerprint: string): string {
+  // Check if it has dev- prefix
+  if (fingerprint.startsWith('dev-')) {
+    // Already has prefix, just return as-is
+    logger.log('[keyManager] Dev device ID:', fingerprint.substring(0, 12));
+    return fingerprint;
+  }
+
+  // Production: hash the fingerprint
   const hash = createHash('sha256');
   hash.update(fingerprint + DEVICE_SESSION_SALT);
   const deviceId = hash.digest('hex');
