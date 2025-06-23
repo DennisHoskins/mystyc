@@ -36,8 +36,8 @@ export function extractDeviceFingerprint(request: NextRequest | Headers): string
   const hash = createHash('sha256');
   hash.update(fingerprint);
   const hashedFingerprint = hash.digest('hex');
-
-  return 'dev-' + hashedFingerprint;
+  const hex = hashedFingerprint.substring(0, 59);
+  return `dev-${hex}`;  
 }
 
 /**
