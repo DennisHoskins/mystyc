@@ -13,6 +13,14 @@ import { logger } from '@/util/logger';
 
 import { IdTokens } from './authTokenManager';
 
+export interface Session {
+  authToken: string; 
+  refreshToken: string; 
+  sessionId: string; 
+  deviceId: string; 
+  uid: string 
+}  
+
 // custom error for any tampered / out-of-sync session
 export class InvalidSessionError extends Error {
   constructor(message: string) {
@@ -70,13 +78,7 @@ export const sessionManager = {
     return sessionId;
   },
 
-  async getCurrentSession(request?: NextRequest | Headers): Promise<{ 
-    authToken: string; 
-    refreshToken: string; 
-    sessionId: string; 
-    deviceId: string; 
-    uid: string 
-  } | null> {
+  async getCurrentSession(request?: NextRequest | Headers): Promise<Session | null> {
     await ensureConnection();
 
     logger.log('');

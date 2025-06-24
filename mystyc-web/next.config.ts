@@ -1,6 +1,6 @@
 const nextConfig = {
  reactStrictMode: false,
- allowedDevOrigins: ['mystyc.app', 'www.mystyc.app', 'mystyc-client.loca.lt'],
+ allowedDevOrigins: ['mystyc.app', '127.0.0.1:3000'],
  async redirects() {
    return [
      {

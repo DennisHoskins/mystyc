@@ -22,7 +22,6 @@ export async function getUser(): Promise<ServerUser> {
     // Get current session from Redis
     const headersList = await headers();
     const session = await sessionManager.getCurrentSession(headersList);
-    
     if (!session) {
       logger.log('No session found');
       return null;
@@ -32,16 +31,22 @@ export async function getUser(): Promise<ServerUser> {
     sessionExists = true;
 
     // Validate the token is still good
-    const decoded = await authTokenManager.validateAndDecode(session.authToken);
-    if (!decoded) {
+    const result = await authTokenManager.validateAndDecode(session);
+    if (!result) {
       throw new Error('Invalid auth token');
+    }
+
+    const { decoded, session: currentSession } = result;    
+    if (!decoded || !currentSession) {
+      logger.log('Fresh session not found');
+      return null;
     }
 
     // Call Nest to get fresh user data
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`, {
       method: 'GET',
       headers: {
-        'Authorization': authTokenManager.createAuthHeader(session.authToken),
+        'Authorization': authTokenManager.createAuthHeader(currentSession.authToken),
       },
     });
 
