@@ -8,8 +8,12 @@ import { NextRequest, NextResponse } from 'next/server';
 // });
 
 export async function middleware(request: NextRequest) {
-  const host = request.headers.get('host') || '';
+  console.log("");
+  console.log("[Middleware]");
+  console.log("[Middleware] Path:", request.nextUrl.pathname);
+  console.log("[Middleware]");
 
+  const host = request.headers.get('host') || '';
   if (process.env.NODE_ENV === 'production') {
     if (host !== 'mystyc.app' && host !== '127.0.0.1:3000') {
       return new NextResponse('Forbidden', { status: 403 });
@@ -38,3 +42,5 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
+
+
