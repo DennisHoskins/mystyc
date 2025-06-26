@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import Overlay from '@/components/overlay/Overlay';
+import Overlay from '@/components/ui/overlay/Overlay';
 import styles from './Modal.module.css';
 
 interface ModalProps {

@@ -6,14 +6,14 @@ import { useEffect } from 'react';
 import { useAppStore } from '@/store/appStore';
 import { useUser, useClearUser, useAuthenticated } from '@/components/layout/context/AppContext';
 import { TransitionProvider } from '@/components/layout/context/TransitionContext';
-import StateTransition from '@/components/transition/StateTransition';
+import StateTransition from '@/components/layout/transition/StateTransition';
 import WebsiteHeader from '@/components/app/website/WebsiteHeader';
 import AppHeader from '@/components/app/mystyc/MystycHeader';
-import PageTransition from '@/components/transition/PageTransition';
+import PageTransition from '@/components/layout/transition/PageTransition';
 import Main from '@/components/layout/Main';
 import WebsiteFooter from '@/components/app/website/WebsiteFooter';
 import AppFooter from '@/components/app/mystyc/MystycFooter';
-import Modal from '@/components/modal/Modal';
+import Modal from '@/components/ui/modal/Modal';
 import ServerLogoutForm from '@/components/app/auth/ServerLogoutForm';
 import { logger } from '@/util/logger';
 

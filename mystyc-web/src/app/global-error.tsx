@@ -3,7 +3,7 @@
 import '@/styles/globals.css';
 
 import AppContext from '@/components/layout/context/AppContext';
-import GlobalError from '@/components/GlobalError';
+import GlobalError from '@/components/layout/GlobalError';
 
 export default function GlobalErrorPage() {
   return (

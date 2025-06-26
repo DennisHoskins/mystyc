@@ -8,10 +8,10 @@ import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
 
 import Layout from '@/components/layout/Layout';
-import GlobalError from '@/components/GlobalError';
-import Offline from '@/components/Offline';
-import Working from '@/components/working/Working';
-import Toast from '@/components/toast/Toast';
+import GlobalError from '@/components/layout/GlobalError';
+import Offline from '@/components/layout/Offline';
+import Working from '@/components/ui/working/Working';
+import Toast from '@/components/ui/toast/Toast';
 
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
 

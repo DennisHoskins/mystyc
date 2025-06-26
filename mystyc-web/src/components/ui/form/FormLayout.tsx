@@ -1,6 +1,6 @@
 'use client';
 
-import AppLogo from '@/components/AppLogo';
+import AppLogo from '@/components/ui/AppLogo';
 import FormError from './FormError';
 import FormSuccess from './FormSuccess';
 

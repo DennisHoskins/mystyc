@@ -1,35 +1,22 @@
-'use client';
-
-import React from 'react';
-import clsx from 'clsx';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 
 interface PanelProps {
-  children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'success' | 'info' | 'warning' | 'danger';
-  className?: string;
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
 }
 
-export default function Panel({ 
-  children, 
-  variant = 'default', 
-  className 
-}: PanelProps) {
-  const variants = {
-    default: 'bg-white border-gray-200',
-    primary: 'bg-blue-50 border-blue-200',
-    success: 'bg-green-50 border-green-200', 
-    info: 'bg-purple-50 border-purple-200',
-    warning: 'bg-yellow-50 border-yellow-200',
-    danger: 'bg-red-50 border-red-200',
-  };
-
+export default function Panel({ title, description, icon }: PanelProps) {
   return (
-    <div className={clsx(
-      'rounded-lg border p-6',
-      variants[variant],
-      className
-    )}>
-      {children}
+    <div className="border rounded-lg p-6 shadow-sm">
+      {icon && <div className="mb-4">{icon}</div>}
+      <Heading level={3} className="mb-2">
+        {title}
+      </Heading>
+      <Text>
+        {description}
+      </Text>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/appStore';
-import Overlay from '@/components/overlay/Overlay';
+import Overlay from '@/components/ui/overlay/Overlay';
 import IconEye from '@/components/ui/icons/IconEye';
 import styles from './Working.module.css';
 

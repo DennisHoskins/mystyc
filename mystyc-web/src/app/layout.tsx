@@ -5,7 +5,7 @@ import '@/styles/globals.css';
 import { getUser } from '@/server/getUser';
 import { createUserStore } from '@/store/userStore'
 import AppContext from '@/components/layout/context/AppContext';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
 
 export const dynamic = 'force-dynamic';
 
