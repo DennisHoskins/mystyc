@@ -2,7 +2,7 @@
 
 import '@/styles/globals.css';
 
-import AppContext from '@/components/context/AppContext';
+import AppContext from '@/components/layout/context/AppContext';
 import GlobalError from '@/components/GlobalError';
 
 export default function GlobalErrorPage() {

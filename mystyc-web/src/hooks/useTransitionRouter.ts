@@ -1,9 +1,8 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useBusy } from '@/components/context/AppContext';
-import { useTransitions } from '@/components/context/TransitionContext';
-import { useUser } from '@/components/context/AppContext';
+import { useBusy, useUser } from '@/components/layout/context/AppContext';
+import { useTransitions } from '@/components/layout/context/TransitionContext';
 import { logger } from '@/util/logger';
 import { useRef } from 'react';
 

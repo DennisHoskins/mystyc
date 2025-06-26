@@ -9,7 +9,7 @@
 // import Button from '@/components/ui/Button';
 
 // export default function OnboardingIntro({ onNext }: { onNext: () => void }) {
-export default function OnboardingIntro() {
+export default function WelcomeIntro() {
   // const { app } = useApp();
 
   // const handleContinue = () => {

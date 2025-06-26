@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/appStore';
-import FormLayout from '@/components/form/FormLayout';
+import FormLayout from '@/components/ui/form/FormLayout';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 

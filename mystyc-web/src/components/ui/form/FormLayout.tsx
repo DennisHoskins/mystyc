@@ -1,8 +1,8 @@
 'use client';
 
 import AppLogo from '@/components/AppLogo';
-import FormError from '@/components/form/FormError';
-import FormSuccess from '@/components/form/FormSuccess';
+import FormError from './FormError';
+import FormSuccess from './FormSuccess';
 
 type FormLayoutProps = {
   subtitle?: string;

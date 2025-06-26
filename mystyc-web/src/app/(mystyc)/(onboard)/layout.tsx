@@ -13,12 +13,12 @@ export default function MystycLayout({
   const router = useTransitionRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !user.isOnboard) {
       router.replace('/', false);
     }
   }, [user, router]);
 
-  if (!user) {
+  if (!user || !user.isOnboard) {
     return null;
   }
 

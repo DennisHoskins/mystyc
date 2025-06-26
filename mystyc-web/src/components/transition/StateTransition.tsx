@@ -7,7 +7,7 @@ import {
   ReactNode,
 } from 'react';
 
-import { useUser } from '@/components/context/AppContext';
+import { useUser } from '@/components/layout/context/AppContext';
 import Transition, { TransitionRef } from './Transition';
 import { logger } from '@/util/logger';
 

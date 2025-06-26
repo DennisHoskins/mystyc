@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useUser } from '@/components/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-export default function MystycLayout({
+export default function MystycAdminLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -13,12 +13,12 @@ export default function MystycLayout({
   const router = useTransitionRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !user.isAdmin) {
       router.replace('/', false);
     }
   }, [user, router]);
 
-  if (!user) {
+  if (!user || !user.isAdmin) {
     return null;
   }
 

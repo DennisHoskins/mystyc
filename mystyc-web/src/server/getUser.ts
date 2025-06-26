@@ -12,18 +12,13 @@ export type ServerUser =
 export async function getUser(): Promise<ServerUser> {
   let sessionExists = false;
 
-  console.log("");
-  console.log("");
-  console.log("GET USER");
-  console.log("");
-  console.log("");
-
   try {
-    // Get current session from Redis
+    console.log('[GET USER]');
     const headersList = await headers();
+    // Get current session from Redis
     const session = await sessionManager.getCurrentSession(headersList);
     if (!session) {
-      logger.log('No session found');
+      logger.log('[GET USER] No session found');
       return null;
     }
 
@@ -38,7 +33,7 @@ export async function getUser(): Promise<ServerUser> {
 
     const { decoded, session: currentSession } = result;    
     if (!decoded || !currentSession) {
-      logger.log('Fresh session not found');
+      logger.log('[GET USER] Fresh session not found');
       return null;
     }
 
@@ -51,7 +46,7 @@ export async function getUser(): Promise<ServerUser> {
     });
 
     if (!nestResponse.ok) {
-      logger.error('Failed to fetch user from Nest:', nestResponse.status);
+      logger.error('[GET USER] Failed to fetch user from Nest:', nestResponse.status);
       return { user: null, authenticated: true };
     }
 
@@ -59,7 +54,7 @@ export async function getUser(): Promise<ServerUser> {
     
     // Validate user object has required fields
     if (!user || !user.firebaseUser || !user.userProfile) {
-      logger.error('Invalid user object returned from Nest');
+      logger.error('[GET USER] Invalid user object returned from Nest');
       return { user: null, authenticated: true };
     }
     
@@ -67,18 +62,18 @@ export async function getUser(): Promise<ServerUser> {
   } catch (err: any) {
     // Handle specific InvalidSessionError
     if (err instanceof InvalidSessionError) {
-      logger.log('Session exists but corrupted:', err.message);
+      logger.log('[GET USER] Session exists but corrupted:', err.message);
       return { user: null, authenticated: true };
     }
     
     // If we found a session but got an error, it's corrupted
     if (sessionExists) {
-      logger.log('Session exists but corrupted:', err.message);
+      logger.log('[GET USER] Session exists but corrupted:', err.message);
       return { user: null, authenticated: true };
     }
     
     // If no session was found and we got an error, treat as no session
-    logger.log('No session found (with error):', err.message);
+    logger.log('[GET USER] No session found (with error):', err.message);
     return null;
   }
 }

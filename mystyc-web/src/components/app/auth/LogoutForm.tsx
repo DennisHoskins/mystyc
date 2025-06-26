@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAppStore } from '@/store/appStore';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useInitialized, useUser, useClearUser, useBusy } from '@/components/context/AppContext';
+import { useInitialized, useUser, useClearUser, useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
 
 export default function LogoutPage() {
@@ -14,7 +14,7 @@ export default function LogoutPage() {
   const clearUser = useClearUser();
   const { setBusy } = useBusy();
   const { signOut } = useAuth();
-  const { showToast } = useAppStore();
+  const { clearFcmToken, showToast } = useAppStore();
 
   const [isReady, setIsReady] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
@@ -47,6 +47,8 @@ export default function LogoutPage() {
 
     logger.log("LOGOUT");
 
+    clearFcmToken();
+
     signOut()
       .then(() => {
         clearUser();
@@ -57,7 +59,7 @@ export default function LogoutPage() {
       }).finally(() => {
         router.replace('/', false);
       });
-  }, [user, isReady, isBusy, setBusy, clearUser, signOut, isLogout, showToast, router]);
+  }, [user, isReady, isBusy, setBusy, clearUser, clearFcmToken, signOut, isLogout, showToast, router]);
 
   return null;
 }

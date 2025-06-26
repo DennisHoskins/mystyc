@@ -3,63 +3,74 @@
 import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useUser, useInitialized, useBusy } from '@/components/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { useInitialized, useUser, useSetUser, useBusy } from '@/components/layout/context/AppContext';
 
+import FormLayout from '@/components/ui/form/FormLayout';
+import FormLink from '@/components/ui/form/FormLink';
 import Form from '@/components/ui/form/Form';
-import FormLayout from '@/components/form/FormLayout';
-import FormLink from '@/components/form/FormLink';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import { logger } from '@/util/logger';
 
-export default function PasswordResetPage() {
+export default function RegisterForm() {
   const router = useTransitionRouter();
   const user = useUser();
+  const setUser = useSetUser();
   const initialized = useInitialized();
   const { setBusy } = useBusy();
-  const { resetPassword } = useAuth();
+  const { register } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
   const [isWorking, setIsWorking] = useState(false);
+  const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   // mount guard
   useEffect(() => {
+    if (!initialized) {
+      return;
+    }
     if (isReady) {
       return;
     }
     setIsReady(true);
-  }, [isReady]);
+    setIsRegister(user == null)
+  }, [initialized, isReady, isRegister, user]);
 
+  // redirect when fully initialized and user exists
   useEffect(() => {
     if (initialized && user) {
-      router.replace('/');
+      router.replace('/', !isRegister);
     }
-  }, [initialized, user, router]);
+  }, [initialized, user, isRegister, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setMessage('');
     setBusy(500);
     setIsWorking(true);
 
+    logger.log("REGISTER");
+
     try {
-      await resetPassword(email);
-      setMessage('Check your email for a password reset link.');
-      setBusy(false);
+      const user = await register(email, password);
+      if (!user) {
+        throw new Error('Register failed: no user returned');
+      }
+
+      setUser(user);
     } catch (err: any) {
-      logger.error('Password reset error:', err);
+      logger.error('Registration error:', err);
 
       switch (err.code) {
         case 500:
           setError('Server error. Please try again.');
           break;
         default:
-          setError('Password reset failed. Please try again.');
+          setError('Registration failed. Please try again.');
       }
 
       setBusy(false);
@@ -74,9 +85,8 @@ export default function PasswordResetPage() {
 
   return (
     <FormLayout
-      subtitle="Reset your password"
+      subtitle="Create an account to begin your journey..."
       error={error}
-      success={message}
     >
       <Form onSubmit={handleSubmit}>
         <TextInput
@@ -89,22 +99,32 @@ export default function PasswordResetPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+        <TextInput
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
         <Button
           type="submit"
           loading={isWorking}
-          loadingContent="Sending Reset Email..."
+          loadingContent="Creating Account..."
           className="w-full"
         >
-          Send Reset Email
+          Create Account
         </Button>
 
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            Remember your password? <FormLink href="/login">Sign In</FormLink>
+            Already have an account? <FormLink href="/login">Sign In</FormLink>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
+            <FormLink href="/password-reset">Forgot your password?</FormLink>
           </span>
         </p>
       </Form>

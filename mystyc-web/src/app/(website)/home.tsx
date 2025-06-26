@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useUser,useBusy } from '@/components/context/AppContext';
+import { useUser,useBusy } from '@/components/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';

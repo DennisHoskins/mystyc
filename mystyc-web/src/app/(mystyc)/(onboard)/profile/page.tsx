@@ -3,7 +3,7 @@
 // import { useEffect, useState, useCallback } from 'react';
 import { useState, useCallback } from 'react';
 
-import { useBusy } from '@/components/context/AppContext';
+import { useBusy } from '@/components/layout/context/AppContext';
 //import { useToast } from '@/hooks/useToast';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 // import { formatDateForInput } from '@/util/dateTime';
@@ -13,7 +13,7 @@ import { logger } from '@/util/logger';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import FormLabel from '@/components/ui/form/FormLabel';
-import FormError from '@/components/form/FormError';
+import FormError from '@/components/ui/form/FormError';
 import Heading from '@/components/ui/Heading';
 
 function EditProfilePage() {

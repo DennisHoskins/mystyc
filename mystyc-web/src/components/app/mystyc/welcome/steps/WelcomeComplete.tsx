@@ -10,7 +10,7 @@
 // import Button from '@/components/ui/Button';
 // import FormError from '@/components/form/FormError';
 
-export default function OnboardingComplete() {
+export default function WelcomeComplete() {
   // const router = useTransitionRouter();
   // // const { updateOnboardingProfile } = useAuth();
   // const [loading, setLoading] = useState(false);

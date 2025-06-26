@@ -8,7 +8,7 @@ export default function WebsiteHeader() {
   const router = useTransitionRouter();
 
   return (
-    <header className="hidden md:flex w-full bg-white px-4 py-3">
+    <header className="flex w-full bg-white px-4 py-3">
       <nav className="flex w-full items-center">
         <button onClick={() => router.push('/')} className="flex items-center">
           <AppLogo orientation="horizontal" showText />

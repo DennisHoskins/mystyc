@@ -17,7 +17,7 @@
 // }
 
 // export default function OnboardingName({ onNext }: OnboardingNameProps) {
-export default function OnboardingName() {
+export default function WelcomeName() {
   // // const { updateOnboardingProfile } = useAuth();
   // const { app } = useApp();
   // const [name, setName] = useState('');

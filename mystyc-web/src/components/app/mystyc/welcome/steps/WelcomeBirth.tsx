@@ -17,7 +17,7 @@
 // }
 
 // export default function OnboardingBirth({ onNext, onBack }: OnboardingBirthProps) {
-export default function OnboardingBirth() {
+export default function WelcomeBirth() {
 //  const { updateOnboardingProfile } = useAuth();
 //   const { app } = useApp();
 //   const [dateOfBirth, setDateOfBirth] = useState('');

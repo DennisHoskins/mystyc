@@ -8,8 +8,8 @@ import {
   ReactNode,
 } from 'react';
 
-import { useUser } from '@/components/context/AppContext';
-import { useTransitions } from '@/components/context/TransitionContext';
+import { useUser } from '@/components/layout/context/AppContext';
+import { useTransitions } from '@/components/layout/context/TransitionContext';
 import Transition, { TransitionRef } from './Transition';
 import { logger } from '@/util/logger';
 

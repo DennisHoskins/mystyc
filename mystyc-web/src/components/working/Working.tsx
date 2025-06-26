@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/appStore';
 import Overlay from '@/components/overlay/Overlay';
-import IconEye from '@/components/icons/IconEye';
+import IconEye from '@/components/ui/icons/IconEye';
 import styles from './Working.module.css';
 
 export default function Working() {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useUser, useBusy, useAuthenticated } from '@/components/context/AppContext';
+import { useUser, useBusy, useAuthenticated } from '@/components/layout/context/AppContext';
 import Mystyc from './(mystyc)/mystyc';
 import Home from './(website)/home';
 

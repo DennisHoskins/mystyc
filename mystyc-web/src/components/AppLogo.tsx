@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import IconEye from '@/components/icons/IconEye';
+import IconEye from '@/components/ui/icons/IconEye';
 
 type AppLogoProps = {
   orientation?: 'vertical' | 'horizontal';

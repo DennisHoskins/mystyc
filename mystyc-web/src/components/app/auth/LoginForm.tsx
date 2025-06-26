@@ -1,29 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
 import { useAuth } from '@/hooks/useAuth';
+import { useInitialized, useUser, useSetUser, useBusy } from '@/components/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useInitialized, useUser, useSetUser, useBusy } from '@/components/context/AppContext';
 
-import FormLayout from '@/components/form/FormLayout';
-import FormLink from '@/components/form/FormLink';
+import FormLayout from '@/components/ui/form/FormLayout';
+import FormLink from '@/components/ui/form/FormLink';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import { logger } from '@/util/logger';
 
-export default function RegisterForm() {
-  const router = useTransitionRouter();
+export default function LoginForm() {
   const user = useUser();
   const setUser = useSetUser();
   const initialized = useInitialized();
+  const router = useTransitionRouter();
   const { setBusy } = useBusy();
-  const { register } = useAuth();
+  const { signIn } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
   const [isWorking, setIsWorking] = useState(false);
-  const [isRegister, setIsRegister] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -37,15 +36,15 @@ export default function RegisterForm() {
       return;
     }
     setIsReady(true);
-    setIsRegister(user == null)
-  }, [initialized, isReady, isRegister, user]);
+    setIsLogin(user == null)
+  }, [initialized, isReady, isLogin, user]);
 
-  // redirect when fully initialized and user exists
+  // Redirect when fully initialized and user exists
   useEffect(() => {
     if (initialized && user) {
-      router.replace('/', !isRegister);
+      router.replace('/', !isLogin);
     }
-  }, [initialized, user, isRegister, router]);
+  }, [initialized, user, isLogin, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,26 +52,19 @@ export default function RegisterForm() {
     setBusy(500);
     setIsWorking(true);
 
-    logger.log("REGISTER");
+    logger.log("LOGIN");
 
     try {
-      const user = await register(email, password);
-      if (!user) {
-        throw new Error('Register failed: no user returned');
-      }
+      const u = await signIn(email, password);
+      if (!u) throw new Error('no user returned');
 
-      setUser(user);
+      setUser(u);
     } catch (err: any) {
-      logger.error('Registration error:', err);
-
-      switch (err.code) {
-        case 500:
-          setError('Server error. Please try again.');
-          break;
-        default:
-          setError('Registration failed. Please try again.');
-      }
-
+      setError(
+        err.code === 500
+          ? 'Server error. Please try again.'
+          : 'Login failed. Please try again.'
+      );
       setBusy(false);
       setIsWorking(false);
     }
@@ -84,10 +76,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <FormLayout
-      subtitle="Create an account to begin your journey..."
-      error={error}
-    >
+    <FormLayout subtitle="Sign in to continue your journey..." error={error}>
       <Form onSubmit={handleSubmit}>
         <TextInput
           id="email"
@@ -96,35 +85,33 @@ export default function RegisterForm() {
           autoComplete="email"
           placeholder="Email address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           required
         />
         <TextInput
           id="password"
           name="password"
           type="password"
-          autoComplete="new-password"
+          autoComplete="current-password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           required
         />
-
         <Button
           type="submit"
           loading={isWorking}
-          loadingContent="Creating Account..."
+          loadingContent="Signing In..."
           className="w-full"
         >
-          Create Account
+          Sign In
         </Button>
-
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            Already have an account? <FormLink href="/login">Sign In</FormLink>
+            <FormLink href="/password-reset">Forgot your password?</FormLink>
           </span>
           <span className="block mt-1">
-            <FormLink href="/password-reset">Forgot your password?</FormLink>
+            Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
           </span>
         </p>
       </Form>

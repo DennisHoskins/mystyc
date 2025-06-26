@@ -9,7 +9,7 @@ import {
   ReactNode 
 } from 'react';
 
-import { PageTransitionRef } from '../transition/PageTransition';
+import { PageTransitionRef } from '@/components/transition/PageTransition';
 
 interface TransitionContextType {
   pageTransitionRef: RefObject<PageTransitionRef | null>;

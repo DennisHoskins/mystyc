@@ -4,17 +4,17 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { useAppStore } from '@/store/appStore';
-import { useUser, useClearUser, useAuthenticated } from '@/components/context/AppContext';
-import { TransitionProvider } from '@/components/context/TransitionContext';
+import { useUser, useClearUser, useAuthenticated } from '@/components/layout/context/AppContext';
+import { TransitionProvider } from '@/components/layout/context/TransitionContext';
 import StateTransition from '@/components/transition/StateTransition';
-import WebsiteHeader from './header/WebsiteHeader';
-import AppHeader from './header/AppHeader';
+import WebsiteHeader from '@/components/app/website/WebsiteHeader';
+import AppHeader from '@/components/app/mystyc/MystycHeader';
 import PageTransition from '@/components/transition/PageTransition';
-import Main from '@/components/Main';
-import WebsiteFooter from './footer/WebsiteFooter';
-import AppFooter from './footer/AppFooter';
+import Main from '@/components/layout/Main';
+import WebsiteFooter from '@/components/app/website/WebsiteFooter';
+import AppFooter from '@/components/app/mystyc/MystycFooter';
 import Modal from '@/components/modal/Modal';
-import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
+import ServerLogoutForm from '@/components/app/auth/ServerLogoutForm';
 import { logger } from '@/util/logger';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

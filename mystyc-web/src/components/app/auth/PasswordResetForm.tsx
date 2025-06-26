@@ -1,70 +1,67 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import { useAuth } from '@/hooks/useAuth';
-import { useInitialized, useUser, useSetUser, useBusy } from '@/components/layout/context/AppContext';
+import { useUser, useInitialized, useBusy } from '@/components/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
+import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/ui/form/FormLayout';
 import FormLink from '@/components/ui/form/FormLink';
-import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import { logger } from '@/util/logger';
 
-export default function LoginForm() {
-  const user = useUser();
-  const setUser = useSetUser();
-  const initialized = useInitialized();
+export default function PasswordResetPage() {
   const router = useTransitionRouter();
+  const user = useUser();
+  const initialized = useInitialized();
   const { setBusy } = useBusy();
-  const { signIn } = useAuth();
+  const { resetPassword } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
   const [isWorking, setIsWorking] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   // mount guard
   useEffect(() => {
-    if (!initialized) {
-      return;
-    }
     if (isReady) {
       return;
     }
     setIsReady(true);
-    setIsLogin(user == null)
-  }, [initialized, isReady, isLogin, user]);
+  }, [isReady]);
 
-  // Redirect when fully initialized and user exists
   useEffect(() => {
     if (initialized && user) {
-      router.replace('/', !isLogin);
+      router.replace('/');
     }
-  }, [initialized, user, isLogin, router]);
+  }, [initialized, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setBusy(500);
     setIsWorking(true);
 
-    logger.log("LOGIN");
-
     try {
-      const u = await signIn(email, password);
-      if (!u) throw new Error('no user returned');
-
-      setUser(u);
+      await resetPassword(email);
+      setMessage('Check your email for a password reset link.');
+      setBusy(false);
     } catch (err: any) {
-      setError(
-        err.code === 500
-          ? 'Server error. Please try again.'
-          : 'Login failed. Please try again.'
-      );
+      logger.error('Password reset error:', err);
+
+      switch (err.code) {
+        case 500:
+          setError('Server error. Please try again.');
+          break;
+        default:
+          setError('Password reset failed. Please try again.');
+      }
+
       setBusy(false);
       setIsWorking(false);
     }
@@ -76,7 +73,11 @@ export default function LoginForm() {
   }
 
   return (
-    <FormLayout subtitle="Sign in to continue your journey..." error={error}>
+    <FormLayout
+      subtitle="Reset your password"
+      error={error}
+      success={message}
+    >
       <Form onSubmit={handleSubmit}>
         <TextInput
           id="email"
@@ -85,30 +86,22 @@ export default function LoginForm() {
           autoComplete="email"
           placeholder="Email address"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <TextInput
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
+
         <Button
           type="submit"
           loading={isWorking}
-          loadingContent="Signing In..."
+          loadingContent="Sending Reset Email..."
           className="w-full"
         >
-          Sign In
+          Send Reset Email
         </Button>
+
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            <FormLink href="/password-reset">Forgot your password?</FormLink>
+            Remember your password? <FormLink href="/login">Sign In</FormLink>
           </span>
           <span className="block mt-1">
             Don&apos;t have an account? <FormLink href="/register">Register</FormLink>

@@ -57,6 +57,7 @@ function normalizeUserAgent(userAgent: string): string {
  * Build device object with deterministic ID from fingerprint
  */
 export function buildDevice(
+  firebaseUid: string,
   deviceInfo: { 
     timezone: string,
     language: string 
@@ -115,6 +116,7 @@ export function buildDevice(
   const userAgent = request.headers.get('user-agent') || 'unknown';
 
   return {
+    firebaseUid,
     deviceId,
     deviceName: generateDeviceName(deviceId, userAgent),
     platform: getPlatform(userAgent),
