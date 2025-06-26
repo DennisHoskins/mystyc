@@ -13,7 +13,7 @@ export default function Section({ children, className = '', background = 'white'
 
   return (
     <section className={`py-16 px-4 ${backgrounds[background]} ${className}`}>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-content mx-auto">
         {children}
       </div>
     </section>

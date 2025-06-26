@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en">
-      <body>
+      <body className="bg-gray-50">
         <ErrorBoundary>
           <AppContext user={user}>
             {children}

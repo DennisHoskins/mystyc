@@ -11,7 +11,7 @@ export default function AppHeader() {
 
   return (
     <header className="flex w-full bg-white px-4 py-3">
-      <nav className="flex w-full max-w-6xl mx-auto items-center">
+      <nav className="flex w-full max-w-content mx-auto items-center">
         <button onClick={() => router.push('/')} className="flex items-center">
           <AppLogo orientation="horizontal" showText />
         </button>
