@@ -1,0 +1,21 @@
+.scrollWrapper {
+  height: calc(100vh - 64px);
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.scrollWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollWrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+
+.scrollWrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

@@ -9,6 +9,8 @@ import { TransitionProvider } from '@/components/layout/context/TransitionContex
 import StateTransition from '@/components/layout/transition/StateTransition';
 import WebsiteHeader from '@/components/app/website/WebsiteHeader';
 import AppHeader from '@/components/app/mystyc/MystycHeader';
+
+import ScrollWrapper from '@/components/layout/scroll/ScrollWrapper';
 import PageTransition from '@/components/layout/transition/PageTransition';
 import Main from '@/components/layout/Main';
 import WebsiteFooter from '@/components/app/website/WebsiteFooter';
@@ -57,10 +59,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <TransitionProvider>
         <StateTransition>
           <Header />
-          <PageTransition>
-            <Main>{children}</Main>
-          </PageTransition>
-          <Footer />
+          <ScrollWrapper>
+            <PageTransition>
+              <Main>{children}</Main>
+            </PageTransition>
+            <Footer />
+          </ScrollWrapper>
         </StateTransition>
       </TransitionProvider>
       <Modal isOpen={isLoggedOutByServer}>

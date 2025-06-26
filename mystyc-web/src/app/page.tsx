@@ -14,5 +14,9 @@ export default function Page() {
     setBusy(false);
   }, [setBusy])
 
-  return <>{ (user) ? <Mystyc /> : (!user && authenticated) ? null : <Home /> }</>
+  return (
+    <>
+      { (user) ? <Mystyc /> : <Home /> }
+    </>
+  );
 }

@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useUser, useBusy } from '@/components/layout/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 
+import Section from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
 
@@ -24,23 +25,23 @@ const Dashboard = () => {
   const birthday = formatDateForDisplay(user.userProfile?.dateOfBirth);
   
   return (
-    <>
-    <Heading level={2} className="mt-8 text-center">Welcome, {fullName} 👋</Heading>
-      <Text variant="muted" className="mt-2 text-center">Glad to have you back.</Text>
+    <Section background="white">
+      <Heading level={2} className="mt-8 text-center">Welcome, {fullName} 👋</Heading>
+        <Text variant="muted" className="mt-2 text-center">Glad to have you back.</Text>
 
-      <div className="mt-6 text-center">
-        {birthday && (
-          <Text>
-            🎂 <strong>Birthday:</strong> {birthday}
-          </Text>
-        )}
-        {user.userProfile?.zodiacSign && (
-          <Text className="mt-2">
-            🔮 <strong>Zodiac Sign:</strong> {user.userProfile.zodiacSign}
-          </Text>
-        )}
-      </div>
-    </>
+        <div className="mt-6 text-center">
+          {birthday && (
+            <Text>
+              🎂 <strong>Birthday:</strong> {birthday}
+            </Text>
+          )}
+          {user.userProfile?.zodiacSign && (
+            <Text className="mt-2">
+              🔮 <strong>Zodiac Sign:</strong> {user.userProfile.zodiacSign}
+            </Text>
+          )}
+        </div>
+    </Section>
   );
 };
 

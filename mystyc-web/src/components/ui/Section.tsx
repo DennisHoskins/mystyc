@@ -4,10 +4,10 @@ interface SectionProps {
   background?: 'white' | 'gray' | 'blue';
 }
 
-export default function Section({ children, className = '', background = 'white' }: SectionProps) {
+export default function Section({ children, className = '', background = 'gray' }: SectionProps) {
   const backgrounds = {
-    white: 'bg-white',
     gray: 'bg-gray-50', 
+    white: 'bg-white',
     blue: 'bg-blue-50'
   };
 
