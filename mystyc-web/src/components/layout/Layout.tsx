@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useAppStore } from '@/store/appStore';
 import { useUser, useClearUser, useAuthenticated } from '@/components/layout/context/AppContext';
@@ -19,6 +19,8 @@ import Modal from '@/components/ui/modal/Modal';
 import ServerLogoutForm from '@/components/app/auth/ServerLogoutForm';
 import { logger } from '@/util/logger';
 
+import AdminSidebar from '@/components/app/mystyc/admin/AdminSidebar';
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();
   const clearUser = useClearUser();
@@ -27,6 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const setLoggedOutByServer = useAppStore((s) => s.setLoggedOutByServer);
   const pathname = usePathname();
   const isWebsite = !user;
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     logger.log('[LAYOUT] pathname', pathname);
@@ -54,17 +57,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [user, authenticated, clearUser, setLoggedOutByServer]);
 
+  const isAdminPath = pathname.startsWith('/admin');  
+  const isAdmin = user && user.isAdmin && isAdminPath;
+
   return (
     <>
       <TransitionProvider>
         <StateTransition>
+
           <Header />
-          <ScrollWrapper>
-            <PageTransition>
-              <Main>{children}</Main>
-            </PageTransition>
-            <Footer />
-          </ScrollWrapper>
+          <div className="flex flex-1 min-h-0">
+
+            {isAdmin && <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} /> }
+
+            <ScrollWrapper>
+              <PageTransition>
+                <Main>{children}</Main>
+              </PageTransition>
+              <Footer />
+            </ScrollWrapper>
+          </div>
+
         </StateTransition>
       </TransitionProvider>
       <Modal isOpen={isLoggedOutByServer}>

@@ -1,8 +1,8 @@
 'use client';
 
-import Admin from '@/components/app/mystyc/admin/Admin';
+import AdminHome from '@/components/app/mystyc/admin/AdminHome';
 
 export default function Page() {
 
-  return <Admin />
+  return <AdminHome />
 }
