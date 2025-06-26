@@ -14,7 +14,7 @@ import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
 @Injectable()
 export class DeviceService {
   constructor(
-    @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>
+    @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
   ) {}
 
   // GET Methods (Read Operations)
@@ -349,6 +349,7 @@ export class DeviceService {
    */
   private transformToDevice(doc: DeviceDocument): DeviceInterface {
     return {
+      firebaseUid: doc.firebaseUid,
       deviceId: doc.deviceId,
       deviceName: doc.deviceName,
       platform: doc.platform,

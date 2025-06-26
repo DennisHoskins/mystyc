@@ -1,9 +1,13 @@
 import {
+  ValidateFirebaseUid,
   ValidateDeviceId,
-  ValidateFcmTokenRequired
+  ValidateFcmTokenRequired,
 } from '@/common/decorators/validation.decorators';
 
 export class UpdateFcmTokenDto {
+  @ValidateFirebaseUid()
+  firebaseUid: string;
+
   @ValidateDeviceId()
   deviceId: string;
 

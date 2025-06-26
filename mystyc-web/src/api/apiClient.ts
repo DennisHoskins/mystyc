@@ -1,7 +1,7 @@
 import { User } from '@/interfaces/user.interface';
 import { logger } from '@/util/logger'
 
-const serverRoot: string = '/api/auth';
+const serverRoot: string = '/api';
 
 const getDeviceInfo = () => {
   const getTimezone = (): string => {
@@ -47,7 +47,7 @@ export const apiClient = {
 
   async register(email: string, password: string): Promise<User> {
 
-    const response = await fetch(`${serverRoot}/register`, {
+    const response = await fetch(`${serverRoot}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -67,7 +67,7 @@ export const apiClient = {
   },
 
   async signIn(email: string, password: string): Promise<User> {
-    const response = await fetch(`${serverRoot}/login`, {
+    const response = await fetch(`${serverRoot}/auth/login`, {
       method: 'POST', 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -87,7 +87,7 @@ export const apiClient = {
   },
 
   async resetPassword(email: string): Promise<void> {
-    const response = await fetch(`${serverRoot}/reset-password`, {
+    const response = await fetch(`${serverRoot}/auth/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -102,7 +102,7 @@ export const apiClient = {
   },
 
   async signOut(): Promise<void> {
-    const response = await fetch(`${serverRoot}/logout`, {
+    const response = await fetch(`${serverRoot}/auth/logout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -113,6 +113,21 @@ export const apiClient = {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new ApiError(errorData.message || 'Logout failed', response.status, errorData.type);
+    }
+  },
+
+  async updateFcmToken(fcmToken: string): Promise<void> {
+    const response = await fetch(`${serverRoot}/updateFcmToken`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        fcmToken
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'updateFcmToken failed', response.status, errorData.type);
     }
   }
 };

@@ -1,201 +1,195 @@
-//import { useState, useEffect, useCallback } from 'react';
-// import { getToken, onMessage } from 'firebase/messaging';
+import { useEffect, useState } from 'react';
+import { initializeApp } from 'firebase/app';
+import { Messaging, getMessaging, getToken, onMessage } from 'firebase/messaging';
 
-// import { messaging } from '@/api/firebase/apiFirebase';
-// import { apiClient } from '@/api/client/apiClient';
+import { useUser } from '@/components/layout/context/AppContext';
+import { useAppStore } from '@/store/appStore';
+import { apiClient } from '@/api/apiClient';
+import { logger } from '@/util/logger';
 
-// import { UpdateFcmToken } from '@/interfaces';
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+};
 
-// import { useApp } from '@/components/context/AppContext';
-
-// import { errorHandler } from '@/util/errorHandler';
-
-// import { isUserOnboarded } from '@/util/util';
-// import { logger } from '@/util/logger';
+const app = initializeApp(firebaseConfig);
+let messaging: Messaging | null = null;
+if (typeof window !== 'undefined') {
+  try {
+    messaging = getMessaging(app);
+  } catch (error) {
+    logger.error('Firebase Messaging not supported:', error);
+    console.log('Firebase Messaging not supported:', error);
+  }
+}
+export { messaging };
 
 export function useFirebaseMessaging() {
-  // const [fcmToken, setFcmToken] = useState<string | null>(null);
-  // const [shouldRequestPermission, setShouldRequestPermission] = useState<boolean>(false);
-  // const [error, setError] = useState<string | null>(null);
-  // const { app } = useApp();
+  const user = useUser();
+  const { fcmToken, setFcmToken, lastTokenUpdate } = useAppStore();
+  const [isReady, setReady] = useState(false);
 
-  // useEffect(() => {
-  //   if (!app || !app.user || !isUserOnboarded(app.user.userProfile)) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (isReady) {
+      return;
+    }
+    setReady(true);
+  }, [isReady])
 
-  //   if (Notification.permission != "default") {
-  //     return;
-  //   }
+  //
+  // register fcmToken
+  //
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+    if (!user) {
+      return;
+    }
+    if ('serviceWorker' in navigator === false) {
+      logger.warn('[useFirebaseMessaging] Firebase Messaging not supported');
+      return;
+    }
 
-  //   setShouldRequestPermission(true);
-  // }, [app, setShouldRequestPermission]);
+    // Skip if we already have a valid token
+    if (fcmToken) {
+      logger.log('[useFirebaseMessaging] FCM Token already exists, skipping');
+      return;
+    }
 
-  // useEffect(() => {
-  //   if (messaging) {
-  //     const unsubscribe = onMessage(messaging, (payload) => {
-  //       logger.log('Received foreground message:', payload);
+    const enableMessaging = async () => {    
+      if (!messaging) {
+        logger.warn('[useFirebaseMessaging] Firebase Messaging not initialized');
+        return;
+      }
+      try {
+        let permission = Notification.permission;
+        if (permission === 'default') {
+          permission = await Notification.requestPermission();
+        }
+        if (permission !== 'granted') {
+          logger.warn('[useFirebaseMessaging] Notification permission not granted');
+          return;
+        }
 
-  //       const title = payload.data?.title || payload.notification?.title || 'New Message';
-  //       const body = payload.data?.body || payload.notification?.body || 'You have a new message';
+        const swPath = '/firebase-sw.js';
+        const existing = await navigator.serviceWorker.getRegistration(swPath);
+        const registration = existing ?? await navigator.serviceWorker.register(swPath);
+        logger.log('[useFirebaseMessaging] Service‑worker ready:', registration);
 
-  //       if ('Notification' in window && Notification.permission === 'granted') {
-  //         try {
-  //           const notification = new Notification(title, {
-  //             body,
-  //             icon: '/favicon/favicon.ico',
-  //             badge: '/favicon/favicon.ico',
-  //             tag: 'mystyc-foreground',
-  //             requireInteraction: false,
-  //           });
+        const newToken = await getToken(messaging, {
+          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+          serviceWorkerRegistration: registration
+        });
+        logger.log('[useFirebaseMessaging] FCM Token received:', newToken);
 
-  //           setTimeout(() => {
-  //             notification.close();
-  //           }, 5000);
+        if (newToken && newToken !== fcmToken) {
+          await apiClient.updateFcmToken(newToken);
+          setFcmToken(newToken);
+          logger.log('[useFirebaseMessaging] FCM Token updated on server successfully');
+        }
+      } catch (err) {
+        logger.error('[useFirebaseMessaging] Error enabling Firebase Messaging:', err);
+        return;
+      }
+    }
+    enableMessaging();
+  }, [isReady, user, fcmToken, setFcmToken]);
 
-  //           notification.onclick = () => {
-  //             window.focus();
-  //             notification.close();
-  //           };
-  //         } catch (err) {
-  //           logger.error('[useFirebaseMessaging] Error showing foreground notification:', err);
-  //         }
-  //       }
-  //     });
+  //
+  // refresh fcmToken
+  //
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
 
-  //     return () => unsubscribe();
-  //   }
-  // }, []);
+    if (!messaging || !fcmToken || !user) return;
 
-  //const updateFcmTokenOnServer = async (fcmToken: string) => {
-    // if (!app) {
-    //   return;
-    // }
+    const handleTokenRefresh = async () => {
+      try {
+        // Only refresh if token is older than 24 hours
+        if (lastTokenUpdate && (Date.now() - lastTokenUpdate < 24 * 60 * 60 * 1000)) {
+          return;
+        }
 
-    // if (!app.deviceId) {
-    //   logger.warn('[useFirebaseMessaging] No device ID available for FCM token update');
-    //   return;
-    // }
+        if (!messaging) return;
 
-    // try {
-    //   const updateFcmToken: UpdateFcmToken = {
-    //     deviceId: app.deviceId, 
-    //     fcmToken
-    //   }
+        const swPath = '/firebase-sw.js';
+        const registration = await navigator.serviceWorker.getRegistration(swPath);
+        if (!registration) return;
 
-    //   await apiClient.updateFcmToken(updateFcmToken);
-    //   logger.log('[useFirebaseMessaging] FCM token updated on server successfully');
-    // } catch (err) {
-    //   errorHandler.processError(err, {
-    //     component: 'useFirebaseMessaging',
-    //     action: 'updateFcmToken',
-    //     additional: { 
-    //       deviceId: app.deviceId,
-    //       hasToken: !!fcmToken
-    //     }
-    //   });
+        const newToken = await getToken(messaging, {
+          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+          serviceWorkerRegistration: registration
+        });
 
-    //   logger.warn('[useFirebaseMessaging] Failed to update FCM token on server, continuing...');
-    // }
-  // }, [app]);
-  //}, []);
+        if (newToken && newToken !== fcmToken) {
+          logger.log('[useFirebaseMessaging] FCM token refreshed:', newToken);
+          await apiClient.updateFcmToken(newToken);
+          setFcmToken(newToken);
+          logger.log('[useFirebaseMessaging] Refreshed token updated on server successfully');
+        }
+      } catch (err) {
+        logger.error('[useFirebaseMessaging] Token refresh failed:', err);
+      }
+    };
 
-  //const requestPermissionAndToken = useCallback(async () => {
-    // try {
-    //   if (!messaging) throw new Error('Messaging not supported');
+    // Check for token refresh every 24 hours
+    const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
+    return () => clearInterval(refreshInterval);
+  }, [isReady, fcmToken, user, setFcmToken, lastTokenUpdate]);
 
-    //   if ('serviceWorker' in navigator === false) {
-    //     throw new Error('Messaging Service not supported');
-    //   }
+  //
+  // message received
+  //
+  useEffect(() => {
+    if (!messaging) {
+      return;
+    }
+    const unsubscribe = onMessage(messaging, (payload) => {
+      handleMessage(payload);
+    });
 
-    //   let permission = Notification.permission;
+    return () => unsubscribe();
+  }, []);
 
-    //   if (permission === 'default') {
-    //     permission = await Notification.requestPermission();
-    //   }
+  //
+  // handle message
+  //
+  const handleMessage = (payload: any) => {
+    logger.log('Received foreground message:', payload);
 
-    //   if (permission !== 'granted') {
-    //     throw new Error('Notification permission not granted');
-    //   }
+    if ('Notification' in window === false || Notification.permission !== 'granted') {
+      logger.log('Unable to display Notification - Not supported or no permission', Notification.permission);
+      return;
+    }
 
-    //   const swPath = '/firebase-sw.js';
+    const title = payload.data?.title || payload.notification?.title || 'New Message';
+    const body = payload.data?.body || payload.notification?.body || 'You have a new message';
+    try {
+      const notification = new Notification(title, {
+        body,
+        icon: '/favicon/favicon.ico',
+        badge: '/favicon/favicon.ico',
+        tag: 'mystyc-foreground',
+        requireInteraction: false,
+      });
 
-    //   const existing = await navigator.serviceWorker.getRegistration(swPath);
-    //   const registration = existing ?? await navigator.serviceWorker.register(swPath);
-    //   logger.log('Service‑worker ready:', registration);
+      setTimeout(() => {
+        notification.close();
+      }, 5000);
 
-    //   const fcmToken = await getToken(messaging, {
-    //     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-    //     serviceWorkerRegistration: registration
-    //   });
-
-    //   setFcmToken(fcmToken);
-    //   logger.log('[useFirebaseMessaging] FCM Token received:', fcmToken);
-
-    //   await updateFcmTokenOnServer(fcmToken);
-    //   return fcmToken;
-    // } catch (err) {
-    //   const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    //   setError(errorMessage);
-
-    //   errorHandler.processError(err, {
-    //     component: 'useFirebaseMessaging',
-    //     action: 'requestPermissionAndToken'
-    //   });
-
-    //   logger.error('[useFirebaseMessaging] Error getting FCM token:', err);
-    // }
-  // }, [updateFcmTokenOnServer]);
-  //}, []);
-
-//   useEffect(() => {
-//     if (!app || !app.deviceId) {
-//       return;
-//     }
-
-//     const shouldAttempt = (
-//       Notification.permission !== 'denied' &&
-//       app.deviceId
-//     );
-
-//     if (!shouldAttempt) return;
-
-//     requestPermissionAndToken();
-//   }, [app, requestPermissionAndToken]);
-  
-//   useEffect(() => {
-//     if (!messaging || !fcmToken || !app || !app.deviceId) return;
-
-//     const handleTokenRefresh = async () => {
-//       try {
-//         if (!messaging) return;
-
-//         const registration = await navigator.serviceWorker.getRegistration('/workers/notifications');
-//         if (!registration) return;
-
-//         const newToken = await getToken(messaging, {
-//           vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-//           serviceWorkerRegistration: registration
-//         });
-
-//         if (newToken && newToken !== fcmToken) {
-//           logger.log('[useFirebaseMessaging] FCM token refreshed:', newToken);
-//           setFcmToken(newToken);
-//           await updateFcmTokenOnServer(newToken);
-//         }
-//       } catch (err) {
-//         errorHandler.processError(err, {
-//           component: 'useFirebaseMessaging',
-//           action: 'tokenRefresh'
-//         });
-
-//         logger.warn('[useFirebaseMessaging] Token refresh failed:', err);
-//       }
-//     };
-
-//     const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
-//     return () => clearInterval(refreshInterval);
-//   }, [fcmToken, app, updateFcmTokenOnServer]);
-
-//  return { shouldRequestPermission, fcmToken, error, requestPermission: requestPermissionAndToken };
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    } catch (err) {
+      logger.error('[useFirebaseMessaging] Error showing foreground notification:', err);
+    }
+  };  
 }
