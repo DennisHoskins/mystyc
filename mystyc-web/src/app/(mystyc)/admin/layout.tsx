@@ -22,5 +22,23 @@ export default function MystycAdminLayout({
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+
+{/* 
+
+admin menu:
+
+Home
+Sessions
+Users
+Devices
+Authentication
+Notifications
+
+*/}
+
+      {children}
+    </>
+  );
 }

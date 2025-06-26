@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useUser,useBusy } from '@/components/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
@@ -9,17 +7,6 @@ import Button from '@/components/ui/Button';
 
 export default function Home() {
   const router = useTransitionRouter();
-  const user = useUser();
-  const { setBusy } = useBusy();
-
-  useEffect(() => {
-    setBusy(false);
-  }, 
-  [setBusy])
-
-  if (user) {
-    return null;
-  }
 
   return (
     <>

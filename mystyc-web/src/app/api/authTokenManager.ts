@@ -89,11 +89,11 @@ export const authTokenManager = {
       logger.log('[authTokenManager] Token validated successfully for uid:', decoded.uid);
       return { session, decoded };
     } catch (error: any) {
-      logger.error('[authTokenManager] Error validating and decoding token:', error);
+      logger.log('[authTokenManager] Error validating and decoding token:', error);
       
       // Only retry if token is expired
       if (error.code !== 'auth/id-token-expired') {
-        logger.log('[authTokenManager] Token error is not expiration, not retrying');
+        logger.error('[authTokenManager] Token error is not expiration, not retrying');
         return null;
       }
       
