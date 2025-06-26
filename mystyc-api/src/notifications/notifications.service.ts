@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Cron } from '@nestjs/schedule';
 
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DeviceService } from '@/devices/device.service';
@@ -19,6 +20,41 @@ export class NotificationsService {
     private readonly deviceService: DeviceService,
     private readonly userProfileService: UserProfileService
   ) {}
+
+  @Cron('18 18 * * *', {
+    timeZone: 'America/Edmonton'
+  }) 
+  async sendDailyNotifications() {
+    logger.info('Starting daily notification broadcast at 9 AM Alberta time', {}, 'NotificationsService');
+    
+    try {
+      const results = {
+        success: true,
+        sent: 0,
+        failed: 0,
+        details: []
+      };
+
+      // Send to all devices in the system
+      await this.sendBroadcast(
+        'Daily Update', 
+        'Good morning! Here\'s your daily update from Mystyc.', 
+        results, 
+        'system' // System-generated notification
+      );
+
+      logger.info('Daily notification broadcast completed', {
+        sent: results.sent,
+        failed: results.failed,
+        totalDevices: results.sent + results.failed
+      }, 'NotificationsService');
+
+    } catch (error) {
+      logger.error('Daily notification broadcast failed', {
+        error: error.message
+      }, 'NotificationsService');
+    }
+  }
 
   // GET Methods (Read Operations)
 
@@ -440,9 +476,11 @@ export class NotificationsService {
   ): Promise<void> {
     // Get all devices with new query format
     const allDevices = await this.deviceService.findAll({ limit: 10000 });
-    
+    console.log("[Notification Service] Found devices:", allDevices.length);
+
     // Filter devices with FCM tokens
     const notifiableDevices = allDevices.filter(device => device.fcmToken);
+    console.log("[Notification Service] Notifyable devices:", notifiableDevices.length);
     
     if (notifiableDevices.length === 0) {
       throw new BadRequestException('No devices with FCM tokens found in the system');
