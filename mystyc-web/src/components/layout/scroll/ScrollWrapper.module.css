@@ -1,5 +1,5 @@
 .scrollWrapper {
-  height: calc(100vh - 64px);
+  height: var(--client-height);
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;

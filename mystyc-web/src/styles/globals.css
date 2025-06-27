@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --client-height: calc(100dvh - 64px);
+}
+
 html, body {
   overflow: hidden;
 }
