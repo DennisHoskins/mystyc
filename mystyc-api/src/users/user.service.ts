@@ -94,13 +94,13 @@ export class UserService {
   ) {
     logger.info('Logging out user session', {
       firebaseUid: firebaseUser.uid,
-      deviceId: logoutDto.deviceId,
+      deviceId: logoutDto.device.deviceId,
       authType: 'logout',
     }, 'UserService');
 
     try {
       // Get device to verify it exists
-      const device = await this.deviceService.findByDeviceId(logoutDto.deviceId);
+      const device = await this.deviceService.findByDeviceId(logoutDto.device.deviceId);
 
       if (!device) {
         throw new Error('Device not found');
@@ -116,7 +116,7 @@ export class UserService {
       const authEventDto = {
         firebaseUid: firebaseUser.uid,
         email: firebaseUser.email,
-        deviceId: logoutDto.deviceId,
+        deviceId: logoutDto.device.deviceId,
         deviceName: device.deviceName,
         type: 'logout' as const,
         ip: serverIp,
@@ -135,7 +135,70 @@ export class UserService {
     } catch (error) {
       logger.error('User session logout failed', {
         firebaseUid: firebaseUser.uid,
-        deviceId: logoutDto.deviceId,
+        deviceId: logoutDto.device.deviceId,
+        error: error.message
+      }, 'UserService');
+
+      throw error;
+    }
+  }
+
+  /**
+   * Logs out user by clearing device FCM token and recording logout auth event
+   * @param firebaseUser - Firebase authentication user object
+   * @param logoutDto - Logout data including device ID and client timestamp
+   * @param serverIp - Server IP address for auth event logging
+   * @returns Promise<null> - Returns null on successful logout
+   */
+  async serverLogout(
+    firebaseUser: FirebaseUser,
+    logoutDto: AuthEventLogoutDto,
+    serverIp: string
+  ) {
+    logger.info('Server Logging out user session', {
+      firebaseUid: firebaseUser.uid,
+      deviceId: logoutDto.device.deviceId,
+      authType: 'server-logout',
+    }, 'UserService');
+
+    try {
+      // Get device to verify it exists
+      const device = await this.deviceService.findByDeviceId(logoutDto.device.deviceId);
+
+      if (!device) {
+        throw new Error('Device not found');
+      }
+
+      // Clear FCM token for device
+      await this.deviceService.logoutDevice(
+        firebaseUser.uid,
+        logoutDto
+      );
+
+      // Record logout auth event
+      const authEventDto = {
+        firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        deviceId: logoutDto.device.deviceId,
+        deviceName: device.deviceName,
+        type: 'server-logout' as const,
+        ip: serverIp,
+        clientTimestamp: logoutDto.clientTimestamp
+      };
+
+      await this.authEventService.recordAuthEvent(authEventDto);
+
+      logger.info('User session logged out successfully', {
+        firebaseUid: firebaseUser.uid,
+        deviceId: device.deviceId,
+        authType: 'logout'
+      }, 'UserService');
+
+      return null;
+    } catch (error) {
+      logger.error('User session logout failed', {
+        firebaseUid: firebaseUser.uid,
+        deviceId: logoutDto.device.deviceId,
         error: error.message
       }, 'UserService');
 

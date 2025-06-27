@@ -3,22 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces';
-import AdminHeader from '@/components/app/mystyc/admin/AdminHeader';
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 import { logger } from '@/util/logger';
 
-export default function AdminDevices() {
+export default function DevicesTable() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
-
-  const breadcrumbs = [
-    { label: 'Admin', href: '/admin' },
-    { label: 'Devices' },
-  ];
 
   const columns: Column<Device>[] = [
     { key: 'deviceName', header: 'Name', render: (d) => d.deviceName || 'Unnamed Device' },
@@ -54,25 +48,16 @@ export default function AdminDevices() {
   }, [loadDevices]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        description="Monitor and control connected devices, view status device configurations"
-      />
-
-      <div className="mt-6">
-        <AdminTable<Device>
-          data={devices}
-          columns={columns}
-          loading={loading}
-          error={error}
-          currentPage={currentPage}
-          hasMore={hasMore}
-          onPageChange={loadDevices}
-          onRetry={() => loadDevices(currentPage)}
-          emptyMessage="No Devices found."
-        />
-      </div>
-    </>
+    <AdminTable<Device>
+      data={devices}
+      columns={columns}
+      loading={loading}
+      error={error}
+      currentPage={currentPage}
+      hasMore={hasMore}
+      onPageChange={loadDevices}
+      onRetry={() => loadDevices(currentPage)}
+      emptyMessage="No Devices found."
+    />
   );
 }

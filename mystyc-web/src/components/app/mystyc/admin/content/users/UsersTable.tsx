@@ -3,23 +3,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
-import AdminHeader from '@/components/app/mystyc/admin/AdminHeader';
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
-export default function AdminUsers() {
+export default function UsersTable() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
-
-  const breadcrumbs = [
-    { label: 'Admin', href: '/admin' },
-    { label: 'Users' },
-  ];
 
   const columns: Column<UserProfile>[] = [
     { key: 'email', header: 'Email' },
@@ -55,25 +49,16 @@ export default function AdminUsers() {
   }, [loadUsers]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        description="Manage user accounts, permissions, and profile information"
-      />
-
-      <div className="mt-6">
-        <AdminTable<UserProfile>
-          data={users}
-          columns={columns}
-          loading={loading}
-          error={error}
-          currentPage={currentPage}
-          hasMore={hasMore}
-          onPageChange={loadUsers}
-          onRetry={() => loadUsers(currentPage)}
-          emptyMessage="No Users found."
-        />
-      </div>
-    </>
+    <AdminTable<UserProfile>
+      data={users}
+      columns={columns}
+      loading={loading}
+      error={error}
+      currentPage={currentPage}
+      hasMore={hasMore}
+      onPageChange={loadUsers}
+      onRetry={() => loadUsers(currentPage)}
+      emptyMessage="No Users found."
+    />
   );
 }

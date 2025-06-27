@@ -1,4 +1,4 @@
-import { AdminQuery, User, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
+import { AdminQuery, Session, User, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 const API_BASE_URL = '/api';
@@ -38,6 +38,21 @@ class AdminApiClient {
   // 
   // todo: dashboard and session
   //
+
+  //
+  // Session Management
+  //
+  getSessions = async (query?: AdminQuery): Promise<Session[]> => {
+    logger.log('getSessions called', { query });
+    try {
+      const queryString = this.buildQueryString(query);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions${queryString}`);
+      return response.data || [];
+    } catch (error) {
+      logger.error('getSessions failed:', error);
+      throw error;
+    }
+  };
 
   //
   // User Management

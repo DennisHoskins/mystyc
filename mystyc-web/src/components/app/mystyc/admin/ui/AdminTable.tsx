@@ -64,7 +64,13 @@ export default function AdminTable<T>({
       value = value?.[key];
     }
     
-    return value || '-';
+    const displayValue = String(value || '-');
+    
+    if (displayValue.length > 50) {
+      return displayValue.substring(0, 50) + '...';
+    }
+    
+    return displayValue;
   };
 
   if (loading && currentPage === 0) {
@@ -99,7 +105,6 @@ export default function AdminTable<T>({
 
   return (
     <>
-      <Card>
         <Table>
           <TableHeader>
             <TableRow>
@@ -129,7 +134,6 @@ export default function AdminTable<T>({
             ))}
           </TableBody>
         </Table>
-      </Card>
       
       {onPageChange && (
         <div className="flex justify-between items-center mt-6">

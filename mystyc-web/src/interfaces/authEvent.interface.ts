@@ -6,7 +6,7 @@ export interface AuthEvent {
   deviceName?: string;
   ip: string;
   clientTimestamp: string;
-  type: 'login' | 'logout' | 'create';
+  type: 'create' | 'login' | 'logout' | 'server-logout';
   timestamp?: Date;
   createdAt?: Date;
   updatedAt?: Date;

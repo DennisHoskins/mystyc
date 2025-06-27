@@ -3,23 +3,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent } from '@/interfaces';
-import AdminHeader from '@/components/app/mystyc/admin/AdminHeader';
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
-export default function AdminDevices() {
+export default function AuthorizationTable() {
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
-
-  const breadcrumbs = [
-    { label: 'Admin', href: '/admin' },
-    { label: 'Devices' },
-  ];
 
   const columns: Column<AuthEvent>[] = [
     { key: 'event', header: 'Event', render: (e) => e.type || 'Unknown' },
@@ -56,25 +50,16 @@ export default function AdminDevices() {
   }, [loadAuthEvents]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        description="Track user login and logout events, monitor authentication patterns, and review access history"
-      />
-
-      <div className="mt-6">
-        <AdminTable<AuthEvent>
-          data={authEvents}
-          columns={columns}
-          loading={loading}
-          error={error}
-          currentPage={currentPage}
-          hasMore={hasMore}
-          onPageChange={loadAuthEvents}
-          onRetry={() => loadAuthEvents(currentPage)}
-          emptyMessage="No Auth Events found."
-        />
-      </div>
-    </>
+    <AdminTable<AuthEvent>
+      data={authEvents}
+      columns={columns}
+      loading={loading}
+      error={error}
+      currentPage={currentPage}
+      hasMore={hasMore}
+      onPageChange={loadAuthEvents}
+      onRetry={() => loadAuthEvents(currentPage)}
+      emptyMessage="No Auth Events found."
+    />
   );
 }

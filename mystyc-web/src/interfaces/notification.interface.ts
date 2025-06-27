@@ -2,6 +2,7 @@ export interface Notification {
   _id?: string;
   firebaseUid: string;
   deviceId?: string;
+  deviceName?: string;
   fcmToken?: string;
   title: string;
   body: string;

@@ -141,7 +141,7 @@ export class UsersController {
   ): Promise<{ success: boolean; message: string }> {
     this.logger.info('User logout via POST /users/logout', {
       uid: firebaseUserFromDecorator.uid,
-      deviceId: logoutDto.deviceId,
+      deviceId: logoutDto.device.deviceId,
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
@@ -158,7 +158,7 @@ export class UsersController {
 
       this.logger.info('Logout recorded successfully via controller', {
         uid: firebaseUser.uid,
-        deviceId: logoutDto.deviceId,
+        deviceId: logoutDto.device.deviceId,
         serverIp
       });
 
@@ -169,7 +169,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error('Logout recording failed via controller', {
         uid: firebaseUser.uid,
-        deviceId: logoutDto.deviceId,
+        deviceId: logoutDto.device.deviceId,
         error: error.message
       });
 

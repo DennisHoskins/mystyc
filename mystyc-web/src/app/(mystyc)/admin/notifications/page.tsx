@@ -1,7 +1,7 @@
 'use client';
 
-import AdminNotifications from '@/components/app/mystyc/admin/content/notifications/AdminNotifications';
+import NotificationsPage from '@/components/app/mystyc/admin/content/notifications/NotificationsPage';
 
 export default function Page() {
-  return <AdminNotifications></AdminNotifications>
+  return <NotificationsPage />
 }

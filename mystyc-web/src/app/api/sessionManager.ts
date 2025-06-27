@@ -159,6 +159,61 @@ export const sessionManager = {
     };
   },
 
+  async getSessions(limit: number = 20, offset: number = 0) {
+    await ensureConnection();
+
+    logger.log('[sessionManager] Getting sessions with limit:', limit, 'offset:', offset);
+
+    const sessions = [];
+    let cursor = '0';
+    let totalFound = 0;
+
+    do {
+      const result = await redis.scan(cursor, {
+        MATCH: 'mystyc::*::*::*::tokenAuth',
+        COUNT: 100 // Scan batch size
+      });
+
+      cursor = result.cursor;
+      const authKeys = result.keys;
+
+      for (const authKey of authKeys) {
+        totalFound++;
+        
+        // Skip items before offset
+        if (totalFound <= offset) continue;
+        
+        // Stop if we've collected enough items
+        if (sessions.length >= limit) break;
+
+        const keyParts = authKey.split('::');
+        const sessionId = keyParts[1];
+        const deviceId = keyParts[2];
+        const uid = keyParts[3];
+
+        sessions.push({
+          sessionId,
+          deviceId,
+          uid,
+          authToken: authKey
+        });
+      }
+
+      // Break if we have enough sessions or no more data
+      if (sessions.length >= limit || cursor === '0') break;
+
+    } while (cursor !== '0');
+
+    return {
+      data: sessions,
+      pagination: {
+        offset,
+        limit,
+        total: totalFound
+      }
+    };
+  },
+
   async updateSession(
     sessionId: string,
     deviceId: string,

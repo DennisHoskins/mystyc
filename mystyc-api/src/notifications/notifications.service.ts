@@ -21,7 +21,7 @@ export class NotificationsService {
     private readonly userProfileService: UserProfileService
   ) {}
 
-  @Cron('0 11 * * *', {
+  @Cron('0 12 * * *', {
     timeZone: 'America/Edmonton'
   }) 
   async sendDailyNotifications() {
@@ -40,7 +40,7 @@ export class NotificationsService {
         'Daily Update', 
         'Good morning! Here\'s your daily update from Mystyc.', 
         results, 
-        'system' // System-generated notification
+        'system'
       );
 
       logger.info('Daily notification broadcast completed', {
@@ -236,12 +236,14 @@ export class NotificationsService {
     body: string,
     type: 'test' | 'admin' | 'broadcast',
     sentBy: string,
-    deviceId?: string
+    deviceId?: string,
+    deviceName?: string
   ): Promise<{ messageId: string; notificationId: string }> {
     // Create notification record for tracking
     const notification = await this.createNotificationRecord({
       firebaseUid: sentBy,
       deviceId,
+      deviceName,
       fcmToken: token,
       title,
       body,
@@ -347,6 +349,7 @@ export class NotificationsService {
     const notification = await this.createNotificationRecord({
       firebaseUid: device.firebaseUid,
       deviceId: device.deviceId,
+      deviceName: device.deviceName,
       fcmToken: device.fcmToken,
       title,
       body,
@@ -506,6 +509,7 @@ export class NotificationsService {
   private async createNotificationRecord(data: {
     firebaseUid: string;
     deviceId?: string;
+    deviceName?: string;
     fcmToken?: string;
     title: string;
     body: string;
@@ -559,6 +563,7 @@ export class NotificationsService {
       _id: doc._id.toString(),
       firebaseUid: doc.firebaseUid,
       deviceId: doc.deviceId,
+      deviceName: doc.deviceName,
       fcmToken: doc.fcmToken,
       title: doc.title,
       body: doc.body,

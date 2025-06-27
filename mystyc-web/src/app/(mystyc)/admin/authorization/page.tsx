@@ -1,7 +1,7 @@
 'use client';
 
-import AdminAuthorization from '@/components/app/mystyc/admin/content/authorization/AdminAuthorization';
+import AuthorizationPage from '@/components/app/mystyc/admin/content/authorization/AuthorizationPage';
 
 export default function Page() {
-  return <AdminAuthorization />
+  return <AuthorizationPage />
 }

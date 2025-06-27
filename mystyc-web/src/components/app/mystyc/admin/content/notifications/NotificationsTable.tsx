@@ -3,12 +3,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
-import AdminHeader from '@/components/app/mystyc/admin/AdminHeader';
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
-export default function AdminDevices() {
+export default function NotificationsTable() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,13 +15,10 @@ export default function AdminDevices() {
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
-  const breadcrumbs = [
-    { label: 'Admin', href: '/admin' },
-    { label: 'Notifications' },
-  ];
-
   const columns: Column<Notification>[] = [
     { key: 'event', header: 'Event', render: (e) => e.type || 'Unknown' },
+    { key: 'deviceName', header: 'Device', render: (e) => e.deviceName || 'Unknown' },
+    { key: 'message', header: 'Message', render: (e) => e.title || 'Unknown' },
     { key: 'sentAt', header: 'Sent', align: 'right', render: (e) => formatDateForDisplay(e.sentAt) || '-' },
   ];
 
@@ -54,25 +50,16 @@ export default function AdminDevices() {
   }, [loadNotifications]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        description="View sent push notifications, message history, and delivery status for user communications"
-      />
-
-      <div className="mt-6">
-        <AdminTable<Notification>
-          data={notifications}
-          columns={columns}
-          loading={loading}
-          error={error}
-          currentPage={currentPage}
-          hasMore={hasMore}
-          onPageChange={loadNotifications}
-          onRetry={() => loadNotifications(currentPage)}
-          emptyMessage="No Notifications found."
-        />
-      </div>
-    </>
+    <AdminTable<Notification>
+      data={notifications}
+      columns={columns}
+      loading={loading}
+      error={error}
+      currentPage={currentPage}
+      hasMore={hasMore}
+      onPageChange={loadNotifications}
+      onRetry={() => loadNotifications(currentPage)}
+      emptyMessage="No Notifications found."
+    />
   );
 }
