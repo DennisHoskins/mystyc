@@ -26,6 +26,8 @@ export function formatDateForDisplay(dateValue: string | Date | null | undefined
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
     timeZone: 'UTC',
   }).format(parsedDate);
 }

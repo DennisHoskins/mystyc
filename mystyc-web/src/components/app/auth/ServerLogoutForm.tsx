@@ -1,16 +1,14 @@
 'use client';
 
-//import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useRouter } from 'next/navigation';
 
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/appStore';
-import FormLayout from '@/components/ui/form/FormLayout';
+import AppLogo from '@/components/ui/AppLogo';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function ServerLogoutForm() {
-  // const router = useTransitionRouter();
   const router = useRouter();
   const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
   const [isReady, setIsReady] = useState(false);
@@ -42,15 +40,21 @@ export default function ServerLogoutForm() {
   }
 
   return (
-    <FormLayout subtitle="You have been logged out">
-      <Text>
-        Your session was ended by an administrator. This may have been done to resolve
-        account issues or for security reasons.
-      </Text>
-      
-      <Button onClick={handleClick} className="w-full">
-        OK
-      </Button>
-    </FormLayout>
+    <div className="flex flex-1 items-center justify-center">
+      <div className="w-full max-w-md text-center px-4 border rounded-lg p-6 shadow-sm bg-white">
+        <AppLogo scale={1.2} subheading={"You have been logged out"} />
+        <div className="mt-8 space-y-6">
+
+          <Text>
+            Your session was ended by an administrator. This may have been done to resolve
+            account issues or for security reasons.
+          </Text>
+          
+          <Button onClick={handleClick} className="w-full">
+            OK
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

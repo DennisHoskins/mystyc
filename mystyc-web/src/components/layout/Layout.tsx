@@ -66,7 +66,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <StateTransition>
 
           <Header />
-          <div className="flex flex-1 min-h-0">
+          <div className="flex flex-1 w-full h-fit">
 
             {isAdmin && <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} /> }
 

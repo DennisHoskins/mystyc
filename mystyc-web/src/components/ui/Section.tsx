@@ -1,7 +1,7 @@
 interface SectionProps {
   children: React.ReactNode;
   className?: string;
-  background?: 'white' | 'gray' | 'blue';
+  background?: 'transparent' | 'white' | 'gray' | 'blue';
 }
 
 export default function Section({ children, className = '', background = 'transparent' }: SectionProps) {

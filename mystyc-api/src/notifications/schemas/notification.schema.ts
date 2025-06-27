@@ -34,7 +34,7 @@ export class Notification {
   error?: string;
 
   @Prop({ required: true, index: true })
-  sentBy: string; // Firebase UID of admin who sent it
+  sentBy: string;
 
   @Prop()
   sentAt?: Date;

@@ -99,7 +99,7 @@ export default function PageTransition({
   }));
 
   return (
-    <div className={`flex flex-1 w-full min-h-0 ${styles.pageTransition}`}>
+    <div className={`flex flex-col flex-1 ${styles.pageTransition}`}>
       <Transition ref={transitionRef} transition="transition-page">
         {hidden ? null : children}
       </Transition>

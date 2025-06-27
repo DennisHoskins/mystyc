@@ -111,11 +111,16 @@ export class DeviceService {
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
-    const devices = await this.deviceModel
-      .find()
-      .sort(sortObj)
-      .limit(limit)
-      .skip(offset)
+    const pipeline = [
+      { $sort: sortObj },
+      { $group: { _id: '$deviceId', doc: { $first: '$$ROOT' } } }, 
+      { $replaceRoot: { newRoot: '$doc' } },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const devices = await this.deviceModel.
+      aggregate(pipeline)
       .exec();
 
     logger.debug('Devices found', { 

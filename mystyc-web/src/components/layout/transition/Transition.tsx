@@ -63,7 +63,7 @@ const Transition = forwardRef<TransitionRef, { children: ReactNode, transition: 
     return (
       <div 
         ref={transitionRef}
-        className={`${styles.transitionWrapper} ${styles[transitionName]}`}
+        className={`flex flex-col w-full min-h-0 ${styles.transitionWrapper} ${styles[transitionName]}`}
       >
         {children}
       </div>
