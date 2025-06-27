@@ -36,7 +36,7 @@ class AdminApiClient {
   }
 
   // 
-  // todo: dashboard and session
+  // todo: dashboard
   //
 
   //
@@ -50,6 +50,17 @@ class AdminApiClient {
       return response.data || [];
     } catch (error) {
       logger.error('getSessions failed:', error);
+      throw error;
+    }
+  };
+
+  getSession = async (query?: AdminQuery): Promise<Session> => {
+    logger.log('getSession called', { query });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/session${queryString}`);
+    } catch (error) {
+      logger.error('getSession failed:', error);
       throw error;
     }
   };
