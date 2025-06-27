@@ -150,15 +150,16 @@ export class UserProfileService {
    * @returns Promise<UserProfile> - Updated user profile object
    * @throws NotFoundException when user profile is not found
    */
-  async updateProfile(firebaseUid: string, updates: UpdateUserProfileDto): Promise<UserProfile> {
+  async updateProfile(firebaseUid: string, email: string, updates: UpdateUserProfileDto): Promise<UserProfile> {
     logger.info('Updating user profile', {
       firebaseUid,
+      email,
       updateFields: Object.keys(updates),
     }, 'UserProfileService');
 
     const updatedUser = await this.userModel.findOneAndUpdate(
       { firebaseUid },
-      updates,
+      { ...updates, email },
       { new: true }
     );
 

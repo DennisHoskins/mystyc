@@ -52,7 +52,9 @@ export class UserService {
       // Record auth event with server IP
       const authEventDto = {
         firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
         deviceId: loginRegisterDto.device.deviceId,
+        deviceName: device.deviceName,
         type: type,
         ip: serverIp,
         clientTimestamp: loginRegisterDto.clientTimestamp
@@ -113,7 +115,9 @@ export class UserService {
       // Record logout auth event
       const authEventDto = {
         firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
         deviceId: logoutDto.deviceId,
+        deviceName: device.deviceName,
         type: 'logout' as const,
         ip: serverIp,
         clientTimestamp: logoutDto.clientTimestamp

@@ -119,7 +119,7 @@ export class UsersController {
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
     
-    const userProfile = await this.userProfileService.updateProfile(firebaseUser.uid, body)
+    const userProfile = await this.userProfileService.updateProfile(firebaseUser.uid, firebaseUser.email, body)
 
     return userProfile;
   }

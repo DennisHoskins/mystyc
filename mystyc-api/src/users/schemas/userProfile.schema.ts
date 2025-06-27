@@ -7,6 +7,9 @@ import { UserRole } from '@/common/enums/roles.enum';
 export class UserProfile {
   @Prop({ required: true })
   firebaseUid: string;
+
+  @Prop()
+  emailAddress: string;
   
   @Prop({ type: [String], enum: UserRole, default: [UserRole.USER], required: true })
   roles: UserRole[];  

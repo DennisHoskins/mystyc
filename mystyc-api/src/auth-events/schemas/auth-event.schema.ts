@@ -7,7 +7,13 @@ export class AuthEvent {
   firebaseUid: string;
 
   @Prop({ required: true, index: true })
+  email: string;
+
+  @Prop({ required: true, index: true })
   deviceId: string;
+
+  @Prop({ required: true, index: true })
+  deviceName: string;
 
   @Prop({ required: true, enum: ['login', 'logout', 'create'], index: true })
   type: 'login' | 'logout' | 'create';

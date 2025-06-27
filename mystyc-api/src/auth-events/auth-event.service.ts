@@ -21,7 +21,7 @@ export class AuthEventService {
     try {
       const event = await this.authEventModel.findById(eventId).exec();
       if (!event) return null;
-      return this.transformToAuthEvent(event as AuthEventDocument & { device?: any; user?: any });
+      return this.transformToAuthEvent(event as AuthEventDocument);
     } catch {
       return null;
     }
@@ -41,7 +41,7 @@ export class AuthEventService {
       .skip(offset)
       .limit(limit)
       .exec();
-    return events.map(evt => this.transformToAuthEvent(evt as AuthEventDocument & { device?: any; user?: any }));
+    return events.map(evt => this.transformToAuthEvent(evt as AuthEventDocument));
   }
 
   /**
@@ -58,11 +58,11 @@ export class AuthEventService {
       .skip(offset)
       .limit(limit)
       .exec();
-    return events.map(evt => this.transformToAuthEvent(evt as AuthEventDocument & { device?: any; user?: any }));
+    return events.map(evt => this.transformToAuthEvent(evt as AuthEventDocument));
   }
 
   /**
-   * Retrieves auth events (admin) with pagination, sorting, and populated deviceName/email
+   * Retrieves auth events (admin) with pagination and sorting
    */
   async findAll(query: BaseAdminQueryDto): Promise<AuthEventInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'timestamp', sortOrder = 'desc' } = query;
@@ -73,11 +73,9 @@ export class AuthEventService {
       .sort(sortObj)
       .skip(offset)
       .limit(limit)
-      .populate({ path: 'device', select: 'deviceName' })
-      .populate({ path: 'user', select: 'fullName' })
       .exec();
 
-    return events.map(evt => this.transformToAuthEvent(evt as AuthEventDocument & { device?: any; user?: any }));
+    return events.map(evt => this.transformToAuthEvent(evt as AuthEventDocument));
   }
 
   /**
@@ -86,34 +84,36 @@ export class AuthEventService {
   async recordAuthEvent(data: AuthEventInterface): Promise<AuthEventInterface> {
     const event = new this.authEventModel({
       firebaseUid: data.firebaseUid,
+      email: data.email,
       deviceId: data.deviceId,
+      deviceName: data.deviceName,
       type: data.type,
       ip: data.ip,
       timestamp: new Date(),
       clientTimestamp: new Date(data.clientTimestamp),
     });
     const saved = await event.save();
-    return this.transformToAuthEvent(saved as AuthEventDocument & { device?: any; user?: any });
+    return this.transformToAuthEvent(saved as AuthEventDocument);
   }
 
   /**
    * Transforms a document to AuthEventInterface
    */
   private transformToAuthEvent(
-    doc: AuthEventDocument & { device?: { deviceName?: string }; user?: { fullName?: string } }
+    doc: AuthEventDocument
   ): AuthEventInterface {
     return {
       _id: doc._id.toString(),
       firebaseUid: doc.firebaseUid,
+      email: doc.email,
       deviceId: doc.deviceId,
+      deviceName: doc.deviceName,
       ip: doc.ip,
       clientTimestamp: doc.clientTimestamp.toISOString(),
       type: doc.type,
       timestamp: doc.timestamp,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
-      deviceName: doc.device?.deviceName || null,
-      fullName: doc.user?.fullName || null,
     };
   }
 }
