@@ -175,6 +175,18 @@ export const sessionManager = {
     };
   },
 
+  async getSessionAuthKey(sessionId: string) {
+    await ensureConnection();
+
+    const authKeys = await redis.keys(`mystyc::${sessionId}::*::*::tokenAuth`);
+    if (authKeys.length === 0) {
+      logger.error('[getSessionAuthKey] No auth token found for session');
+      return null;
+    }
+
+    return  await redis.get(authKeys[0]);
+  },
+
   async getSessions(limit: number = 20, offset: number = 0) {
     await ensureConnection();
 
@@ -253,7 +265,15 @@ export const sessionManager = {
   },
 
   async clearSession(): Promise<void> {
+
+console.log("");
+console.log("");
+console.log("CLEAR");
+console.log("");
+console.log("");
+
     await ensureConnection();
+
 
     const cookieStore = await cookies();
 

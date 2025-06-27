@@ -20,6 +20,7 @@ import ServerLogoutForm from '@/components/app/auth/ServerLogoutForm';
 import { logger } from '@/util/logger';
 
 import AdminSidebar from '@/components/app/mystyc/admin/AdminSidebar';
+import { apiClient } from '@/api/apiClient';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();
@@ -41,10 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user && authenticated) {
       const logout = async () => {
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          headers: { 'x-source': 'client-cleanup' },
-        });
+        await apiClient.serverLogout()
         clearUser();
       };
 

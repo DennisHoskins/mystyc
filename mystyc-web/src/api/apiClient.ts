@@ -117,6 +117,22 @@ export const apiClient = {
     }
   },
 
+  async serverLogout(): Promise<void> {
+    const response = await fetch(`${serverRoot}/auth/server-logout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        deviceInfo: getDeviceInfo(),
+        clientTimestamp: new Date().toISOString() 
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Server Logout failed', response.status, errorData.type);
+    }
+  },
+
   async updateFcmToken(fcmToken: string): Promise<void> {
     const response = await fetch(`${serverRoot}/updateFcmToken`, {
       method: 'POST',
