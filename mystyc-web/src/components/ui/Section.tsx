@@ -4,8 +4,9 @@ interface SectionProps {
   background?: 'white' | 'gray' | 'blue';
 }
 
-export default function Section({ children, className = '', background = 'gray' }: SectionProps) {
+export default function Section({ children, className = '', background = 'transparent' }: SectionProps) {
   const backgrounds = {
+    transparent: 'bg-transparent', 
     gray: 'bg-gray-50', 
     white: 'bg-white',
     blue: 'bg-blue-50'

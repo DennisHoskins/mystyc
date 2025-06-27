@@ -8,6 +8,8 @@ import {
   ReactNode,
 } from 'react';
 
+import styles from './Transition.module.css';
+
 import { useUser } from '@/components/layout/context/AppContext';
 import { useTransitions } from '@/components/layout/context/TransitionContext';
 import Transition, { TransitionRef } from './Transition';
@@ -97,8 +99,10 @@ export default function PageTransition({
   }));
 
   return (
-    <Transition ref={transitionRef} transition="transition-page">
-      {hidden ? null : children}
-    </Transition>
+    <div className={`flex flex-1 w-full min-h-0 ${styles.pageTransition}`}>
+      <Transition ref={transitionRef} transition="transition-page">
+        {hidden ? null : children}
+      </Transition>
+    </div>
   );
 }

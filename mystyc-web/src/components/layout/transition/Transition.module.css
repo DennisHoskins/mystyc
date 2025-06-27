@@ -23,3 +23,6 @@
   to { opacity: 1; }
 } 
 
+.pageTransition {
+   box-shadow: inset 0 0 4px -1px rgb(0 0 0 / 0.25);  
+}

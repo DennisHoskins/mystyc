@@ -1,6 +1,7 @@
 'use client';
 
-export default function Page() {
+import AdminSessions from '@/components/app/mystyc/admin/sessions/AdminSessions';
 
-  return <>Sessions</>
+export default function Page() {
+  return <AdminSessions></AdminSessions>
 }

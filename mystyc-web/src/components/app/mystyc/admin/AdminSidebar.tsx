@@ -22,7 +22,7 @@ export default function AdminSidebar({
    { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
    { icon: <Users />, label: 'Users', href: '/admin/users' },
    { icon: <Monitor />, label: 'Devices', href: '/admin/devices' },
-   { icon: <Shield />, label: 'Authentication', href: '/admin/authentication' },
+   { icon: <Shield />, label: 'Authorization', href: '/admin/authorization' },
    { icon: <Bell />, label: 'Notifications', href: '/admin/notifications' },
  ];
 

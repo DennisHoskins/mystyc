@@ -1,6 +1,7 @@
 'use client';
 
-export default function Page() {
+import AdminDevices from '@/components/app/mystyc/admin/devices/AdminDevices';
 
-  return <>Devices</>
+export default function Page() {
+  return <AdminDevices></AdminDevices>
 }
