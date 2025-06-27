@@ -2,7 +2,8 @@ import 'server-only';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getAuth, DecodedIdToken } from 'firebase-admin/auth';
 import { firebaseAuth } from './firebaseAuth';
-import { Session, sessionManager } from './sessionManager';
+import { sessionManager } from './sessionManager';
+import { Session } from '@/interfaces/session.interface';
 import { logger } from '@/util/logger';
 
 // Initialize Firebase Admin SDK

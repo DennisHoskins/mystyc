@@ -9,17 +9,11 @@ import {
   validateSessionId,
   generateDeviceId 
 } from './keyManager';
+
+import { Session } from '@/interfaces/session.interface';
 import { logger } from '@/util/logger';
 
 import { IdTokens } from './authTokenManager';
-
-export interface Session {
-  authToken: string; 
-  refreshToken: string; 
-  sessionId: string; 
-  deviceId: string; 
-  uid: string 
-}  
 
 // custom error for any tampered / out-of-sync session
 export class InvalidSessionError extends Error {
@@ -50,7 +44,10 @@ export const sessionManager = {
     uid: string,
     deviceId: string, 
     idTokens: IdTokens,
-    sessionId: string
+    sessionId: string,
+    email: string,
+    deviceName: string,
+    isAdmin: boolean = false    
   ): Promise<string> {
     await ensureConnection();
 
@@ -63,6 +60,15 @@ export const sessionManager = {
     const refreshTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
     await redis.set(refreshTokenKey, idTokens.refreshToken);
     logger.log('[sessionManager] Refresh token stored in Redis');
+
+    const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
+    await redis.hSet(metadataKey, {
+      email,
+      deviceName,
+      isAdmin: isAdmin.toString(),
+      createdAt: Date.now().toString()
+    });    
+    logger.log('[sessionManager] Metadata token stored in Redis');
 
     // Set httpOnly cookie for session only (remove device cookie)
     const cookieStore = await cookies();
@@ -142,11 +148,18 @@ export const sessionManager = {
 
     // Get the refresh token for this session
     const refreshKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
-
     const refreshToken = await redis.get(refreshKey);
     if (!refreshToken) {
       logger.error('[sessionManager] Refresh token value is null');
       throw new InvalidSessionError('refresh token null');
+    }
+
+    // Get session metadata
+    const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
+    const metadata = await redis.hGetAll(metadataKey);
+    if (!metadata.email) {
+      logger.error('[sessionManager] Session metadata missing');
+      throw new InvalidSessionError('session metadata missing');
     }
 
     logger.log('[sessionManager] Session retrieved successfully');
@@ -155,7 +168,10 @@ export const sessionManager = {
       refreshToken,
       sessionId,
       deviceId,
-      uid
+      uid,
+      email: metadata.email,
+      deviceName: metadata.deviceName || 'Unknown Device',
+      isAdmin: metadata.isAdmin === 'true'      
     };
   },
 
@@ -170,36 +186,38 @@ export const sessionManager = {
 
     do {
       const result = await redis.scan(cursor, {
-        MATCH: 'mystyc::*::*::*::tokenAuth',
-        COUNT: 100 // Scan batch size
+        MATCH: 'mystyc::*::*::*::metadata',
+        COUNT: 100
       });
 
       cursor = result.cursor;
-      const authKeys = result.keys;
+      const metadataKeys = result.keys;
 
-      for (const authKey of authKeys) {
+      for (const metadataKey of metadataKeys) {
         totalFound++;
         
-        // Skip items before offset
         if (totalFound <= offset) continue;
-        
-        // Stop if we've collected enough items
         if (sessions.length >= limit) break;
 
-        const keyParts = authKey.split('::');
+        const keyParts = metadataKey.split('::');
         const sessionId = keyParts[1];
         const deviceId = keyParts[2];
         const uid = keyParts[3];
+
+        // Get metadata
+        const metadata = await redis.hGetAll(metadataKey);
 
         sessions.push({
           sessionId,
           deviceId,
           uid,
-          authToken: authKey
+          email: metadata.email,
+          deviceName: metadata.deviceName,
+          isAdmin: metadata.isAdmin === 'true',
+          createdAt: metadata.createdAt ? new Date(parseInt(metadata.createdAt)) : null
         });
       }
 
-      // Break if we have enough sessions or no more data
       if (sessions.length >= limit || cursor === '0') break;
 
     } while (cursor !== '0');

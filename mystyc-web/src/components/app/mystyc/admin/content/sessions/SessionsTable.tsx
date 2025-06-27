@@ -16,8 +16,8 @@ export default function UsersTable() {
 
   const columns: Column<Session>[] = [
     { key: 'sessionId', header: 'Session'},
-    { key: 'deviceId', header: 'Device'},
-    { key: 'authorized', header: 'Authorized', align: "right", render: (s) => s.authToken ? 'Yes' : 'No' },
+    { key: 'email', header: 'User'},
+    { key: 'deviceName', header: 'Device'},
   ];
 
   const loadSessions = useCallback(async (page: number) => {

@@ -16,6 +16,7 @@ export default function UsersTable() {
   const LIMIT = 20;
 
   const columns: Column<UserProfile>[] = [
+    { key: 'uid', header: 'Id', render: (u) => u.firebaseUid },
     { key: 'email', header: 'Email' },
     { key: 'fullName', header: 'Name', render: (u) => u.fullName || 'Unnamed User' },
     { key: 'createdAt', header: 'Joined', align: 'right', render: (u) => formatDateForDisplay(u.createdAt) || '-' },

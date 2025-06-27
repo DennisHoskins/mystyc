@@ -32,6 +32,16 @@ export async function handleAdmin(
       );
     }
 
+    if (!session.isAdmin) {
+      logger.warn(`[admin/${endpoint}] Non-admin user attempted access:`, session.email);
+      return NextResponse.json(
+        { message: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
+    logger.log(`[admin/${endpoint}] Admin access granted to:`, session.email);
+
     // Handle sessions endpoint (no Nest call needed)
     if (!requiresNestCall) {
       const searchParams = request.nextUrl.searchParams;

@@ -30,14 +30,15 @@ async function doLogout(request: NextRequest) {
 
   // Parse and validate request body
   const body: AuthLogoutBody = await request.json();
-
-console.log(body);
-  
   const { deviceInfo, clientTimestamp } = body;
 
   // Build device object with deterministic ID based on request fingerprint
   const device = buildDevice(session.uid, deviceInfo, request);
   logger.log(`[authHandler] Device ID generated:`, device.deviceId);
+
+  logger.log('Clearing Session and Firebase Auth');
+  await sessionManager.clearSession();
+  await firebaseAuth.signOut();
 
   // Call Nest backend to register session and get user profile
   logger.log(`[authHandler] Calling Nest API for Logout`);
@@ -59,8 +60,6 @@ console.log(body);
     logger.error(`[authHandler] Nest Logout failed:`, error);
   }
 
-  await sessionManager.clearSession();
-  await firebaseAuth.signOut();
   logger.log('Logout completed successfully');
 }
 
