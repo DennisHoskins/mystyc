@@ -7,14 +7,14 @@ import SessionsDevicesTable from './SessionsDevicesTable';
 export default function SessionsPage() {
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
-    { label: 'Devices' },
+    { label: 'Sessions' },
   ];
 
   return (
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
-        description="Track user login and logout events, monitor authentication patterns, and review access history"
+        description="View active user sessions and devices, monitor login activity, and manage session security settings"
       />
 
       <div className="mt-6">
