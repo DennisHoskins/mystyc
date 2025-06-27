@@ -6,7 +6,8 @@ import {
   decryptCookieValue,
 } from '../../keyManager';
 
-import { buildDevice } from '@/app/api/auth/deviceManager';
+import { buildDevice, extractDeviceFingerprint } from '@/app/api/auth/deviceManager';
+import { generateDeviceId } from '../../keyManager';
 import { sessionManager } from '@/app/api/sessionManager';
 import { authTokenManager } from '@/app/api/authTokenManager';
 import { firebaseAuth } from '@/app/api/firebaseAuth';
@@ -22,53 +23,67 @@ export interface AuthLogoutBody {
 
 async function doServerLogout(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || 'unknown';
-  const source    = request.headers.get('x-source')  || 'unknown';
+  const source = request.headers.get('x-source') || 'unknown';
   logger.log('Server Logout initiated', { source, userAgent });
 
+  let authTokenForLogout = null;
   let sessionData = null;
 
-  // Manual extraction - get sessionId from cookie and scan for any auth tokens
+  // Try to get session from cookie first
   const cookieStore = await cookies();
   const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
- 
-  if (!encryptedSessionId) {
-    logger.error('[doServerLogout] No session cookie found');
-    await doLogout();    
-    return new Response('Unauthorized', { status: 401 });
+  
+  if (encryptedSessionId) {
+    const sessionId = decryptCookieValue(encryptedSessionId);
+    if (sessionId) {
+      authTokenForLogout = await sessionManager.getSessionAuthKey(sessionId);
+      if (authTokenForLogout) {
+        const keyParts = authTokenForLogout[0].split('::');
+        sessionData = {
+          sessionId,
+          deviceId: keyParts[2],
+          uid: keyParts[3],
+          authToken: authTokenForLogout
+        };
+      }
+    }
   }
 
-  const sessionId = decryptCookieValue(encryptedSessionId);
- 
-  if (!sessionId) {
-    logger.error('[doServerLogout] Failed to decrypt session cookie');
+  // If cookie method failed, try device fingerprint method
+  if (!sessionData) {
+    logger.log('[doServerLogout] Cookie method failed, trying device fingerprint method');
+    
+    // Calculate deviceId from request fingerprint
+    const fingerprint = extractDeviceFingerprint(request);
+    const deviceId = generateDeviceId(fingerprint);
+    
+    // Look up sessionId for this device
+    const actualSessionId = await sessionManager.getDeviceSession(deviceId);
+    if (actualSessionId) {
+      authTokenForLogout = await sessionManager.getSessionAuthKey(actualSessionId);
+      if (authTokenForLogout) {
+        const keyParts = authTokenForLogout[0].split('::');
+        sessionData = {
+          sessionId: actualSessionId,
+          deviceId: keyParts[2],
+          uid: keyParts[3],
+          authToken: authTokenForLogout
+        };
+        logger.log('[doServerLogout] Found session via device mapping');
+      }
+    }
+  }
+
+  if (!sessionData) {
+    logger.error('[doServerLogout] No session data available via any method');
     await doLogout();
     return new Response('Unauthorized', { status: 401 });
   }
 
-  // Look for ANY auth token with this sessionId, regardless of device/uid
-  const authKey = await sessionManager.getSessionAuthKey(sessionId)
-  if (!authKey) {
-    logger.error('[doServerLogout] Auth token value is null');
-    await doLogout();
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  // Extract uid and deviceId from the key for the logout call
-  const keyParts = authKey.split('::');
-  sessionData = {
-    sessionId,
-    deviceId: keyParts[2],
-    uid: keyParts[3],
-    authToken: keyParts[1]
-  };
-
-  logger.log('Found auth token via manual extraction for uid:', sessionData.uid);
-
-  // Parse and validate request body
+  // Rest of logout logic remains the same...
   const body: AuthLogoutBody = await request.json();
   const { deviceInfo, clientTimestamp } = body;
 
-  // Build device object with deterministic ID based on request fingerprint
   const device = buildDevice(sessionData.uid, deviceInfo, request);
   logger.log(`[doServerLogout] Device ID generated:`, device.deviceId);
 
@@ -77,23 +92,25 @@ async function doServerLogout(request: NextRequest) {
   await firebaseAuth.signOut();
 
   // Call Nest backend using the saved auth token
-  logger.log(`[doServerLogout] Calling Nest API for Server Logout`);
-  const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/server-logout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': authTokenManager.createAuthHeader(authKey),
-    },
-    body: JSON.stringify({
-      firebaseUid: sessionData.uid,
-      device: device,
-      clientTimestamp
-    })
-  });
+  if (authTokenForLogout) {
+    logger.log(`[doServerLogout] Calling Nest API for Server Logout`);
+    const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/server-logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authTokenManager.createAuthHeader(authTokenForLogout),
+      },
+      body: JSON.stringify({
+        firebaseUid: sessionData.uid,
+        device: device,
+        clientTimestamp
+      })
+    });
 
-  if (!nestResponse.ok) {
-    const error = await nestResponse.text();
-    logger.error(`[doServerLogout] Nest Logout failed:`, error);
+    if (!nestResponse.ok) {
+      const error = await nestResponse.text();
+      logger.error(`[doServerLogout] Nest Logout failed:`, error);
+    }
   }
 
   await doLogout();

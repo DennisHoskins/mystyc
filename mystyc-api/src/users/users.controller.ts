@@ -118,9 +118,7 @@ export class UsersController {
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
-    
     const userProfile = await this.userProfileService.updateProfile(firebaseUser.uid, firebaseUser.email, body)
-
     return userProfile;
   }
 
@@ -168,6 +166,59 @@ export class UsersController {
       };
     } catch (error) {
       this.logger.error('Logout recording failed via controller', {
+        uid: firebaseUser.uid,
+        deviceId: logoutDto.device.deviceId,
+        error: error.message
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * Logs out user by clearing device FCM token and recording logout event
+   * @param firebaseUserFromDecorator - Firebase user from auth guard
+   * @param logoutDto - Logout data with device ID and client timestamp
+   * @param request - Express request object for IP extraction
+   * @returns Promise<{success: boolean, message: string}> - Logout confirmation
+   */
+  @Post('server-logout')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ auth: { limit: 10, ttl: 60000 } })
+  async serverLogout(
+    @FirebaseUser() firebaseUserFromDecorator,
+    @Body() logoutDto: AuthEventLogoutDto,
+    @Req() request: Request
+  ): Promise<{ success: boolean; message: string }> {
+    this.logger.info('Server logout via POST /users/server-logout', {
+      uid: firebaseUserFromDecorator.uid,
+      deviceId: logoutDto.device.deviceId,
+    });
+
+    const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
+    
+    // Extract server IP from request
+    const serverIp = this.getClientIp(request);
+    
+    try {
+      await this.userService.serverLogout(
+        firebaseUser,
+        logoutDto,
+        serverIp
+      );
+
+      this.logger.info('Server Logout recorded successfully via controller', {
+        uid: firebaseUser.uid,
+        deviceId: logoutDto.device.deviceId,
+        serverIp
+      });
+
+      return {
+        success: true,
+        message: 'Server Logout recorded successfully'
+      };
+    } catch (error) {
+      this.logger.error('Server Logout recording failed via controller', {
         uid: firebaseUser.uid,
         deviceId: logoutDto.device.deviceId,
         error: error.message

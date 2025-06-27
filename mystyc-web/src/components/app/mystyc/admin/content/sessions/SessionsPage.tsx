@@ -2,6 +2,7 @@
 
 import AdminHeader from '@/components/app/mystyc/admin/AdminHeader';
 import SessionsTable from './SessionsTable';
+import SessionsDevicesTable from './SessionsDevicesTable';
 
 export default function SessionsPage() {
   const breadcrumbs = [
@@ -18,6 +19,10 @@ export default function SessionsPage() {
 
       <div className="mt-6">
         <SessionsTable />
+      </div>
+
+      <div className="mt-6">
+        <SessionsDevicesTable />
       </div>
     </>
   );

@@ -51,15 +51,21 @@ export const sessionManager = {
   ): Promise<string> {
     await ensureConnection();
 
+    // Check for existing session on this device
+    const existingSessionId = await this.getDeviceSession(deviceId);
+    if (existingSessionId && existingSessionId !== sessionId) {
+      logger.log('[sessionManager] Device already has session, clearing:', deviceId.substring(0, 8));
+      await this.clearSessionByDeviceId(deviceId);
+    }
+
     logger.log('[sessionManager] Creating session for uid:', uid, 'device:', deviceId.substring(0, 8));
 
+    // Store session data (existing code)
     const authTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenAuth`;
     await redis.set(authTokenKey, idTokens.authToken);
-    logger.log('[sessionManager] Auth token stored in Redis');
-
+    
     const refreshTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
     await redis.set(refreshTokenKey, idTokens.refreshToken);
-    logger.log('[sessionManager] Refresh token stored in Redis');
 
     const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
     await redis.hSet(metadataKey, {
@@ -67,12 +73,13 @@ export const sessionManager = {
       deviceName,
       isAdmin: isAdmin.toString(),
       createdAt: Date.now().toString()
-    });    
-    logger.log('[sessionManager] Metadata token stored in Redis');
+    });
 
-    // Set httpOnly cookie for session only (remove device cookie)
+    // Create device mapping
+    await this.setDeviceSession(deviceId, sessionId);
+
+    // Set cookie (existing code)
     const cookieStore = await cookies();
-
     cookieStore.set(getSessionCookieName(), encryptCookieValue(sessionId), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -80,8 +87,14 @@ export const sessionManager = {
       path: '/'
     });
 
-    logger.log('[sessionManager] Session cookie set');
+    logger.log('[sessionManager] Session created with device mapping');
     return sessionId;
+  },
+
+  async setDeviceSession(deviceId: string, sessionId: string): Promise<void> {
+    await ensureConnection();
+    await redis.set(`mystyc_device_session::${deviceId}`, sessionId);
+    logger.log('[sessionManager] Device session mapping created:', deviceId.substring(0, 8));
   },
 
   async getCurrentSession(request?: NextRequest | Headers): Promise<Session | null> {
@@ -187,6 +200,11 @@ export const sessionManager = {
     return  await redis.get(authKeys[0]);
   },
 
+  async getDeviceSession(deviceId: string): Promise<string | null> {
+    await ensureConnection();
+    return await redis.get(`mystyc_device_session::${deviceId}`);
+  },  
+
   async getSessions(limit: number = 20, offset: number = 0) {
     await ensureConnection();
 
@@ -244,6 +262,54 @@ export const sessionManager = {
     };
   },
 
+  async getSessionsDevices(limit: number = 20, offset: number = 0) {
+    await ensureConnection();
+
+    logger.log('[sessionManager] Getting sessions devices with limit:', limit, 'offset:', offset);
+
+    const sessionsDevices = [];
+    let cursor = '0';
+    let totalFound = 0;
+
+    do {
+      const result = await redis.scan(cursor, {
+        MATCH: 'mystyc_device_session::*',
+        COUNT: 100
+      });
+
+      cursor = result.cursor;
+      const metadataKeys = result.keys;
+
+      for (const metadataKey of metadataKeys) {
+        totalFound++;
+        
+        if (totalFound <= offset) continue;
+        if (sessionsDevices.length >= limit) break;
+
+        const keyParts = metadataKey.split('::');
+        const deviceId = keyParts[1];
+        const sessionId = await redis.get(metadataKey);
+
+        sessionsDevices.push({
+          deviceId,
+          sessionId,
+        });
+      }
+
+      if (sessionsDevices.length >= limit || cursor === '0') break;
+
+    } while (cursor !== '0');
+
+    return {
+      data: sessionsDevices,
+      pagination: {
+        offset,
+        limit,
+        total: totalFound
+      }
+    };
+  },
+
   async updateSession(
     sessionId: string,
     deviceId: string,
@@ -265,18 +331,9 @@ export const sessionManager = {
   },
 
   async clearSession(): Promise<void> {
-
-console.log("");
-console.log("");
-console.log("CLEAR");
-console.log("");
-console.log("");
-
     await ensureConnection();
 
-
     const cookieStore = await cookies();
-
     const cookieKeySession = getSessionCookieName();
     const encryptedSessionId = cookieStore.get(cookieKeySession)?.value;
 
@@ -286,13 +343,46 @@ console.log("");
       const sessionId = decryptCookieValue(encryptedSessionId);
       const pattern = `mystyc::${sessionId}::*`;
       const keys = await redis.keys(pattern);
+      
       if (keys.length > 0) {
+        // Extract deviceId from first key to clear device mapping
+        const firstKey = keys.find(key => key.endsWith('::tokenAuth'));
+        if (firstKey) {
+          const keyParts = firstKey.split('::');
+          const deviceId = keyParts[2];
+          await this.clearDeviceSession(deviceId);
+        }
+        
         await redis.del(keys);
-        logger.log('[sessionManager] Deleted', keys.length, 'Redis keys');
+        logger.log('[sessionManager] Deleted', keys.length, 'Redis keys and device mapping');
       }
     }
+    
     cookieStore.delete(cookieKeySession);
-
     logger.log('[sessionManager] Session cookie cleared');
+  },
+
+  async clearDeviceSession(deviceId: string): Promise<void> {
+    await ensureConnection();
+    await redis.del(`mystyc_device_session::${deviceId}`);
+    logger.log('[sessionManager] Device session mapping cleared:', deviceId.substring(0, 8));
+  },
+
+  async clearSessionByDeviceId(deviceId: string): Promise<void> {
+    await ensureConnection();
+    
+    const sessionId = await this.getDeviceSession(deviceId);
+    if (sessionId) {
+      // Clear all session data
+      const pattern = `mystyc::${sessionId}::*`;
+      const keys = await redis.keys(pattern);
+      if (keys.length > 0) {
+        await redis.del(keys);
+        logger.log('[sessionManager] Cleared session by deviceId:', deviceId.substring(0, 8));
+      }
+      
+      // Clear device mapping
+      await this.clearDeviceSession(deviceId);
+    }
   }
 };

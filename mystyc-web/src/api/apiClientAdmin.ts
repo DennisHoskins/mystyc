@@ -1,4 +1,4 @@
-import { AdminQuery, Session, User, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
+import { AdminQuery, Session, SessionDevice, User, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 const API_BASE_URL = '/api';
@@ -61,6 +61,29 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/session${queryString}`);
     } catch (error) {
       logger.error('getSession failed:', error);
+      throw error;
+    }
+  };
+
+  getSessionsDevices = async (query?: AdminQuery): Promise<SessionDevice[]> => {
+    logger.log('getSessionsDevices called', { query });
+    try {
+      const queryString = this.buildQueryString(query);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devices${queryString}`);
+      return response.data || [];
+    } catch (error) {
+      logger.error('getSessionsDevices failed:', error);
+      throw error;
+    }
+  };
+
+  getSessionDevice = async (query?: AdminQuery): Promise<SessionDevice> => {
+    logger.log('getSessionDevice called', { query });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/session/device${queryString}`);
+    } catch (error) {
+      logger.error('getSessionDevice failed:', error);
       throw error;
     }
   };

@@ -44,6 +44,37 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
     const device = buildDevice(idTokens.uid, deviceInfo, request);
     logger.log(`[authHandler] Device ID generated:`, device.deviceId);
 
+    // Check for existing session on this device and clear it
+    const existingSessionId = await sessionManager.getDeviceSession(device.deviceId);
+    if (existingSessionId) {
+      logger.log(`[authHandler] Found existing session for device, clearing:`, device.deviceId.substring(0, 8));
+      
+      // Try to notify Nest about the forced logout
+      const existingAuthToken = await sessionManager.getSessionAuthKey(existingSessionId);
+      if (existingAuthToken) {
+        try {
+          const response = await fetch(`api/auth/server-logout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              deviceInfo,
+              clientTimestamp: new Date().toISOString() 
+            })
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            logger.warn(`[authHandler] Failed to notify Nest of forced logout:`, errorData.message || 'Server Logout failed', response.status, errorData.type);
+          } else {
+            logger.log(`[authHandler] Notified Nest of forced logout`);
+          }
+        } catch (error) {
+          logger.warn(`[authHandler] Failed to notify Nest of forced logout:`, error);
+        }
+      }
+      
+      await sessionManager.clearSessionByDeviceId(device.deviceId);
+    }
+
     // Generate cryptographically secure session ID from device and user
     const sessionId = generateSessionId(device.deviceId, idTokens.uid);
     logger.log(`[authHandler] Session ID generated:`, sessionId.substring(0, 8));

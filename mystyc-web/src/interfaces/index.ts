@@ -1,5 +1,6 @@
 export * from './firebaseUser.interface';
 export * from './session.interface';
+export * from './sessionDevice.interface';
 export * from './user.interface';
 export * from './userRole.interface';
 export * from './userProfile.interface';
