@@ -22,7 +22,7 @@ export default function Sidebar({
   return (
     <aside className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''} ${isOpen ? styles.open : styles.closed} ${className} fixed rounded-lg m-4 mr-0 shadow-sm bg-white flex flex-col self-start`}>
       <SidebarToggleButton isCollapsed={isCollapsed} onToggle={onToggle} />
-      <nav className={styles.nav}>
+      <nav className={`${styles.nav} rounded-lg`}>
         {children}
       </nav>
     </aside>
