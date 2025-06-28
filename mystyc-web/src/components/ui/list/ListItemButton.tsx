@@ -22,7 +22,7 @@ export default function ListItemButton({
 }: ListItemButtonProps) {
   const router = useTransitionRouter();
   const baseClasses =
-    'block w-full p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
+    'block w-full p-4 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors';
   const combinedClasses = `${baseClasses} ${className}`;
 
   const content = (

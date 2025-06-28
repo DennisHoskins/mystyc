@@ -1,21 +1,27 @@
 'use client';
 
 import Card from '@/components/ui/Card';
+import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
-import Breadcrumbs, { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
+import { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
+import AdminBreadcrumbs from './AdminBreadcrumbs';
 
 interface AdminHeaderProps {
-  description: string;
-  breadcrumbs: BreadcrumbItem[];
+  breadcrumbs?: BreadcrumbItem[];
+  title: string;
+  description?: string;
+  children?: React.ReactNode
 }
 
-export default function AdminHeader({ description, breadcrumbs }: AdminHeaderProps) {
+export default function AdminHeader({ breadcrumbs, title, description, children }: AdminHeaderProps) {
   return (
-    <Card>
-      <div className="space-y-4">
-        <Breadcrumbs items={breadcrumbs} />
-        <Text>{description}</Text>
-      </div>
-    </Card>
+    <>
+      {breadcrumbs && <AdminBreadcrumbs breadcrumbs={breadcrumbs} />}
+      <Card>
+        <Heading level={2}>{title}</Heading>
+        {description && <Text>{description}</Text>}
+        {children}
+      </Card>
+    </>
   );
 }

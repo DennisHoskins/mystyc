@@ -51,6 +51,7 @@ export default function DevicesPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
+        title={"Devices"}
         description="Monitor and control connected devices, view status device configurations"
       />
 

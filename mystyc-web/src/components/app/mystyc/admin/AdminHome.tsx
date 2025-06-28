@@ -10,7 +10,7 @@ export default function AdminHome() {
   return (
     <>
       <AdminHeader 
-        breadcrumbs={breadcrumbs}
+        title={"Admin"}
         description="Overview of system activity, key metrics, and quick access to administrative tasks"
       />
     </>

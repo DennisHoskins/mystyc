@@ -81,6 +81,7 @@ export default function SessionsPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
+        title={"Sessions"}
         description="View active user sessions and devices, monitor login activity, and manage session security settings"
       />
 

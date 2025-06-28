@@ -10,7 +10,7 @@ const Table = forwardRef<
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={clsx('w-full caption-bottom text-sm', className)}
+      className={clsx('w-full overflow-hidden caption-bottom text-sm', className)}
       {...props}
     />
   </div>

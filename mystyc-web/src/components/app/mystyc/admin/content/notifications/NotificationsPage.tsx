@@ -51,6 +51,7 @@ export default function NotificationsPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
+        title={"Notifications"}
         description="View sent push notifications, message history, and delivery status for user communications"
       />
 

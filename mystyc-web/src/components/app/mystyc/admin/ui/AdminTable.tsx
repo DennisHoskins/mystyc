@@ -144,7 +144,7 @@ export default function AdminTable<T>({
   }
 
   return (
-    <div className='rounded-lg shadow-sm bg-white '>
+    <div className='rounded-md overflow-hidden shadow-sm bg-white '>
         <Table>
           <TableHeader>
             <TableRow>

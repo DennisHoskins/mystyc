@@ -51,6 +51,7 @@ export default function AuthorizationPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
+        title={"Authorization"}
         description="Track user login and logout events, monitor authentication patterns, and review access history"
       />
 

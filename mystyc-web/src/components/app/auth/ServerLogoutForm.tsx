@@ -41,7 +41,7 @@ export default function ServerLogoutForm() {
 
   return (
     <div className="flex flex-1 items-center justify-center">
-      <div className="w-full max-w-md text-center px-4 border rounded-lg p-6 shadow-sm bg-white">
+      <div className="w-full max-w-md text-center px-4 border rounded-md p-6 shadow-sm bg-white">
         <AppLogo scale={1.2} subheading={"You have been logged out"} />
         <div className="mt-8 space-y-6">
 

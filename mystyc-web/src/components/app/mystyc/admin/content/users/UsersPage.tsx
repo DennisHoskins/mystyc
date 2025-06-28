@@ -51,6 +51,7 @@ export default function UsersPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
+        title={"Users"}
         description="Manage user accounts, permissions, and profile information"
       />
 

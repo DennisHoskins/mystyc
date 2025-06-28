@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default function Card({ children }: { children: React.ReactNode }) {
+export default function Card({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <div className={'rounded-lg p-6 shadow-sm bg-white flex flex-col'}>
+    <div className={`rounded-md overflow-hidden p-4 shadow-sm bg-white flex flex-col ${className}`}>
       {children}
     </div>
   );
