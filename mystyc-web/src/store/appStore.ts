@@ -15,6 +15,9 @@ export interface AppState {
   fcmToken: string | null;
   lastTokenUpdate: number | null;
 
+  // Admin state
+  sidebarCollapsed: boolean;
+
   // Actions
   setOnline: (isOnline: boolean) => void;
   setBusy: (delayMs?: number) => void;
@@ -29,9 +32,13 @@ export interface AppState {
   // FCM actions
   setFcmToken: (token: string | null) => void;
   clearFcmToken: () => void;
+
+  // Admin actions
+  setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
 const initialState = {
+  // App initial state
   isOnline: true,
   isBusy: false,
   isGlobalError: false,
@@ -43,6 +50,9 @@ const initialState = {
   // FCM initial state
   fcmToken: null,
   lastTokenUpdate: null,
+
+  // Admin initial state
+  sidebarCollapsed: false,
 };
 
 export const useAppStore = create<AppState>()(
@@ -84,12 +94,16 @@ export const useAppStore = create<AppState>()(
       // FCM actions
       setFcmToken: (token) => set({ fcmToken: token, lastTokenUpdate: Date.now() }),
       clearFcmToken: () => set({ fcmToken: null, lastTokenUpdate: null }),
+
+      // Admin actions
+      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
     }),
     {
       name: 'app-storage',
       partialize: (state) => ({ 
         fcmToken: state.fcmToken, 
-        lastTokenUpdate: state.lastTokenUpdate 
+        lastTokenUpdate: state.lastTokenUpdate,
+        sidebarCollapsed: state.sidebarCollapsed
       })
     }
   )

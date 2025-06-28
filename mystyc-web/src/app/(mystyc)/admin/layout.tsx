@@ -23,7 +23,7 @@ export default function MystycLayout({
   }
 
   return (
-    <div className='px-4 py-4'>
+    <div className='px-4 pl-0 py-4'>
       {children}
     </div>
   );

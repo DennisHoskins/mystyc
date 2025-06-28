@@ -18,7 +18,7 @@ export default function AuthorizationTable() {
   const columns: Column<AuthEvent>[] = [
     { key: 'event', header: 'Event', render: (e) => e.type || 'Unknown' },
     { key: 'email', header: 'User', render: (e) => e.email || 'Unknown User' },
-    { key: 'deviceName', header: 'Device Name', render: (e) => e.deviceName || 'Unnamed Device' },
+    { key: 'deviceName', header: 'Device', render: (e) => e.deviceName || 'Unnamed Device' },
     { key: 'timestamp', header: 'Timestamp', align: 'right', render: (e) => formatDateForDisplay(e.clientTimestamp) || '-' },
   ];
 

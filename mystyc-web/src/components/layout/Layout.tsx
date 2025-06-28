@@ -30,7 +30,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const setLoggedOutByServer = useAppStore((s) => s.setLoggedOutByServer);
   const pathname = usePathname();
   const isWebsite = !user;
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
+  const setSidebarCollapsed = useAppStore((s) => s.setSidebarCollapsed);
 
   useEffect(() => {
     logger.log('[LAYOUT] pathname', pathname);
@@ -65,13 +66,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           <Header />
           <div className="flex flex-1 w-full h-fit">
-
-            {isAdmin && <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} /> }
-
             <ScrollWrapper>
-              <PageTransition>
-                <Main>{children}</Main>
-              </PageTransition>
+
+              {isAdmin && 
+                <AdminSidebar 
+                  isOpen={isAdmin} 
+                  isCollapsed={sidebarCollapsed}
+                  onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                /> 
+              }
+              
+              <div className={`transition-all duration-300 ease-in-out flex flex-col flex-1 ${isAdmin ? (sidebarCollapsed ? 'ml-28' : 'ml-80') : ''}`}>
+                <PageTransition>
+                  <Main>{children}</Main>
+                </PageTransition>
+              </div>
+
               <Footer />
             </ScrollWrapper>
           </div>

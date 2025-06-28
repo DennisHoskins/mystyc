@@ -37,8 +37,8 @@ export default function SidebarItem({
       className={`${styles.sidebarItem} ${isActive ? styles.active : ''} ${isCollapsed ? styles.collapsed : ''}`}
       title={isCollapsed ? label : undefined}
     >
-      <span className={styles.icon}>{icon}</span>
-      {!isCollapsed && <span className={styles.label}>{label}</span>}
+      <span className={`${styles.icon}`}>{icon}</span>
+      <span className={`${styles.label} ${isCollapsed ? styles.collapsed : ''}`}>{label}</span>
     </button>
   );
 }

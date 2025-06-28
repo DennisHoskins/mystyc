@@ -8,8 +8,6 @@ import {
   ReactNode,
 } from 'react';
 
-import styles from './Transition.module.css';
-
 import { useUser } from '@/components/layout/context/AppContext';
 import { useTransitions } from '@/components/layout/context/TransitionContext';
 import Transition, { TransitionRef } from './Transition';
@@ -99,7 +97,7 @@ export default function PageTransition({
   }));
 
   return (
-    <div className={`flex flex-col flex-1 ${styles.pageTransition}`}>
+    <div className={`flex flex-col flex-1`}>
       <Transition ref={transitionRef} transition="transition-page">
         {hidden ? null : children}
       </Transition>

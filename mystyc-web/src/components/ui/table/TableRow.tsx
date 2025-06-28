@@ -10,7 +10,7 @@ const TableRow = forwardRef<
   <tr
     ref={ref}
     className={clsx(
-      'border-b transition-colors hover:bg-gray-50/50 data-[state=selected]:bg-gray-100',
+      'even:bg-gray-50 transition-colors hover:bg-gray-50/50 data-[state=selected]:bg-gray-100',
       className
     )}
     {...props}

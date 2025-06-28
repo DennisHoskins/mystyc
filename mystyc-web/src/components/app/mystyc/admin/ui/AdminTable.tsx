@@ -104,7 +104,7 @@ export default function AdminTable<T>({
   }
 
   return (
-    <>
+    <div className='rounded-lg shadow-sm bg-white '>
         <Table>
           <TableHeader>
             <TableRow>
@@ -136,7 +136,7 @@ export default function AdminTable<T>({
         </Table>
       
       {onPageChange && (
-        <div className="flex justify-between items-center mt-6">
+        <div className="flex justify-between items-center p-4 border-t border-t-gray-100">
           <Button
             variant="secondary"
             onClick={() => onPageChange(currentPage - 1)}
@@ -158,6 +158,6 @@ export default function AdminTable<T>({
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }
