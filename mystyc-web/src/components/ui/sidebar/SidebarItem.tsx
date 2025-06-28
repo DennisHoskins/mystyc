@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import styles from './Sidebar.module.css';
 
@@ -18,10 +19,20 @@ export default function SidebarItem({
   label, 
   href, 
   onClick, 
-  isActive = false, 
+  isActive, 
   isCollapsed = false 
 }: SidebarItemProps) {
   const router = useTransitionRouter();
+  const pathname = usePathname();
+
+  // Calculate active state if not explicitly provided
+  const computedIsActive = isActive !== undefined ? isActive : (() => {
+    if (!href) return false;
+    if (href === '/admin') {
+      return pathname === '/admin';
+    }
+    return pathname.startsWith(href);
+  })();
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -36,7 +47,7 @@ export default function SidebarItem({
     <a
       href={href}
       onClick={handleClick}
-      className={`${styles.sidebarItem} ${isActive ? styles.active : ''} ${isCollapsed ? styles.collapsed : ''}`}
+      className={`${styles.sidebarItem} ${computedIsActive ? styles.active : ''} ${isCollapsed ? styles.collapsed : ''} hover:bg-gray-200`}
       title={isCollapsed ? label : undefined}
     >
       <span className={`${styles.icon}`}>{icon}</span>

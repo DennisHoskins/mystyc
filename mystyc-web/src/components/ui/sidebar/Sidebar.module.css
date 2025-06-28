@@ -1,8 +1,5 @@
 .sidebar {
-  background: white;
   transition: width 0.3s ease;
-  display: flex;
-  flex-direction: column;
 }
 
 .sidebar.collapsed {
@@ -26,16 +23,9 @@
   display: flex;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  border: none;
-  background: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  text-align: left;
   gap: 0.75rem;
-}
-
-.sidebarItem:hover {
-  background: #f3f4f6;
 }
 
 .sidebarItem.active {
@@ -65,7 +55,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   opacity: 1;
-  transition: opacity 0.3s ease; /* Add fade transition */
+  transition: opacity 0.3s ease;
 }
 
 .label.collapsed {

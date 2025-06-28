@@ -1,7 +1,6 @@
 'use client';
 
 import { Home, Users, Monitor, Shield, Bell, Activity } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/ui/sidebar/Sidebar';
 import SidebarItem from '@/components/ui/sidebar/SidebarItem';
 
@@ -16,8 +15,6 @@ export default function AdminSidebar({
   isCollapsed = false,
   onToggle = () => {} 
 }: AdminSidebarProps) {
-  const pathname = usePathname();
-
   const menuItems = [
     { icon: <Home />, label: 'Home', href: '/admin' },
     { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
@@ -35,7 +32,6 @@ export default function AdminSidebar({
           icon={item.icon}
           label={item.label}
           href={item.href}
-          isActive={pathname === item.href}
           isCollapsed={isCollapsed}
         />
       ))}
