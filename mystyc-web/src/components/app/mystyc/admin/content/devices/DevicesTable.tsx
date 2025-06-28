@@ -1,62 +1,43 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces';
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
-import { logger } from '@/util/logger';
 
-export default function DevicesTable() {
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 20;
+interface DevicesTableProps {
+  data: Device[];
+  loading: boolean;
+  error: string | null;
+  currentPage: number;
+  hasMore: boolean;
+  onPageChange: (page: number) => void;
+  onRetry: () => void;
+}
 
+export default function DevicesTable({
+  data,
+  loading,
+  error,
+  currentPage,
+  hasMore,
+  onPageChange,
+  onRetry
+}: DevicesTableProps) {
   const columns: Column<Device>[] = [
     { key: 'deviceName', header: 'Name', render: (d) => d.deviceName || 'Unnamed Device' },
     { key: 'timezone', header: 'Timezone', render: (d) => d.timezone || 'Unknown' },
     { key: 'fcmToken', header: 'Fcm Token', align: 'right', render: (d) => d.fcmToken ? 'Ready' : 'Not Ready' },
   ];
 
-  const loadDevices = useCallback(async (page: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await apiClientAdmin.getDevices({
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'asc',
-      });
-
-      setDevices(data);
-      setHasMore(data.length === LIMIT);
-      setCurrentPage(page);
-    } catch (err) {
-      logger.error('Failed to load devices:', err);
-      setError('Failed to load devices. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadDevices(0);
-  }, [loadDevices]);
-
   return (
     <AdminTable<Device>
-      data={devices}
+      data={data}
       columns={columns}
       loading={loading}
       error={error}
       currentPage={currentPage}
       hasMore={hasMore}
-      onPageChange={loadDevices}
-      onRetry={() => loadDevices(currentPage)}
+      onPageChange={onPageChange}
+      onRetry={onRetry}
       emptyMessage="No Devices found."
     />
   );

@@ -103,10 +103,10 @@ class AdminApiClient {
     }
   };
 
-  getUser = async (firebaseUid: string): Promise<User> => {
+  getUser = async (firebaseUid: string): Promise<UserProfile> => {
     logger.log('getUser called', { firebaseUid });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/user/${firebaseUid}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}`);
     } catch (error) {
       logger.error('getUser failed:', error);
       throw error;

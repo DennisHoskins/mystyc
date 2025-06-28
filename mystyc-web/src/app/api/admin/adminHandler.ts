@@ -8,24 +8,34 @@ interface AdminHandlerOptions {
   endpoint: string;
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   requiresNestCall?: boolean;
+  params?: Record<string, string>;  
 }
 
 export async function handleAdmin(
   request: NextRequest, 
-  options: AdminHandlerOptions
+  options: AdminHandlerOptions,
+  routeParams?: Record<string, string>
 ): Promise<NextResponse> {
-  const { endpoint, method = 'GET', requiresNestCall = true } = options;
-  
+  const { endpoint, method = 'GET', requiresNestCall = true, params } = options;
+
+  const allParams = { ...routeParams, ...params };  
+  let finalEndpoint = endpoint;
+  if (allParams) {
+    Object.entries(allParams).forEach(([key, value]) => {
+      finalEndpoint = finalEndpoint.replace(`{${key}}`, value);
+    });
+  }
+
   try {
     logger.log('');
-    logger.log(`[admin/${endpoint}] ${method} request started`);
+    logger.log(`[admin/${finalEndpoint}] ${method} request started`);
 
     // Get current session
     const headersList = await headers();
     const session = await sessionManager.getCurrentSession(headersList);
     
     if (!session) {
-      logger.error(`[admin/${endpoint}] No session found`);
+      logger.error(`[admin/${finalEndpoint}] No session found`);
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }
@@ -33,23 +43,23 @@ export async function handleAdmin(
     }
 
     if (!session.isAdmin) {
-      logger.warn(`[admin/${endpoint}] Non-admin user attempted access:`, session.email);
+      logger.warn(`[admin/${finalEndpoint}] Non-admin user attempted access:`, session.email);
       return NextResponse.json(
         { message: 'Forbidden - Admin access required' },
         { status: 403 }
       );
     }
 
-    logger.log(`[admin/${endpoint}] Admin access granted to:`, session.email);
+    logger.log(`[admin/${finalEndpoint}] Admin access granted to:`, session.email);
 
-    // Handle sessions endpoint (no Nest call needed)
+    // Handle sessions finalEndpoint (no Nest call needed)
     if (!requiresNestCall) {
       const searchParams = request.nextUrl.searchParams;
       const limit = parseInt(searchParams.get('limit') || '20');
       const offset = parseInt(searchParams.get('offset') || '0');
 
       const data = await sessionManager.getSessions(limit, offset);
-      logger.log(`[admin/${endpoint}] Data fetched successfully, count:`, data.data?.length || 0);
+      logger.log(`[admin/${finalEndpoint}] Data fetched successfully, count:`, data.data?.length || 0);
       return NextResponse.json(data);
     }
 
@@ -57,10 +67,10 @@ export async function handleAdmin(
     const searchParams = request.nextUrl.searchParams;
     const queryString = searchParams.toString();
     
-    logger.log(`[admin/${endpoint}] Query params:`, queryString);
+    logger.log(`[admin/${finalEndpoint}] Query params:`, queryString);
 
     const nestResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${endpoint}${queryString ? `?${queryString}` : ''}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${finalEndpoint}${queryString ? `?${queryString}` : ''}`,
       {
         method,
         headers: {
@@ -72,21 +82,21 @@ export async function handleAdmin(
 
     if (!nestResponse.ok) {
       const error = await nestResponse.text();
-      logger.error(`[admin/${endpoint}] Nest request failed:`, error);
+      logger.error(`[admin/${finalEndpoint}] Nest request failed:`, error);
       
       return NextResponse.json(
-        { message: `Failed to fetch ${endpoint}` },
+        { message: `Failed to fetch ${finalEndpoint}` },
         { status: nestResponse.status }
       );
     }
 
     const data = await nestResponse.json();
-    logger.log(`[admin/${endpoint}] Data fetched successfully, count:`, data.data?.length || 0);
+    logger.log(`[admin/${finalEndpoint}] Data fetched successfully, count:`, data.data?.length || 0);
     
     return NextResponse.json(data);
 
   } catch (error) {
-    logger.error(`[admin/${endpoint}] Error:`, error);
+    logger.error(`[admin/${finalEndpoint}] Error:`, error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

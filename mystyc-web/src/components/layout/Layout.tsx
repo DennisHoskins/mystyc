@@ -21,7 +21,7 @@ import GlobalError from '@/components/layout/GlobalError';
 import Offline from '@/components/layout/Offline';
 import { logger } from '@/util/logger';
 
-import AdminSidebar from '@/components/app/mystyc/admin/AdminSidebar';
+import AdminSidebar from '@/components/app/mystyc/admin/ui/AdminSidebar';
 import { apiClient } from '@/api/apiClient';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

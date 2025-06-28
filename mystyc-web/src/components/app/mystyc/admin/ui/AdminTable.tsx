@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Card from '@/components/ui/Card';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
@@ -19,6 +20,36 @@ export interface Column<T> {
   width?: string;
   align?: 'left' | 'center' | 'right';
   render?: (item: T) => React.ReactNode;
+  link?: (item: T) => string;  
+}
+
+interface LinkCellProps {
+  href: string;
+  children: React.ReactNode;
+}
+
+function LinkCell({ href, children }: LinkCellProps) {
+  const router = useTransitionRouter();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Allow right-click, ctrl+click, etc. to work normally
+    if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) {
+      return;
+    }
+    
+    e.preventDefault();
+    router.push(href);
+  };
+
+  return (
+    <a 
+      href={href} 
+      onClick={handleClick}
+      className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+    >
+      {children}
+    </a>
+  );
 }
 
 interface AdminTableProps<T> {
@@ -52,10 +83,20 @@ export default function AdminTable<T>({
   };
 
   const getCellValue = (item: T, column: Column<T>): React.ReactNode => {
-    if (column.render) {
-      return column.render(item);
+    const content = column.render ? 
+      column.render(item) : 
+      getDisplayValue(item, column);
+
+    // If column has a link function, wrap content in LinkCell
+    if (column.link) {
+      const href = column.link(item);
+      return href ? <LinkCell href={href}>{content}</LinkCell> : content;
     }
-    
+
+    return content;
+  };
+
+  const getDisplayValue = (item: T, column: Column<T>): string => {
     // Handle nested keys like "user.name"
     const keys = column.key.toString().split('.');
     let value: any = item;
@@ -90,7 +131,6 @@ export default function AdminTable<T>({
               Retry
             </Button>
           )}
-
       </Card>
     );
   }

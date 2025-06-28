@@ -1,6 +1,6 @@
 'use client';
 
-import AdminHeader from '@/components/app/mystyc/admin/AdminHeader';
+import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
 
 export default function AdminHome() {
   const breadcrumbs = [

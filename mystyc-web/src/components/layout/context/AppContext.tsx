@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useRef } from 'react';
+import { createContext, useContext, useRef } from 'react';
 import { useStore } from 'zustand';
 
 import { ServerUser } from '@/server/getUser';
