@@ -3,10 +3,6 @@
 import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
 
 export default function AdminHome() {
-  const breadcrumbs = [
-    { label: 'Admin' }
-  ];
-
   return (
     <>
       <AdminHeader 

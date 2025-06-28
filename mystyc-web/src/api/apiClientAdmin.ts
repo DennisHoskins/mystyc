@@ -3,6 +3,21 @@ import { logger } from '@/util/logger';
 
 const API_BASE_URL = '/api';
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+    totalItems: number;
+    totalPages: number;
+  };
+  sort?: {
+    field: string;
+    order: 'asc' | 'desc';
+  };
+}
+
 class AdminApiClient {
   private async fetchWithAuth(url: string, options: RequestInit = {}) {
     const response = await fetch(url, {
@@ -35,55 +50,55 @@ class AdminApiClient {
     return queryString ? `?${queryString}` : '';
   }
 
+
+
   // 
   // todo: dashboard
   //
 
+
+
   //
   // Session Management
   //
-  getSessions = async (query?: AdminQuery): Promise<Session[]> => {
+  getSessions = async (query?: AdminQuery): Promise<PaginatedResponse<Session>> => {
     logger.log('getSessions called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions${queryString}`);
-      return response.data || [];
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions${queryString}`);
     } catch (error) {
       logger.error('getSessions failed:', error);
       throw error;
     }
   };
 
-  getSession = async (query?: AdminQuery): Promise<Session> => {
-    logger.log('getSession called', { query });
+  getSession = async (sessionId: string): Promise<Session> => {
+    logger.log('getSession called', { sessionId });
     try {
-      const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/session${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/${sessionId}`);
     } catch (error) {
       logger.error('getSession failed:', error);
       throw error;
     }
   };
 
-  getSessionsDevices = async (query?: AdminQuery): Promise<SessionDevice[]> => {
+  getSessionsDevices = async (query?: AdminQuery): Promise<PaginatedResponse<SessionDevice>> => {
     logger.log('getSessionsDevices called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devices${queryString}`);
-      return response.data || [];
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devices${queryString}`);
     } catch (error) {
       logger.error('getSessionsDevices failed:', error);
       throw error;
     }
   };
 
-  getSessionDevice = async (query?: AdminQuery): Promise<SessionDevice> => {
-    logger.log('getSessionDevice called', { query });
+  getSessionDevice = async (deviceId: string): Promise<Session> => {
+    logger.log('getSession called', { deviceId });
     try {
-      const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/session/device${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devces/${deviceId}`);
     } catch (error) {
-      logger.error('getSessionDevice failed:', error);
+      logger.error('getSession failed:', error);
       throw error;
     }
   };
@@ -91,12 +106,11 @@ class AdminApiClient {
   //
   // User Management
   //
-  getUsers = async (query?: AdminQuery): Promise<UserProfile[]> => {
+  getUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     logger.log('getUsers called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/users${queryString}`);
-      return response.data || [];
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users${queryString}`);
     } catch (error) {
       logger.error('getUsers failed:', error);
       throw error;
@@ -113,15 +127,47 @@ class AdminApiClient {
     }
   };
 
+  getUserDevices = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Device>> => {
+    logger.log('getUserDevices called', { firebaseUid, query });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/devices${queryString}`);
+    } catch (error) {
+      logger.error('getUserDevices failed:', error);
+      throw error;
+    }
+  };
+
+  getUserAuthEvents = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
+    logger.log('getUserAuthEvents called', { firebaseUid });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/user/${firebaseUid}/auth-events${queryString}`);
+    } catch (error) {
+      logger.error('getUserAuthEvents failed:', error);
+      throw error;
+    }
+  };
+
+  getUserNotifications = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
+    logger.log('getUserNotifications called', { firebaseUid });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/user/${firebaseUid}/notifications${queryString}`);
+    } catch (error) {
+      logger.error('getUserNotifications failed:', error);
+      throw error;
+    }
+  };
+
   //
   // Device Management
   //
-  getDevices = async (query?: AdminQuery): Promise<Device[]> => {
+  getDevices = async (query?: AdminQuery): Promise<PaginatedResponse<Device>> => {
     logger.log('getDevices called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/devices${queryString}`);
-      return response.data || [];
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices${queryString}`);
     } catch (error) {
       logger.error('getDevices failed:', error);
       throw error;
@@ -131,29 +177,43 @@ class AdminApiClient {
   getDevice = async (deviceId: string): Promise<Device> => {
     logger.log('getDevice called', { deviceId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/device/${deviceId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}`);
     } catch (error) {
       logger.error('getDevice failed:', error);
       throw error;
     }
   };
 
-  getDeviceUsers = async (deviceId: string): Promise<User[]> => {
+  getDeviceUsers = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<User>> => {
     logger.log('getDeviceUsers called', { deviceId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/device/${deviceId}/users`);
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/users${queryString}`);
     } catch (error) {
       logger.error('getDeviceUsers failed:', error);
       throw error;
     }
   };
 
-  getUserDevices = async (firebaseUid: string): Promise<Device[]> => {
-    logger.log('getUserDevices called', { firebaseUid });
+  getDeviceAuthEvents = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
+    logger.log('getDeviceAuthEvents called', { deviceId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/user/${firebaseUid}/devices`);
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/auth-events${queryString}`
+      );
     } catch (error) {
-      logger.error('getUserDevices failed:', error);
+      logger.error('getDeviceAuthEvents failed:', error);
+      throw error;
+    }
+  };
+
+  getDeviceNotifications = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
+    logger.log('getDeviceNotifications called', { deviceId });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/notifications${queryString}`);
+    } catch (error) {
+      logger.error('getUserNotifications failed:', error);
       throw error;
     }
   };
@@ -161,12 +221,11 @@ class AdminApiClient {
   //
   // Auth Events Management
   //
-  getAuthEvents = async (query?: AdminQuery): Promise<AuthEvent[]> => {
+  getAuthEvents = async (query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     logger.log('getAuthEvents called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events${queryString}`);
-      return response.data || [];
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events${queryString}`);
     } catch (error) {
       logger.error('getAuthEvents failed:', error);
       throw error;
@@ -183,42 +242,15 @@ class AdminApiClient {
     }
   };
 
-  getUserAuthEvents = async (firebaseUid: string): Promise<AuthEvent[]> => {
-    logger.log('getUserAuthEvents called', { firebaseUid });
-    try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/user/${firebaseUid}/auth-events`);
-    } catch (error) {
-      logger.error('getUserAuthEvents failed:', error);
-      throw error;
-    }
-  };
-
-  getDeviceAuthEvents = async (deviceId: string, limit?: number, offset?: number): Promise<AuthEvent[]> => {
-    logger.log('getDeviceAuthEvents called', { deviceId, limit, offset });
-    try {
-      const params = new URLSearchParams();
-      if (limit) params.append('limit', limit.toString());
-      if (offset) params.append('offset', offset.toString());
-      const queryString = params.toString();
-      
-      return await this.fetchWithAuth(
-        `${API_BASE_URL}/admin/device/${deviceId}/auth-events${queryString ? `?${queryString}` : ''}`
-      );
-    } catch (error) {
-      logger.error('getDeviceAuthEvents failed:', error);
-      throw error;
-    }
-  };
-
   //
   // Notifications Management
   //
-  getNotifications = async (query?: AdminQuery): Promise<Notification[]> => {
+  getNotifications = async (query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
     logger.log('getNotifications called', { query });
     try {
       const queryString = this.buildQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications${queryString}`);
-      return response.data || [];
+      return response;
     } catch (error) {
       logger.error('getNotifications failed:', error);
       throw error;

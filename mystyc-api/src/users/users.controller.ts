@@ -7,7 +7,7 @@ import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebaseUser.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UserProfile } from '@/common/interfaces/userProfile.interface';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { UserProfileService } from './user-profile.service';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-register.dto';
@@ -19,7 +19,7 @@ export class UsersController {
   private logger = createServiceLogger('UsersController');
 
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: UsersService,
     private readonly userProfileService: UserProfileService,
   ) {}
 

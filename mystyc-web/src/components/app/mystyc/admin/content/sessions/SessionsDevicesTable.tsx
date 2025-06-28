@@ -4,6 +4,7 @@ import { SessionDevice } from '@/interfaces';
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 
 interface SessionsDevicesTableProps {
+  label?: string;
   data: SessionDevice[];
   loading: boolean;
   error: string | null;
@@ -11,16 +12,19 @@ interface SessionsDevicesTableProps {
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
+  onRefresh: () => void;
 }
 
 export default function SessionsDevicesTable({
+  label,
   data,
   loading,
   error,
   currentPage,
   hasMore,
   onPageChange,
-  onRetry
+  onRetry,
+  onRefresh
 }: SessionsDevicesTableProps) {
   const columns: Column<SessionDevice>[] = [
     { key: 'deviceId', header: 'Device'},
@@ -29,6 +33,7 @@ export default function SessionsDevicesTable({
 
   return (
     <AdminTable<SessionDevice>
+      label={label}
       data={data}
       columns={columns}
       loading={loading}
@@ -37,6 +42,7 @@ export default function SessionsDevicesTable({
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}
+      onRefresh={onRefresh}
       emptyMessage="No Session Devices found."
     />
   );

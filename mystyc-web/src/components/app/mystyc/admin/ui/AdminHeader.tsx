@@ -1,10 +1,10 @@
 'use client';
 
 import Card from '@/components/ui/Card';
-import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
 import { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
 import AdminBreadcrumbs from './AdminBreadcrumbs';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 
 interface AdminHeaderProps {
   breadcrumbs?: BreadcrumbItem[];

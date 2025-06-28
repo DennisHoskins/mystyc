@@ -7,6 +7,7 @@ import { logger } from '@/util/logger';
 import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
 import Text from '@/components/ui/Text';
 import UserPanel from './UserPanel';
+import UserDevices from './UserDevices';
 
 export default function UserPage({ userId }: { userId: string }) {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -64,6 +65,10 @@ export default function UserPage({ userId }: { userId: string }) {
           loading={loading}
           onRetry={loadUser}
         />
+      </div>
+
+      <div className="mt-4">
+        <UserDevices userId={user && user.firebaseUid} />
       </div>
     </>
   );

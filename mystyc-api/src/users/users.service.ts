@@ -13,7 +13,7 @@ import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     private readonly userProfileService: UserProfileService,
     private readonly deviceService: DeviceService,
@@ -35,7 +35,7 @@ export class UserService {
     logger.info('Registering user session', {
       firebaseUid: firebaseUser.uid,
       deviceId: loginRegisterDto.device.deviceId
-    }, 'UserService');
+    }, 'UsersService');
 
     try {
       // Register/update device
@@ -66,7 +66,7 @@ export class UserService {
         firebaseUid: firebaseUser.uid,
         deviceId: device.deviceId,
         authType: type
-      }, 'UserService');
+      }, 'UsersService');
 
       return user;
     } catch (error) {
@@ -74,7 +74,7 @@ export class UserService {
         firebaseUid: firebaseUser.uid,
         deviceId: loginRegisterDto.device.deviceId,
         error: error.message
-      }, 'UserService');
+      }, 'UsersService');
 
       throw error;
     }
@@ -96,7 +96,7 @@ export class UserService {
       firebaseUid: firebaseUser.uid,
       deviceId: logoutDto.device.deviceId,
       authType: 'logout',
-    }, 'UserService');
+    }, 'UsersService');
 
     try {
       // Get device to verify it exists
@@ -129,7 +129,7 @@ export class UserService {
         firebaseUid: firebaseUser.uid,
         deviceId: device.deviceId,
         authType: 'logout'
-      }, 'UserService');
+      }, 'UsersService');
 
       return null;
     } catch (error) {
@@ -137,7 +137,7 @@ export class UserService {
         firebaseUid: firebaseUser.uid,
         deviceId: logoutDto.device.deviceId,
         error: error.message
-      }, 'UserService');
+      }, 'UsersService');
 
       throw error;
     }
@@ -159,7 +159,7 @@ export class UserService {
       firebaseUid: firebaseUser.uid,
       deviceId: logoutDto.device.deviceId,
       authType: 'server-logout',
-    }, 'UserService');
+    }, 'UsersService');
 
     try {
       // Get device to verify it exists
@@ -192,7 +192,7 @@ export class UserService {
         firebaseUid: firebaseUser.uid,
         deviceId: device.deviceId,
         authType: 'logout'
-      }, 'UserService');
+      }, 'UsersService');
 
       return null;
     } catch (error) {
@@ -200,7 +200,7 @@ export class UserService {
         firebaseUid: firebaseUser.uid,
         deviceId: logoutDto.device.deviceId,
         error: error.message
-      }, 'UserService');
+      }, 'UsersService');
 
       throw error;
     }
@@ -258,7 +258,7 @@ export class UserService {
       logger.error('User creation failed', {
         firebaseUid: firebaseUser.uid,
         error: error.message
-      }, 'UserService');
+      }, 'UsersService');
 
       throw error;
     }
@@ -290,7 +290,7 @@ export class UserService {
       logger.error('User lookup failed', { 
         firebaseUid: firebaseUser.uid,
         error: error.message 
-      }, 'UserService');
+      }, 'UsersService');
       throw error;
     }
   }

@@ -5,6 +5,7 @@ import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable'
 import { formatDateForDisplay } from '@/util/dateTime';
 
 interface NotificationsTableProps {
+  label?: string;
   data: Notification[];
   loading: boolean;
   error: string | null;
@@ -12,16 +13,19 @@ interface NotificationsTableProps {
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
+  onRefresh: () => void;
 }
 
 export default function NotificationsTable({
+  label,
   data,
   loading,
   error,
   currentPage,
   hasMore,
   onPageChange,
-  onRetry
+  onRetry,
+  onRefresh
 }: NotificationsTableProps) {
   const columns: Column<Notification>[] = [
     { key: 'event', header: 'Event', render: (e) => e.type || 'Unknown' },
@@ -32,6 +36,7 @@ export default function NotificationsTable({
 
   return (
     <AdminTable<Notification>
+      label={label}
       data={data}
       columns={columns}
       loading={loading}
@@ -40,6 +45,7 @@ export default function NotificationsTable({
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}
+      onRefresh={onRefresh}
       emptyMessage="No Notifications found."
     />
   );

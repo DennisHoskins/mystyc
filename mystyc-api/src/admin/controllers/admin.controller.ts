@@ -28,22 +28,27 @@ export abstract class AdminController<T> {
       sortOrder: query.sortOrder
     }, `Admin${this.serviceName}Controller`);
 
-    const data = await this.service.findAll(query);
+    const [data, totalItems] = await Promise.all([
+      this.service.findAll(query),
+      this.service.getTotal()
+    ])
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
     
     logger.info(`Admin ${this.serviceName} list retrieved`, { 
       count: data.length 
     }, `Admin${this.serviceName}Controller`);
 
     console.log("[AdminQuery]", query);
-
     return {
       data,
       pagination: {
-        limit: query.limit || 50,
+        limit: query.limit || 100,
         offset: query.offset || 0,
-        hasMore: data.length === (query.limit || 50)
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
       },
-      sort: query.sortBy ? {
+        sort: query.sortBy ? {
         field: query.sortBy,
         order: query.sortOrder || 'desc'
       } : undefined

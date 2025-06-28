@@ -4,6 +4,7 @@ import { Session } from '@/interfaces';
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 
 interface SessionsTableProps {
+  label?: string;
   data: Session[];
   loading: boolean;
   error: string | null;
@@ -11,16 +12,19 @@ interface SessionsTableProps {
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
+  onRefresh: () => void;
 }
 
 export default function SessionsTable({
+  label,
   data,
   loading,
   error,
   currentPage,
   hasMore,
   onPageChange,
-  onRetry
+  onRetry,
+  onRefresh
 }: SessionsTableProps) {
   const columns: Column<Session>[] = [
     { key: 'sessionId', header: 'Session'},
@@ -30,6 +34,7 @@ export default function SessionsTable({
 
   return (
     <AdminTable<Session>
+      label={label}
       data={data}
       columns={columns}
       loading={loading}
@@ -38,6 +43,7 @@ export default function SessionsTable({
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}
+      onRefresh={onRefresh}
       emptyMessage="No Sessions found."
     />
   );

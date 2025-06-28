@@ -25,15 +25,15 @@ export default function AuthorizationPage() {
       setLoading(true);
       setError(null);
 
-      const data = await apiClientAdmin.getAuthEvents({
+      const response = await apiClientAdmin.getAuthEvents({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'clientTimestamp',
         sortOrder: 'desc',
       });
 
-      setAuthEvents(data);
-      setHasMore(data.length === LIMIT);
+      setAuthEvents(response.data);
+      setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
     } catch (err) {
       logger.error('Failed to load Auth Events:', err);
@@ -64,6 +64,7 @@ export default function AuthorizationPage() {
           hasMore={hasMore}
           onPageChange={loadAuthEvents}
           onRetry={() => loadAuthEvents(currentPage)}
+          onRefresh={() => loadAuthEvents(currentPage)}
         />
       </div>
     </>

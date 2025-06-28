@@ -3,8 +3,10 @@
 import React from 'react';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Card from '@/components/ui/Card';
+import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
+import TablePagination from '@/components/ui/table/TablePagination';
 import {
   Table,
   TableHeader,
@@ -32,7 +34,6 @@ function LinkCell({ href, children }: LinkCellProps) {
   const router = useTransitionRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Allow right-click, ctrl+click, etc. to work normally
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) {
       return;
     }
@@ -53,28 +54,34 @@ function LinkCell({ href, children }: LinkCellProps) {
 }
 
 interface AdminTableProps<T> {
+  label?: string;
   data: T[];
   columns: Column<T>[];
   getRowId?: (row: T) => string;
   loading?: boolean;
   error?: string | null;
   currentPage?: number;
+  totalPages?: number;
   hasMore?: boolean;
   onPageChange?: (page: number) => void;
   onRetry?: () => void;
+  onRefresh?: () => void;
   emptyMessage?: string;
 }
 
 export default function AdminTable<T>({
+  label,
   data,
   columns,
   getRowId,
   loading = false,
   error = null,
   currentPage = 0,
+  totalPages,
   hasMore = false,
   onPageChange,
   onRetry,
+  onRefresh,
   emptyMessage = 'No data found.',
 }: AdminTableProps<T>) {
   
@@ -117,6 +124,7 @@ export default function AdminTable<T>({
   if (loading && currentPage === 0) {
     return (
       <Card>
+        {label && <Heading level={3} className="mb-4">{label}</Heading>}
         <Text>Loading...</Text>
       </Card>
     );
@@ -125,12 +133,13 @@ export default function AdminTable<T>({
   if (error) {
     return (
       <Card>
-          <Text className="text-red-600">{error}</Text>
-          {onRetry && (
-            <Button onClick={onRetry} className="mt-4">
-              Retry
-            </Button>
-          )}
+        {label && <Heading level={3} className="mb-4">{label}</Heading>}
+        <Text className="text-red-600">{error}</Text>
+        {onRetry && (
+          <Button onClick={onRetry} className="mt-4">
+            Retry
+          </Button>
+        )}
       </Card>
     );
   }
@@ -138,66 +147,99 @@ export default function AdminTable<T>({
   if (data.length === 0) {
     return (
       <Card>
+        {label && <Heading level={3} className="mb-4">{label}</Heading>}
         <Text>{emptyMessage}</Text>
+        {(onRefresh || onPageChange) && (
+          <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
+            <div>
+              {onRefresh && (
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  onClick={onRefresh}
+                  disabled={loading}
+                >
+                  Refresh
+                </Button>
+              )}
+            </div>
+            <div>
+              {onPageChange && (
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  hasMore={hasMore}
+                  loading={loading}
+                  onPageChange={onPageChange}
+                />
+              )}
+            </div>
+          </div>
+        )}
       </Card>
     );
   }
 
   return (
-    <div className='rounded-md overflow-hidden shadow-sm bg-white '>
-        <Table>
-          <TableHeader>
-            <TableRow>
+    <Card>
+      {label && <Heading level={3} className="mb-4">{label}</Heading>}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((column) => (
+              <TableHead 
+                key={column.key.toString()} 
+                style={{ width: column.width }}
+                className={column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : ''}
+              >
+                {column.header}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((item, index) => (
+            <TableRow key={getItemKey(item, index)}>
               {columns.map((column) => (
-                <TableHead 
-                  key={column.key.toString()} 
-                  style={{ width: column.width }}
+                <TableCell 
+                  key={`${getItemKey(item, index)}-${column.key.toString()}`}
                   className={column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : ''}
                 >
-                  {column.header}
-                </TableHead>
+                  {getCellValue(item, column)}
+                </TableCell>
               ))}
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item, index) => (
-              <TableRow key={getItemKey(item, index)}>
-                {columns.map((column) => (
-                  <TableCell 
-                    key={`${getItemKey(item, index)}-${column.key.toString()}`}
-                    className={column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : ''}
-                  >
-                    {getCellValue(item, column)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+          ))}
+        </TableBody>
+      </Table>
       
-      {onPageChange && (
-        <div className="flex justify-between items-center p-4 border-t border-t-gray-100">
-          <Button
-            variant="secondary"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 0 || loading}
-          >
-            Previous
-          </Button>
-          
-          <Text variant="small">
-            Page {currentPage + 1}
-          </Text>
-          
-          <Button
-            variant="secondary"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={!hasMore || loading}
-          >
-            Next
-          </Button>
+      {(onRefresh || onPageChange) && (
+        <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+          <div>
+            {onRefresh && (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={onRefresh}
+                disabled={loading}
+              >
+                Refresh
+              </Button>
+            )}
+          </div>
+          <div>
+            {onPageChange && (
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                hasMore={hasMore}
+                loading={loading}
+                onPageChange={onPageChange}
+              />
+            )}
+          </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

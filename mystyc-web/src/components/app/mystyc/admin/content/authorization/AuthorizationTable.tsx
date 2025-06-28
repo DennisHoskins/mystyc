@@ -5,6 +5,7 @@ import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable'
 import { formatDateForDisplay } from '@/util/dateTime';
 
 interface AuthorizationTableProps {
+  label?: string;
   data: AuthEvent[];
   loading: boolean;
   error: string | null;
@@ -12,16 +13,19 @@ interface AuthorizationTableProps {
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
+  onRefresh: () => void;
 }
 
 export default function AuthorizationTable({
+  label,
   data,
   loading,
   error,
   currentPage,
   hasMore,
   onPageChange,
-  onRetry
+  onRetry,
+  onRefresh
 }: AuthorizationTableProps) {
   const columns: Column<AuthEvent>[] = [
     { key: 'event', header: 'Event', render: (e) => e.type || 'Unknown' },
@@ -32,6 +36,7 @@ export default function AuthorizationTable({
 
   return (
     <AdminTable<AuthEvent>
+      label={label}
       data={data}
       columns={columns}
       loading={loading}
@@ -40,6 +45,7 @@ export default function AuthorizationTable({
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}
+      onRefresh={onRefresh}
       emptyMessage="No Auth Events found."
     />
   );

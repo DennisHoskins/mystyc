@@ -11,7 +11,9 @@ export default function UsersPage() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -25,16 +27,18 @@ export default function UsersPage() {
       setLoading(true);
       setError(null);
 
-      const data = await apiClientAdmin.getUsers({
+      const response = await apiClientAdmin.getUsers({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
         sortOrder: 'asc',
       });
 
-      setUsers(data);
-      setHasMore(data.length === LIMIT);
+      setUsers(response.data);
+      setHasMore(response.pagination.hasMore);
+      setTotalItems(response.pagination.totalItems);
       setCurrentPage(page);
+      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load users:', err);
       setError('Failed to load users. Please try again.');
@@ -51,7 +55,7 @@ export default function UsersPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
-        title={"Users"}
+        title={`Users (${totalItems})`}
         description="Manage user accounts, permissions, and profile information"
       />
 
@@ -61,9 +65,11 @@ export default function UsersPage() {
           loading={loading}
           error={error}
           currentPage={currentPage}
+          totalPages={totalPages}
           hasMore={hasMore}
           onPageChange={loadUsers}
           onRetry={() => loadUsers(currentPage)}
+          onRefresh={() => loadUsers(currentPage)}
         />
       </div>
     </>

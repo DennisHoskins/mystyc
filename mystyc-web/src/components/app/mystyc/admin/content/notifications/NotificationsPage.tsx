@@ -25,15 +25,15 @@ export default function NotificationsPage() {
       setLoading(true);
       setError(null);
 
-      const data = await apiClientAdmin.getNotifications({
+      const response = await apiClientAdmin.getNotifications({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'sentAt',
         sortOrder: 'desc',
       });
 
-      setNotifications(data);
-      setHasMore(data.length === LIMIT);
+      setNotifications(response.data);
+      setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
     } catch (err) {
       logger.error('Failed to load Notifications:', err);
@@ -64,6 +64,7 @@ export default function NotificationsPage() {
           hasMore={hasMore}
           onPageChange={loadNotifications}
           onRetry={() => loadNotifications(currentPage)}
+          onRefresh={() => loadNotifications(currentPage)}
         />
       </div>
     </>

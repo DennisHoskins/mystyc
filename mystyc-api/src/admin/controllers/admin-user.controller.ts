@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, UseGuards, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Query, Get, Post, Patch, UseGuards, Param, NotFoundException } from '@nestjs/common';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
@@ -9,8 +9,14 @@ import { UserRolesService } from '@/users/user-roles.service';
 import { FirebaseService } from '@/auth/firebase.service';
 import { DeviceService } from '@/devices/device.service';
 import { AuthEventService } from '@/auth-events/auth-event.service';
+import { NotificationsService } from '@/notifications/notifications.service';
 import { UserProfile } from '@/common/interfaces/userProfile.interface';
+import { Device } from '@/common/interfaces/device.interface';
+import { AuthEvent } from '@/common/interfaces/authEvent.interface';
+import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
+import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
+import { AdminListResponse } from '@/common/interfaces/adminQuery.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/user')
@@ -23,6 +29,7 @@ export class AdminUserController extends AdminController<UserProfile> {
     private readonly firebaseService: FirebaseService,
     private readonly deviceService: DeviceService,
     private readonly authEventsService: AuthEventService,
+    private readonly notificationsService: NotificationsService,
   ) {
     super();
   }
@@ -69,155 +76,153 @@ export class AdminUserController extends AdminController<UserProfile> {
     }
   }
 
-  /**
-   * Finds all devices registered to a specific user (admin use)
-   * @param firebaseUid - Firebase user unique identifier
-   * @returns Promise<Device[]> - Array of user's devices
-   */
-  @Get(':firebaseUid/devices')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getUserDevices(@Param('firebaseUid') firebaseUid: string) {
-    logger.info('Admin fetching user devices', { firebaseUid }, 'AdminUserController');
-    
-    const devices = await this.deviceService.findByFirebaseUid(firebaseUid);
-    
-    logger.info('User devices retrieved', { 
-      firebaseUid, 
-      count: devices.length 
-    }, 'AdminUserController');
-    
-    return devices;
-  }
+/**
+ * Finds all devices registered to a specific user (admin use)
+ * @param firebaseUid - Firebase user unique identifier
+ * @param query - Query parameters for pagination, sorting, and filtering
+ * @returns Promise<AdminListResponse<Device>> - Paginated list of user's devices
+ */
+@Get(':firebaseUid/devices')
+@UseGuards(FirebaseAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
+async getUserDevices(
+  @Param('firebaseUid') firebaseUid: string,
+  @Query() query: BaseAdminQueryDto
+): Promise<AdminListResponse<Device>> {
+  logger.info('Admin fetching user devices', { 
+    firebaseUid,
+    limit: query.limit,
+    offset: query.offset,
+    sortBy: query.sortBy,
+    sortOrder: query.sortOrder
+  }, 'AdminUserController');
+  
+  const [data, totalItems] = await Promise.all([
+    this.deviceService.findByFirebaseUid(firebaseUid, query),
+    this.deviceService.getTotalByFirebaseUid(firebaseUid)
+  ]);
+  
+  const totalPages = Math.ceil(totalItems / (query.limit || 100));
+  
+  logger.info('User devices retrieved', { 
+    firebaseUid, 
+    count: data.length,
+    totalItems
+  }, 'AdminUserController');
+  
+  return {
+    data,
+    pagination: {
+      limit: query.limit || 100,
+      offset: query.offset || 0,
+      hasMore: data.length === (query.limit || 100),
+      totalItems,
+      totalPages
+    },
+    sort: query.sortBy ? {
+      field: query.sortBy,
+      order: query.sortOrder || 'desc'
+    } : undefined
+  };
+}
 
   /**
    * Finds all auth events for a specific user (admin use)
    * @param firebaseUid - Firebase user unique identifier
-   * @returns Promise<AuthEvent[]> - Array of user's auth events, newest first
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<AuthEvent>> - Paginated list of user's auth events
    */
   @Get(':firebaseUid/auth-events')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getUserAuthEvents(@Param('firebaseUid') firebaseUid: string) {
-    logger.info('Admin fetching user auth events', { firebaseUid }, 'AdminUserController');
+  async getUserAuthEvents(
+    @Param('firebaseUid') firebaseUid: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<AuthEvent>> {
+    logger.info('Admin fetching user auth events', { 
+      firebaseUid,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminUserController');
     
-    const authEvents = await this.authEventsService.findByFirebaseUid(firebaseUid);
+    const [data, totalItems] = await Promise.all([
+      this.authEventsService.findByFirebaseUid(firebaseUid, query),
+      this.authEventsService.getTotalByFirebaseUid(firebaseUid)
+    ]);
+    
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
     
     logger.info('User auth events retrieved', { 
       firebaseUid, 
-      count: authEvents.length 
+      count: data.length,
+      totalItems
     }, 'AdminUserController');
     
-    return authEvents;
-  }
-
-  // POST/PUT/PATCH Methods (Write Operations)
-
-  /**
-   * Promotes user to admin role (admin use)
-   * @param firebaseUid - Firebase user unique identifier
-   * @returns Promise<{success: boolean, message: string}> - Success response
-   * @throws NotFoundException when user not found
-   */
-  @Post(':firebaseUid/promote')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async promoteAdmin(@Param('firebaseUid') firebaseUid: string) {
-    logger.info('Admin promoting user', { targetUid: firebaseUid }, 'AdminUserController');
-    
-    try {
-      await this.userRolesService.promoteToAdmin(firebaseUid);
-      
-      logger.info('User promoted successfully', { targetUid: firebaseUid }, 'AdminUserController');
-      return { 
-        success: true, 
-        message: 'User promoted to admin successfully'
-      };
-    } catch (error) {
-      if (error.status === 404) {
-        logger.warn('User promotion failed - user not found', { targetUid: firebaseUid }, 'AdminUserController');
-        throw new NotFoundException('User not found');
-      }
-      
-      logger.error('User promotion failed', { 
-        targetUid: firebaseUid, 
-        error: error.message 
-      }, 'AdminUserController');
-      throw error;
-    }
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+      sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
   }
 
   /**
-   * Revokes admin access from user (admin use)
+   * Finds all notifications for a specific user (admin use)
    * @param firebaseUid - Firebase user unique identifier
-   * @returns Promise<{success: boolean, message: string}> - Success response
-   * @throws NotFoundException when user not found
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<Notification>> - Paginated list of user's notifications
    */
-  @Patch(':firebaseUid/revoke-admin')
+  @Get(':firebaseUid/notifications')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async revokeAdmin(@Param('firebaseUid') firebaseUid: string) {
-    logger.info('Admin revoking admin access', { targetUid: firebaseUid }, 'AdminUserController');
+  async getUserNotifications(
+    @Param('firebaseUid') firebaseUid: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<Notification>> {
+    logger.info('Admin fetching user notifications', { 
+      firebaseUid,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminUserController');
     
-    try {
-      await this.userRolesService.revokeAdminAccess(firebaseUid);
-      
-      logger.info('Admin access revoked successfully', { targetUid: firebaseUid }, 'AdminUserController');
-      return { 
-        success: true, 
-        message: 'Admin access revoked successfully'
-      };
-    } catch (error) {
-      if (error.status === 404) {
-        logger.warn('Admin revocation failed - user not found', { targetUid: firebaseUid }, 'AdminUserController');
-        throw new NotFoundException('User not found');
-      }
-      
-      logger.error('Admin revocation failed', { 
-        targetUid: firebaseUid, 
-        error: error.message 
-      }, 'AdminUserController');
-      throw error;
-    }
-  }
-
-  /**
-   * Revokes all Firebase refresh tokens for user (admin use)
-   * @param firebaseUid - Firebase user unique identifier
-   * @returns Promise<{success: boolean, message: string}> - Success response
-   * @throws NotFoundException when user not found
-   */
-  @Post(':firebaseUid/revoke-tokens')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async revokeUserTokens(@Param('firebaseUid') firebaseUid: string) {
-    logger.info('Admin revoking user tokens', { targetUid: firebaseUid }, 'AdminUserController');
+    const [data, totalItems] = await Promise.all([
+      this.notificationsService.findByFirebaseUid(firebaseUid, query),
+      this.notificationsService.getTotalByFirebaseUid(firebaseUid)
+    ]);
     
-    try {
-      // Verify user exists first
-      const user = await this.service.findByFirebaseUid(firebaseUid);
-      if (!user) {
-        logger.warn('Token revocation failed - user not found', { targetUid: firebaseUid }, 'AdminUserController');
-        throw new NotFoundException('User not found');
-      }
-
-      await this.firebaseService.revokeRefreshTokens(firebaseUid);
-      
-      logger.info('User tokens revoked successfully', { targetUid: firebaseUid }, 'AdminUserController');
-      return { 
-        success: true, 
-        message: 'User tokens revoked successfully'
-      };
-    } catch (error) {
-      if (error.status === 404) {
-        throw error;
-      }
-      
-      logger.error('Token revocation failed', { 
-        targetUid: firebaseUid, 
-        error: error.message 
-      }, 'AdminUserController');
-      throw error;
-    }
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info('User notifications retrieved', { 
+      firebaseUid, 
+      count: data.length,
+      totalItems
+    }, 'AdminUserController');
+    
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+      sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
   }
 }

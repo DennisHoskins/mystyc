@@ -35,13 +35,13 @@ export default function SessionsPage() {
       setSessionsLoading(true);
       setSessionsError(null);
 
-      const data = await apiClientAdmin.getSessions({
+      const response = await apiClientAdmin.getSessions({
         limit: LIMIT,
         offset: page * LIMIT,
       });
 
-      setSessions(data);
-      setSessionsHasMore(data.length === LIMIT);
+      setSessions(response.data);
+      setSessionsHasMore(response.pagination.hasMore);
       setSessionsCurrentPage(page);
     } catch (err) {
       logger.error('Failed to load Sessions:', err);
@@ -56,13 +56,13 @@ export default function SessionsPage() {
       setSessionsDevicesLoading(true);
       setSessionsDevicesError(null);
 
-      const data = await apiClientAdmin.getSessionsDevices({
+      const response = await apiClientAdmin.getSessionsDevices({
         limit: LIMIT,
         offset: page * LIMIT,
       });
 
-      setSessionsDevices(data);
-      setSessionsDevicesHasMore(data.length === LIMIT);
+      setSessionsDevices(response.data);
+      setSessionsDevicesHasMore(response.pagination.hasMore);
       setSessionsDevicesCurrentPage(page);
     } catch (err) {
       logger.error('Failed to load Sessions Devices:', err);
@@ -94,11 +94,13 @@ export default function SessionsPage() {
           hasMore={sessionsHasMore}
           onPageChange={loadSessions}
           onRetry={() => loadSessions(sessionsCurrentPage)}
+          onRefresh={() => loadSessions(sessionsCurrentPage)}
         />
       </div>
 
       <div className="mt-6">
         <SessionsDevicesTable 
+          label={"Session Devices"}
           data={sessionsDevices}
           loading={sessionsDevicesLoading}
           error={sessionsDevicesError}
@@ -106,6 +108,7 @@ export default function SessionsPage() {
           hasMore={sessionsDevicesHasMore}
           onPageChange={loadSessionsDevices}
           onRetry={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
+          onRefresh={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
         />
       </div>
     </>

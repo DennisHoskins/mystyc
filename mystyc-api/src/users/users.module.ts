@@ -6,7 +6,7 @@ import { DevicesModule } from '@/devices/devices.module';
 import { AuthEventsModule } from '@/auth-events/auth-events.module';
 
 import { UsersController } from './users.controller';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { UserProfileService } from './user-profile.service';
 import { UserRolesService } from './user-roles.service';
 import { UserProfileSchema } from './schemas/userProfile.schema';
@@ -24,12 +24,12 @@ import { UserProfileSchema } from './schemas/userProfile.schema';
   ],
   controllers: [UsersController],
   providers: [
-    UserService,
+    UsersService,
     UserProfileService,
     UserRolesService,
   ],
   exports: [
-    UserService,
+    UsersService,
     UserProfileService,
     UserRolesService,
   ],

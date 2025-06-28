@@ -9,9 +9,11 @@ interface UsersTableProps {
   loading: boolean;
   error: string | null;
   currentPage: number;
+  totalPages: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
+  onRefresh: () => void;
 }
 
 export default function UsersTable({
@@ -19,13 +21,15 @@ export default function UsersTable({
   loading,
   error,
   currentPage,
+  totalPages,
   hasMore,
   onPageChange,
-  onRetry
+  onRetry,
+  onRefresh
 }: UsersTableProps) {
   const columns: Column<UserProfile>[] = [
-    { key: 'uid', header: 'Id',  link: (u) => `/admin/users/${u.id}`, render: (u) => u.id },
-    { key: 'email', header: 'Email' },
+    { key: 'email', header: 'Email', link: (u) => `/admin/users/${u.id}` },
+    { key: 'uid', header: 'Id', link: (u) => `/admin/users/${u.id}`, render: (u) => u.id.substring(0, 15) + '...' },
     { key: 'fullName', header: 'Name', render: (u) => u.fullName || 'Unnamed User' },
     { key: 'createdAt', header: 'Joined', align: 'right', render: (u) => formatDateForDisplay(u.createdAt) || '-' },
   ];
@@ -36,10 +40,12 @@ export default function UsersTable({
       columns={columns}
       loading={loading}
       error={error}
+      totalPages={totalPages}
       currentPage={currentPage}
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}
+      onRefresh={onRefresh}
       emptyMessage="No Users found."
     />
   );

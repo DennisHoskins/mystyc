@@ -72,6 +72,22 @@ export class UserProfileService {
   }
 
   /**
+   * @returns number - Retrieves userProfile records total
+   */
+  async getTotal(): Promise<number> {
+    const pipeline = [
+      { $group: { _id: '$firebaseUid' } },
+      { $count: 'totalUsers' }
+    ];
+    
+    const result = await this.userModel
+      .aggregate(pipeline)
+      .exec();
+      
+    return result[0]?.totalUsers || 0;
+  }  
+
+  /**
    * Retrieves user profiles with pagination and sorting (admin use)
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<UserProfile[]> - Array of user profiles with applied query params

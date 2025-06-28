@@ -75,22 +75,20 @@ export class DeviceService {
   }
 
   /**
-   * Finds all devices registered to a specific user
-   * @param firebaseUid - Firebase user unique identifier
-   * @returns Promise<DeviceInterface[]> - Array of user's devices
+   * @returns number - Retrieves device records total
    */
-  async findByFirebaseUid(firebaseUid: string): Promise<DeviceInterface[]> {
-    logger.debug('Finding devices by Firebase UID', { firebaseUid }, 'DeviceService');
-
-    const devices = await this.deviceModel.find({ firebaseUid }).exec();
-
-    logger.debug('Devices found', { 
-      firebaseUid, 
-      count: devices.length 
-    }, 'DeviceService');
-
-    return devices.map(device => this.transformToDevice(device));
-  }
+  async getTotal(): Promise<number> {
+    const pipeline = [
+      { $group: { _id: '$deviceId' } },
+      { $count: 'totalDevices' }
+    ];
+    
+    const result = await this.deviceModel
+      .aggregate(pipeline)
+      .exec();
+      
+    return result[0]?.totalDevices || 0;
+  }  
 
   /**
    * Retrieves device records with pagination and sorting (admin use)
@@ -124,6 +122,70 @@ export class DeviceService {
       .exec();
 
     logger.debug('Devices found', { 
+      count: devices.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'DeviceService');
+
+    return devices.map(device => this.transformToDevice(device));
+  }
+
+  /**
+   * @param firebaseUid - Firebase user unique identifier
+   * @returns number - Retrieves device records total
+   */
+  async getTotalByFirebaseUid(firebaseUid: string): Promise<number> {
+    const pipeline = [
+      { $match: { firebaseUid } },
+      { $group: { _id: '$deviceId' } },
+      { $count: 'totalDevices' }
+    ];
+    
+    const result = await this.deviceModel
+      .aggregate(pipeline)
+      .exec();
+      
+    return result[0]?.totalDevices || 0;
+  }  
+
+  /**
+   * Retrieves user's device records with pagination and sorting (admin use)
+   * @param firebaseUid - Firebase user unique identifier
+   * @param query - Query parameters including limit, offset, sortBy, sortOrder
+   * @returns Promise<DeviceInterface[]> - Array of device records with applied query params
+   */
+  async findByFirebaseUid(firebaseUid: string, query?: BaseAdminQueryDto): Promise<DeviceInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding user devices with query', { 
+      firebaseUid,
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'DeviceService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { firebaseUid } },
+      { $sort: sortObj },
+      { $group: { _id: '$deviceId', doc: { $first: '$$ROOT' } } }, 
+      { $replaceRoot: { newRoot: '$doc' } },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const devices = await this.deviceModel
+      .aggregate(pipeline)
+      .exec();
+
+    logger.debug('User Devices found', { 
+      firebaseUid,
       count: devices.length, 
       limit, 
       offset,
