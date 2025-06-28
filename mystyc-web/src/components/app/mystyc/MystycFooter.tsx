@@ -8,6 +8,11 @@ export default function AppFooter() {
   const user = useUser();
   if (!user) return;
 
+  const handleAdminClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push('/admin')    
+  }
+
   return (
     <footer className="flex w-full bg-gray-200 px-4 py-3 text-center text-sm text-gray-500">
       <div className="flex w-full max-w-content mx-auto justify-center items-center">
@@ -18,7 +23,7 @@ export default function AppFooter() {
               {' · '}
               <a            
                 href="/admin"
-                onClick={() => router.push('/admin')}
+                onClick={handleAdminClick}
                 className="ml-1 underline hover:text-gray-700"
               >
                 Admin

@@ -23,7 +23,8 @@ export default function SidebarItem({
 }: SidebarItemProps) {
   const router = useTransitionRouter();
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (onClick) {
       onClick();
     } else if (href) {
@@ -32,13 +33,14 @@ export default function SidebarItem({
   };
 
   return (
-    <button
+    <a
+      href={href}
       onClick={handleClick}
       className={`${styles.sidebarItem} ${isActive ? styles.active : ''} ${isCollapsed ? styles.collapsed : ''}`}
       title={isCollapsed ? label : undefined}
     >
       <span className={`${styles.icon}`}>{icon}</span>
       <span className={`${styles.label} ${isCollapsed ? styles.collapsed : ''}`}>{label}</span>
-    </button>
+    </a>
   );
 }

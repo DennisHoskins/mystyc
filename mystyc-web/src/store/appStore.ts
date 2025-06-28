@@ -4,13 +4,14 @@ import { persist } from 'zustand/middleware';
 export interface AppState {
   // App state
   isOnline: boolean;
-  isBusy: boolean;
   isGlobalError: boolean;
   isLoggedOut: boolean;
   isLoggedOutByServer: boolean;
+  isBusy: boolean;
   busyTimer: NodeJS.Timeout | null;
   toasts: { id: string; message: string; type: 'success' | 'error' | 'info'; timestamp: number }[];
-  
+  hasHydrated: boolean;
+
   // FCM state
   fcmToken: string | null;
   lastTokenUpdate: number | null;
@@ -20,13 +21,14 @@ export interface AppState {
 
   // Actions
   setOnline: (isOnline: boolean) => void;
-  setBusy: (delayMs?: number) => void;
-  clearBusy: () => void;
   setGlobalError: (isGlobalError: boolean) => void;
   setLoggedOut: (isLoggedOut: boolean) => void;
   setLoggedOutByServer: (isLoggedOutByServer: boolean) => void;
+  setBusy: (delayMs?: number) => void;
+  clearBusy: () => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   hideToast: (id: string) => void;
+  setHasHydrated: (isHydrated: boolean) => void;
   clearAppState: () => void;
   
   // FCM actions
@@ -46,6 +48,7 @@ const initialState = {
   isLoggedOutByServer: false,
   busyTimer: null,
   toasts: [],
+  hasHydrated: false,
   
   // FCM initial state
   fcmToken: null,
@@ -90,6 +93,7 @@ export const useAppStore = create<AppState>()(
         if (state.busyTimer) clearTimeout(state.busyTimer);
         set(initialState as any);
       },
+      setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
       
       // FCM actions
       setFcmToken: (token) => set({ fcmToken: token, lastTokenUpdate: Date.now() }),
@@ -104,7 +108,12 @@ export const useAppStore = create<AppState>()(
         fcmToken: state.fcmToken, 
         lastTokenUpdate: state.lastTokenUpdate,
         sidebarCollapsed: state.sidebarCollapsed
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setHasHydrated(true);
+        }
+      }      
     }
   )
 );

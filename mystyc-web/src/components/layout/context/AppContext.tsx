@@ -8,8 +8,6 @@ import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
 
 import Layout from '@/components/layout/Layout';
-import GlobalError from '@/components/layout/GlobalError';
-import Offline from '@/components/layout/Offline';
 import Working from '@/components/ui/working/Working';
 import Toast from '@/components/ui/toast/Toast';
 
@@ -22,39 +20,19 @@ interface AppContextProps {
 
 export default function AppContext({ children, user }: AppContextProps) {
   const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
-  const isGlobalError = useAppStore((state) => state.isGlobalError);
-  const setOnline = useAppStore((state) => state.setOnline);  
-  const isOnline = useAppStore((state) => state.isOnline);
-  
   if (!storeRef.current) {
     storeRef.current = createUserStore(user);
   }
 
-  useEffect(() => {
-    const handleOnline = () => setOnline(true);
-    const handleOffline = () => setOnline(false);
-
-    // Set initial state
-    setOnline(navigator.onLine);
-
-    // Listen for changes
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [setOnline]);  
+  const hasHydrated = useAppStore((state) => state.hasHydrated);  
+  if (!hasHydrated) {
+    return null
+  }  
 
   return (
     <UserStoreContext.Provider value={storeRef.current}>
       <Layout>
-        {
-          isGlobalError ? <GlobalError /> :
-          !isOnline ? <Offline /> :
-          children
-        }
+        {children}
       </Layout>
       <Working />
       <Toast />
