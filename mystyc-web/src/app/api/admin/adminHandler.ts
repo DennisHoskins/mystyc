@@ -30,9 +30,12 @@ export async function handleAdmin(
     logger.log('');
     logger.log(`[admin/${finalEndpoint}] ${method} request started`);
 
+    const body = await request.json();
+    const { deviceInfo } = body;    
+
     // Get current session
     const headersList = await headers();
-    const session = await sessionManager.getCurrentSession(headersList);
+    const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
     
     if (!session) {
       logger.error(`[admin/${finalEndpoint}] No session found`);

@@ -9,6 +9,8 @@ import { logger } from '@/util/logger';
 
 export interface AuthLogoutBody {
   deviceInfo: {
+    cores: string,
+    renderer: string,
     timezone: string,
     language: string
   };
@@ -21,16 +23,17 @@ async function doLogout(request: NextRequest) {
   const source    = request.headers.get('x-source')  || 'unknown';
   logger.log('Logout initiated', { source, userAgent });
 
+  // Parse and validate request body
+  const body: AuthLogoutBody = await request.json();
+  const { deviceInfo, clientTimestamp } = body;
+
   const headersList = await headers();
-  const session = await sessionManager.getCurrentSession(headersList);
+  const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
   if (!session) {
     logger.error('[doLogout] No Current Session');
     return new Response('Unauthorized', { status: 401 });
   }
 
-  // Parse and validate request body
-  const body: AuthLogoutBody = await request.json();
-  const { deviceInfo, clientTimestamp } = body;
 
   // Build device object with deterministic ID based on request fingerprint
   const device = buildDevice(session.uid, deviceInfo, request);

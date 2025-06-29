@@ -97,7 +97,7 @@ export const sessionManager = {
     logger.log('[sessionManager] Device session mapping created:', deviceId.substring(0, 8));
   },
 
-  async getCurrentSession(request?: NextRequest | Headers): Promise<Session | null> {
+  async getCurrentSession(request: NextRequest | Headers, deviceInfo : any): Promise<Session | null> {
     await ensureConnection();
 
     logger.log('');
@@ -110,7 +110,8 @@ export const sessionManager = {
     }
 
     const fingerprint = extractDeviceFingerprint(request);
-    const deviceId = generateDeviceId(fingerprint);
+
+    const deviceId = generateDeviceId(fingerprint, deviceInfo);
     logger.log('[sessionManager] Calculated device ID:', deviceId.substring(0, 8));
 
     const cookieStore = await cookies();

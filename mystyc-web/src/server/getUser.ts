@@ -14,9 +14,14 @@ export async function getUser(): Promise<ServerUser> {
 
   try {
     console.log('[GET USER]');
+
     const headersList = await headers();
+
+    const body = await request.json();
+    const { deviceInfo } = body;    
+    
     // Get current session from Redis
-    const session = await sessionManager.getCurrentSession(headersList);
+    const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
     if (!session) {
       logger.log('[GET USER] No session found');
       return null;

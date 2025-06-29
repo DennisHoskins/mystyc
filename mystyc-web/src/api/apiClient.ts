@@ -3,7 +3,7 @@ import { logger } from '@/util/logger'
 
 const serverRoot: string = '/api';
 
-const getDeviceInfo = () => {
+export const getDeviceInfo = () => {
   const getTimezone = (): string => {
     if (typeof window === 'undefined') return 'UTC';
     
@@ -26,7 +26,33 @@ const getDeviceInfo = () => {
     }
   };
 
+  const getHardwareCores = (): number => {
+    if (typeof window === 'undefined') return 0;
+    try {
+      return navigator.hardwareConcurrency || 0;
+    } catch (err) {
+      return 0;
+    }
+  };
+
+  const getWebGLRenderer = (): string => {
+    if (typeof window === 'undefined') return 'unknown';
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) return 'no-webgl';
+      
+      const webgl = gl as WebGLRenderingContext;
+      const debugInfo = webgl.getExtension('WEBGL_debug_renderer_info');
+      return debugInfo ? webgl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'masked';
+    } catch (err) {
+      return 'error';
+    }
+  };
+
   return {
+    cores: getHardwareCores(),
+    renderer: getWebGLRenderer(),
     timezone: getTimezone(),
     language: getLanguage()
   };
@@ -138,6 +164,7 @@ export const apiClient = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
+        deviceInfo: getDeviceInfo(),
         fcmToken
       })
     });

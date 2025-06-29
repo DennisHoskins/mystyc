@@ -1,4 +1,5 @@
 import { AdminQuery, Session, SessionDevice, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
+import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
 
 const API_BASE_URL = '/api';
@@ -20,8 +21,16 @@ export interface PaginatedResponse<T> {
 
 class AdminApiClient {
   private async fetchWithAuth(url: string, options: RequestInit = {}) {
-    const response = await fetch(url, {
+  const response = await fetch(url, {
       ...options,
+      body: options.body ? JSON.stringify({
+        ...JSON.parse(options.body as string),
+        deviceInfo: getDeviceInfo(),
+        clientTimestamp: new Date().toISOString()
+      }) : JSON.stringify({
+        deviceInfo: getDeviceInfo(),
+        clientTimestamp: new Date().toISOString()
+      }),
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,

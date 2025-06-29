@@ -15,15 +15,6 @@ export function extractDeviceFingerprint(request: NextRequest | Headers): string
   // Check for TLS fingerprint from Apache (production)
   const tlsFingerprint = headers.get('x-tls-fingerprint');
 
-
-console.log("");
-console.log("");
-console.log("");
-console.log("tlsFingerprint: ", tlsFingerprint);
-console.log("");
-console.log("");
-console.log("");
-
   if (tlsFingerprint) {
     // Production: Use TLS fingerprint from Apache
     return tlsFingerprint;
@@ -68,6 +59,8 @@ function normalizeUserAgent(userAgent: string): string {
 export function buildDevice(
   firebaseUid: string,
   deviceInfo: { 
+    cores: string,
+    renderer: string,
     timezone: string,
     language: string 
   },
@@ -76,7 +69,7 @@ export function buildDevice(
   
   // Extract fingerprint and generate deterministic deviceId
   const fingerprint = extractDeviceFingerprint(request);
-  const deviceId = generateDeviceId(fingerprint);
+  const deviceId = generateDeviceId(fingerprint, deviceInfo);
   
   // Get platform from User-Agent
   const getPlatform = (userAgent: string): string => {

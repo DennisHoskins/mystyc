@@ -12,6 +12,8 @@ export interface AuthRequestBody {
   email: string;
   password: string;
   deviceInfo: {
+    cores: string,
+    renderer: string,
     timezone: string,
     language: string
   };

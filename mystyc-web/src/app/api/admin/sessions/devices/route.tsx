@@ -10,8 +10,11 @@ export async function GET(request: NextRequest) {
 
   try {
     // Get current session
+    const body = await request.json();
+    const { deviceInfo } = body;    
+
     const headersList = await headers();
-    const session = await sessionManager.getCurrentSession(headersList);
+    const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
     
     if (!session) {
       logger.error('[admin/sessions/devices] No session found');
