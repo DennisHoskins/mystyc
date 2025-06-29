@@ -4,10 +4,9 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { logger } from '@/util/logger';
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
-import Card from '@/components/ui/Card';
-import Text from '@/components/ui/Text';
+import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout'
 import UserDetailsPanel from './UserDetailsPanel';
+import UserProfilePanel from './UserProfilePanel';
 import UserDevicesPanel from './UserDevicesPanel';
 import UserTabPanel from './UserTabPanel';
 
@@ -45,30 +44,26 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   ], [user, firebaseUid]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        title={user && user.fullName ? user.fullName : `Unknown User`}
-      >
-        <div className="space-y-1 mt-2">
-          <UserDetailsPanel
-            user={user}
-            error={error}
-            loading={loading}
-            onRetry={loadUser}
-          />
-        </div>
-      </AdminHeader>
-
-      <div className="mt-4">
-        <Card>
-          <UserDevicesPanel firebaseUid={user && user.firebaseUid} />
-        </Card>          
-      </div>
-
-      <div className="mt-4">
+    <AdminItemLayout
+      breadcrumbs={breadcrumbs}
+      title={user && user.fullName ? user.fullName : `Unknown User`}
+      headerContent={
+        <UserDetailsPanel
+          user={user}
+          error={error}
+          loading={loading}
+          onRetry={loadUser}
+        />
+      }
+      mainContent={
+        <UserDevicesPanel firebaseUid={user && user.firebaseUid} />
+      }
+      sidebarContent={
+        <UserProfilePanel user={user} />
+      }
+      tabsContent={
         <UserTabPanel firebaseUid={user && user.firebaseUid} />
-      </div>
-    </>
-  );
+      }
+    />
+  );    
 }

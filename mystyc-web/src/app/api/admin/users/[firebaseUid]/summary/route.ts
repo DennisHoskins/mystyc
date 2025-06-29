@@ -8,7 +8,7 @@ export async function GET(
   const { firebaseUid } = await params;  
   return handleAdmin(
     request, 
-    { endpoint: 'user/{firebaseUid}/summary' },
+    { endpoint: 'users/{firebaseUid}/summary' },
     { firebaseUid }
   );
 }

@@ -8,7 +8,7 @@ export async function GET(
   const { deviceId } = await params;  
   return handleAdmin(
     request, 
-    { endpoint: 'device/{deviceId}/summary' },
+    { endpoint: 'devices/{deviceId}/summary' },
     { deviceId }
   );
 }

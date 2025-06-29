@@ -4,9 +4,9 @@ import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UserRole } from '@/common/enums/roles.enum';
 import { Device } from '@/common/interfaces/device.interface';
-import { UserProfileService } from './user-profile.service';
-import { DeviceService } from '@/devices/device.service';
-import { AuthEventService } from '@/auth-events/auth-event.service';
+import { UserProfilesService } from './user-profiles.service';
+import { DevicesService } from '@/devices/devices.service';
+import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-register.dto';
 import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
@@ -15,9 +15,9 @@ import { logger } from '@/common/util/logger';
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly userProfileService: UserProfileService,
-    private readonly deviceService: DeviceService,
-    private readonly authEventService: AuthEventService
+    private readonly userProfileService: UserProfilesService,
+    private readonly deviceService: DevicesService,
+    private readonly authEventService: AuthEventsService
   ) {}
 
   /**
@@ -39,6 +39,13 @@ export class UsersService {
 
     try {
       // Register/update device
+
+console.log("")
+console.log("")
+console.log("LOGIN:", loginRegisterDto.device);
+console.log("")
+console.log("")
+
       const device = await this.deviceService.upsertDevice(
         firebaseUser.uid,
         loginRegisterDto.device

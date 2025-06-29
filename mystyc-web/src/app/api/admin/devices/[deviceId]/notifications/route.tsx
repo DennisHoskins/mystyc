@@ -8,7 +8,7 @@ export async function GET(
   const { deviceId } = await params;  
   return handleAdmin(
     request, 
-    { endpoint: 'device/{deviceId}/notifications' },
+    { endpoint: 'devices/{deviceId}/notifications' },
     { deviceId }
   );
 }

@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { UserRole } from '@/common/enums/roles.enum';
-import { UserProfileService } from './user-profile.service';
+import { UserProfilesService } from './user-profiles.service';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class UserRolesService {
-  constructor(private readonly userProfileService: UserProfileService) {}
+  constructor(private readonly userProfileService: UserProfilesService) {}
 
   /**
    * Promotes user to admin role by adding ADMIN to their existing roles

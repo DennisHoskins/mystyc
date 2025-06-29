@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 
-import { AuthEventService } from '@/auth-events/auth-event.service';
+import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { AuthEvent } from '@/common/interfaces/authEvent.interface';
 import { AdminController } from './admin.controller';
 
@@ -8,7 +8,7 @@ import { AdminController } from './admin.controller';
 export class AdminAuthEventsController extends AdminController<AuthEvent> {
   protected serviceName = 'AuthEvents';
   
-  constructor(protected service: AuthEventService) {
+  constructor(protected service: AuthEventsService) {
     super();
   }
 }

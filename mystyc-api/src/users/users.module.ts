@@ -7,7 +7,7 @@ import { AuthEventsModule } from '@/auth-events/auth-events.module';
 
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserProfileService } from './user-profile.service';
+import { UserProfilesService } from './user-profiles.service';
 import { UserRolesService } from './user-roles.service';
 import { UserProfileSchema } from './schemas/userProfile.schema';
 
@@ -25,12 +25,12 @@ import { UserProfileSchema } from './schemas/userProfile.schema';
   controllers: [UsersController],
   providers: [
     UsersService,
-    UserProfileService,
+    UserProfilesService,
     UserRolesService,
   ],
   exports: [
     UsersService,
-    UserProfileService,
+    UserProfilesService,
     UserRolesService,
   ],
 })

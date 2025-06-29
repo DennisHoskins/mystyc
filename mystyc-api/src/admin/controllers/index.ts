@@ -1,9 +1,5 @@
 export { AdminUsersController } from './admin-users.controller';
-export { AdminUserController } from './admin-user.controller';
 export { AdminDevicesController } from './admin-devices.controller';
-export { AdminDeviceController } from './admin-device.controller';
 export { AdminAuthEventsController } from './admin-auth-events.controller';
-export { AdminAuthEventController } from './admin-auth-event.controller';
 export { AdminNotificationsController } from './admin-notifications.controller';
 export { AdminNotificationsSendController } from './admin-notifications-send.controller';
-export { AdminNotificationController } from './admin-notification.controller';

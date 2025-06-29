@@ -12,7 +12,7 @@ import { logger } from '@/common/util/logger';
 import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
 
 @Injectable()
-export class DeviceService {
+export class DevicesService {
   constructor(
     @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
   ) {}
@@ -156,7 +156,7 @@ export class DeviceService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<DeviceInterface[]> - Array of device records with applied query params
    */
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto = {}): Promise<DeviceInterface[]> { // Fixed default value
+  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto = {}): Promise<DeviceInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user devices with query', { 

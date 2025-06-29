@@ -7,7 +7,7 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
 import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
-import { DeviceService } from '@/devices/device.service';
+import { DevicesService } from '@/devices/devices.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { TestNotificationDto } from '@/notifications/dto/test-notification.dto';
 import { SendNotificationDto } from '@/notifications/dto/send-notification.dto';
@@ -17,7 +17,7 @@ import { logger } from '@/common/util/logger';
 export class AdminNotificationsSendController {
 
   constructor(
-    private readonly deviceService: DeviceService,
+    private readonly deviceService: DevicesService,
     private readonly notificationsService: NotificationsService
   ) {}
 

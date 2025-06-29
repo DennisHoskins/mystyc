@@ -4,12 +4,12 @@ import { Throttle } from '@nestjs/throttler';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
-import { DeviceService } from './device.service';
+import { DevicesService } from './devices.service';
 import { logger } from '@/common/util/logger';
 
 @Controller('devices')
 export class DevicesController {
-  constructor(private readonly deviceService: DeviceService) {}
+  constructor(private readonly deviceService: DevicesService) {}
 
   /**
    * Updates FCM token for user's device to enable push notifications

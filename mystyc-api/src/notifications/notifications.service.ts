@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
 
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
-import { DeviceService } from '@/devices/device.service';
-import { UserProfileService } from '@/users/user-profile.service';
+import { DevicesService } from '@/devices/devices.service';
+import { UserProfilesService } from '@/users/user-profiles.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
 import { SendNotificationDto } from './dto/send-notification.dto';
@@ -17,11 +17,11 @@ import * as admin from 'firebase-admin';
 export class NotificationsService {
   constructor(
     @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
-    private readonly deviceService: DeviceService,
-    private readonly userProfileService: UserProfileService
+    private readonly deviceService: DevicesService,
+    private readonly userProfileService: UserProfilesService
   ) {}
 
-  @Cron('45 18 * * *', {
+  @Cron('30 14 * * *', {
     timeZone: 'America/Edmonton'
   }) 
   async sendDailyNotifications() {
@@ -95,16 +95,7 @@ export class NotificationsService {
    * @returns number - Retrieves notification records total
    */
   async getTotal(): Promise<number> {
-    const pipeline = [
-      { $group: { _id: '$id' } },
-      { $count: 'totalNotifications' }
-    ];
-    
-    const result = await this.notificationModel
-      .aggregate(pipeline)
-      .exec();
-      
-    return result[0]?.totalNotifications || 0;
+    return await this.notificationModel.countDocuments();
   }  
 
   /**
@@ -162,7 +153,7 @@ export class NotificationsService {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding device notifications with query', { 
-      deviceId, // Fixed parameter name
+      deviceId,
       limit, 
       offset, 
       sortBy, 

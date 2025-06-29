@@ -1,7 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { AuthEventService } from './auth-event.service';
+import { AuthEventsService } from './auth-events.service';
 import { AuthEvent, AuthEventSchema } from './schemas/auth-event.schema';
 import { DevicesModule } from '@/devices/devices.module';
 
@@ -12,7 +12,7 @@ import { DevicesModule } from '@/devices/devices.module';
     ]),
     forwardRef(() => DevicesModule)
   ],
-  providers: [AuthEventService],
-  exports: [AuthEventService],
+  providers: [AuthEventsService],
+  exports: [AuthEventsService],
 })
 export class AuthEventsModule {}

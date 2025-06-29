@@ -8,14 +8,14 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '@/common/decorators/roles.decorator';
 import { IS_PUBLIC_KEY } from '@/common/decorators/public.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
-import { UserProfileService } from '@/users/user-profile.service';
+import { UserProfilesService } from '@/users/user-profiles.service';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfilesService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

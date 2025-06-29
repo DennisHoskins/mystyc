@@ -5,8 +5,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
-import Card from '@/components/ui/Card';
+import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import UsersTable from './UsersTable';
 
 export default function UsersPage() {
@@ -54,26 +53,23 @@ export default function UsersPage() {
   }, [loadUsers]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        title={`Users ${totalItems ? `(${totalItems})` : ''}`}
-        description="Manage user accounts, permissions, and profile information"
-      >
-        <div className="mt-4">
-          <UsersTable 
-            data={users}
-            loading={loading}
-            error={error}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            hasMore={hasMore}
-            onPageChange={loadUsers}
-            onRetry={() => loadUsers(currentPage)}
-            onRefresh={() => loadUsers(currentPage)}
-          />
-      </div>
-    </AdminHeader>
-    </>
+   <AdminListLayout
+      breadcrumbs={breadcrumbs}
+      title={`Users ${totalItems ? `(${totalItems})` : ''}`}
+      description="Manage user accounts, permissions, and profile information"
+      tableContent={
+        <UsersTable 
+          data={users}
+          loading={loading}
+          error={error}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasMore={hasMore}
+          onPageChange={loadUsers}
+          onRetry={() => loadUsers(currentPage)}
+          onRefresh={() => loadUsers(currentPage)}
+        />
+      }
+    />
   );
 }

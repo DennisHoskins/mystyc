@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { FirebaseModule } from '@/auth/firebase.module';
 
-import { DeviceService } from './device.service';
+import { DevicesService } from './devices.service';
 import { DevicesController } from './devices.controller';
 import { Device, DeviceSchema } from './schemas/device.schema';
 
@@ -15,7 +15,7 @@ import { Device, DeviceSchema } from './schemas/device.schema';
     ])
   ],
   controllers: [DevicesController],
-  providers: [DeviceService],
-  exports: [DeviceService],
+  providers: [DevicesService],
+  exports: [DevicesService],
 })
 export class DevicesModule {}

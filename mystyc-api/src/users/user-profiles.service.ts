@@ -11,7 +11,7 @@ import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
-export class UserProfileService {
+export class UserProfilesService {
   constructor(@InjectModel('UserProfile') private userModel: Model<UserProfileDocument>) {}
 
   // GET Methods (Read Operations)
@@ -75,16 +75,7 @@ export class UserProfileService {
    * @returns number - Retrieves userProfile records total
    */
   async getTotal(): Promise<number> {
-    const pipeline = [
-      { $group: { _id: '$firebaseUid' } },
-      { $count: 'totalUsers' }
-    ];
-    
-    const result = await this.userModel
-      .aggregate(pipeline)
-      .exec();
-      
-    return result[0]?.totalUsers || 0;
+    return await this.userModel.countDocuments();
   }  
 
   /**

@@ -5,8 +5,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
-import Card from '@/components/ui/Card';
+import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import AuthorizationTable from './AuthorizationTable';
 
 export default function AuthorizationPage() {
@@ -54,27 +53,23 @@ export default function AuthorizationPage() {
   }, [loadAuthEvents]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        title={`Authorizations ${totalItems ? `(${totalItems})` : ''}`}
-        description="Track user login and logout events, monitor authentication patterns, and review access history"
-      >
-
-        <div className="mt-4">
-          <AuthorizationTable 
-            data={authEvents}
-            loading={loading}
-            error={error}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            hasMore={hasMore}
-            onPageChange={loadAuthEvents}
-            onRetry={() => loadAuthEvents(currentPage)}
-            onRefresh={() => loadAuthEvents(currentPage)}
-          />
-        </div>
-      </AdminHeader>
-    </>
+    <AdminListLayout
+      breadcrumbs={breadcrumbs}
+      title={`Authorizations ${totalItems ? `(${totalItems})` : ''}`}
+      description="Track user login and logout events, monitor authentication patterns, and review access history"
+      tableContent={
+        <AuthorizationTable 
+          data={authEvents}
+          loading={loading}
+          error={error}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasMore={hasMore}
+          onPageChange={loadAuthEvents}
+          onRetry={() => loadAuthEvents(currentPage)}
+          onRefresh={() => loadAuthEvents(currentPage)}
+        />
+      }
+    />
   );
 }

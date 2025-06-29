@@ -2,12 +2,11 @@
 
 import { UserProfile } from '@/interfaces';
 import { formatDateForDisplay } from '@/util/dateTime';
+import AdminDetailGroup from '@/components/app/mystyc/admin/ui/detail/AdminDetailGroup';
+import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetailField';
 import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
 import Button from '@/components/ui/Button';
-import AdminDetailGrid from '@/components/app/mystyc/admin/ui/detail/AdminDetailGrid';
-import AdminDetailGroup from '@/components/app/mystyc/admin/ui/detail/AdminDetailGroup';
-import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetailField';
 
 interface UserDetailsPanelProps {
   user: UserProfile | null;
@@ -67,25 +66,25 @@ export default function UserDetailsPanel({
 
   return (
     <>
-      <div className="space-y-1 mb-4">
-        <Text variant="muted">
-          <strong>User ID:</strong> {user && user.id}
-        </Text>
-      </div>
+      <hr />
 
-      <div className="space-y-6">
-        <AdminDetailGrid>
-          <AdminDetailGroup>
-            <AdminDetailField
-              label="Contact Information"
-              value={user.email}
-            />
-            <AdminDetailField
-              label="Roles & Permissions"
-              value={formatUserRoles(user.roles)}
-            />
-          </AdminDetailGroup>
+      <Text variant="muted" className='pt-4 mb-4'>
+        <strong>User ID:</strong> {user && user.id}
+      </Text>
 
+      <div className="grid grid-cols-2 gap-6 pt-4">
+        <AdminDetailGroup>
+          <AdminDetailField
+            label="Contact Information"
+            value={user.email}
+          />
+          <AdminDetailField
+            label="Roles & Permissions"
+            value={formatUserRoles(user.roles)}
+          />
+        </AdminDetailGroup>
+
+        <div className='text-right'>
           <AdminDetailGroup>
             <AdminDetailField
               label="Account Created"
@@ -96,7 +95,7 @@ export default function UserDetailsPanel({
               value={formatDateForDisplay(user.updatedAt)}
             />
           </AdminDetailGroup>
-        </AdminDetailGrid>
+        </div>
       </div>
     </>
   );

@@ -20,7 +20,6 @@ interface TabPanelProps {
 export default function TabPanel({ 
   tabs, 
   defaultActiveTab, 
-  height = '500px',
   className = '',
   onTabChange 
 }: TabPanelProps) {
@@ -74,10 +73,7 @@ export default function TabPanel({
         ))}
       </div>
 
-      <div 
-        className="overflow-auto"
-        style={{ height }}
-      >
+      <div className="overflow-auto">
         {tabs.map((tab) => (
           <div
             key={tab.id}

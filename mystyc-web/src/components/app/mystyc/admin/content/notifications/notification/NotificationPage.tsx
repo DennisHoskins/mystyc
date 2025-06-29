@@ -4,8 +4,12 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
+import { formatDateForDisplay } from '@/util/dateTime';
+import AdminBreadcrumbs from '@/components/app/mystyc/admin/ui/AdminBreadcrumbs';
 import Text from '@/components/ui/Text';
+import Heading from '@/components/ui/Heading';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
   const [notification, setNotification] = useState<Notification | null>(null);
@@ -42,16 +46,12 @@ export default function NotificationPage({ notificationId }: { notificationId: s
 
   return (
     <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        title={notification && notification._id ? notification._id : "Unknown Notification"}
-      >
-        <div className="space-y-1 mt-2">
-          <Text variant="muted">
-            <strong>FirebaseUid:</strong> {notification && notification.firebaseUid}
-          </Text>
-        </div>
-      </AdminHeader>
+      <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+
+      <Card className="h-60 order-1 lg:col-span-2 lg:order-none">
+        <Heading level={2}>{notification ? notification.type + " @ " + formatDateForDisplay(notification.sentAt) : "Event"}</Heading>
+      </Card>
+
     </>
   );
 }

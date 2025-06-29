@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode } from 'react';
-import Card from '@/components/ui/Card';
 
 interface AdminDetailGridProps {
   children: ReactNode;
@@ -9,7 +8,7 @@ interface AdminDetailGridProps {
 
 export default function AdminDetailGrid({ children }: AdminDetailGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid md:grid-cols-3 lg:grid-cols-1 grid-cols-1 gap-6">
       {children}
     </div>
   );

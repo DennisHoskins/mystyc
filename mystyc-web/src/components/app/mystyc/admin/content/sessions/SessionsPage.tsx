@@ -5,7 +5,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Session, SessionDevice } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
+import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import Card from '@/components/ui/Card';
 import SessionsTable from './SessionsTable';
 import SessionsDevicesTable from './SessionsDevicesTable';
@@ -47,6 +47,7 @@ export default function SessionsPage() {
       setSessions(response.data);
       setSessionsHasMore(response.pagination.hasMore);
       setSessionsCurrentPage(page);
+      setSessionsTotalItems(response.pagination.totalItems);
     } catch (err) {
       logger.error('Failed to load Sessions:', err);
       setSessionsError('Failed to load Sessions. Please try again.');
@@ -68,6 +69,7 @@ export default function SessionsPage() {
       setSessionsDevices(response.data);
       setSessionsDevicesHasMore(response.pagination.hasMore);
       setSessionsDevicesCurrentPage(page);
+      setSessionsDevicesTotalItems(response.pagination.totalItems);
     } catch (err) {
       logger.error('Failed to load Sessions Devices:', err);
       setSessionsDevicesError('Failed to load Sessions Devices. Please try again.');
@@ -83,12 +85,11 @@ export default function SessionsPage() {
 
   return (
     <>
-      <AdminHeader
+      <AdminListLayout
         breadcrumbs={breadcrumbs}
         title={`Sessions ${sessionsTotalItems ? `(${sessionsTotalItems})` : ''}`}
         description="View active user sessions and devices, monitor login activity, and manage session security settings"
-      >
-        <div className="mt-4">
+        tableContent={
           <SessionsTable 
             data={sessions}
             loading={sessionsLoading}
@@ -99,13 +100,13 @@ export default function SessionsPage() {
             onRetry={() => loadSessions(sessionsCurrentPage)}
             onRefresh={() => loadSessions(sessionsCurrentPage)}
           />
-        </div>
-      </AdminHeader>
+        }
+      />
 
       <div className="mt-4">
         <Card>
           <SessionsDevicesTable 
-            title={`Session Devices ${sessionsDevicesTotalItems ? `(${sessionsDevicesTotalItems})` : ''}`}
+            label={`Session Devices ${sessionsDevicesTotalItems ? `(${sessionsDevicesTotalItems})` : ''}`}
             data={sessionsDevices}
             loading={sessionsDevicesLoading}
             error={sessionsDevicesError}

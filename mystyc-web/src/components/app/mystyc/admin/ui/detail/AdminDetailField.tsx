@@ -13,7 +13,7 @@ export default function AdminDetailField({ label, value }: AdminDetailFieldProps
       <Text variant="small" className="font-light text-gray-500 uppercase tracking-wide">
         {label}
       </Text>
-      <Text className='font-bold'>{value || ''}</Text>
+      <Text>{value || ''}</Text>
     </div>
   );
 }

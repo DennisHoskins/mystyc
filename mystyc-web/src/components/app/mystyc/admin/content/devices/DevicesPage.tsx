@@ -5,8 +5,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
-import Card from '@/components/ui/Card';
+import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import DevicesTable from './DevicesTable';
 
 export default function DevicesPage() {
@@ -54,26 +53,23 @@ export default function DevicesPage() {
   }, [loadDevices]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        title={`Devices ${totalItems ? `(${totalItems})` : ''}`}
-        description="Monitor and control connected devices, view status device configurations"
-      >
-        <div className="mt-4">
-          <DevicesTable
-            data={devices}
-            loading={loading}
-            error={error}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            hasMore={hasMore}
-            onPageChange={loadDevices}
-            onRetry={() => loadDevices(currentPage)}
-            onRefresh={() => loadDevices(currentPage)}
-          />
-        </div>
-      </AdminHeader>
-    </>
+    <AdminListLayout
+      breadcrumbs={breadcrumbs}
+      title={`Devices ${totalItems ? `(${totalItems})` : ''}`}
+      description="Monitor and control connected devices, view status device configurations"
+      tableContent={
+        <DevicesTable
+          data={devices}
+          loading={loading}
+          error={error}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasMore={hasMore}
+          onPageChange={loadDevices}
+          onRetry={() => loadDevices(currentPage)}
+          onRefresh={() => loadDevices(currentPage)}
+        />
+      }
+    />
   );
 }

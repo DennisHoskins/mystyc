@@ -8,7 +8,7 @@ import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
-export class AuthEventService {
+export class AuthEventsService {
   constructor(
     @InjectModel(AuthEvent.name) private authEventModel: Model<AuthEventDocument>,
   ) {}
@@ -31,16 +31,7 @@ export class AuthEventService {
    * @returns number - Retrieves auth events records total
    */
   async getTotal(): Promise<number> {
-    const pipeline = [
-      { $group: { _id: '$id' } },
-      { $count: 'totalAuthEvents' }
-    ];
-    
-    const result = await this.authEventModel
-      .aggregate(pipeline)
-      .exec();
-      
-    return result[0]?.totalAuthEvents || 0;
+    return await this.authEventModel.countDocuments();
   }  
 
   /**
@@ -135,7 +126,7 @@ export class AuthEventService {
       offset, 
       sortBy, 
       sortOrder 
-    }, 'AuthEventService'); // Fixed service name
+    }, 'AuthEventService');
 
     // Build sort object
     const sortObj: any = {};

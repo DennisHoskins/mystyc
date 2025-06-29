@@ -5,8 +5,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
-import Card from '@/components/ui/Card';
+import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import NotificationsTable from './NotificationsTable';
 
 export default function NotificationsPage() {
@@ -54,26 +53,23 @@ export default function NotificationsPage() {
   }, [loadNotifications]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        title={`Notifications ${totalItems ? `(${totalItems})` : ''}`}
-        description="View sent push notifications, message history, and delivery status for user communications"
-      >
-        <div className="mt-4">
-          <NotificationsTable 
-            data={notifications}
-            loading={loading}
-            error={error}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            hasMore={hasMore}
-            onPageChange={loadNotifications}
-            onRetry={() => loadNotifications(currentPage)}
-            onRefresh={() => loadNotifications(currentPage)}
-          />
-        </div>
-      </AdminHeader>
-    </>
+   <AdminListLayout
+      breadcrumbs={breadcrumbs}
+      title={`Notifications ${totalItems ? `(${totalItems})` : ''}`}
+      description="View sent push notifications, message history, and delivery status for user communications"
+      tableContent={
+        <NotificationsTable 
+          data={notifications}
+          loading={loading}
+          error={error}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasMore={hasMore}
+          onPageChange={loadNotifications}
+          onRetry={() => loadNotifications(currentPage)}
+          onRefresh={() => loadNotifications(currentPage)}
+        />
+      }
+    />
   );
 }

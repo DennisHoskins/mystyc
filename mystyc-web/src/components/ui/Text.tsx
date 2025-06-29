@@ -12,7 +12,7 @@ const Text = forwardRef<HTMLParagraphElement, TextProps>(
   ({ className, variant = 'body', as: Component = 'p', ...props }, ref) => {
     const variants = {
       body: 'text-base text-gray-900',
-      small: 'text-sm text-gray-600', 
+      small: 'text-xs text-gray-600', 
       muted: 'text-sm text-gray-500',
     };
 

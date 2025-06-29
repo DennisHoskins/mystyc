@@ -62,16 +62,11 @@ export default function DeviceTabPanel({ deviceId }: { deviceId: string | null }
     ];
   }, [deviceId, activeTab, summary]);
 
-  if (!deviceId) {
-    return null;
-  }
-
   return (
-    <Card>
+    <Card className='h-[56rem]'>
       <TabPanel 
         tabs={tabs} 
         defaultActiveTab="auth-events"
-        height="900px"
         onTabChange={setActiveTab}
       />
     </Card>      

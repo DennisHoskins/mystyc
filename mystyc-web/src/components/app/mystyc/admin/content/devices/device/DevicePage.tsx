@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces';
 import { logger } from '@/util/logger';
-import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
-import Card from '@/components/ui/Card';
+import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout'
 import DeviceDetailsPanel from './DeviceDetailsPanel';
 import DeviceUsersPanel from './DeviceUsersPanel';
+import DeviceInfoPanel from './DeviceInfoPanel';
 import DeviceTabPanel from './DeviceTabPanel';
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
@@ -44,28 +44,26 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
   ], [device, deviceId]);
 
   return (
-    <>
-      <AdminHeader
-        breadcrumbs={breadcrumbs}
-        title={device && device.deviceName ? device.deviceName : `Unknown Device`}
-      >
+   <AdminItemLayout
+      breadcrumbs={breadcrumbs}
+      title={device && device.deviceName ? device.deviceName : `Unknown Device`}
+      headerContent={
         <DeviceDetailsPanel
           device={device}
           error={error}
           loading={loading}
           onRetry={loadDevice}
         />
-      </AdminHeader>
-
-      <div className="mt-4">
-        <Card>
-          <DeviceUsersPanel deviceId={device && device.deviceId} />
-        </Card>          
-      </div>
-
-      <div className="mt-4">
+      }
+      mainContent={
+        <DeviceUsersPanel deviceId={device && device.deviceId} />
+      }
+      sidebarContent={
+        <DeviceInfoPanel device={device} />
+      }
+      tabsContent={
         <DeviceTabPanel deviceId={device && device.deviceId} />
-      </div>
-    </>
+      }
+    />
   );
 }

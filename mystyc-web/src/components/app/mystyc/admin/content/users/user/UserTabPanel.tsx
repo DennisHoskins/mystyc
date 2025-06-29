@@ -67,7 +67,7 @@ export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | nu
   }
 
   return (
-    <Card>
+    <Card className='h-[56rem]'>
       <TabPanel 
         tabs={tabs} 
         defaultActiveTab="auth-events"
