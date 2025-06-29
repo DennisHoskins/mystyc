@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent } from '@/interfaces';
 import { logger } from '@/util/logger';
+
 import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
+import Card from '@/components/ui/Card';
 import AuthorizationTable from './AuthorizationTable';
 
 export default function AuthorizationPage() {
@@ -12,6 +14,8 @@ export default function AuthorizationPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -35,6 +39,8 @@ export default function AuthorizationPage() {
       setAuthEvents(response.data);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
+      setTotalPages(response.pagination.totalPages);
+      setTotalItems(response.pagination.totalItems);
     } catch (err) {
       logger.error('Failed to load Auth Events:', err);
       setError('Failed to load Auth Events. Please try again.');
@@ -51,22 +57,24 @@ export default function AuthorizationPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
-        title={"Authorization"}
+        title={`Authorizations ${totalItems ? `(${totalItems})` : ''}`}
         description="Track user login and logout events, monitor authentication patterns, and review access history"
-      />
+      >
 
-      <div className="mt-6">
-        <AuthorizationTable 
-          data={authEvents}
-          loading={loading}
-          error={error}
-          currentPage={currentPage}
-          hasMore={hasMore}
-          onPageChange={loadAuthEvents}
-          onRetry={() => loadAuthEvents(currentPage)}
-          onRefresh={() => loadAuthEvents(currentPage)}
-        />
-      </div>
+        <div className="mt-4">
+          <AuthorizationTable 
+            data={authEvents}
+            loading={loading}
+            error={error}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            hasMore={hasMore}
+            onPageChange={loadAuthEvents}
+            onRetry={() => loadAuthEvents(currentPage)}
+            onRefresh={() => loadAuthEvents(currentPage)}
+          />
+        </div>
+      </AdminHeader>
     </>
   );
 }

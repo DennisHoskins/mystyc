@@ -6,7 +6,7 @@ import { Device } from '@/interfaces';
 import { logger } from '@/util/logger';
 import DevicesTable from '@/components/app/mystyc/admin/content/devices/DevicesTable';
 
-export default function DevicesPage({ userId }: { userId?: string | null }) {
+export default function UserDevicesPanel({ firebaseUid }: { firebaseUid?: string | null }) {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +17,7 @@ export default function DevicesPage({ userId }: { userId?: string | null }) {
   const LIMIT = 20;
 
   const loadUserDevices = useCallback(async (page: number) => {
-    if (!userId) {
+    if (!firebaseUid) {
       return;
     }
 
@@ -25,7 +25,7 @@ export default function DevicesPage({ userId }: { userId?: string | null }) {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getUserDevices(userId, {
+      const response = await apiClientAdmin.getUserDevices(firebaseUid, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -43,7 +43,7 @@ export default function DevicesPage({ userId }: { userId?: string | null }) {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [firebaseUid]);
 
   useEffect(() => {
     loadUserDevices(0);
@@ -51,7 +51,7 @@ export default function DevicesPage({ userId }: { userId?: string | null }) {
 
   return (
       <DevicesTable
-        label={`User Devices (${totalItems})`}
+        label={`User Devices ${totalItems ? `(${totalItems})` : ''}`}
         data={devices}
         loading={loading}
         error={error}

@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
+
 import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
+import Card from '@/components/ui/Card';
 import NotificationsTable from './NotificationsTable';
 
 export default function NotificationsPage() {
@@ -12,6 +14,8 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -35,6 +39,8 @@ export default function NotificationsPage() {
       setNotifications(response.data);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
+      setTotalPages(response.pagination.totalPages);
+      setTotalItems(response.pagination.totalItems);
     } catch (err) {
       logger.error('Failed to load Notifications:', err);
       setError('Failed to load Notifications. Please try again.');
@@ -51,22 +57,23 @@ export default function NotificationsPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
-        title={"Notifications"}
+        title={`Notifications ${totalItems ? `(${totalItems})` : ''}`}
         description="View sent push notifications, message history, and delivery status for user communications"
-      />
-
-      <div className="mt-6">
-        <NotificationsTable 
-          data={notifications}
-          loading={loading}
-          error={error}
-          currentPage={currentPage}
-          hasMore={hasMore}
-          onPageChange={loadNotifications}
-          onRetry={() => loadNotifications(currentPage)}
-          onRefresh={() => loadNotifications(currentPage)}
-        />
-      </div>
+      >
+        <div className="mt-4">
+          <NotificationsTable 
+            data={notifications}
+            loading={loading}
+            error={error}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            hasMore={hasMore}
+            onPageChange={loadNotifications}
+            onRetry={() => loadNotifications(currentPage)}
+            onRefresh={() => loadNotifications(currentPage)}
+          />
+        </div>
+      </AdminHeader>
     </>
   );
 }

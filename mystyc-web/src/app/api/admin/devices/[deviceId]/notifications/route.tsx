@@ -3,12 +3,12 @@ import { handleAdmin } from '../../../adminHandler';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ deviceId: string }> }
 ) {
-  const { userId } = await params;  
+  const { deviceId } = await params;  
   return handleAdmin(
     request, 
-    { endpoint: 'user/{userId}/devices' },
-    { userId }
+    { endpoint: 'device/{deviceId}/notifications' },
+    { deviceId }
   );
 }

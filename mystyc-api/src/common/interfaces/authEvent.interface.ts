@@ -1,6 +1,6 @@
 export interface AuthEvent {
   _id?: string;
-  firebaseUid: string;
+  userId: string;
   email?: string;
   deviceId: string;
   deviceName?: string;

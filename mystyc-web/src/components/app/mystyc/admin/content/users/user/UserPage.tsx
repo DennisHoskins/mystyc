@@ -5,11 +5,13 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { logger } from '@/util/logger';
 import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
+import Card from '@/components/ui/Card';
 import Text from '@/components/ui/Text';
-import UserPanel from './UserPanel';
-import UserDevices from './UserDevices';
+import UserDetailsPanel from './UserDetailsPanel';
+import UserDevicesPanel from './UserDevicesPanel';
+import UserTabPanel from './UserTabPanel';
 
-export default function UserPage({ userId }: { userId: string }) {
+export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export default function UserPage({ userId }: { userId: string }) {
       setLoading(true);
       setError(null);
 
-      const data = await apiClientAdmin.getUser(userId);
+      const data = await apiClientAdmin.getUser(firebaseUid);
       setUser(data);
     } catch (err) {
       logger.error('Failed to load user:', err);
@@ -27,7 +29,7 @@ export default function UserPage({ userId }: { userId: string }) {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [firebaseUid]);
 
   useEffect(() => {
     loadUser();
@@ -38,9 +40,9 @@ export default function UserPage({ userId }: { userId: string }) {
     { label: 'Admin', href: '/admin' },
     { label: 'Users', href: '/admin/users' },
     { 
-      label: user ? (user.email || `User ${userId}`) : ``
+      label: user ? `${firebaseUid}` : ``
     },
-  ], [user, userId]);
+  ], [user, firebaseUid]);
 
   return (
     <>
@@ -49,26 +51,23 @@ export default function UserPage({ userId }: { userId: string }) {
         title={user && user.fullName ? user.fullName : `Unknown User`}
       >
         <div className="space-y-1 mt-2">
-          <Text variant="muted">
-            <strong>User ID:</strong> {user && user.id}
-          </Text>
-          <Text variant="muted">
-            <strong>FirebaseUid:</strong> {user && user.firebaseUid}
-          </Text>
+          <UserDetailsPanel
+            user={user}
+            error={error}
+            loading={loading}
+            onRetry={loadUser}
+          />
         </div>
       </AdminHeader>
 
       <div className="mt-4">
-        <UserPanel
-          user={user}
-          error={error}
-          loading={loading}
-          onRetry={loadUser}
-        />
+        <Card>
+          <UserDevicesPanel firebaseUid={user && user.firebaseUid} />
+        </Card>          
       </div>
 
       <div className="mt-4">
-        <UserDevices userId={user && user.firebaseUid} />
+        <UserTabPanel firebaseUid={user && user.firebaseUid} />
       </div>
     </>
   );

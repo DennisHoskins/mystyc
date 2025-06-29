@@ -4,16 +4,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { logger } from '@/util/logger';
+
 import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
+import Card from '@/components/ui/Card';
 import UsersTable from './UsersTable';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -36,9 +38,9 @@ export default function UsersPage() {
 
       setUsers(response.data);
       setHasMore(response.pagination.hasMore);
-      setTotalItems(response.pagination.totalItems);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
+      setTotalItems(response.pagination.totalItems);
     } catch (err) {
       logger.error('Failed to load users:', err);
       setError('Failed to load users. Please try again.');
@@ -55,23 +57,23 @@ export default function UsersPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
-        title={`Users (${totalItems})`}
+        title={`Users ${totalItems ? `(${totalItems})` : ''}`}
         description="Manage user accounts, permissions, and profile information"
-      />
-
-      <div className="mt-6">
-        <UsersTable 
-          data={users}
-          loading={loading}
-          error={error}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          hasMore={hasMore}
-          onPageChange={loadUsers}
-          onRetry={() => loadUsers(currentPage)}
-          onRefresh={() => loadUsers(currentPage)}
-        />
+      >
+        <div className="mt-4">
+          <UsersTable 
+            data={users}
+            loading={loading}
+            error={error}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            hasMore={hasMore}
+            onPageChange={loadUsers}
+            onRetry={() => loadUsers(currentPage)}
+            onRefresh={() => loadUsers(currentPage)}
+          />
       </div>
+    </AdminHeader>
     </>
   );
 }

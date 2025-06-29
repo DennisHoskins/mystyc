@@ -76,55 +76,70 @@ export class AdminUserController extends AdminController<UserProfile> {
     }
   }
 
-/**
- * Finds all devices registered to a specific user (admin use)
- * @param firebaseUid - Firebase user unique identifier
- * @param query - Query parameters for pagination, sorting, and filtering
- * @returns Promise<AdminListResponse<Device>> - Paginated list of user's devices
- */
-@Get(':firebaseUid/devices')
-@UseGuards(FirebaseAuthGuard, RolesGuard)
-@Roles(UserRole.ADMIN)
-async getUserDevices(
-  @Param('firebaseUid') firebaseUid: string,
-  @Query() query: BaseAdminQueryDto
-): Promise<AdminListResponse<Device>> {
-  logger.info('Admin fetching user devices', { 
-    firebaseUid,
-    limit: query.limit,
-    offset: query.offset,
-    sortBy: query.sortBy,
-    sortOrder: query.sortOrder
-  }, 'AdminUserController');
-  
-  const [data, totalItems] = await Promise.all([
-    this.deviceService.findByFirebaseUid(firebaseUid, query),
-    this.deviceService.getTotalByFirebaseUid(firebaseUid)
-  ]);
-  
-  const totalPages = Math.ceil(totalItems / (query.limit || 100));
-  
-  logger.info('User devices retrieved', { 
-    firebaseUid, 
-    count: data.length,
-    totalItems
-  }, 'AdminUserController');
-  
-  return {
-    data,
-    pagination: {
-      limit: query.limit || 100,
-      offset: query.offset || 0,
-      hasMore: data.length === (query.limit || 100),
-      totalItems,
-      totalPages
-    },
-    sort: query.sortBy ? {
-      field: query.sortBy,
-      order: query.sortOrder || 'desc'
-    } : undefined
-  };
-}
+  @Get(':firebaseUid/summary')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUserSummary(@Param('firebaseUid') firebaseUid: string) {
+    const [authEventsCount, notificationsCount] = await Promise.all([
+      this.authEventsService.getTotalByFirebaseUid(firebaseUid),
+      this.notificationsService.getTotalByFirebaseUid(firebaseUid)
+    ]);
+
+    return {
+      authEvents: { total: authEventsCount },
+      notifications: { total: notificationsCount },
+    };
+  }
+
+  /**
+   * Finds all devices registered to a specific user (admin use)
+   * @param firebaseUid - Firebase user unique identifier
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<Device>> - Paginated list of user's devices
+   */
+  @Get(':firebaseUid/devices')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUserDevices(
+    @Param('firebaseUid') firebaseUid: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<Device>> {
+    logger.info('Admin fetching user devices', { 
+      firebaseUid,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminUserController');
+    
+    const [data, totalItems] = await Promise.all([
+      this.deviceService.findByFirebaseUid(firebaseUid, query),
+      this.deviceService.getTotalByFirebaseUid(firebaseUid)
+    ]);
+    
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info('User devices retrieved', { 
+      firebaseUid, 
+      count: data.length,
+      totalItems
+    }, 'AdminUserController');
+    
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+      sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
+  }
 
   /**
    * Finds all auth events for a specific user (admin use)

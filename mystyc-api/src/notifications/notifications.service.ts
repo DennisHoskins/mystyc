@@ -21,7 +21,7 @@ export class NotificationsService {
     private readonly userProfileService: UserProfileService
   ) {}
 
-  @Cron('0 12 * * *', {
+  @Cron('45 18 * * *', {
     timeZone: 'America/Edmonton'
   }) 
   async sendDailyNotifications() {
@@ -149,29 +149,20 @@ export class NotificationsService {
    * @returns number - Retrieves notifications records total
    */
   async getTotalByDeviceId(deviceId: string): Promise<number> {
-    const pipeline = [
-      { $match: { deviceId } },
-      { $group: { _id: '$id' } },
-      { $count: 'notifications' }
-    ];
-    
-    const result = await this.notificationModel
-      .aggregate(pipeline)
-      .exec();
-      
-    return result[0]?.notifications || 0;
-  }  
+    return await this.notificationModel.countDocuments({ deviceId });
+  }
 
   /**
-   * Finds notifications by device Id, returns null if not found
-   * @param deviceId - MongoDB ObjectId as string
-   * @returns Promise<NotificationInterface | null> - Notifications if found, null if not found
+   * Finds notifications by device Id
+   * @param deviceId - Device ID string
+   * @param query - Query parameters including limit, offset, sortBy, sortOrder
+   * @returns Promise<NotificationInterface[]> - Array of notification records
    */
-  async findByDeviceId(firebaseUid: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+  async findByDeviceId(deviceId: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
-    logger.debug('Finding user notifications with query', { 
-      firebaseUid,
+    logger.debug('Finding device notifications with query', { 
+      deviceId, // Fixed parameter name
       limit, 
       offset, 
       sortBy, 
@@ -183,10 +174,8 @@ export class NotificationsService {
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
     const pipeline = [
-      { $match: { firebaseUid } },
+      { $match: { deviceId } },
       { $sort: sortObj },
-      { $group: { _id: '$deviceId', doc: { $first: '$$ROOT' } } }, 
-      { $replaceRoot: { newRoot: '$doc' } },
       { $skip: offset },
       { $limit: limit },
     ];
@@ -195,16 +184,16 @@ export class NotificationsService {
       .aggregate(pipeline)
       .exec();
 
-    logger.debug('User notifications found', { 
-      firebaseUid,
+    logger.debug('Device notifications found', { 
+      deviceId,
       count: notifications.length, 
       limit, 
       offset,
       sortBy,
       sortOrder
-    }, 'DeviceService');
+    }, 'NotificationsService');
 
-    return notifications.map(device => this.transformToNotification(device));
+    return notifications.map(notification => this.transformToNotification(notification));
   }
 
   /**
@@ -212,24 +201,14 @@ export class NotificationsService {
    * @returns number - Retrieves notifications records total
    */
   async getTotalByFirebaseUid(firebaseUid: string): Promise<number> {
-    const pipeline = [
-      { $match: { firebaseUid } },
-      { $group: { _id: '$id' } },
-      { $count: 'notifications' }
-    ];
-    
-    const result = await this.notificationModel
-      .aggregate(pipeline)
-      .exec();
-      
-    return result[0]?.notifications || 0;
-  }  
+    return await this.notificationModel.countDocuments({ firebaseUid });
+  }
 
   /**
    * Retrieves user's notification records with pagination and sorting (admin use)
    * @param firebaseUid - Firebase user unique identifier
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
-   * @returns Promise<DeviceInterface[]> - Array of notification records with applied query params
+   * @returns Promise<NotificationInterface[]> - Array of notification records with applied query params
    */
   async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
@@ -249,8 +228,6 @@ export class NotificationsService {
     const pipeline = [
       { $match: { firebaseUid } },
       { $sort: sortObj },
-      { $group: { _id: '$firebaseUid', doc: { $first: '$$ROOT' } } }, 
-      { $replaceRoot: { newRoot: '$doc' } },
       { $skip: offset },
       { $limit: limit },
     ];
@@ -266,11 +243,11 @@ export class NotificationsService {
       offset,
       sortBy,
       sortOrder
-    }, 'DeviceService');
+    }, 'NotificationsService');
 
-    return notifications.map(device => this.transformToNotification(device));
+    return notifications.map(notification => this.transformToNotification(notification));
   }
-
+  
   // POST/PUT/PATCH Methods (Write Operations)
 
   /**

@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
@@ -123,16 +122,16 @@ export default function AdminTable<T>({
 
   if (loading && currentPage === 0) {
     return (
-      <Card>
+      <>
         {label && <Heading level={3} className="mb-4">{label}</Heading>}
-        <Text>Loading...</Text>
-      </Card>
+        <Text className='mt-4'>Loading...</Text>
+      </>
     );
   }
 
   if (error) {
     return (
-      <Card>
+      <>
         {label && <Heading level={3} className="mb-4">{label}</Heading>}
         <Text className="text-red-600">{error}</Text>
         {onRetry && (
@@ -140,15 +139,15 @@ export default function AdminTable<T>({
             Retry
           </Button>
         )}
-      </Card>
+      </>
     );
   }
 
   if (data.length === 0) {
     return (
-      <Card>
+      <>
         {label && <Heading level={3} className="mb-4">{label}</Heading>}
-        <Text>{emptyMessage}</Text>
+        <Text className='mt-4'>{emptyMessage}</Text>
         {(onRefresh || onPageChange) && (
           <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
             <div>
@@ -176,12 +175,12 @@ export default function AdminTable<T>({
             </div>
           </div>
         )}
-      </Card>
+      </>
     );
   }
 
   return (
-    <Card>
+    <>
       {label && <Heading level={3} className="mb-4">{label}</Heading>}
       <Table>
         <TableHeader>
@@ -240,6 +239,6 @@ export default function AdminTable<T>({
           </div>
         </div>
       )}
-    </Card>
+    </>
   );
 }

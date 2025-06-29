@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Session, SessionDevice } from '@/interfaces';
 import { logger } from '@/util/logger';
+
 import AdminHeader from '@/components/app/mystyc/admin/ui/AdminHeader';
+import Card from '@/components/ui/Card';
 import SessionsTable from './SessionsTable';
 import SessionsDevicesTable from './SessionsDevicesTable';
 
@@ -15,6 +17,7 @@ export default function SessionsPage() {
   const [sessionsError, setSessionsError] = useState<string | null>(null);
   const [sessionsCurrentPage, setSessionsCurrentPage] = useState(0);
   const [sessionsHasMore, setSessionsHasMore] = useState(true);
+  const [sessionsTotalItems, setSessionsTotalItems] = useState(0);
 
   // Sessions Devices state
   const [sessionsDevices, setSessionsDevices] = useState<SessionDevice[]>([]);
@@ -22,6 +25,7 @@ export default function SessionsPage() {
   const [sessionsDevicesError, setSessionsDevicesError] = useState<string | null>(null);
   const [sessionsDevicesCurrentPage, setSessionsDevicesCurrentPage] = useState(0);
   const [sessionsDevicesHasMore, setSessionsDevicesHasMore] = useState(true);
+  const [sessionsDevicesTotalItems, setSessionsDevicesTotalItems] = useState(0);
 
   const LIMIT = 20;
 
@@ -81,35 +85,37 @@ export default function SessionsPage() {
     <>
       <AdminHeader
         breadcrumbs={breadcrumbs}
-        title={"Sessions"}
+        title={`Sessions ${sessionsTotalItems ? `(${sessionsTotalItems})` : ''}`}
         description="View active user sessions and devices, monitor login activity, and manage session security settings"
-      />
+      >
+        <div className="mt-4">
+          <SessionsTable 
+            data={sessions}
+            loading={sessionsLoading}
+            error={sessionsError}
+            currentPage={sessionsCurrentPage}
+            hasMore={sessionsHasMore}
+            onPageChange={loadSessions}
+            onRetry={() => loadSessions(sessionsCurrentPage)}
+            onRefresh={() => loadSessions(sessionsCurrentPage)}
+          />
+        </div>
+      </AdminHeader>
 
-      <div className="mt-6">
-        <SessionsTable 
-          data={sessions}
-          loading={sessionsLoading}
-          error={sessionsError}
-          currentPage={sessionsCurrentPage}
-          hasMore={sessionsHasMore}
-          onPageChange={loadSessions}
-          onRetry={() => loadSessions(sessionsCurrentPage)}
-          onRefresh={() => loadSessions(sessionsCurrentPage)}
-        />
-      </div>
-
-      <div className="mt-6">
-        <SessionsDevicesTable 
-          label={"Session Devices"}
-          data={sessionsDevices}
-          loading={sessionsDevicesLoading}
-          error={sessionsDevicesError}
-          currentPage={sessionsDevicesCurrentPage}
-          hasMore={sessionsDevicesHasMore}
-          onPageChange={loadSessionsDevices}
-          onRetry={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
-          onRefresh={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
-        />
+      <div className="mt-4">
+        <Card>
+          <SessionsDevicesTable 
+            title={`Session Devices ${sessionsDevicesTotalItems ? `(${sessionsDevicesTotalItems})` : ''}`}
+            data={sessionsDevices}
+            loading={sessionsDevicesLoading}
+            error={sessionsDevicesError}
+            currentPage={sessionsDevicesCurrentPage}
+            hasMore={sessionsDevicesHasMore}
+            onPageChange={loadSessionsDevices}
+            onRetry={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
+            onRefresh={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
+          />
+        </Card>
       </div>
     </>
   );

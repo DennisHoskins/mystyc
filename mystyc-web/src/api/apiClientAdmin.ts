@@ -1,4 +1,4 @@
-import { AdminQuery, Session, SessionDevice, User, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
+import { AdminQuery, Session, SessionDevice, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 const API_BASE_URL = '/api';
@@ -106,6 +106,19 @@ class AdminApiClient {
   //
   // User Management
   //
+  getUserSummary = async (firebaseUid: string): Promise<{
+    authEvents: { total: number };
+    notifications: { total: number };
+  }> => {
+    logger.log('getUserSummary called', { firebaseUid });
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/summary`);
+    } catch (error) {
+      logger.error('getUserSummary failed:', error);
+      throw error;
+    }
+  };
+
   getUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     logger.log('getUsers called', { query });
     try {
@@ -142,7 +155,7 @@ class AdminApiClient {
     logger.log('getUserAuthEvents called', { firebaseUid });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/user/${firebaseUid}/auth-events${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/auth-events${queryString}`);
     } catch (error) {
       logger.error('getUserAuthEvents failed:', error);
       throw error;
@@ -153,7 +166,7 @@ class AdminApiClient {
     logger.log('getUserNotifications called', { firebaseUid });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/user/${firebaseUid}/notifications${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/notifications${queryString}`);
     } catch (error) {
       logger.error('getUserNotifications failed:', error);
       throw error;
@@ -163,6 +176,19 @@ class AdminApiClient {
   //
   // Device Management
   //
+  getDeviceSummary = async (deviceId: string): Promise<{
+    authEvents: { total: number };
+    notifications: { total: number };
+  }> => {
+    logger.log('getDeviceSummary called', { deviceId });
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/summary`);
+    } catch (error) {
+      logger.error('getDeviceSummary failed:', error);
+      throw error;
+    }
+  };
+
   getDevices = async (query?: AdminQuery): Promise<PaginatedResponse<Device>> => {
     logger.log('getDevices called', { query });
     try {
@@ -184,7 +210,7 @@ class AdminApiClient {
     }
   };
 
-  getDeviceUsers = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<User>> => {
+  getDeviceUsers = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     logger.log('getDeviceUsers called', { deviceId });
     try {
       const queryString = this.buildQueryString(query);
@@ -235,7 +261,7 @@ class AdminApiClient {
   getAuthEvent = async (eventId: string): Promise<AuthEvent> => {
     logger.log('getAuthEvent called', { eventId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-event/${eventId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events/${eventId}`);
     } catch (error) {
       logger.error('getAuthEvent failed:', error);
       throw error;
@@ -260,7 +286,7 @@ class AdminApiClient {
   getNotification = async (notificationId: string): Promise<Notification> => {
     logger.log('getNotification called', { notificationId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notification/${notificationId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/${notificationId}`);
     } catch (error) {
       logger.error('getNotification failed:', error);
       throw error;

@@ -65,18 +65,8 @@ export class AuthEventService {
    * @returns number - Retrieves auth events records total
    */
   async getTotalByFirebaseUid(firebaseUid: string): Promise<number> {
-    const pipeline = [
-      { $match: { firebaseUid } },
-      { $group: { _id: '$id' } },
-      { $count: 'authEvents' }
-    ];
-    
-    const result = await this.authEventModel
-      .aggregate(pipeline)
-      .exec();
-      
-    return result[0]?.authEvents || 0;
-  }  
+    return await this.authEventModel.countDocuments({ firebaseUid });
+  }
 
   /**
    * Retrieves user's auth event records with pagination and sorting (admin use)
@@ -93,7 +83,7 @@ export class AuthEventService {
       offset, 
       sortBy, 
       sortOrder 
-    }, 'DeviceService');
+    }, 'AuthEventService');
 
     // Build sort object
     const sortObj: any = {};
@@ -102,8 +92,6 @@ export class AuthEventService {
     const pipeline = [
       { $match: { firebaseUid } },
       { $sort: sortObj },
-      { $group: { _id: '$firebaseUid', doc: { $first: '$$ROOT' } } }, 
-      { $replaceRoot: { newRoot: '$doc' } },
       { $skip: offset },
       { $limit: limit },
     ];
@@ -119,45 +107,35 @@ export class AuthEventService {
       offset,
       sortBy,
       sortOrder
-    }, 'DeviceService');
+    }, 'AuthEventService');
 
     return authEvents.map(device => this.transformToAuthEvent(device));
   }
 
   /**
-   * @param device Id -Device id unique identifier
+   * @param deviceId - Device id unique identifier
    * @returns number - Retrieves auth events records total
    */
   async getTotalByDeviceId(deviceId: string): Promise<number> {
-    const pipeline = [
-      { $match: { deviceId } },
-      { $group: { _id: '$id' } },
-      { $count: 'authEvents' }
-    ];
-    
-    const result = await this.authEventModel
-      .aggregate(pipeline)
-      .exec();
-      
-    return result[0]?.authEvents || 0;
-  }  
+    return await this.authEventModel.countDocuments({ deviceId });
+  }
 
   /**
-   * Retrieves user's auth event records with pagination and sorting (admin use)
+   * Retrieves device's auth event records with pagination and sorting (admin use)
    * @param deviceId - Device id unique identifier
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
-   * @returns Promise<DeviceInterface[]> - Array of auth event records with applied query params
+   * @returns Promise<AuthEventInterface[]> - Array of auth event records with applied query params
    */
   async findByDeviceId(deviceId: string, query: BaseAdminQueryDto): Promise<AuthEventInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
-    logger.debug('Finding user auth events with query', { 
+    logger.debug('Finding device auth events with query', { 
       deviceId,
       limit, 
       offset, 
       sortBy, 
       sortOrder 
-    }, 'DeviceService');
+    }, 'AuthEventService'); // Fixed service name
 
     // Build sort object
     const sortObj: any = {};
@@ -166,8 +144,7 @@ export class AuthEventService {
     const pipeline = [
       { $match: { deviceId } },
       { $sort: sortObj },
-      { $group: { _id: '$firebaseUid', doc: { $first: '$$ROOT' } } }, 
-      { $replaceRoot: { newRoot: '$doc' } },
+      // Remove $group - we want all auth events for this device
       { $skip: offset },
       { $limit: limit },
     ];
@@ -176,16 +153,16 @@ export class AuthEventService {
       .aggregate(pipeline)
       .exec();
 
-    logger.debug('User auth events found', { 
+    logger.debug('Device auth events found', { 
       deviceId,
       count: authEvents.length, 
       limit, 
       offset,
       sortBy,
       sortOrder
-    }, 'DeviceService');
+    }, 'AuthEventService');
 
-    return authEvents.map(device => this.transformToAuthEvent(device));
+    return authEvents.map(event => this.transformToAuthEvent(event));
   }
 
   /**

@@ -148,7 +148,7 @@ export class DeviceService {
       .exec();
       
     return result[0]?.totalDevices || 0;
-  }  
+  }
 
   /**
    * Retrieves user's device records with pagination and sorting (admin use)
@@ -156,7 +156,7 @@ export class DeviceService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<DeviceInterface[]> - Array of device records with applied query params
    */
-  async findByFirebaseUid(firebaseUid: string, query?: BaseAdminQueryDto): Promise<DeviceInterface[]> {
+  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto = {}): Promise<DeviceInterface[]> { // Fixed default value
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user devices with query', { 
@@ -194,7 +194,21 @@ export class DeviceService {
     }, 'DeviceService');
 
     return devices.map(device => this.transformToDevice(device));
+  }  
+
+  /**
+   * Get unique firebaseUids that have used a specific device
+   * @param deviceId - Device identifier
+   * @returns Promise<string[]> - Array of unique firebaseUids
+   */
+  async getFirebaseUidsByDeviceId(deviceId: string): Promise<string[]> {
+    return await this.deviceModel.distinct('firebaseUid', { deviceId });
   }
+
+  async getTotalUsersByDeviceId(deviceId: string): Promise<number> {
+    const uniqueFirebaseUids = await this.getFirebaseUidsByDeviceId(deviceId);
+    return uniqueFirebaseUids.length;
+  }  
 
   // POST/PUT/PATCH Methods (Write Operations)
 

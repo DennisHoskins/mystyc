@@ -5,12 +5,12 @@ import UserPage from '@/components/app/mystyc/admin/content/users/user/UserPage'
 
 interface UserPageProps {
   params: Promise<{
-    userId: string;
+    firebaseUid: string;
   }>;
 }
 
 export default function Page({ params }: UserPageProps) {
-  const { userId } = use(params);
+  const { firebaseUid } = use(params);
 
-  return <UserPage userId={userId} />
+  return <UserPage firebaseUid={firebaseUid} />
 }

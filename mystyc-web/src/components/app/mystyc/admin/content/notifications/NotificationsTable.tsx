@@ -10,10 +10,12 @@ interface NotificationsTableProps {
   loading: boolean;
   error: string | null;
   currentPage: number;
+  totalPages: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
   onRefresh: () => void;
+  hideUserColumn?: boolean;
 }
 
 export default function NotificationsTable({
@@ -22,17 +24,35 @@ export default function NotificationsTable({
   loading,
   error,
   currentPage,
+  totalPages,
   hasMore,
   onPageChange,
   onRetry,
-  onRefresh
+  onRefresh,
+  hideUserColumn = false
 }: NotificationsTableProps) {
-  const columns: Column<Notification>[] = [
-    { key: 'event', header: 'Event', render: (e) => e.type || 'Unknown' },
-    { key: 'deviceName', header: 'Device', render: (e) => e.deviceName || 'Unknown' },
+  const baseColumns: Column<Notification>[] = [
+    { key: 'event', header: 'Event', link: (e) => `/admin/notifications/${e._id}`, render: (e) => e.type || 'Unknown' },
+    { key: 'deviceName', header: 'Device', link: (e) => `/admin/devices/${e.deviceId}`, render: (e) => e.deviceName || 'Unknown' },
     { key: 'message', header: 'Message', render: (e) => e.title || 'Unknown' },
-    { key: 'sentAt', header: 'Sent', align: 'right', render: (e) => formatDateForDisplay(e.sentAt) || '-' },
+    { key: 'sentAt', header: 'Sent', align: 'right', link: (e) => `/admin/notifications/${e._id}`, render: (e) => formatDateForDisplay(e.sentAt) || '-' },
   ];
+
+  const userColumn: Column<Notification> = {
+    key: 'userName', 
+    header: 'User', 
+    link: (e) => `/admin/users/${e.firebaseUid}`,
+    render: (e) => e.firebaseUid || 'Unknown User'
+  };
+
+  const columns = hideUserColumn 
+    ? baseColumns 
+    : [
+        baseColumns[0],
+        userColumn,
+        ...baseColumns.slice(1)
+      ];
+
 
   return (
     <AdminTable<Notification>
@@ -42,6 +62,7 @@ export default function NotificationsTable({
       loading={loading}
       error={error}
       currentPage={currentPage}
+      totalPages={totalPages}
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}

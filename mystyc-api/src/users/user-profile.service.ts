@@ -124,6 +124,28 @@ export class UserProfileService {
     return users.map(user => this.transformToUserProfile(user));
   }
 
+  /**
+   * Find user profiles by array of firebaseUids with pagination
+   * @param firebaseUids - Array of firebaseUids to find
+   * @param query - Query parameters for pagination and sorting
+   * @returns Promise<UserProfile[]> - Array of user profiles
+   */
+  async findByFirebaseUids(firebaseUids: string[], query: BaseAdminQueryDto): Promise<UserProfile[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const users = await this.userModel
+      .find({ firebaseUid: { $in: firebaseUids } })
+      .sort(sortObj)
+      .skip(offset)
+      .limit(limit)
+      .exec();
+
+    return users.map(user => this.transformToUserProfile(user));
+  }
+
   // POST/PUT/PATCH Methods (Write Operations)
 
   /**
