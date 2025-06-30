@@ -21,7 +21,7 @@ export class NotificationsService {
     private readonly userProfileService: UserProfilesService
   ) {}
 
-  @Cron('30 14 * * *', {
+  @Cron('0 22 * * *', {
     timeZone: 'America/Edmonton'
   }) 
   async sendDailyNotifications() {
@@ -554,11 +554,11 @@ export class NotificationsService {
   ): Promise<void> {
     // Get all devices with new query format
     const allDevices = await this.deviceService.findAll({ limit: 10000 });
-    console.log("[Notification Service] Found devices:", allDevices.length);
+    logger.info("[Notification Service] Found devices:" + allDevices.length);
 
     // Filter devices with FCM tokens
     const notifiableDevices = allDevices.filter(device => device.fcmToken);
-    console.log("[Notification Service] Notifyable devices:", notifiableDevices.length);
+    logger.info("[Notification Service] Notifyable devices:" + notifiableDevices.length);
     
     if (notifiableDevices.length === 0) {
       throw new BadRequestException('No devices with FCM tokens found in the system');

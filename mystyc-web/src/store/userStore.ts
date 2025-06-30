@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { User } from '@/interfaces/user.interface';
 import { AppUser } from '@/interfaces/appUser.interface';
-import { ServerUser } from '@/server/getUser';
+import { ServerUser } from '@/interfaces/serverUser.interface';
 
 const transformUserToAppUser = (user: User): AppUser => ({
   ...user,

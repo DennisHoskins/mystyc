@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { handleAdmin } from '../../adminHandler';
 
-export async function GET(
+export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ firebaseUid: string }> }
 ) {

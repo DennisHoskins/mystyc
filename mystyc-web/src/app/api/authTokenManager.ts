@@ -81,11 +81,6 @@ export const authTokenManager = {
    */
   async validateAndDecode(session: Session): Promise<{ decoded: DecodedIdToken; session: Session } | null> {
     try {
-
-      console.log("");
-      console.log("[AuthTokenManager] Validate and Decode:", session.authToken);
-      console.log("");
-
       const decoded = await adminAuth.verifyIdToken(session.authToken, true);
       logger.log('[authTokenManager] Token validated successfully for uid:', decoded.uid);
       return { session, decoded };

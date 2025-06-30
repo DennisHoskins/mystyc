@@ -23,11 +23,18 @@ const isDev = process.env.NODE_ENV === 'development';
 // Create a 32-byte key from the environment variable
 const ENCRYPTION_KEY = createHash('sha256').update(COOKIE_ENCRYPTION_KEY!).digest();
 
+type DeviceInfo = {
+  cores: string,
+  renderer: string,
+  timezone: string,
+  language: string
+};
+
 /**
  * Generate a deterministic device ID from a device fingerprint
  */
 
-export function generateDeviceId(fingerprint: string, deviceInfo: any): string {
+export function generateDeviceId(fingerprint: string, deviceInfo: DeviceInfo): string {
 
   // Check if it has dev- prefix
   if (fingerprint.startsWith('dev-')) {
@@ -38,7 +45,7 @@ export function generateDeviceId(fingerprint: string, deviceInfo: any): string {
 
   // Production: hash the fingerprint
   const hash = createHash('sha256');
-  hash.update(fingerprint + DEVICE_SESSION_SALT);
+  hash.update(fingerprint + deviceInfo.cores + deviceInfo.renderer + deviceInfo.language + DEVICE_SESSION_SALT);
   const deviceId = hash.digest('hex');
   logger.log('[keyManager] Generated device ID:', deviceId.substring(0, 8));
   return deviceId;

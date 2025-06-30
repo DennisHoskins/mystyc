@@ -1,4 +1,5 @@
 import { User } from '@/interfaces/user.interface';
+import { ServerUser } from '@/interfaces/serverUser.interface';
 import { logger } from '@/util/logger'
 
 const serverRoot: string = '/api';
@@ -31,6 +32,7 @@ export const getDeviceInfo = () => {
     try {
       return navigator.hardwareConcurrency || 0;
     } catch (err) {
+      logger.info("Unable to get Hardware Cores", err);
       return 0;
     }
   };
@@ -46,6 +48,7 @@ export const getDeviceInfo = () => {
       const debugInfo = webgl.getExtension('WEBGL_debug_renderer_info');
       return debugInfo ? webgl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'masked';
     } catch (err) {
+      logger.info("Unable to get WebGL Renderer", err);
       return 'error';
     }
   };
@@ -159,8 +162,20 @@ export const apiClient = {
     }
   },
 
-  async updateFcmToken(fcmToken: string): Promise<void> {
-    const response = await fetch(`${serverRoot}/updateFcmToken`, {
+  async getUser(): Promise<ServerUser | null> {
+    const response = await fetch(`${serverRoot}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        deviceInfo: getDeviceInfo(),
+      })
+    });
+
+    return response.json();
+  },
+
+  async updateFcmToken(deviceId: string, fcmToken: string): Promise<void> {
+    const response = await fetch(`${serverRoot}/devices/[${deviceId}]/updateFcmToken`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

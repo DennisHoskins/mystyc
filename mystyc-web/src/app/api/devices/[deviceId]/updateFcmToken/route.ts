@@ -1,9 +1,8 @@
 import { NextRequest } from 'next/server';
 import { headers } from 'next/headers';
 
-import { sessionManager } from '../sessionManager';
-import { authTokenManager } from '../authTokenManager';
-import { UpdateFcmToken } from '@/interfaces';
+import { sessionManager } from '../../../sessionManager';
+import { authTokenManager } from '../../../authTokenManager';
 import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest) {
@@ -11,11 +10,11 @@ export async function POST(request: NextRequest) {
  logger.log(`[updateFcmToken] Update attempt started`);
 
  try {
-    const body: UpdateFcmToken = await request.json();
-    const { deviceId, fcmToken } = body;
+    const body = await request.json();
+    const { deviceInfo, fcmToken } = body;
 
     const headersList = await headers();
-    const session = await sessionManager.getCurrentSession(headersList, deviceId);
+    const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
     if (!session) {
       logger.error('[updateFcmToken] No Current Session');
       return new Response('Unauthorized', { status: 401 });

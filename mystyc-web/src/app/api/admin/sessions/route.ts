@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
-import { sessionManager } from '../../../sessionManager';
+import { sessionManager } from '../../sessionManager';
 import { logger } from '@/util/logger';
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   logger.log('');
-  logger.log('[admin/sessions/devices] GET request started');
+  logger.log('[admin/sessions] GET request started');
 
   try {
     // Get current session
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
     
     if (!session) {
-      logger.error('[admin/sessions/devices] No session found');
+      logger.error('[admin/sessions] No session found');
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }
@@ -30,13 +30,13 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const sessionsDevices = await sessionManager.getSessionsDevices(limit, offset);
+    const sessions = await sessionManager.getSessions(limit, offset);
 
-    logger.log('[admin/sessions/devices] Sessions Devices fetched successfully, count:', sessionsDevices.data.length || 0);
+    logger.log('[admin/sessions] Sessions fetched successfully, count:', sessions.data.length || 0);
     
-    return NextResponse.json(sessionsDevices);
+    return NextResponse.json(sessions);
   } catch (error) {
-    logger.error('[admin/sessions/devices] Error:', error);
+    logger.error('[admin/sessions] Error:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

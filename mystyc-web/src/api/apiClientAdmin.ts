@@ -21,7 +21,8 @@ export interface PaginatedResponse<T> {
 
 class AdminApiClient {
   private async fetchWithAuth(url: string, options: RequestInit = {}) {
-  const response = await fetch(url, {
+    const response = await fetch(url, {
+      method: 'POST',
       ...options,
       body: options.body ? JSON.stringify({
         ...JSON.parse(options.body as string),

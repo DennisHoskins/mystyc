@@ -20,7 +20,8 @@ interface LogEntry {
 }
 
 class Logger {
-  private isDev = process.env.NODE_ENV === 'development';
+  // private isDev = process.env.NODE_ENV === 'development';
+  private isDev = true;
   private logLevel = this.getLogLevel();
   
   private getLogLevel(): LogLevel {

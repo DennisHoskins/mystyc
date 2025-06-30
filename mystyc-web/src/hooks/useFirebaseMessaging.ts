@@ -23,7 +23,6 @@ if (typeof window !== 'undefined') {
     messaging = getMessaging(app);
   } catch (error) {
     logger.error('Firebase Messaging not supported:', error);
-    console.log('Firebase Messaging not supported:', error);
   }
 }
 export { messaging };
@@ -47,7 +46,7 @@ export function useFirebaseMessaging() {
     if (!isReady) {
       return;
     }
-    if (!user) {
+    if (!user || !user.device) {
       return;
     }
     if ('serviceWorker' in navigator === false) {
@@ -62,6 +61,10 @@ export function useFirebaseMessaging() {
     }
 
     const enableMessaging = async () => {    
+      if (!user || !user.device) {
+        return;
+      }
+
       if (!messaging) {
         logger.warn('[useFirebaseMessaging] Firebase Messaging not initialized');
         return;
@@ -88,7 +91,7 @@ export function useFirebaseMessaging() {
         logger.log('[useFirebaseMessaging] FCM Token received:', newToken);
 
         if (newToken && newToken !== fcmToken) {
-          await apiClient.updateFcmToken(newToken);
+          await apiClient.updateFcmToken(user.device.deviceId, newToken);
           setFcmToken(newToken);
           logger.log('[useFirebaseMessaging] FCM Token updated on server successfully');
         }
@@ -111,6 +114,10 @@ export function useFirebaseMessaging() {
     if (!messaging || !fcmToken || !user) return;
 
     const handleTokenRefresh = async () => {
+      if (!user || !user.device) {
+        return;
+      }
+      
       try {
         // Only refresh if token is older than 24 hours
         if (lastTokenUpdate && (Date.now() - lastTokenUpdate < 24 * 60 * 60 * 1000)) {
@@ -130,7 +137,7 @@ export function useFirebaseMessaging() {
 
         if (newToken && newToken !== fcmToken) {
           logger.log('[useFirebaseMessaging] FCM token refreshed:', newToken);
-          await apiClient.updateFcmToken(newToken);
+          await apiClient.updateFcmToken(user.device?.deviceId, newToken);
           setFcmToken(newToken);
           logger.log('[useFirebaseMessaging] Refreshed token updated on server successfully');
         }

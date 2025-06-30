@@ -13,13 +13,17 @@ import { authTokenManager } from '@/app/api/authTokenManager';
 import { firebaseAuth } from '@/app/api/firebaseAuth';
 import { logger } from '@/util/logger';
 
-export interface AuthLogoutBody {
+export interface ServerLogoutBody {
   deviceInfo: {
+    cores: string,
+    renderer: string,
     timezone: string,
     language: string
   };
   clientTimestamp: string;
 }
+
+
 
 async function doServerLogout(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || 'unknown';
@@ -49,13 +53,16 @@ async function doServerLogout(request: NextRequest) {
     }
   }
 
+  const body: ServerLogoutBody = await request.json();
+  const { deviceInfo, clientTimestamp } = body;
+
   // If cookie method failed, try device fingerprint method
   if (!sessionData) {
     logger.log('[doServerLogout] Cookie method failed, trying device fingerprint method');
-    
+
     // Calculate deviceId from request fingerprint
     const fingerprint = extractDeviceFingerprint(request);
-    const deviceId = generateDeviceId(fingerprint);
+    const deviceId = generateDeviceId(fingerprint, deviceInfo);
     
     // Look up sessionId for this device
     const actualSessionId = await sessionManager.getDeviceSession(deviceId);
@@ -79,10 +86,6 @@ async function doServerLogout(request: NextRequest) {
     await doLogout();
     return new Response('Unauthorized', { status: 401 });
   }
-
-  // Rest of logout logic remains the same...
-  const body: AuthLogoutBody = await request.json();
-  const { deviceInfo, clientTimestamp } = body;
 
   const device = buildDevice(sessionData.uid, deviceInfo, request);
   logger.log(`[doServerLogout] Device ID generated:`, device.deviceId);

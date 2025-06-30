@@ -38,7 +38,8 @@ export abstract class AdminController<T> {
       count: data.length 
     }, `Admin${this.serviceName}Controller`);
 
-    console.log("[AdminQuery]", query);
+    logger.info("[AdminQuery]", query);
+
     return {
       data,
       pagination: {

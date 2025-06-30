@@ -6,9 +6,7 @@ import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 import { formatDateForDisplay } from '@/util/dateTime';
 import AdminBreadcrumbs from '@/components/app/mystyc/admin/ui/AdminBreadcrumbs';
-import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
-import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {

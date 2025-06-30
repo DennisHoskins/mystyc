@@ -1,9 +1,9 @@
 'use client';
 
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 
-import { ServerUser } from '@/server/getUser';
+import { apiClient } from '@/api/apiClient';
 import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
 
@@ -15,19 +15,42 @@ const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null
 
 interface AppContextProps {
   children: React.ReactNode;
-  user: ServerUser | null;
 }
 
-export default function AppContext({ children, user }: AppContextProps) {
+export default function AppContext({ children }: AppContextProps) {
+  const [loading, setLoading] = useState(true);
   const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
   if (!storeRef.current) {
-    storeRef.current = createUserStore(user);
+    storeRef.current = createUserStore(null);
   }
+
+  useEffect(() => {
+    const getServerUser = async () => {
+      if (document.readyState !== 'complete') {
+        await new Promise(resolve => window.addEventListener('load', resolve));
+      }      
+      
+      const user = await apiClient.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      storeRef.current = createUserStore(user);
+      setLoading(false);
+    }
+
+    getServerUser();
+  }, [])
 
   const hasHydrated = useAppStore((state) => state.hasHydrated);  
   if (!hasHydrated) {
     return null
   }  
+
+  if (loading) {
+    return;
+  }
 
   return (
     <UserStoreContext.Provider value={storeRef.current}>

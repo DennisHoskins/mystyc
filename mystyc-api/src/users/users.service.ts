@@ -39,13 +39,6 @@ export class UsersService {
 
     try {
       // Register/update device
-
-console.log("")
-console.log("")
-console.log("LOGIN:", loginRegisterDto.device);
-console.log("")
-console.log("")
-
       const device = await this.deviceService.upsertDevice(
         firebaseUser.uid,
         loginRegisterDto.device

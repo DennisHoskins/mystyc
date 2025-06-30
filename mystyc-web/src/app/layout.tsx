@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 
 import '@/styles/globals.css';
 
-import { getUser } from '@/server/getUser';
-import { createUserStore } from '@/store/userStore'
 import AppContext from '@/components/layout/context/AppContext';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 
@@ -24,14 +22,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getUser();
-  createUserStore(user);
-
   return (
     <html lang="en">
       <body className="bg-gray-100">
         <ErrorBoundary>
-          <AppContext user={user}>
+          <AppContext>
             {children}
           </AppContext>
         </ErrorBoundary>

@@ -18,7 +18,7 @@ export default function GlobalErrorPage() {
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body>
-        <AppContext user={null}>
+        <AppContext>
           <GlobalError />
         </AppContext>
       </body>

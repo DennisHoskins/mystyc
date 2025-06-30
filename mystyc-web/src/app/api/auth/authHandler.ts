@@ -43,7 +43,9 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
     logger.log(`[authHandler] Firebase ${operation} successful for uid:`, idTokens.uid);
 
     // Build device object with deterministic ID based on request fingerprint
+
     const device = buildDevice(idTokens.uid, deviceInfo, request);
+    
     logger.log(`[authHandler] Device ID generated:`, device.deviceId);
 
     // Check for existing session on this device and clear it
