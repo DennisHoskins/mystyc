@@ -248,8 +248,8 @@ export class DevicesService {
           deviceId: deviceDto.deviceId,
           deviceName: deviceDto.deviceName,
           platform: deviceDto.platform,
-          fcmToken: null, // FCM token added later via separate endpoint
           appVersion: deviceDto.appVersion,
+          fcmToken: null,
           userAgent: deviceDto.userAgent,
           userAgentParsed,
           timezone: deviceDto.timezone,

@@ -27,6 +27,7 @@ export async function POST(
   if (!sessionId) {
     const deviceSession: DeviceSession = {
       device: device,
+      session: null
     };
 
     return Response.json(deviceSession);
@@ -36,13 +37,7 @@ export async function POST(
   
   const deviceSession: DeviceSession = {
     device: device,
-    sessionId: session?.sessionId,
-    deviceId: session?.deviceId,
-    uid: session?.uid,
-    email: session?.email,
-    authToken: session?.authToken,
-    retryToken: session?.refreshToken,
-    fcmToken: session?.fcmToken
+    session: session
   };
 
   return Response.json(deviceSession);

@@ -84,6 +84,25 @@ export function buildDevice(
     return 'web';
   };
 
+  // Get app version from User-Agent
+  const getAppVersion = (userAgent: string): string => {
+    if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+      const chromeMatch = userAgent.match(/Chrome\/(\d+\.\d+\.\d+)/);
+      return chromeMatch ? chromeMatch[1] : '0.0.0';
+    } else if (userAgent.includes('Firefox')) {
+      const firefoxMatch = userAgent.match(/Firefox\/(\d+\.\d+)/);
+      return firefoxMatch ? `${firefoxMatch[1]}.0` : '0.0.0';
+    } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+      const safariMatch = userAgent.match(/Version\/(\d+\.\d+\.\d+)/);
+      return safariMatch ? safariMatch[1] : '0.0.0';
+    } else if (userAgent.includes('Edg')) {
+      const edgeMatch = userAgent.match(/Edg\/(\d+\.\d+\.\d+)/);
+      return edgeMatch ? edgeMatch[1] : '0.0.0';
+    }
+    
+    return '0.0.0';
+  };
+
   // Generate device name
   const generateDeviceName = (deviceId: string, userAgent: string): string => {
     const deviceSuffix = deviceId.slice(0, 8);
@@ -122,6 +141,7 @@ export function buildDevice(
     deviceId,
     deviceName: generateDeviceName(deviceId, userAgent),
     platform: getPlatform(userAgent),
+    appVersion: getAppVersion(userAgent),
     timezone: deviceInfo.timezone,
     language: deviceInfo.language,
     userAgent

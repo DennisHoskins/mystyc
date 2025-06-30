@@ -83,6 +83,10 @@ export default function DeviceDetailsPanel({
             label="Platform"
             value={device.platform}
           />
+          <AdminDetailField
+            label="Version"
+            value={device.appVersion || "-"}
+          />
         </AdminDetailGroup>
       </div>
     </>

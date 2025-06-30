@@ -26,6 +26,9 @@ export class DeviceDto {
   @ValidatePlatform()
   platform: string;
 
+  @ValidateAppVersion()
+  appVersion?: string;
+
   @ValidateTimezone()
   timezone: string;
 
@@ -34,7 +37,4 @@ export class DeviceDto {
 
   @ValidateUserAgent()
   userAgent: string;
-
-  @ValidateAppVersion()
-  appVersion?: string;
 }

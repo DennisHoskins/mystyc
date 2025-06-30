@@ -60,25 +60,30 @@ export const sessionManager = {
 
     logger.log('[sessionManager] Creating session for uid:', uid, 'device:', deviceId.substring(0, 8));
 
-    // Store session data (existing code)
+    const now = Date.now().toString();
+
+    // Store session data with timestamps
     const authTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenAuth`;
     await redis.set(authTokenKey, idTokens.authToken);
+    await redis.set(`${authTokenKey}:timestamp`, now);
     
     const refreshTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
     await redis.set(refreshTokenKey, idTokens.refreshToken);
+    await redis.set(`${refreshTokenKey}:timestamp`, now);
 
     const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
     await redis.hSet(metadataKey, {
       email,
       deviceName,
       isAdmin: isAdmin.toString(),
-      createdAt: Date.now().toString()
+      createdAt: Date.now().toString(),
+      lastUpdated: now
     });
 
     // Create device mapping
     await this.setDeviceSession(deviceId, sessionId);
 
-    // Set cookie (existing code)
+    // Set cookie
     const cookieStore = await cookies();
     cookieStore.set(getSessionCookieName(), encryptCookieValue(sessionId), {
       httpOnly: true,
@@ -111,7 +116,6 @@ export const sessionManager = {
     }
 
     const fingerprint = extractDeviceFingerprint(request);
-
     const deviceId = generateDeviceId(fingerprint, deviceInfo);
     logger.log('[sessionManager] Calculated device ID:', deviceId.substring(0, 8));
 
@@ -143,7 +147,6 @@ export const sessionManager = {
     }
 
     const authKey = keysAuth[0];
-
     const authToken = await redis.get(authKey);
     if (!authToken) {
       logger.error('[sessionManager] Auth token value is null');
@@ -161,38 +164,8 @@ export const sessionManager = {
       throw new InvalidSessionError('session validation failed');
     }
 
-    // Get the refresh token for this session
-    const refreshKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
-    const refreshToken = await redis.get(refreshKey);
-    if (!refreshToken) {
-      logger.error('[sessionManager] Refresh token value is null');
-      throw new InvalidSessionError('refresh token null');
-    }
-
-    // Get the fcm token for this session if it exists
-    const fcmKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenFcm`;
-    const fcmToken = await redis.get(fcmKey);
-
-    // Get session metadata
-    const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
-    const metadata = await redis.hGetAll(metadataKey);
-    if (!metadata.email) {
-      logger.error('[sessionManager] Session metadata missing');
-      throw new InvalidSessionError('session metadata missing');
-    }
-
-    logger.log('[sessionManager] Session retrieved successfully');
-    return {
-      sessionId,
-      deviceId,
-      uid,
-      authToken,
-      refreshToken,
-      fcmToken: fcmToken || `Not Set`,
-      email: metadata.email,
-      deviceName: metadata.deviceName || 'Unknown Device',
-      isAdmin: metadata.isAdmin === 'true'      
-    };
+    // Use shared method to get session data
+    return await this.getSessionData(sessionId, deviceId, uid, true);
   },
 
   async getSession(sessionId: string): Promise<Session | null> {
@@ -221,37 +194,68 @@ export const sessionManager = {
 
     logger.log('[sessionManager] Extracted deviceId:', deviceId.substring(0, 8), 'uid:', uid);
 
-    // Get the refresh token
+    // Use shared method to get session data
+    return await this.getSessionData(sessionId, deviceId, uid, false);
+  },
+
+  async getSessionData(sessionId: string, deviceId: string, uid: string, throwErrors: boolean): Promise<Session | null> {
+    // Get tokens and timestamps
     const refreshKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
     const refreshToken = await redis.get(refreshKey);
     if (!refreshToken) {
-      logger.error('[getSession] Refresh token value is null');
+      if (throwErrors) {
+        logger.error('[getSessionData] Refresh token value is null');
+        throw new InvalidSessionError('refresh token null');
+      }
       return null;
     }
 
-    // Get the fcm token
+    const authKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenAuth`;
+    const authToken = await redis.get(authKey);
+    if (!authToken) {
+      if (throwErrors) {
+        logger.error('[getSessionData] Auth token value is null');
+        throw new InvalidSessionError('auth token null');
+      }
+      return null;
+    }
+
+    // Get FCM token
     const fcmKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenFcm`;
     const fcmToken = await redis.get(fcmKey);
+
+    // Get timestamps
+    const authTimestamp = await redis.get(`${authKey}:timestamp`);
+    const refreshTimestamp = await redis.get(`${refreshKey}:timestamp`);
+    const fcmTimestamp = await redis.get(`${fcmKey}:timestamp`);
 
     // Get session metadata
     const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
     const metadata = await redis.hGetAll(metadataKey);
     if (!metadata.email) {
-      logger.error('[getSession] Session metadata missing');
+      if (throwErrors) {
+        logger.error('[getSessionData] Session metadata missing');
+        throw new InvalidSessionError('session metadata missing');
+      }
       return null;
     }
 
-    logger.log('[sessionManager] Session retrieved successfully by sessionId');
+    logger.log('[sessionManager] Session data retrieved successfully');
     return {
       sessionId,
       deviceId,
       uid,
       authToken,
       refreshToken,
-      fcmToken: fcmToken || `Not set`,
+      fcmToken: fcmToken || 'Not Set',
+      authTokenTimestamp: authTimestamp ? parseInt(authTimestamp) : 0,
+      refreshTokenTimestamp: refreshTimestamp ? parseInt(refreshTimestamp) : 0,
+      fcmTokenTimestamp: fcmTimestamp ? parseInt(fcmTimestamp) : 0,
       email: metadata.email,
       deviceName: metadata.deviceName || 'Unknown Device',
-      isAdmin: metadata.isAdmin === 'true'      
+      isAdmin: metadata.isAdmin === 'true',
+      createdAt: metadata.createdAt ? parseInt(metadata.createdAt) : 0,
+      lastUpdated: metadata.lastUpdated ? parseInt(metadata.lastUpdated) : 0
     };
   },
 
@@ -388,13 +392,21 @@ export const sessionManager = {
 
     logger.log('[sessionManager] Updating session tokens for uid:', uid);
 
+    const now = Date.now().toString();
+
     const authTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenAuth`;
     await redis.set(authTokenKey, authToken);
+    await redis.set(`${authTokenKey}:timestamp`, now);
     logger.log('[sessionManager] Auth token updated');
 
     const refreshTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
     await redis.set(refreshTokenKey, refreshToken);
+    await redis.set(`${refreshTokenKey}:timestamp`, now);
     logger.log('[sessionManager] Refresh token updated');
+
+    // Update metadata lastUpdated
+    const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
+    await redis.hSet(metadataKey, 'lastUpdated', now);
   },
 
   async updateSessionFcmToken(
@@ -407,9 +419,16 @@ export const sessionManager = {
 
     logger.log('[sessionManager] Updating session fcm token for uid:', uid);
 
+    const now = Date.now().toString();
+
     const fcmTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenFcm`;
     await redis.set(fcmTokenKey, fcmToken);
+    await redis.set(`${fcmTokenKey}:timestamp`, now);
     logger.log('[sessionManager] Fcm token updated');
+
+    // Update metadata lastUpdated
+    const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
+    await redis.hSet(metadataKey, 'lastUpdated', now);
   },
 
   async clearSession(): Promise<void> {

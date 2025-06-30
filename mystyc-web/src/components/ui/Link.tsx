@@ -21,11 +21,9 @@ export default function Link({ href, children, className }: LinkProps) {
     <a
       href={href}
       onClick={handleClick}
-      className={className && 'text-indigo-600 hover:underline'}
+      className={`text-indigo-600 hover:underline ${className || ''}`}
     >
-      <p className='truncate'>
-        {children}
-      </p>
+      {children}
     </a>
   );
 }
