@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Device } from '@/interfaces';
+import { DeviceSession } from '@/interfaces';
 import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout'
 import DeviceDetailsPanel from './DeviceDetailsPanel';
 import DeviceUsersPanel from './DeviceUsersPanel';
-import DeviceInfoPanel from './DeviceInfoPanel';
+import DeviceSessionPanel from './DeviceSessionPanel';
 import DeviceTabPanel from './DeviceTabPanel';
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
-  const [device, setDevice] = useState<Device | null>(null);
+  const [deviceSession, setDeviceSession] = useState<DeviceSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +21,7 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       setError(null);
 
       const data = await apiClientAdmin.getDevice(deviceId);
-      setDevice(data);
+      setDeviceSession(data);
     } catch (err) {
       logger.error('Failed to load device:', err);
       setError('Failed to load device. Please try again.');
@@ -39,30 +39,30 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
     { label: 'Admin', href: '/admin' },
     { label: 'Devices', href: '/admin/devices' },
     { 
-      label: device ? (device.deviceId || `Device ${deviceId}`) : ``
+      label: deviceSession ? (deviceSession.device.deviceId || `Device ${deviceId}`) : ``
     },
-  ], [device, deviceId]);
+  ], [deviceSession, deviceId]);
 
   return (
    <AdminItemLayout
       breadcrumbs={breadcrumbs}
-      title={device && device.deviceName ? device.deviceName : `Unknown Device`}
+      title={deviceSession && deviceSession.device.deviceName ? deviceSession.device.deviceName : `Unknown Device`}
       headerContent={
         <DeviceDetailsPanel
-          device={device}
+          device={deviceSession && deviceSession.device}
           error={error}
           loading={loading}
           onRetry={loadDevice}
         />
       }
       mainContent={
-        <DeviceUsersPanel deviceId={device && device.deviceId} />
+        <DeviceUsersPanel deviceId={deviceSession && deviceSession.device.deviceId} />
       }
       sidebarContent={
-        <DeviceInfoPanel device={device} />
+        <DeviceSessionPanel deviceSession={deviceSession} />
       }
       tabsContent={
-        <DeviceTabPanel deviceId={device && device.deviceId} />
+        <DeviceTabPanel deviceId={deviceSession && deviceSession.device.deviceId} />
       }
     />
   );

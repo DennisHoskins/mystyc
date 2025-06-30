@@ -14,7 +14,8 @@ interface AdminHandlerOptions {
 export async function handleAdmin(
   request: NextRequest, 
   options: AdminHandlerOptions,
-  routeParams?: Record<string, string>
+  routeParams?: Record<string, string>,
+  requestBody?: any
 ): Promise<NextResponse> {
   const { endpoint, method = 'GET', requiresNestCall = true, params } = options;
 
@@ -30,7 +31,7 @@ export async function handleAdmin(
     logger.log('');
     logger.log(`[admin/${finalEndpoint}] ${method} request started`);
 
-    const body = await request.json();
+    const body = requestBody || await request.json();
     const { deviceInfo } = body;    
 
     // Get current session

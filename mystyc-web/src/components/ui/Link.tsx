@@ -3,13 +3,13 @@
 import { ReactNode } from 'react';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-type FormLinkProps = {
+type LinkProps = {
   href: string;
   children: ReactNode;
   className?: string;
 };
 
-export default function FormLink({ href, children, className }: FormLinkProps) {
+export default function Link({ href, children, className }: LinkProps) {
   const router = useTransitionRouter();
 
   const handleClick = (e: React.MouseEvent) => {
@@ -21,9 +21,11 @@ export default function FormLink({ href, children, className }: FormLinkProps) {
     <a
       href={href}
       onClick={handleClick}
-      className={className || 'text-indigo-600 hover:underline'}
+      className={className && 'text-indigo-600 hover:underline'}
     >
-      {children}
+      <p className='truncate'>
+        {children}
+      </p>
     </a>
   );
 }

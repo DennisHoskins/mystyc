@@ -31,7 +31,9 @@ export async function POST(request: NextRequest) {
         deviceId: session.deviceId,
         fcmToken
       })
-   });
+    });
+
+    sessionManager.updateSessionFcmToken(session.sessionId, session.deviceId, session.uid, fcmToken);
 
     return new Response(nestResponse.body, { 
       status: nestResponse.status,

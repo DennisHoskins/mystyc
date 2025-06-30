@@ -6,6 +6,7 @@ export * from './userRole.interface';
 export * from './userProfile.interface';
 export * from './userProfileUpdate.interface';
 export * from './device.interface';
+export * from './deviceSession.interface';
 export * from './authEvent.interface';
 export * from './authEventLoginRegister.interface';
 export * from './authEventLogout.interface';

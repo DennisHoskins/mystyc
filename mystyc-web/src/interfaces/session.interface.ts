@@ -1,9 +1,10 @@
 export interface Session {
-  authToken: string; 
-  refreshToken: string; 
   sessionId: string; 
   deviceId: string; 
   uid: string;
+  authToken: string; 
+  refreshToken: string; 
+  fcmToken: string; 
   email: string;
   deviceName: string;
   isAdmin: boolean;

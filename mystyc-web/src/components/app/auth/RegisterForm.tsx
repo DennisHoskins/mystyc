@@ -7,7 +7,7 @@ import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useInitialized, useUser, useSetUser, useBusy } from '@/components/layout/context/AppContext';
 
 import FormLayout from '@/components/ui/form/FormLayout';
-import FormLink from '@/components/ui/form/FormLink';
+import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
@@ -121,10 +121,10 @@ export default function RegisterForm() {
 
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            Already have an account? <FormLink href="/login">Sign In</FormLink>
+            Already have an account? <Link href="/login">Sign In</Link>
           </span>
           <span className="block mt-1">
-            <FormLink href="/password-reset">Forgot your password?</FormLink>
+            <Link href="/password-reset">Forgot your password?</Link>
           </span>
         </p>
       </Form>

@@ -1,4 +1,4 @@
-import { AdminQuery, Session, SessionDevice, UserProfile, Device, AuthEvent, Notification } from '@/interfaces';
+import { AdminQuery, Session, SessionDevice, UserProfile, Device, DeviceSession, AuthEvent, Notification } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
 
@@ -210,7 +210,7 @@ class AdminApiClient {
     }
   };
 
-  getDevice = async (deviceId: string): Promise<Device> => {
+  getDevice = async (deviceId: string): Promise<DeviceSession> => {
     logger.log('getDevice called', { deviceId });
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}`);

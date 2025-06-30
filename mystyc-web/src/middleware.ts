@@ -9,15 +9,17 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
-  if (process.env.NODE_ENV === 'production') {
-    if (host !== 'mystyc.app' && host !== '127.0.0.1:3000') {
-      return new NextResponse('Forbidden', { status: 403 });
-    }
-  } else {
-    if (host !== 'localhost:3000') {
-      return new NextResponse('Forbidden', { status: 403 });
-    }
-  }
+  console.log(host);
+  
+  // if (process.env.NODE_ENV === 'production') {
+  //   if (host !== 'mystyc.app' && host !== '127.0.0.1:3000') {
+  //     return new NextResponse('Forbidden', { status: 403 });
+  //   }
+  // } else {
+  //   if (host !== 'localhost:3000') {
+  //     return new NextResponse('Forbidden', { status: 403 });
+  //   }
+  // }
 
   // Only apply rate-limit/origin checks on /api/server routes
   // if (request.nextUrl.pathname.startsWith('/api/server')) {

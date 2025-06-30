@@ -8,7 +8,7 @@ import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/ui/form/FormLayout';
-import FormLink from '@/components/ui/form/FormLink';
+import Link from '@/components/ui/Link';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 import { logger } from '@/util/logger';
@@ -101,10 +101,10 @@ export default function PasswordResetPage() {
 
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            Remember your password? <FormLink href="/login">Sign In</FormLink>
+            Remember your password? <Link href="/login">Sign In</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
+            Don&apos;t have an account? <Link href="/register">Register</Link>
           </span>
         </p>
       </Form>

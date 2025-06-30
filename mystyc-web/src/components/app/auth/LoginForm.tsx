@@ -6,7 +6,7 @@ import { useInitialized, useUser, useSetUser, useBusy } from '@/components/layou
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 import FormLayout from '@/components/ui/form/FormLayout';
-import FormLink from '@/components/ui/form/FormLink';
+import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
@@ -108,10 +108,10 @@ export default function LoginForm() {
         </Button>
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            <FormLink href="/password-reset">Forgot your password?</FormLink>
+            <Link href="/password-reset">Forgot your password?</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <FormLink href="/register">Register</FormLink>
+            Don&apos;t have an account? <Link href="/register">Register</Link>
           </span>
         </p>
       </Form>

@@ -146,7 +146,7 @@ export default function AdminTable<T>({
   if (data.length === 0) {
     return (
       <>
-        {label && <Heading level={3} className="mb-4">{label}</Heading>}
+        {label && <Heading level={4} className="mb-4">{label}</Heading>}
         <Text className='mt-4'>{emptyMessage}</Text>
         {(onRefresh || onPageChange) && (
           <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
@@ -181,7 +181,7 @@ export default function AdminTable<T>({
 
   return (
     <>
-      {label && <Heading level={3} className="mb-4">{label}</Heading>}
+      {label && <Heading level={5} className="mb-4">{label}</Heading>}
       <Table>
         <TableHeader>
           <TableRow>

@@ -73,9 +73,7 @@ class ApiError extends Error {
 }
 
 export const apiClient = {
-
   async register(email: string, password: string): Promise<User> {
-
     const response = await fetch(`${serverRoot}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
