@@ -1,7 +1,9 @@
 'use client';
 
 import { ReactNode } from 'react';
+
 import styles from './Sidebar.module.css';
+
 import SidebarToggleButton from './SidebarToggleButton';
 
 interface SidebarProps {

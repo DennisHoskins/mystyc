@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import AppLogo from '@/components/ui/AppLogo';
 
 export default function SplashScreen() {

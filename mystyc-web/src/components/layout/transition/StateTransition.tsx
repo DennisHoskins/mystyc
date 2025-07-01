@@ -8,8 +8,9 @@ import {
 } from 'react';
 
 import { useUser } from '@/components/layout/context/AppContext';
-import Transition, { TransitionRef } from './Transition';
 import { logger } from '@/util/logger';
+
+import Transition, { TransitionRef } from './Transition';
 
 export default function StateTransition({ children }: { children: ReactNode; }) {
   const user = useUser();

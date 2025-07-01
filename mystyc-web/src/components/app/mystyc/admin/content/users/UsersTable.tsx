@@ -1,16 +1,20 @@
 'use client';
 
 import { UserProfile } from '@/interfaces';
-import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 import { formatDateForDisplay } from '@/util/dateTime';
 
+import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
+import { IconComponent } from '@/components/ui/icons/Icon';
+
 interface UsersTableProps {
+  icon?: IconComponent,
   label?: string,
   data: UserProfile[];
   loading: boolean;
   error: string | null;
   currentPage: number;
   totalPages: number;
+  totalItems: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
@@ -18,12 +22,14 @@ interface UsersTableProps {
 }
 
 export default function UsersTable({
+  icon,
   label,
   data,
   loading,
   error,
   currentPage,
   totalPages,
+  totalItems,
   hasMore,
   onPageChange,
   onRetry,
@@ -38,13 +44,15 @@ export default function UsersTable({
 
   return (
     <AdminTable<UserProfile>
+      icon={icon}
       label={label}
       data={data}
       columns={columns}
       loading={loading}
       error={error}
-      totalPages={totalPages}
       currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}

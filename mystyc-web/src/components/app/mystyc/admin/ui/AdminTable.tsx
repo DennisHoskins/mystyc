@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
+
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
@@ -14,6 +16,9 @@ import {
   TableRow,
   TableCell,
 } from '@/components/ui/table';
+import { IconComponent } from '@/components/ui/icons/Icon';
+import Avatar from '@/components/ui/Avatar';
+import Badge from '@/components/ui/Badge';
 
 export interface Column<T> {
   key: keyof T | string;
@@ -53,6 +58,7 @@ function LinkCell({ href, children }: LinkCellProps) {
 }
 
 interface AdminTableProps<T> {
+  icon?: IconComponent;
   label?: string;
   data: T[];
   columns: Column<T>[];
@@ -61,6 +67,7 @@ interface AdminTableProps<T> {
   error?: string | null;
   currentPage?: number;
   totalPages?: number;
+  totalItems?: number;
   hasMore?: boolean;
   onPageChange?: (page: number) => void;
   onRetry?: () => void;
@@ -69,6 +76,7 @@ interface AdminTableProps<T> {
 }
 
 export default function AdminTable<T>({
+  icon,
   label,
   data,
   columns,
@@ -77,6 +85,7 @@ export default function AdminTable<T>({
   error = null,
   currentPage = 0,
   totalPages,
+  totalItems,
   hasMore = false,
   onPageChange,
   onRetry,
@@ -121,18 +130,21 @@ export default function AdminTable<T>({
   };
 
   if (loading && currentPage === 0) {
-    return (
-      <>
-        {label && <Heading level={3} className="mb-4">{label}</Heading>}
-        <Text className='mt-4'>Loading...</Text>
-      </>
-    );
+    return null;
   }
 
   if (error) {
     return (
       <>
-        {label && <Heading level={3} className="mb-4">{label}</Heading>}
+        {label && (
+          <div className='flex justify-between items-center mb-2'>
+            <div className='flex space-x-2 items-center'>
+              {icon && <Avatar size={'small'} icon={icon} />}
+              <Heading level={5}>{label}</Heading>
+            </div>
+            {totalItems && <Badge total={totalItems} />}
+          </div>
+        )}        
         <Text className="text-red-600">{error}</Text>
         {onRetry && (
           <Button onClick={onRetry} className="mt-4">
@@ -146,7 +158,15 @@ export default function AdminTable<T>({
   if (data.length === 0) {
     return (
       <>
-        {label && <Heading level={4} className="mb-4">{label}</Heading>}
+        {label && (
+          <div className='flex justify-between items-center mb-2'>
+            <div className='flex space-x-2 items-center'>
+              {icon && <Avatar size={'small'} icon={icon} />}
+              <Heading level={5}>{label}</Heading>
+            </div>
+            {totalItems && <Badge total={totalItems} />}
+          </div>
+        )}        
         <Text className='mt-4'>{emptyMessage}</Text>
         {(onRefresh || onPageChange) && (
           <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
@@ -181,7 +201,15 @@ export default function AdminTable<T>({
 
   return (
     <>
-      {label && <Heading level={5} className="mb-4">{label}</Heading>}
+      {label && (
+        <div className='flex justify-between items-center mb-2'>
+          <div className='flex space-x-2 items-center'>
+            {icon && <Avatar size={'small'} icon={icon} />}
+            <Heading level={5}>{label}</Heading>
+          </div>
+          {totalItems && <Badge total={totalItems} />}
+        </div>
+      )}        
       <Table>
         <TableHeader>
           <TableRow>

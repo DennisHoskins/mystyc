@@ -1,8 +1,9 @@
 'use client';
 
 import { Notification } from '@/interfaces';
-import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 import { formatDateForDisplay } from '@/util/dateTime';
+
+import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 
 interface NotificationsTableProps {
   label?: string;

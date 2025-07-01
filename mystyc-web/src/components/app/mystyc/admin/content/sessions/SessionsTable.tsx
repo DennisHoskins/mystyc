@@ -1,6 +1,8 @@
 'use client';
 
 import { Session } from '@/interfaces';
+import { formatTimestampForComponent } from '@/util/dateTime';
+
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 
 interface SessionsTableProps {
@@ -27,9 +29,10 @@ export default function SessionsTable({
   onRefresh
 }: SessionsTableProps) {
   const columns: Column<Session>[] = [
-    { key: 'sessionId', header: 'Session'},
-    { key: 'email', header: 'User'},
-    { key: 'deviceName', header: 'Device'},
+    { key: 'sessionId', header: 'Session', link: (s) => `/admin/sessions/${s.sessionId}`},
+    { key: 'email', header: 'User', link: (s) => `/admin/users/${s.uid}`},
+    { key: 'deviceName', header: 'Device', link: (s) => `/admin/devices/${s.deviceId}`},
+    { key: 'age', header: 'Age', align: 'right', link: (s) => `/admin/sessions/${s.sessionId}`, render: (s) => formatTimestampForComponent(s.createdAt)},
   ];
 
   return (

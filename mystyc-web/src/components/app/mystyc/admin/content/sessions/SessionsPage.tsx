@@ -1,32 +1,24 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Session, SessionDevice } from '@/interfaces';
+import { useBusy } from '@/components/layout/context/AppContext';
+import { Session } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
-import Card from '@/components/ui/Card';
 import SessionsTable from './SessionsTable';
-import SessionsDevicesTable from './SessionsDevicesTable';
+import SessionIcon from '@/components/app/mystyc/admin/ui/icons/SessionIcon';
 
 export default function SessionsPage() {
-  // Sessions state
+  const { setBusy } = useBusy();
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [sessionsLoading, setSessionsLoading] = useState(true);
-  const [sessionsError, setSessionsError] = useState<string | null>(null);
-  const [sessionsCurrentPage, setSessionsCurrentPage] = useState(0);
-  const [sessionsHasMore, setSessionsHasMore] = useState(true);
-  const [sessionsTotalItems, setSessionsTotalItems] = useState(0);
-
-  // Sessions Devices state
-  const [sessionsDevices, setSessionsDevices] = useState<SessionDevice[]>([]);
-  const [sessionsDevicesLoading, setSessionsDevicesLoading] = useState(true);
-  const [sessionsDevicesError, setSessionsDevicesError] = useState<string | null>(null);
-  const [sessionsDevicesCurrentPage, setSessionsDevicesCurrentPage] = useState(0);
-  const [sessionsDevicesHasMore, setSessionsDevicesHasMore] = useState(true);
-  const [sessionsDevicesTotalItems, setSessionsDevicesTotalItems] = useState(0);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalItems, setTotalItems] = useState(0);
   const LIMIT = 20;
 
   const breadcrumbs = [
@@ -36,8 +28,9 @@ export default function SessionsPage() {
 
   const loadSessions = useCallback(async (page: number) => {
     try {
-      setSessionsLoading(true);
-      setSessionsError(null);
+      setError(null);
+      setBusy(true);
+      setLoading(true);
 
       const response = await apiClientAdmin.getSessions({
         limit: LIMIT,
@@ -45,79 +38,41 @@ export default function SessionsPage() {
       });
 
       setSessions(response.data);
-      setSessionsHasMore(response.pagination.hasMore);
-      setSessionsCurrentPage(page);
-      setSessionsTotalItems(response.pagination.totalItems);
+      setHasMore(response.pagination.hasMore);
+      setCurrentPage(page);
+      setTotalItems(response.pagination.totalItems);
     } catch (err) {
       logger.error('Failed to load Sessions:', err);
-      setSessionsError('Failed to load Sessions. Please try again.');
+      setError('Failed to load Sessions. Please try again.');
     } finally {
-      setSessionsLoading(false);
+      setBusy(false);
+      setLoading(false);
     }
-  }, []);
-
-  const loadSessionsDevices = useCallback(async (page: number) => {
-    try {
-      setSessionsDevicesLoading(true);
-      setSessionsDevicesError(null);
-
-      const response = await apiClientAdmin.getSessionsDevices({
-        limit: LIMIT,
-        offset: page * LIMIT,
-      });
-
-      setSessionsDevices(response.data);
-      setSessionsDevicesHasMore(response.pagination.hasMore);
-      setSessionsDevicesCurrentPage(page);
-      setSessionsDevicesTotalItems(response.pagination.totalItems);
-    } catch (err) {
-      logger.error('Failed to load Sessions Devices:', err);
-      setSessionsDevicesError('Failed to load Sessions Devices. Please try again.');
-    } finally {
-      setSessionsDevicesLoading(false);
-    }
-  }, []);
+  }, [setBusy]);
 
   useEffect(() => {
     loadSessions(0);
-    loadSessionsDevices(0);
-  }, [loadSessions, loadSessionsDevices]);
+  }, [loadSessions]);
 
   return (
-    <>
-      <AdminListLayout
-        breadcrumbs={breadcrumbs}
-        title={`Sessions ${sessionsTotalItems ? `(${sessionsTotalItems})` : ''}`}
-        description="View active user sessions and devices, monitor login activity, and manage session security settings"
-        tableContent={
-          <SessionsTable 
-            data={sessions}
-            loading={sessionsLoading}
-            error={sessionsError}
-            currentPage={sessionsCurrentPage}
-            hasMore={sessionsHasMore}
-            onPageChange={loadSessions}
-            onRetry={() => loadSessions(sessionsCurrentPage)}
-            onRefresh={() => loadSessions(sessionsCurrentPage)}
-          />
-        }
-      />
-
-      <div className="mt-4">
-        <Card>
-          <SessionsDevicesTable 
-            label={`Session Devices ${sessionsDevicesTotalItems ? `(${sessionsDevicesTotalItems})` : ''}`}
-            data={sessionsDevices}
-            loading={sessionsDevicesLoading}
-            error={sessionsDevicesError}
-            currentPage={sessionsDevicesCurrentPage}
-            hasMore={sessionsDevicesHasMore}
-            onPageChange={loadSessionsDevices}
-            onRetry={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
-            onRefresh={() => loadSessionsDevices(sessionsDevicesCurrentPage)}
-          />
-        </Card>
-      </div>
-    </>
+    <AdminListLayout
+      breadcrumbs={breadcrumbs}
+      icon={SessionIcon}
+      title={`Sessions`}
+      total={totalItems}
+      description="View active user sessions and devices, monitor login activity, and manage session security settings"
+      tableContent={
+        <SessionsTable 
+          data={sessions}
+          loading={loading}
+          error={error}
+          currentPage={currentPage}
+          hasMore={hasMore}
+          onPageChange={loadSessions}
+          onRetry={() => loadSessions(currentPage)}
+          onRefresh={() => loadSessions(currentPage)}
+        />
+      }
+    />
   );
 }

@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
+import styles from './Working.module.css';
+
 import { useAppStore } from '@/store/appStore';
+
 import Overlay from '@/components/ui/overlay/Overlay';
 import IconEye from '@/components/ui/icons/IconEye';
-import styles from './Working.module.css';
 
 export default function Working() {
   const isBusy = useAppStore((state) => state.isBusy);

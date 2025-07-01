@@ -1,6 +1,7 @@
 'use client';
 
 import { SessionDevice } from '@/interfaces';
+
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 
 interface SessionsDevicesTableProps {

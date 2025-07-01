@@ -3,14 +3,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
+import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import UsersTable from './UsersTable';
+import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon';
 
 export default function UsersPage() {
+  const { setBusy } = useBusy();
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -25,8 +28,9 @@ export default function UsersPage() {
 
   const loadUsers = useCallback(async (page: number) => {
     try {
-      setLoading(true);
       setError(null);
+      setBusy(true);
+      setLoading(true);
 
       const response = await apiClientAdmin.getUsers({
         limit: LIMIT,
@@ -44,9 +48,10 @@ export default function UsersPage() {
       logger.error('Failed to load users:', err);
       setError('Failed to load users. Please try again.');
     } finally {
+      setBusy(false);
       setLoading(false);
     }
-  }, []);
+  }, [setBusy]);
 
   useEffect(() => {
     loadUsers(0);
@@ -55,7 +60,9 @@ export default function UsersPage() {
   return (
    <AdminListLayout
       breadcrumbs={breadcrumbs}
-      title={`Users ${totalItems ? `(${totalItems})` : ''}`}
+      icon={UsersIcon}
+      title={`Users`}
+      total={totalItems}
       description="Manage user accounts, permissions, and profile information"
       tableContent={
         <UsersTable 
@@ -64,6 +71,7 @@ export default function UsersPage() {
           error={error}
           currentPage={currentPage}
           totalPages={totalPages}
+          totalItems={totalItems}
           hasMore={hasMore}
           onPageChange={loadUsers}
           onRetry={() => loadUsers(currentPage)}

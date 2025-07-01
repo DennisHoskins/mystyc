@@ -1,40 +1,47 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { DeviceSession } from '@/interfaces';
+import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
-import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout'
-import DeviceDetailsPanel from './DeviceDetailsPanel';
-import DeviceUsersPanel from './DeviceUsersPanel';
-import DeviceSessionPanel from './DeviceSessionPanel';
-import DeviceTabPanel from './DeviceTabPanel';
+
+import Card from '@/components/ui/Card';
+import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
+import DeviceIcon from '@/components/app/mystyc/admin/ui/icons/DeviceIcon';
+import DeviceDetailsPanel from './content/DeviceDetailsPanel';
+import DeviceUsersPanel from './content/DeviceUsersPanel';
+import DeviceSessionPanel from './content/DeviceSessionPanel';
+import DeviceTabPanel from './content/DeviceTabPanel';
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
+  const { setBusy } = useBusy();
   const [deviceSession, setDeviceSession] = useState<DeviceSession | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadDevice = useCallback(async () => {
     try {
-      setLoading(true);
       setError(null);
+      setBusy(true);
+      setLoading(true);
 
-      const data = await apiClientAdmin.getDevice(deviceId);
+      const data = await apiClientAdmin.getDeviceSession(deviceId);
       setDeviceSession(data);
     } catch (err) {
       logger.error('Failed to load device:', err);
       setError('Failed to load device. Please try again.');
     } finally {
+      setBusy(false);
       setLoading(false);
     }
-  }, [deviceId]);
+  }, [deviceId, setBusy]);
 
   useEffect(() => {
     loadDevice();
   }, [loadDevice]);
 
-  // Generate breadcrumbs with device info
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Devices', href: '/admin/devices' },
@@ -43,27 +50,38 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
     },
   ], [deviceSession, deviceId]);
 
+  if (loading) {
+    return null;
+  }
+
+  if (!deviceSession) {
+    return (
+      <AdminItemLayout
+        error={'Device Not Found'}
+        onRetry={loadDevice}
+        breadcrumbs={breadcrumbs}
+        icon={<DeviceIcon size={6}/>}
+        title={'Unkown Device'}
+      />
+    );
+  }
+
   return (
    <AdminItemLayout
+      error={error}
+      onRetry={loadDevice}
       breadcrumbs={breadcrumbs}
+      icon={deviceSession && <DeviceIcon size={6} device={deviceSession.device}/>}
       title={deviceSession && deviceSession.device.deviceName ? deviceSession.device.deviceName : `Unknown Device`}
-      headerContent={
-        <DeviceDetailsPanel
-          device={deviceSession && deviceSession.device}
-          error={error}
-          loading={loading}
-          onRetry={loadDevice}
-        />
+      headerContent={<DeviceDetailsPanel device={deviceSession && deviceSession.device} />
       }
-      mainContent={
-        <DeviceUsersPanel deviceId={deviceSession && deviceSession.device.deviceId} />
-      }
-      sidebarContent={
-        <DeviceSessionPanel deviceSession={deviceSession} />
-      }
-      tabsContent={
-        <DeviceTabPanel deviceId={deviceSession && deviceSession.device.deviceId} />
-      }
+      sectionsContent={[
+        <Card key='users' className='h-[22rem]'>
+          <DeviceUsersPanel deviceId={deviceSession.device.deviceId} />
+        </Card>
+      ]}
+      sidebarContent={<DeviceSessionPanel deviceSession={deviceSession} />}
+      mainContent={<DeviceTabPanel deviceId={deviceSession.device.deviceId} />}
     />
   );
 }

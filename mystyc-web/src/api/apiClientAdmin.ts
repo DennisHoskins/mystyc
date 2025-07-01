@@ -66,6 +66,7 @@ class AdminApiClient {
   // todo: dashboard
   //
 
+  // get better summary
 
 
   //
@@ -210,7 +211,17 @@ class AdminApiClient {
     }
   };
 
-  getDevice = async (deviceId: string): Promise<DeviceSession> => {
+  getDeviceSession = async (deviceId: string): Promise<DeviceSession> => {
+    logger.log('getDeviceSession called', { deviceId });
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/session`);
+    } catch (error) {
+      logger.error('getDeviceSession failed:', error);
+      throw error;
+    }
+  };
+
+  getDevice = async (deviceId: string): Promise<Device> => {
     logger.log('getDevice called', { deviceId });
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}`);

@@ -2,8 +2,10 @@
 
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+
 import styles from './Sidebar.module.css';
+
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 interface SidebarItemProps {
   icon: ReactNode;

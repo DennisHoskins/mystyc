@@ -1,15 +1,19 @@
 'use client';
 
 import { Device } from '@/interfaces';
+
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
+import { IconComponent } from '@/components/ui/icons/Icon';
 
 interface DevicesTableProps {
+  icon?: IconComponent;
   label?: string;
   data: Device[];
   loading: boolean;
   error: string | null;
   currentPage: number;
   totalPages: number;
+  totalItems?: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRetry: () => void;
@@ -17,19 +21,21 @@ interface DevicesTableProps {
 }
 
 export default function DevicesTable({
+  icon,
   label,
   data,
   loading,
   error,
   currentPage,
   totalPages,
+  totalItems,
   hasMore,
   onPageChange,
   onRetry,
   onRefresh
 }: DevicesTableProps) {
   const columns: Column<Device>[] = [
-    { key: 'deviceName', header: 'Name', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceName || 'Unnamed Device' },
+    { key: 'deviceName', header: 'Name', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceName.split(" (")[0]  || 'Unnamed Device' },
     { key: 'deviceId', header: 'Id', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceId.substring(0, 15) + '...' },
     { key: 'timezone', header: 'Timezone', render: (d) => d.timezone || 'Unknown' },
     { key: 'fcmToken', header: 'Fcm Token', align: 'right', render: (d) => d.fcmToken ? 'Ready' : 'Not Ready' },
@@ -37,6 +43,7 @@ export default function DevicesTable({
 
   return (
     <AdminTable<Device>
+      icon={icon}
       label={label}
       data={data}
       columns={columns}
@@ -44,6 +51,7 @@ export default function DevicesTable({
       error={error}
       currentPage={currentPage}
       totalPages={totalPages}
+      totalItems={totalItems}
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRetry={onRetry}

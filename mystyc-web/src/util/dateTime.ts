@@ -40,3 +40,47 @@ export function formatDateForInput(dateValue: string | Date | null | undefined):
 
   return parsedDate.toISOString().slice(0, 10);
 }
+
+export function formatTimestampForComponent(timestamp: number): string {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return formatDateForComponent(date);
+}
+  
+export function formatDateForComponent(date: Date): string {
+
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  
+  // Calculate time differences
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  // Build relative time string
+  let relativeTime = "";
+  if (days > 0) {
+    relativeTime = `${days} day${days !== 1 ? 's' : ''}`;
+    if (hours > 0) {
+      relativeTime += `, ${hours} hour${hours !== 1 ? 's' : ''}`;
+    }
+  } else if (hours > 0) {
+    relativeTime = `${hours} hour${hours !== 1 ? 's' : ''}`;
+  } else {
+    relativeTime = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+  }
+  
+  // Format absolute time
+  const timeStr = date.toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: false 
+  });
+  const dateStr = date.toLocaleDateString('en-US', { 
+    month: 'long', 
+    day: 'numeric', 
+    year: 'numeric' 
+  });
+  
+  return `${relativeTime} (${timeStr} ${dateStr})`;
+};

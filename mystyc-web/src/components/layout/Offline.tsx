@@ -1,6 +1,7 @@
 'use client';
 
 import { useAppStore } from '@/store/appStore';
+
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';

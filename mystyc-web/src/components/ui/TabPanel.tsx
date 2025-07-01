@@ -42,7 +42,7 @@ export default function TabPanel({
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
             className={`
-              px-6 py-3 text-sm font-medium border-b-2 transition-colors duration-200
+              flex px-6 py-3 text-sm font-medium border-b-2 transition-colors duration-200 items-center
               ${activeTab === tab.id 
                 ? 'border-blue-500' 
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -58,17 +58,17 @@ export default function TabPanel({
               {tab.label}
             </span>
 
-            {tab.count !== undefined && (
-              <span className={`
-                ml-2 px-2 py-1 text-xs rounded-full
-                ${activeTab === tab.id 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'bg-gray-100 text-gray-400'
-                }
-              `}>
-                {tab.count}
-              </span>
-            )}
+              
+            <span className={`
+              flex ml-2 w-5 h-5 items-center justify-center text-xs rounded-full
+              ${activeTab === tab.id 
+                ? 'bg-blue-100 text-blue-600' 
+                : 'bg-gray-100 text-gray-400'
+              }
+            `}>
+              {tab.count || '0'}
+            </span>
+            
           </button>
         ))}
       </div>

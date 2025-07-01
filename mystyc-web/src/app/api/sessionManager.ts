@@ -328,7 +328,7 @@ export const sessionManager = {
       pagination: {
         offset,
         limit,
-        total: totalFound
+        totalItems: totalFound
       }
     };
   },

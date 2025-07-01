@@ -1,16 +1,20 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces';
+import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import DevicesTable from './DevicesTable';
+import DevicesIcon from '@/components/app/mystyc/admin/ui/icons/DevicesIcon';
 
 export default function DevicesPage() {
+  const { setBusy } = useBusy();
   const [devices, setDevices] = useState<Device[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -25,8 +29,9 @@ export default function DevicesPage() {
 
   const loadDevices = useCallback(async (page: number) => {
     try {
-      setLoading(true);
       setError(null);
+      setBusy(true);
+      setLoading(true);
 
       const response = await apiClientAdmin.getDevices({
         limit: LIMIT,
@@ -44,9 +49,10 @@ export default function DevicesPage() {
       logger.error('Failed to load devices:', err);
       setError('Failed to load devices. Please try again.');
     } finally {
+      setBusy(false);
       setLoading(false);
     }
-  }, []);
+  }, [setBusy]);
 
   useEffect(() => {
     loadDevices(0);
@@ -55,7 +61,9 @@ export default function DevicesPage() {
   return (
     <AdminListLayout
       breadcrumbs={breadcrumbs}
-      title={`Devices ${totalItems ? `(${totalItems})` : ''}`}
+      icon={DevicesIcon}
+      title={`Devices`}
+      total={totalItems}
       description="Monitor and control connected devices, view status device configurations"
       tableContent={
         <DevicesTable

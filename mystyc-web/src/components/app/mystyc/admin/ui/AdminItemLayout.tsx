@@ -1,7 +1,10 @@
 import { ReactNode } from 'react';
+
 import AdminBreadcrumbs from '@/components/app/mystyc/admin/ui/AdminBreadcrumbs';
+import AdminError from '@/components/app/mystyc/admin/ui/AdminError'
 import Heading from '@/components/ui/Heading';
 import Card from '@/components/ui/Card';
+import Avatar from '@/components/ui/Avatar';
 
 interface Breadcrumb {
   label: string;
@@ -9,46 +12,75 @@ interface Breadcrumb {
 }
 
 interface AdminDetailLayoutProps {
+  error?: string | null;
+  onRetry: () => void;
   breadcrumbs: Breadcrumb[];
+  icon: ReactNode;
   title: string;
-  headerContent: ReactNode;
-  mainContent: ReactNode;
-  sidebarContent: ReactNode;
-  tabsContent?: ReactNode;
+  headerContent?: ReactNode | null;
+  sectionsContent?: ReactNode[] | null;
+  sidebarContent?: ReactNode | null;
+  mainContent?: ReactNode | null;
 }
 
 export default function AdminDetailLayout({
+  error,
+  onRetry,
   breadcrumbs,
+  icon,
   title,
   headerContent,
-  mainContent,
+  sectionsContent,
   sidebarContent,
-  tabsContent
+  mainContent
 }: AdminDetailLayoutProps) {
+
+  if (error) {
+    return (
+      <>
+        <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+        <AdminError 
+          title={title}
+          error={error} 
+          onRetry={onRetry}
+        />
+      </>
+    )
+  }
+
   return (
     <>
       <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="h-60 order-1 lg:col-span-2 lg:order-none">
-          <Heading level={2}>{title}</Heading>
+        <Card className={`order-1 lg:col-span-2 lg:order-none`}>
+          <div className='flex space-x-3 items-center'>
+            {icon && (
+              <div className='mt-1'>
+                <Avatar size={'medium'} icon={icon} />
+              </div>
+            )}
+            <Heading level={2}>{title}</Heading>
+          </div>
           <div className="space-y-1 mt-2">
             {headerContent}
           </div>
         </Card>
 
-        <Card className="h-full order-2 lg:col-span-1 lg:order-none lg:row-span-2">
-          {sidebarContent}
-        </Card>
+        {sidebarContent && (
+          <Card className="h-full order-2 lg:col-span-1 lg:order-none lg:row-span-2">
+            {sidebarContent}
+          </Card>
+        )}
 
-        <Card className="h-[17rem] order-3 lg:col-span-2 lg:order-none">
-          {mainContent}
-        </Card>
+        <div className={`order-3 lg:col-span-2 lg:order-none space-y-4`}>
+          {sectionsContent}
+        </div>
       </div>
 
-      {tabsContent && (
+      {mainContent && (
         <div className="mt-4">
-          {tabsContent}
+          {mainContent}
         </div>
       )}
     </>

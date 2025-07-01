@@ -1,6 +1,7 @@
 'use client';
 
 import { useAppStore } from '@/store/appStore';
+
 import Text from '@/components/ui/Text';
 import styles from './Toast.module.css';
 

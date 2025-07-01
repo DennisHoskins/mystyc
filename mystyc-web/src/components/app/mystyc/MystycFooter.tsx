@@ -2,6 +2,7 @@
 
 import { useUser } from '@/components/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+
 import Text from '@/components/ui/Text';
 
 export default function AppFooter() {

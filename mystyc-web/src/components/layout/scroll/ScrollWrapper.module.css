@@ -5,6 +5,10 @@
   scrollbar-color: #cbd5e1 transparent;
 }
 
+.scrollWrapper.admin {
+  overflow-y: scroll;
+}
+
 .scrollWrapper::-webkit-scrollbar-track {
   background: transparent;
 }

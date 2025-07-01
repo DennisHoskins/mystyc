@@ -1,55 +1,83 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
+import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
-import { formatDateForDisplay } from '@/util/dateTime';
-import AdminBreadcrumbs from '@/components/app/mystyc/admin/ui/AdminBreadcrumbs';
-import Heading from '@/components/ui/Heading';
-import Card from '@/components/ui/Card';
+
+import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
+import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
+import NotificationDetailsPanel from './content/NotificationDetailsPanel';
+import NotificationMessagePanel from './content/NotificationMessagePanel';
+import UserInfoPanel from '@/components/app/mystyc/admin/content/users/user/UserInfoPanel';
+import DeviceInfoPanel from '@/components/app/mystyc/admin/content/devices/device/DeviceInfoPanel';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
+  const { setBusy } = useBusy();
   const [notification, setNotification] = useState<Notification | null>(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadNotification = useCallback(async () => {
     try {
-      // setLoading(true);
-      // setError(null);
+      setError(null);
+      setBusy(true);
+      setLoading(true);
 
       const data = await apiClientAdmin.getNotification(notificationId);
       setNotification(data);
     } catch (err) {
-      logger.error('Failed to load auth event:', err);
-      // setError('Failed to load auth event. Please try again.');
+      logger.error('Failed to load notification:', err);
+      setError('Failed to load notification. Please try again.');
     } finally {
-      // setLoading(false);
+      setBusy(false);
+      setLoading(false);
     }
-  }, [notificationId]);
+  }, [notificationId, setBusy]);
 
   useEffect(() => {
     loadNotification();
   }, [loadNotification]);
 
-  // Generate breadcrumbs with auth event info
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
-    { label: 'Authorization', href: '/admin/authorization' },
+    { label: 'Notifications', href: '/admin/notifications' },
     { 
-      label: notification ? (notification._id || `Device ${notificationId}`) : ``
+      label: notification ? (notification._id || `Notification ${notificationId}`) : ``
     },
   ], [notification, notificationId]);
 
+  if (loading) {
+    return null;
+  }
+
+  if (!notification) {
+    return (
+      <AdminItemLayout
+        error={'Notification Not Found'}
+        onRetry={loadNotification}
+        breadcrumbs={breadcrumbs}
+        icon={<NotificationIcon size={6}/>}
+        title={'Unkown Notification'}
+      />
+    );
+  }
+
   return (
-    <>
-      <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
-
-      <Card className="h-60 order-1 lg:col-span-2 lg:order-none">
-        <Heading level={2}>{notification ? notification.type + " @ " + formatDateForDisplay(notification.sentAt) : "Event"}</Heading>
-      </Card>
-
-    </>
+   <AdminItemLayout
+      error={error}
+      onRetry={loadNotification}
+      breadcrumbs={breadcrumbs}
+      icon={<NotificationIcon size={6} />}
+      title={notification ? `${notification.sentBy}: ${notification.type}` : 'Unknown Notification'}
+      headerContent={<NotificationDetailsPanel notification={notification} />}
+      sectionsContent={[
+        <UserInfoPanel key='user' firebaseUid={notification.firebaseUid} />,
+        (notification.deviceId && <DeviceInfoPanel key='device' deviceId={notification.deviceId} />)
+      ]}
+      sidebarContent={<NotificationMessagePanel notification={notification} />}
+    />
   );
 }

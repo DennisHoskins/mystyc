@@ -3,7 +3,10 @@
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
+import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
+import { logger } from '@/util/logger';
+
 import { useUser, useClearUser, useAuthenticated } from '@/components/layout/context/AppContext';
 import { TransitionProvider } from '@/components/layout/context/TransitionContext';
 import StateTransition from '@/components/layout/transition/StateTransition';
@@ -19,10 +22,7 @@ import Modal from '@/components/ui/modal/Modal';
 import ServerLogoutForm from '@/components/app/auth/ServerLogoutForm';
 import GlobalError from '@/components/layout/GlobalError';
 import Offline from '@/components/layout/Offline';
-import { logger } from '@/util/logger';
-
 import AdminSidebar from '@/components/app/mystyc/admin/ui/AdminSidebar';
-import { apiClient } from '@/api/apiClient';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();

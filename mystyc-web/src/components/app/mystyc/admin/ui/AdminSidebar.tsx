@@ -1,6 +1,7 @@
 'use client';
 
-import { Home, Users, Monitor, Shield, Bell, Activity } from 'lucide-react';
+import { Home, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
+
 import Sidebar from '@/components/ui/sidebar/Sidebar';
 import SidebarItem from '@/components/ui/sidebar/SidebarItem';
 
@@ -19,8 +20,8 @@ export default function AdminSidebar({
     { icon: <Home />, label: 'Home', href: '/admin' },
     { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
     { icon: <Users />, label: 'Users', href: '/admin/users' },
-    { icon: <Monitor />, label: 'Devices', href: '/admin/devices' },
-    { icon: <Shield />, label: 'Authorization', href: '/admin/authorization' },
+    { icon: <MonitorSmartphone />, label: 'Devices', href: '/admin/devices' },
+    { icon: <Shield />, label: 'Authentication', href: '/admin/authentication' },
     { icon: <Bell />, label: 'Notifications', href: '/admin/notifications' },
   ];
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 export interface BreadcrumbItem {
@@ -42,12 +43,13 @@ export default function Breadcrumbs({
           return (
             <li key={index} className="flex items-center">
               {isClickable ? (
-                <button
+                <a
+                  href={item.href}
                   onClick={(e) => handleClick(item, e)}
                   className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
                 >
                   {item.label}
-                </button>
+                </a>
               ) : (
                 <span className={`text-sm {isLast ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
                   {item.label}

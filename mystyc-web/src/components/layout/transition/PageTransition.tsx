@@ -10,8 +10,9 @@ import {
 
 import { useUser } from '@/components/layout/context/AppContext';
 import { useTransitions } from '@/components/layout/context/TransitionContext';
-import Transition, { TransitionRef } from './Transition';
 import { logger } from '@/util/logger';
+
+import Transition, { TransitionRef } from './Transition';
 
 export interface PageTransitionRef extends TransitionRef {
   waitForContent: () => Promise<void>;

@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 type LinkProps = {

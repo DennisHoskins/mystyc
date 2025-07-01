@@ -2,12 +2,13 @@
 
 import { forwardRef, HTMLAttributes } from 'react';
 import clsx from 'clsx';
+import styles from './Table.module.css';
 
 const Table = forwardRef<
   HTMLTableElement,
   HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+  <div className={`relative w-full overflow-auto ${styles.tableBody}`}>
     <table
       ref={ref}
       className={clsx('w-full overflow-hidden caption-bottom text-sm', className)}

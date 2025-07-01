@@ -1,16 +1,20 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
+import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import NotificationsTable from './NotificationsTable';
+import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
 
 export default function NotificationsPage() {
+  const { setBusy } = useBusy();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -25,8 +29,9 @@ export default function NotificationsPage() {
 
   const loadNotifications = useCallback(async (page: number) => {
     try {
-      setLoading(true);
       setError(null);
+      setBusy(true);
+      setLoading(true);
 
       const response = await apiClientAdmin.getNotifications({
         limit: LIMIT,
@@ -44,9 +49,10 @@ export default function NotificationsPage() {
       logger.error('Failed to load Notifications:', err);
       setError('Failed to load Notifications. Please try again.');
     } finally {
+      setBusy(false);
       setLoading(false);
     }
-  }, []);
+  }, [setBusy]);
 
   useEffect(() => {
     loadNotifications(0);
@@ -55,7 +61,9 @@ export default function NotificationsPage() {
   return (
    <AdminListLayout
       breadcrumbs={breadcrumbs}
-      title={`Notifications ${totalItems ? `(${totalItems})` : ''}`}
+      icon={NotificationIcon}
+      title={`Notifications`}
+      total={totalItems}
       description="View sent push notifications, message history, and delivery status for user communications"
       tableContent={
         <NotificationsTable 

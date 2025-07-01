@@ -7,8 +7,10 @@ import {
   useImperativeHandle, 
   forwardRef 
 } from 'react';
-import styles from './Transition.module.css';
+
 import { logger } from '@/util/logger';
+
+import styles from './Transition.module.css';
 
 export interface TransitionRef {
   transitionOut: () => Promise<void>;

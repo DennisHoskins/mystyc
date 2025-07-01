@@ -1,17 +1,22 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useUser } from '@/components/layout/context/AppContext';  
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+
 import AppLogo from '@/components/ui/AppLogo';
 import Button from '@/components/ui/Button';
 
 export default function AppHeader() {
   const user = useUser();
   const router = useTransitionRouter();
+  const pathname = usePathname();
+ 
+  const isAdminPath = pathname?.startsWith('/admin');
 
   return (
     <header className="flex w-full bg-white px-4 py-3 shadow-sm">
-      <nav className="flex w-full max-w-content mx-auto items-center">
+      <nav className={`flex w-full items-center ${isAdminPath ? '' : 'max-w-content mx-auto'}`}>
         <button onClick={() => router.push('/')} className="flex items-center">
           <AppLogo orientation="horizontal" showText />
         </button>

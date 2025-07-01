@@ -1,11 +1,11 @@
 'use client';
 
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { useStore } from 'zustand';
 
 import { apiClient } from '@/api/apiClient';
-import { createUserStore, UserState } from '@/store/userStore';
 import { useAppStore } from '@/store/appStore';
+import { createUserStore, UserState } from '@/store/userStore';
 
 import Layout from '@/components/layout/Layout';
 import Working from '@/components/ui/working/Working';
@@ -117,7 +117,7 @@ export const useBusy = () => {
   const clearBusy = useAppStore((state) => state.clearBusy);
   const isBusy = useAppStore((state) => state.isBusy);
 
-  const setBusy = (state: boolean | number = true) => {
+  const setBusy = useCallback((state: boolean | number = true) => {
     if (state === false) {
       clearBusy();
     } else if (state === true) {
@@ -125,7 +125,7 @@ export const useBusy = () => {
     } else {
       setBusyStore(state);
     }
-  };
+  }, [setBusyStore, clearBusy]);
 
   return {
     isBusy,
