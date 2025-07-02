@@ -15,6 +15,7 @@ interface AdminDetailLayoutProps {
   error?: string | null;
   onRetry: () => void;
   breadcrumbs: Breadcrumb[];
+  button?: ReactNode;
   icon: ReactNode;
   title: string;
   headerContent?: ReactNode | null;
@@ -27,6 +28,7 @@ export default function AdminDetailLayout({
   error,
   onRetry,
   breadcrumbs,
+  button,
   icon,
   title,
   headerContent,
@@ -50,7 +52,12 @@ export default function AdminDetailLayout({
 
   return (
     <>
-      <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+      <div className='flex justify-between items-start '>
+        <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+        <div className='mt-2 ml-4'>
+          {button}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className={`order-1 lg:col-span-2 lg:order-none`}>

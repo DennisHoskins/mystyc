@@ -51,7 +51,7 @@ export default function Breadcrumbs({
                   {item.label}
                 </a>
               ) : (
-                <span className={`text-sm {isLast ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+                <span className={`text-sm overflow-hidden whitespace-nowrap text-ellipsis max-w-xs ${isLast ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
                   {item.label}
                 </span>
               )}

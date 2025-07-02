@@ -314,32 +314,19 @@ class AdminApiClient {
     }
   };
 
-  sendTestNotification = async (deviceId: string): Promise<void> => {
-    logger.log('sendTestNotification called', { deviceId });
+  sendNotification = async (
+    deviceId:string,
+    title:string,
+    body:string
+  ): Promise<any> => {
+    logger.log('sendNotification called', deviceId, title, body);
     try {
-      await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/test`, {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/send/${deviceId}`, {
         method: 'POST',
-        body: JSON.stringify({ deviceId }),
-      });
-    } catch (error) {
-      logger.error('sendTestNotification failed:', error);
-      throw error;
-    }
-  };
-
-  sendNotification = async (params: {
-    title?: string;
-    body?: string;
-    deviceId?: string;
-    firebaseUid?: string;
-    broadcast?: boolean;
-    test?: boolean;
-  }): Promise<void> => {
-    logger.log('sendNotification called', params);
-    try {
-      await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/send`, {
-        method: 'POST',
-        body: JSON.stringify(params),
+        body: JSON.stringify({
+          title,
+          body
+        }),
       });
     } catch (error) {
       logger.error('sendNotification failed:', error);

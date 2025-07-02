@@ -80,7 +80,10 @@ export async function handleAdmin(
         headers: {
           'Content-Type': 'application/json',
           'Authorization': authTokenManager.createAuthHeader(session.authToken),
-        }
+        },
+        ...(method !== 'GET' && requestBody && {
+          body: JSON.stringify(requestBody)
+        })
       }
     );
 

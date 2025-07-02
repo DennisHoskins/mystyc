@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, UseGuards, Param, Body, UnauthorizedException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
@@ -9,11 +9,10 @@ import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
 import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
 import { DevicesService } from '@/devices/devices.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { TestNotificationDto } from '@/notifications/dto/test-notification.dto';
 import { SendNotificationDto } from '@/notifications/dto/send-notification.dto';
 import { logger } from '@/common/util/logger';
 
-@Controller('admin/notifications')
+@Controller('admin/notifications/send')
 export class AdminNotificationsSendController {
 
   constructor(
@@ -24,81 +23,52 @@ export class AdminNotificationsSendController {
   // POST/PUT/PATCH Methods (Write Operations)
 
   /**
-   * Sends test notification to admin's own device for testing purposes
-   * @param testNotificationDto - Test notification data including device ID
-   * @param user - Firebase authentication user object (admin)
-   * @returns Promise<{success: boolean, messageId: string, notificationId: string}> - Test result with IDs
-   * @throws UnauthorizedException when device doesn't belong to admin
-   */
-  @Post('test')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
-  async sendTestNotification(
-    @Body() testNotificationDto: TestNotificationDto,
-    @FirebaseUserDecorator() user: FirebaseUser
-  ) {
-
-    const matchingDevice = await this.validateDeviceForUser(user, testNotificationDto.deviceId);
-
-    try {
-      const result = await this.notificationsService.sendDirectTokenNotification(
-        matchingDevice.fcmToken,
-        'Hello World',
-        'This is a test notification from your server!',
-        'test',
-        user.uid,
-        matchingDevice.deviceId
-      );
-
-      return {
-        success: true,
-        messageId: result.messageId,
-        notificationId: result.notificationId
-      };
-    } catch (error) {
-      logger.error('Test notification failed', { error: error.message }, 'AdminNotificationsSendController');
-      throw error;
-    }
-  }
-
-  /**
    * Sends notifications to various target types (device, user, broadcast, or test)
    * @param sendNotificationDto - Notification configuration specifying targets and message content
    * @param user - Firebase authentication user object (admin)
    * @returns Promise<{success: boolean, sent: number, failed: number, details: any[]}> - Batch send results
    */
-  @Post('send')
+  @Post(':deviceId')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async sendNotification(
+  async sendNotificationToDevice(
+    @Param('deviceId') deviceId: string,
     @Body() sendNotificationDto: SendNotificationDto,
     @FirebaseUserDecorator() user: FirebaseUser
   ) {
-    logger.info('Admin sending notification', {
+    logger.info('Admin sending notification to device', {
       adminUid: user.uid,
-      targetType: sendNotificationDto.test ? 'test' : 
-                  sendNotificationDto.deviceId ? 'device' : 
-                  sendNotificationDto.firebaseUid ? 'user' : 
-                  sendNotificationDto.broadcast ? 'broadcast' : 'unknown',
+      targetType: 'device: ' + deviceId,
       title: sendNotificationDto.title,
+      body: sendNotificationDto.body,
       hasCustomMessage: !!(sendNotificationDto.title || sendNotificationDto.body)
     }, 'AdminNotificationsSendController');
 
+    const results = {
+      success: true,
+      sent: 0,
+      failed: 0,
+      details: []
+    };
+
     try {
-      const result = await this.notificationsService.sendNotificationToTargets(
-        user.uid,
-        sendNotificationDto
+      await this.notificationsService.sendToDevice(
+        deviceId, 
+        sendNotificationDto.title, 
+        sendNotificationDto.body, 
+        results,
+        'admin',
+        user.email
       );
 
-      logger.info('Notification batch completed successfully', {
+      logger.info('Notification sent to Device successfully', {
         adminUid: user.uid,
-        sent: result.sent,
-        failed: result.failed
+        sent: results.sent,
+        failed: results.failed
       }, 'AdminNotificationsSendController');
 
-      return result;
+      return results;
     } catch (error) {
       logger.error('Notification batch failed', { 
         adminUid: user.uid,

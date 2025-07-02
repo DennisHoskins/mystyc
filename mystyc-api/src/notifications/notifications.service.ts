@@ -8,6 +8,7 @@ import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
+import { Device } from '@/common/interfaces/device.interface';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
@@ -413,7 +414,7 @@ export class NotificationsService {
    * @param results - Results object to track success/failure counts
    */
   private async sendToSingleDevice(
-    device: any,
+    device: Device,
     title: string,
     body: string,
     type: 'test' | 'admin' | 'broadcast',
@@ -474,7 +475,7 @@ export class NotificationsService {
    * @throws NotFoundException when device not found
    * @throws BadRequestException when device has no FCM token
    */
-  private async sendToDevice(
+  async sendToDevice(
     deviceId: string, 
     title: string, 
     body: string, 
