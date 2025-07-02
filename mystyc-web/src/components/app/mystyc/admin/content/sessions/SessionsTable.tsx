@@ -32,6 +32,7 @@ export default function SessionsTable({
     { key: 'sessionId', header: 'Session', link: (s) => `/admin/sessions/${s.sessionId}`},
     { key: 'email', header: 'User', link: (s) => `/admin/users/${s.uid}`},
     { key: 'deviceName', header: 'Device', link: (s) => `/admin/devices/${s.deviceId}`},
+    { key: 'fcmToken', header: 'fcmToken', render: (s) => s.fcmToken},
     { key: 'age', header: 'Age', align: 'right', link: (s) => `/admin/sessions/${s.sessionId}`, render: (s) => formatTimestampForComponent(s.createdAt)},
   ];
 

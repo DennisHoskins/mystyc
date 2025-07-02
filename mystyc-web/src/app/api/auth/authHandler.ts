@@ -126,7 +126,7 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
       idTokens,
       sessionId,
       user.firebaseUser.email || "unknown user",
-      device.deviceName,
+      device.deviceName || 'unknown device',
       user.userProfile.roles.includes("admin")
     );
     logger.log(`[authHandler] Session created in Redis`);

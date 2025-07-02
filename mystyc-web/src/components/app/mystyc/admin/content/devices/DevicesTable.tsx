@@ -35,7 +35,7 @@ export default function DevicesTable({
   onRefresh
 }: DevicesTableProps) {
   const columns: Column<Device>[] = [
-    { key: 'deviceName', header: 'Name', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceName.split(" (")[0]  || 'Unnamed Device' },
+    { key: 'deviceName', header: 'Name', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceName ? d.deviceName.split(" (")[0]  : 'Unnamed Device' },
     { key: 'deviceId', header: 'Id', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceId.substring(0, 15) + '...' },
     { key: 'timezone', header: 'Timezone', render: (d) => d.timezone || 'Unknown' },
     { key: 'fcmToken', header: 'Fcm Token', align: 'right', render: (d) => d.fcmToken ? 'Ready' : 'Not Ready' },

@@ -59,6 +59,13 @@ export async function POST(request: NextRequest): Promise<Response> {
       logger.error('[getUser] Invalid user object returned from Nest');
       return NextResponse.json({ user: null, authenticated: true }, { status: 200 });
     }
+
+    user.device = {
+      firebaseUid: user.firebaseUser.uid,
+      deviceId: currentSession.deviceId,
+      deviceName: currentSession.deviceName,
+      fcmToken: currentSession.fcmToken
+    }
     
     return NextResponse.json({ user, authenticated: true }, { status: 200 });
   } catch (err: any) {

@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
     });
 
     sessionManager.updateSessionFcmToken(session.sessionId, session.deviceId, session.uid, fcmToken);
+    console.log("[updateFcomToken] Updated fcmToken in Redis", session, fcmToken)
 
     return new Response(nestResponse.body, { 
       status: nestResponse.status,

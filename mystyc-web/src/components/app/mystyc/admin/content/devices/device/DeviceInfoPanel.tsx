@@ -83,7 +83,7 @@ export default function DeviceInfoPanel({ deviceId }: { deviceId: string }) {
       <div className="flex items-center space-x-4">
         <Avatar size={'medium'} icon={(props) => <DeviceIcon {...props} device={device} />} />
         <div>
-          <Heading level={5}>{device.deviceName.split(" (")[0]}</Heading>
+          <Heading level={5}>{device.deviceName ? device.deviceName.split(" (")[0] : "Unknown Device"}</Heading>
           <Heading level={6}>Device Id: <Link href={`/admin/devices/${device.deviceId}`}>{device.deviceId}</Link></Heading>
         </div>
       </div>

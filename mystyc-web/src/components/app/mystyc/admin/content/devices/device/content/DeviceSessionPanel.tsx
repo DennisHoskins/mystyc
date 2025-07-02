@@ -5,13 +5,27 @@ import { formatTimestampForComponent } from '@/util/dateTime';
 
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 import AdminDetailGroup from '@/components/app/mystyc/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetailField';
 import SessionIcon from '@/components/app/mystyc/admin/ui/icons/SessionIcon';
 
 export default function DeviceSessionPanel({ deviceSession }: { deviceSession: DeviceSession }) {
   if (!deviceSession.session) {
-    return null;
+    return (
+      <div className='flex flex-col'>
+        <div className="flex items-center space-x-2">
+          <Avatar size={'small'} icon={SessionIcon} />
+          <div>
+            <Heading level={5}>Session</Heading>
+          </div>
+        </div>
+
+        <div className="pt-4">
+          <Text>Unable to load Session</Text>
+        </div>
+      </div>
+    );
   }
   
   return (

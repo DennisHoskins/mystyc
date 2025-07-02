@@ -105,8 +105,6 @@ export const useAppStore = create<AppState>()(
     {
       name: 'app-storage',
       partialize: (state) => ({ 
-        fcmToken: state.fcmToken, 
-        lastTokenUpdate: state.lastTokenUpdate,
         sidebarCollapsed: state.sidebarCollapsed
       }),
       onRehydrateStorage: () => (state) => {

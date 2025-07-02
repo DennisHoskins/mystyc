@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { Messaging, getMessaging, getToken, onMessage } from 'firebase/messaging';
 
-import { useUser } from '@/components/layout/context/AppContext';
+import { useUser, useInitialized } from '@/components/layout/context/AppContext';
 import { useAppStore } from '@/store/appStore';
 import { apiClient } from '@/api/apiClient';
 import { logger } from '@/util/logger';
@@ -28,35 +28,41 @@ if (typeof window !== 'undefined') {
 export { messaging };
 
 export function useFirebaseMessaging() {
-  const user = useUser();
-  const { fcmToken, setFcmToken, lastTokenUpdate } = useAppStore();
-  const [isReady, setReady] = useState(false);
 
-  useEffect(() => {
-    if (isReady) {
-      return;
-    }
-    setReady(true);
-  }, [isReady])
+  const initialized = useInitialized();
+  const user = useUser();
+  // const { fcmToken, setFcmToken, lastTokenUpdate } = useAppStore();
+  const { fcmToken, setFcmToken } = useAppStore();
 
   //
   // register fcmToken
   //
   useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-    if (!user || !user.device) {
-      return;
-    }
-    if ('serviceWorker' in navigator === false) {
-      logger.warn('[useFirebaseMessaging] Firebase Messaging not supported');
+
+    logger.log("register fcmToken")
+
+    if (!initialized || !user || !user.device) {
       return;
     }
 
-    // Skip if we already have a valid token
-    if (fcmToken) {
-      logger.log('[useFirebaseMessaging] FCM Token already exists, skipping');
+    if (user.device.fcmToken) {
+      if (fcmToken) {
+        if (user.device.fcmToken === fcmToken) {
+          logger.info("[useFirebaseMessaging] fcmToken loaded from Server", fcmToken);
+        } else {
+          logger.info("[useFirebaseMessaging] fcmToken Mismatch: App is out of sync", fcmToken, user.device.fcmToken);
+        }
+      } else {
+        logger.info("[useFirebaseMessaging] fcmToken Mismatch, App is out of sync", fcmToken, user.device.fcmToken);
+      }
+      return;
+    } else if (fcmToken) {
+      logger.info("[useFirebaseMessaging] fcmToken Mismatch: Redis is out of sync", fcmToken, user.device.fcmToken);
+      return;
+    }
+
+    if ('serviceWorker' in navigator === false) {
+      logger.warn('[useFirebaseMessaging] Firebase Messaging not supported');
       return;
     }
 
@@ -101,55 +107,55 @@ export function useFirebaseMessaging() {
       }
     }
     enableMessaging();
-  }, [isReady, user, fcmToken, setFcmToken]);
+  }, [initialized, user, fcmToken, setFcmToken]);
 
   //
   // refresh fcmToken
   //
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!initialized) {
+  //     return;
+  //   }
 
-    if (!messaging || !fcmToken || !user) return;
+  //   if (!messaging || !fcmToken || !user) return;
 
-    const handleTokenRefresh = async () => {
-      if (!user || !user.device) {
-        return;
-      }
+  //   const handleTokenRefresh = async () => {
+  //     if (!user || !user.device) {
+  //       return;
+  //     }
       
-      try {
-        // Only refresh if token is older than 24 hours
-        if (lastTokenUpdate && (Date.now() - lastTokenUpdate < 24 * 60 * 60 * 1000)) {
-          return;
-        }
+  //     try {
+  //       // Only refresh if token is older than 24 hours
+  //       if (lastTokenUpdate && (Date.now() - lastTokenUpdate < 24 * 60 * 60 * 1000)) {
+  //         return;
+  //       }
 
-        if (!messaging) return;
+  //       if (!messaging) return;
 
-        const swPath = '/firebase-sw.js';
-        const registration = await navigator.serviceWorker.getRegistration(swPath);
-        if (!registration) return;
+  //       const swPath = '/firebase-sw.js';
+  //       const registration = await navigator.serviceWorker.getRegistration(swPath);
+  //       if (!registration) return;
 
-        const newToken = await getToken(messaging, {
-          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-          serviceWorkerRegistration: registration
-        });
+  //       const newToken = await getToken(messaging, {
+  //         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+  //         serviceWorkerRegistration: registration
+  //       });
 
-        if (newToken && newToken !== fcmToken) {
-          logger.log('[useFirebaseMessaging] FCM token refreshed:', newToken);
-          await apiClient.updateFcmToken(user.device?.deviceId, newToken);
-          setFcmToken(newToken);
-          logger.log('[useFirebaseMessaging] Refreshed token updated on server successfully');
-        }
-      } catch (err) {
-        logger.error('[useFirebaseMessaging] Token refresh failed:', err);
-      }
-    };
+  //       if (newToken && newToken !== fcmToken) {
+  //         logger.log('[useFirebaseMessaging] FCM token refreshed:', newToken);
+  //         await apiClient.updateFcmToken(user.device?.deviceId, newToken);
+  //         setFcmToken(newToken);
+  //         logger.log('[useFirebaseMessaging] Refreshed token updated on server successfully');
+  //       }
+  //     } catch (err) {
+  //       logger.error('[useFirebaseMessaging] Token refresh failed:', err);
+  //     }
+  //   };
 
-    // Check for token refresh every 24 hours
-    const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
-    return () => clearInterval(refreshInterval);
-  }, [isReady, fcmToken, user, setFcmToken, lastTokenUpdate]);
+  //   // Check for token refresh every 24 hours
+  //   const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
+  //   return () => clearInterval(refreshInterval);
+  // }, [initialized, fcmToken, user, setFcmToken, lastTokenUpdate]);
 
   //
   // message received

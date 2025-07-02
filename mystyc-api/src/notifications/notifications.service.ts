@@ -21,7 +21,7 @@ export class NotificationsService {
     private readonly userProfileService: UserProfilesService
   ) {}
 
-  @Cron('15 13 * * *', {
+  @Cron('15 17 * * *', {
     timeZone: 'America/Edmonton'
   }) 
   async sendDailyNotifications() {

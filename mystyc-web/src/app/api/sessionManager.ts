@@ -429,6 +429,7 @@ export const sessionManager = {
     // Update metadata lastUpdated
     const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
     await redis.hSet(metadataKey, 'lastUpdated', now);
+    logger.log('[sessionManager] Fcm token update OK');
   },
 
   async clearSession(): Promise<void> {
