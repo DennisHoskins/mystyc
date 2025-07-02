@@ -22,7 +22,7 @@ export class NotificationsService {
     private readonly userProfileService: UserProfilesService
   ) {}
 
-  @Cron('30 22 * * *', {
+  @Cron('30 21 * * *', {
     timeZone: 'America/Edmonton'
   }) 
   async sendDailyNotifications() {
@@ -270,7 +270,6 @@ export class NotificationsService {
           title,
           body,
           icon: '/favicon/favicon.ico',
-          badge: '/favicon/favicon.ico'
         }
       }
     };

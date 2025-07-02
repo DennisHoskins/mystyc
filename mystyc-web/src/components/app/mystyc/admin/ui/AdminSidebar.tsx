@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
+import { LayoutDashboard, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
 import Sidebar from '@/components/ui/sidebar/Sidebar';
 import SidebarItem from '@/components/ui/sidebar/SidebarItem';
@@ -14,10 +14,10 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ 
   isOpen = true, 
   isCollapsed = false,
-  onToggle = () => {} 
+  onToggle = () => {},
 }: AdminSidebarProps) {
   const menuItems = [
-    { icon: <Home />, label: 'Home', href: '/admin' },
+    { icon: <LayoutDashboard />, label: 'Dashboard', href: '/admin' },
     { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
     { icon: <Users />, label: 'Users', href: '/admin/users' },
     { icon: <MonitorSmartphone />, label: 'Devices', href: '/admin/devices' },
@@ -26,7 +26,11 @@ export default function AdminSidebar({
   ];
 
   return (
-    <Sidebar isOpen={isOpen} isCollapsed={isCollapsed} onToggle={onToggle}>
+    <Sidebar 
+      isOpen={isOpen} 
+      isCollapsed={isCollapsed} 
+      onToggle={onToggle} 
+    >
       {menuItems.map((item) => (
         <SidebarItem
           key={item.href}

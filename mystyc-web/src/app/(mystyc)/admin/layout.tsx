@@ -23,7 +23,7 @@ export default function MystycAdminLayout({
   }
 
   return (
-    <div className='px-4 pl-0 py-4'>
+    <div className='px-4 md:pl-0 py-4'>
       {children}
     </div>
   );

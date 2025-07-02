@@ -1,55 +1,48 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+
 import { useUser } from '@/components/layout/context/AppContext';  
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-import AppLogo from '@/components/ui/AppLogo';
+import MenuComponent from '@/components/layout/menu/Menu';
 import Button from '@/components/ui/Button';
+import MystycMenu from './MystycMenu';
 
 export default function AppHeader() {
+  const pathname = usePathname();
   const user = useUser();
   const router = useTransitionRouter();
-  const pathname = usePathname();
- 
-  const isAdminPath = pathname?.startsWith('/admin');
+
+  const isAdminPath = pathname.startsWith('/admin');  
+  const isAdmin = user && user.isAdmin && isAdminPath;
 
   return (
-    <header className="flex w-full bg-white px-4 py-3 shadow-sm">
-      <nav className={`flex w-full items-center ${isAdminPath ? '' : 'max-w-content mx-auto'}`}>
-        <button onClick={() => router.push('/')} className="flex items-center">
-          <AppLogo orientation="horizontal" showText />
-        </button>
-
-        {user && user.isOnboard &&
-          <div className="flex flex-1 justify-center space-x-8">
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/answers')}
-              className="text-sm font-medium hover:underline"
-            >
-              Answers
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/profile')}
-              className="text-sm font-medium hover:underline"
-            >
-              Profile
-            </Button>
-          </div>
-        }
-
-        <div className="flex space-x-4 ml-auto">
+    <>
+      {user && user.isOnboard &&
+        <div className="flex flex-1 justify-center space-x-8">
           <Button
             variant="ghost"
-            onClick={() => router.push('/logout')}
+            onClick={() => router.push('/answers')}
             className="text-sm font-medium hover:underline"
           >
-            Logout
+            Answers
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/profile')}
+            className="text-sm font-medium hover:underline"
+          >
+            Profile
           </Button>
         </div>
-      </nav>
-    </header>
+      }
+
+      <div className="flex space-x-4 ml-auto">
+        <MenuComponent  isFullWidth={isAdmin == true}>
+          <MystycMenu />
+        </MenuComponent>
+      </div>        
+    </>
   );
 }

@@ -15,7 +15,9 @@ import AppHeader from '@/components/app/mystyc/MystycHeader';
 
 import ScrollWrapper from '@/components/layout/scroll/ScrollWrapper';
 import PageTransition from '@/components/layout/transition/PageTransition';
+import Header from '@/components/layout/Header';
 import Main from '@/components/layout/Main';
+import Footer from '@/components/layout/Footer';
 import WebsiteFooter from '@/components/app/website/WebsiteFooter';
 import AppFooter from '@/components/app/mystyc/MystycFooter';
 import Modal from '@/components/ui/modal/Modal';
@@ -25,12 +27,12 @@ import Offline from '@/components/layout/Offline';
 import AdminSidebar from '@/components/app/mystyc/admin/ui/AdminSidebar';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const user = useUser();
   const clearUser = useClearUser();
   const authenticated = useAuthenticated();
   const isLoggedOutByServer = useAppStore((s) => s.isLoggedOutByServer);
   const setLoggedOutByServer = useAppStore((s) => s.setLoggedOutByServer);
-  const pathname = usePathname();
   const isWebsite = !user;
   const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((s) => s.setSidebarCollapsed);
@@ -59,8 +61,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     logger.log('[LAYOUT] pathname', pathname);
   }, [pathname]);
 
-  const Header = isWebsite ? WebsiteHeader : AppHeader;
-  const Footer = isWebsite ? WebsiteFooter : AppFooter;
+  const FooterContent = isWebsite ? WebsiteFooter : AppFooter;
 
   useEffect(() => {
     if (!user && authenticated) {
@@ -86,7 +87,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <TransitionProvider>
         <StateTransition>
 
-          <Header />
+          <Header isFullWidth={isAdmin == true}>
+            {isWebsite
+              ? <WebsiteHeader />
+              : <AppHeader />
+            }            
+          </Header>
 
           <div className="flex flex-1 w-full h-fit">
             <ScrollWrapper>
@@ -97,13 +103,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <>
                     {isAdmin && 
                       <AdminSidebar 
-                        isOpen={isAdmin} 
                         isCollapsed={sidebarCollapsed}
-                        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                       /> 
                     }
                     
-                    <div className={`transition-all duration-300 ease-in-out flex flex-col flex-1 ${isAdmin ? (sidebarCollapsed ? 'ml-28' : 'ml-80') : ''}`}>
+                    <div className={`transition-all duration-300 ease-in-out flex flex-col flex-1 ${isAdmin ? `md:ml-28 ${sidebarCollapsed ? 'lg:ml-28' : 'lg:ml-80'}` : ''}`}>
                       <PageTransition>
                         <Main>{children}</Main>
                       </PageTransition>
@@ -112,7 +117,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </>
                 )
               }
-              <Footer />
+              <Footer><FooterContent /></Footer>
             </ScrollWrapper>
           </div>
 
