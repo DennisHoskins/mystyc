@@ -22,7 +22,7 @@ export class NotificationsService {
     private readonly userProfileService: UserProfilesService
   ) {}
 
-  @Cron('15 17 * * *', {
+  @Cron('30 22 * * *', {
     timeZone: 'America/Edmonton'
   }) 
   async sendDailyNotifications() {
@@ -251,49 +251,31 @@ export class NotificationsService {
    * @returns Promise<string> - Firebase message ID
    */
   async sendNotification(
-    token: string, 
-    title: string, 
-    body: string, 
-    url: string = "https://mystyc.app"
+    token: string,
+    title: string,
+    body: string,
+    url: string = 'https://mystyc.app'
   ) {
-    try {
-      const message: admin.messaging.Message = {
-        token,
-        data: { 
+    const message: admin.messaging.Message = {
+      token,
+      webpush: {
+        headers: {
+          Urgency: 'high',
+          TTL: '86400'
+        },
+        fcmOptions: {
+          link: url
+        },
+        notification: {
           title,
           body,
-          type: 'daily_horoscope', 
-          url: url 
-        },
-        android: { 
-          collapseKey: 'daily_horoscope', 
-          priority: 'high', 
-          ttl: 86_400_000 
-        },
-        apns: {
-          headers: {
-            'apns-push-type': 'background',
-            'apns-priority': '5',
-            'apns-expiration': `${Math.floor(Date.now()/1000)+86_400}`
-          },
-          payload: { aps: { 'content-available': 1 } }
+          icon: '/favicon/favicon.ico',
+          badge: '/favicon/favicon.ico'
         }
-      };
+      }
+    };
 
-      const response = await firebaseAdmin.messaging().send(message);
-      logger.info('Notification sent successfully', { 
-        messageId: response,
-        token: token.substring(0, 20) + '...' 
-      }, 'NotificationsService');
-      
-      return response;
-    } catch (error) {
-      logger.error('Failed to send notification', { 
-        error: error.message,
-        token: token.substring(0, 20) + '...' 
-      }, 'NotificationsService');
-      throw error;
-    }
+    return firebaseAdmin.messaging().send(message);
   }
 
   /**
