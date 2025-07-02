@@ -63,7 +63,7 @@ export default function Toast() {
             hover:scale-[1.02] hover:shadow-3xl
           `}
         >
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-3">
             <div className={`${colors[toast.type].icon} flex-shrink-0 mt-0.5`}>
               {icons[toast.type]}
             </div>
