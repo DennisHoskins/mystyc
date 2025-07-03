@@ -25,7 +25,7 @@ export default function AdminListLayout({ breadcrumbs, icon, title, total, descr
     <>
       {breadcrumbs && <AdminBreadcrumbs breadcrumbs={breadcrumbs} />}
       <Card>
-        <div className='flex space-x-3 items-center mb-2'>
+        <div className='flex space-x-3 items-center mb-4'>
           {icon && (
             <div className='mt-1'>
               <Avatar size={'medium'} icon={icon} />
@@ -36,9 +36,9 @@ export default function AdminListLayout({ breadcrumbs, icon, title, total, descr
         
         <hr />
 
-        <div className='flex items-center mt-2'>
+        <div className='flex items-center mt-4'>
           {description && <Text>{description}</Text>}
-          {total && <Badge total={total} className='ml-auto'/>}
+          {total > 0 && <Badge total={total} className='ml-auto'/>}
         </div>
         
         {tableContent && (

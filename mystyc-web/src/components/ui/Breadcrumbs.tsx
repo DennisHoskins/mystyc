@@ -41,7 +41,7 @@ export default function Breadcrumbs({
           const isClickable = !isLast && (item.href || item.onClick);
 
           return (
-            <li key={index} className="flex items-center">
+            <li key={index} className="flex items-center overflow-hidden">
               {isClickable ? (
                 <a
                   href={item.href}
@@ -51,7 +51,7 @@ export default function Breadcrumbs({
                   {item.label}
                 </a>
               ) : (
-                <span className={`text-sm overflow-hidden whitespace-nowrap text-ellipsis max-w-xs ${isLast ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+                <span className={`text-sm overflow-hidden whitespace-nowrap text-ellipsis ${isLast ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
                   {item.label}
                 </span>
               )}

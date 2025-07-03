@@ -101,11 +101,11 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       button={
         <Button
           onClick={sendNotification}
-          className='flex items-center'
+          className='flex justify-center items-center -mt-4 py-[0.8rem] min-w-20 w-auto'
           disabled={deviceSession.session?.fcmToken == null && deviceSession.device.fcmToken == null}
         >
-          <NotificationIcon size={4} className='text-white mr-2'/>
-          <span className='hidden md:inline'>Send Notification</span>
+          <NotificationIcon size={4} className='text-white'/>
+          <span className='hidden lg:inline ml-2'>Send Notification</span>
         </Button>
       }
       icon={deviceSession && <DeviceIcon size={6} device={deviceSession.device}/>}

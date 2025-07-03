@@ -11,7 +11,7 @@ export default function DeviceDetailsPanel({ device }: { device: Device }) {
     <div className='flex flex-col min-h-16'>
       <hr />
 
-      <Text variant="muted" className='pt-2 mb-2 overflow-hidden text-nowrap overflow-ellipsis'>
+      <Text variant="muted" className='pt-4 mb-2 overflow-hidden text-nowrap overflow-ellipsis'>
         <strong> {device && device.userAgent}</strong>
       </Text>
 

@@ -37,24 +37,24 @@ export default function AdminDetailLayout({
   mainContent
 }: AdminDetailLayoutProps) {
 
-  if (error) {
-    return (
-      <>
-        <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
-        <AdminError 
-          title={title}
-          error={error} 
-          onRetry={onRetry}
-        />
-      </>
-    )
-  }
+  // if (error) {
+  //   return (
+  //     <>
+  //       <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+  //       <AdminError 
+  //         title={title}
+  //         error={error} 
+  //         onRetry={onRetry}
+  //       />
+  //     </>
+  //   )
+  // }
 
   return (
     <>
-      <div className='flex justify-between items-start '>
+      <div className='flex items-center justify-between w-full'>
         <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
-        <div className='mt-2 ml-4'>
+        <div className='ml-4'>
           {button}
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function AdminDetailLayout({
             )}
             <Heading level={2}>{title}</Heading>
           </div>
-          <div className="space-y-1 mt-2">
+          <div className="space-y-1 mt-4">
             {headerContent}
           </div>
         </Card>
