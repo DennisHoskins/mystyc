@@ -19,7 +19,6 @@ import Main from '@/components/layout/Main';
 import Footer from '@/components/layout/Footer';
 import WebsiteFooter from '@/components/app/website/WebsiteFooter';
 import AppFooter from '@/components/app/mystyc/MystycFooter';
-import Modal from '@/components/ui/modal/Modal';
 import ServerLogoutForm from '@/components/app/auth/ServerLogoutForm';
 import GlobalError from '@/components/layout/GlobalError';
 import Offline from '@/components/layout/Offline';
@@ -28,7 +27,6 @@ import AdminSidebar from '@/components/app/mystyc/admin/ui/AdminSidebar';
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useUser();
-  const isLoggedOutByServer = useAppStore((s) => s.isLoggedOutByServer);
   const isWebsite = !user;
   const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((s) => s.setSidebarCollapsed);
@@ -115,10 +113,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         </AppTransition>
       </TransitionProvider>
-      
-      <Modal isOpen={isLoggedOutByServer}>
-        <ServerLogoutForm />
-      </Modal>
+      <ServerLogoutForm />
     </>
   );  
 }
