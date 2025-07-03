@@ -37,18 +37,18 @@ export default function AdminDetailLayout({
   mainContent
 }: AdminDetailLayoutProps) {
 
-  // if (error) {
-  //   return (
-  //     <>
-  //       <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
-  //       <AdminError 
-  //         title={title}
-  //         error={error} 
-  //         onRetry={onRetry}
-  //       />
-  //     </>
-  //   )
-  // }
+  if (error) {
+    return (
+      <>
+        <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+        <AdminError 
+          title={title}
+          error={error} 
+          onRetry={onRetry}
+        />
+      </>
+    )
+  }
 
   return (
     <>

@@ -2,8 +2,8 @@
 
 import { LayoutDashboard, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
-import Sidebar from '@/components/ui/sidebar/Sidebar';
-import SidebarItem from '@/components/ui/sidebar/SidebarItem';
+import Sidebar from '@/components/layout/sidebar/Sidebar';
+import SidebarItem from '@/components/layout/sidebar/SidebarItem';
 
 interface AdminSidebarProps {
   isOpen?: boolean;
