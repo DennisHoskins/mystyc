@@ -1,30 +1,19 @@
-'use client';
+import type { Metadata } from 'next';
 
-import { useEffect } from 'react';
-import { useUser } from '@/components/layout/context/AppContext';
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import AdminLayout from '@/components/app/mystyc/admin/AdminLayout'
 
-export default function MystycAdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const user = useUser();
-  const router = useTransitionRouter();
+export async function generateMetadata(): Promise<Metadata> {
+  const title = process.env.NODE_ENV === 'production' ? 'mystyc admin' : 'mystyc admin // dev';
+  
+  return {
+    title
+  };
+}
 
-  useEffect(() => {
-    if (!user || !user.isAdmin) {
-      router.replace('/', false);
-    }
-  }, [user, router]);
-
-  if (!user || !user.isAdmin) {
-    return null;
-  }
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className='px-4 md:pl-0 py-4'>
+    <AdminLayout>
       {children}
-    </div>
+    </AdminLayout>
   );
 }

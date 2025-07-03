@@ -101,10 +101,10 @@ export default function PasswordResetPage() {
 
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            Remember your password? <Link useTransition={false} href="/login">Sign In</Link>
+            Remember your password? <Link href="/login">Sign In</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <Link useTransition={false} href="/register">Register</Link>
+            Don&apos;t have an account? <Link href="/register">Register</Link>
           </span>
         </p>
       </Form>

@@ -109,10 +109,10 @@ export default function LoginForm() {
         </Button>
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            <Link useTransition={false} href="/password-reset">Forgot your password?</Link>
+            <Link href="/password-reset">Forgot your password?</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <Link useTransition={false} href="/register">Register</Link>
+            Don&apos;t have an account? <Link href="/register">Register</Link>
           </span>
         </p>
       </Form>

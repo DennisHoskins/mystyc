@@ -8,8 +8,6 @@ export default function Page() {
   const user = useUser();
   const isAdmin = user && user.isAdmin;
 
-  
-
   if (!isAdmin) {
     return null;
   }

@@ -21,7 +21,7 @@ export default function MystycMenu() {
     return (
       <>
         {user.isAdmin && (
-          <div className='h-full'>
+          <div className='h-full border-b mb-4'>
             <div className='pb-4 sm:hidden'>
               <AdminMenu />
             </div>
@@ -33,7 +33,7 @@ export default function MystycMenu() {
             </div>
           </div>
         )}
-        <div className="flex flex-col pt-4 border-t">
+        <div className="flex flex-col">
           <MenuItem className='mt-auto pb-0 items-end' onClick={() => router.push('/logout')}>
             <LogOut className="inline-block mr-2 h-4 w-4" />
             Logout

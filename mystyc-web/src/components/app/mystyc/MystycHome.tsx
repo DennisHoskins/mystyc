@@ -14,7 +14,8 @@ export default function Mystyc() {
   }
 
   return (
-    <Section>
+    
+    <Section className='flex flex-1 h-full items-center'>
       <Card>
         {user.isOnboard ? <Dashboard /> : <Welcome />}
       </Card>
