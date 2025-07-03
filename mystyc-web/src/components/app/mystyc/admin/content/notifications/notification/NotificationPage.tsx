@@ -23,7 +23,7 @@ export default function NotificationPage({ notificationId }: { notificationId: s
   const loadNotification = useCallback(async () => {
     try {
       setError(null);
-      setBusy(true);
+      setBusy(1000);
       setLoading(true);
 
       const data = await apiClientAdmin.getNotification(notificationId);

@@ -27,7 +27,7 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
   const loadDevice = useCallback(async () => {
     try {
       setError(null);
-      setBusy(true);
+      setBusy(1000);
       setLoading(true);
 
       const data = await apiClientAdmin.getDeviceSession(deviceId);

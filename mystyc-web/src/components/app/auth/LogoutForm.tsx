@@ -57,7 +57,7 @@ export default function LogoutPage() {
       .catch((err: any) => {
         logger.error('Logout error:', err);
       }).finally(() => {
-        router.replace('/', false);
+        router.replace('/');
       });
   }, [user, isReady, isBusy, setBusy, clearUser, clearFcmToken, signOut, isLogout, showToast, router]);
 

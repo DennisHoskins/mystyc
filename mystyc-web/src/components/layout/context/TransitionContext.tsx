@@ -1,31 +1,57 @@
 'use client';
 
-import { 
-  createContext, 
-  useContext, 
-  useRef, 
-  useMemo, 
-  RefObject,
-  ReactNode 
-} from 'react';
+import React, { createContext, useContext, useState, useRef, createRef, ReactNode } from 'react';
 
-import { PageTransitionRef } from '@/components/layout/transition/PageTransition';
+import type { AppTransitionRef } from '@/components/layout/transition/AppTransition';
+import type { PageTransitionRef } from '@/components/layout/transition/PageTransition';
 
 interface TransitionContextType {
-  pageTransitionRef: RefObject<PageTransitionRef | null>;
+  isAppTransitioning: boolean;
+  isPageTransitioning: boolean;
+  appTransitionRef: React.RefObject<AppTransitionRef | null>;
+  pageTransitionRef: React.RefObject<PageTransitionRef | null>;
+  startAppTransition: () => void;
+  endAppTransition: () => void;
+  startPageTransition: () => void;
+  endPageTransition: () => void;
 }
 
-const TransitionContext = createContext<TransitionContextType>(null!);
+const TransitionContext = createContext<TransitionContextType>({
+  isAppTransitioning: false,
+  isPageTransitioning: false,
+  appTransitionRef: createRef<AppTransitionRef | null>(),
+  pageTransitionRef: createRef<PageTransitionRef | null>(),
+  startAppTransition: () => {},
+  endAppTransition: () => {},
+  startPageTransition: () => {},
+  endPageTransition: () => {},
+});
 
 export function TransitionProvider({ children }: { children: ReactNode }) {
-  const pageTransitionRef = useRef<PageTransitionRef>(null);
+  const [isAppTransitioning, setIsAppTransitioning] = useState(false);
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  const appTransitionRef = useRef<AppTransitionRef | null>(null);
+  const pageTransitionRef = useRef<PageTransitionRef | null>(null);
 
-  const value = useMemo(() => ({ 
-    pageTransitionRef,
-  }), []);
+  const startAppTransition = () => setIsAppTransitioning(true);
+  const endAppTransition = () => setIsAppTransitioning(false);
+
+  const startPageTransition = () => setIsPageTransitioning(true);
+  const endPageTransition = () => setIsPageTransitioning(false);
 
   return (
-    <TransitionContext.Provider value={value}>
+    <TransitionContext.Provider
+      value={{
+        isAppTransitioning,
+        isPageTransitioning,
+        appTransitionRef,
+        pageTransitionRef,
+        startAppTransition,
+        endAppTransition,
+        startPageTransition,
+        endPageTransition,
+      }}
+    >
       {children}
     </TransitionContext.Provider>
   );

@@ -9,7 +9,7 @@ import { logger } from '@/util/logger';
 
 import { useUser, useClearUser, useAuthenticated } from '@/components/layout/context/AppContext';
 import { TransitionProvider } from '@/components/layout/context/TransitionContext';
-import StateTransition from '@/components/layout/transition/StateTransition';
+import AppTransition from '@/components/layout/transition/AppTransition';
 import WebsiteHeader from '@/components/app/website/WebsiteHeader';
 import AppHeader from '@/components/app/mystyc/MystycHeader';
 
@@ -82,10 +82,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isAdminPath = pathname.startsWith('/admin');  
   const isAdmin = user && user.isAdmin && isAdminPath;
 
+  if (pathname.startsWith("/logout")) {
+    return (
+      <TransitionProvider>
+        <AppTransition>
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </AppTransition>
+      </TransitionProvider>
+    );
+  }
+
   return (
     <>
       <TransitionProvider>
-        <StateTransition>
+        <AppTransition>
 
           <Header isFullWidth={isAdmin == true}>
             {isWebsite
@@ -121,7 +133,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </ScrollWrapper>
           </div>
 
-        </StateTransition>
+        </AppTransition>
       </TransitionProvider>
       
       <Modal isOpen={isLoggedOutByServer}>

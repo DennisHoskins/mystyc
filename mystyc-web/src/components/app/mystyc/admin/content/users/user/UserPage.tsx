@@ -24,7 +24,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const loadUser = useCallback(async () => {
     try {
       setError(null);
-      setBusy(true);
+      setBusy(1000);
       setLoading(true);
 
       const data = await apiClientAdmin.getUser(firebaseUid);

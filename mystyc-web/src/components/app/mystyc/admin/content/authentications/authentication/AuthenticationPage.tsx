@@ -22,7 +22,7 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
   const loadAuthentication = useCallback(async () => {
     try {
       setError(null);
-      setBusy(true);
+      setBusy(1000);
       setLoading(true);
 
       const data = await apiClientAdmin.getAuthEvent(authId);

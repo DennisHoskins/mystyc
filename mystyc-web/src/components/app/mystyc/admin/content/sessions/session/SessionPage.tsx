@@ -23,7 +23,7 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
   const loadSession = useCallback(async () => {
     try {
       setError(null);
-      setBusy(true);
+      setBusy(1000);
       setLoading(true);
 
       const data = await apiClientAdmin.getSession(sessionId);

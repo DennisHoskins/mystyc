@@ -2,9 +2,9 @@
 
 import {
   useImperativeHandle,
+  useEffect,
   useRef,
   useState,
-  useEffect,
   ReactNode,
 } from 'react';
 
@@ -14,24 +14,32 @@ import { logger } from '@/util/logger';
 
 import Transition, { TransitionRef } from './Transition';
 
-export interface PageTransitionRef extends TransitionRef {
+export interface AppTransitionRef extends TransitionRef {
   waitForContent: () => Promise<void>;
 }
 
-export default function PageTransition({ children }: { children: ReactNode }) {
+export default function AppTransition({ children }: { children: ReactNode }) {
   const user = useUser();
-  const { pageTransitionRef, isAppTransitioning, startPageTransition, endPageTransition } = useTransitions();
+  const {
+    appTransitionRef,
+    isAppTransitioning,
+    startAppTransition,
+    endAppTransition,
+  } = useTransitions();
   const transitionRef = useRef<TransitionRef>(null);
-  const [currentChildren, setCurrentChildren] = useState(children);
   const isFirstRender = useRef(true);
-  const isWebsite = !user;
-  const prevIsWebsite = useRef(isWebsite);
+
+  const isOnboard = user?.isOnboard === true;
+  const view = isOnboard ? 'onboard' : 'guest';
+  const prevView = useRef(view);
+
   const contentPromiseRef = useRef<{ resolve: () => void; promise?: Promise<void>; } | null>(null);
+
+  const [currentChildren, setCurrentChildren] = useState(children);
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      prevIsWebsite.current = isWebsite;
       return;
     }
 
@@ -43,10 +51,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
       setCurrentChildren(children);
     }
 
-    if (isWebsite !== prevIsWebsite.current) {
-      prevIsWebsite.current = isWebsite;
-    }
-  }, [children, currentChildren, isWebsite]);
+  }, [children, currentChildren]);
 
   useEffect(() => {
     return () => {
@@ -57,28 +62,31 @@ export default function PageTransition({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  useImperativeHandle(pageTransitionRef, () => ({
+  useImperativeHandle(appTransitionRef, () => ({
     transitionOut: async () => {
       if (isAppTransitioning) {
-        logger.log('[PAGE TRANSITION] skipping transitionOut due to appTransition');
+        logger.log('[APP TRANSITION] skipping transitionOut due to appTransition');
         return Promise.resolve();
       }
-      startPageTransition();
-      logger.log('[PAGE TRANSITION] out');
+      startAppTransition();
+      logger.log('[APP TRANSITION] out');
       return transitionRef.current?.transitionOut();
     },
     transitionIn: async () => {
-      if (isAppTransitioning) {
-        logger.log('[PAGE TRANSITION] skipping transitionIn due to appTransition');
+      if (!isAppTransitioning) {
+        logger.log('[APP TRANSITION] skipping transitionIn due to no appTransition');
         return Promise.resolve();
       }
-      logger.log('[PAGE TRANSITION] in');
+      
+      await new Promise(resolve => setTimeout(resolve, 250));
+
+      logger.log('[APP TRANSITION] in');
       const result = transitionRef.current?.transitionIn();
-      endPageTransition();
+      endAppTransition();
       return result;
     },
     waitForContent: () => {
-      logger.log('[PAGE TRANSITION] waiting for content');
+      logger.log('[APP TRANSITION] waiting for content');
       if (children !== currentChildren) {
         setCurrentChildren(children);
         return Promise.resolve();
@@ -93,10 +101,8 @@ export default function PageTransition({ children }: { children: ReactNode }) {
   }));
 
   return (
-    <div className="flex flex-col flex-1">
-      <Transition ref={transitionRef} transition="transition-page">
-        {currentChildren}
-      </Transition>
-    </div>
+    <Transition ref={transitionRef} transition="transition-state">
+      {currentChildren}
+    </Transition>
   );
 }

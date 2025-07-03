@@ -30,7 +30,7 @@ export default function AuthenticationsPage() {
   const loadAuthEvents = useCallback(async (page: number) => {
     try {
       setError(null);
-      setBusy(true);
+      setBusy(1000);
       setLoading(true);
 
       const response = await apiClientAdmin.getAuthEvents({
