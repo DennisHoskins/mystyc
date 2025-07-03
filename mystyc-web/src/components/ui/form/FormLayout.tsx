@@ -18,16 +18,14 @@ export default function FormLayout({
   children,
 }: FormLayoutProps) {
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <div className="w-full max-w-md text-center px-4 -mt-20 border rounded-md p-6 shadow-sm bg-white">
-        <AppLogo scale={1.2} subheading={subtitle} />
+    <div className="p-6 min-w-96">
+      <AppLogo scale={1.2} subheading={subtitle} />
 
-        {error && <FormError message={error} />}
-        {success && <FormSuccess message={success} />}
+      {error && <FormError message={error} />}
+      {success && <FormSuccess message={success} />}
 
-        <div className="mt-8 space-y-6">
-          {children}
-        </div>
+      <div className="mt-8 space-y-6">
+        {children}
       </div>
     </div>
   );

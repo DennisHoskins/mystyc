@@ -1,10 +1,11 @@
 'use client';
 
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { useRouter } from 'next/navigation';
+
 import Button from '@/components/ui/Button';
 
 export default function WebsiteHeader() {
-  const router = useTransitionRouter();
+  const router = useRouter();
 
   return (
     <div className="flex space-x-4 ml-auto">

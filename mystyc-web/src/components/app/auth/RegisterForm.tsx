@@ -121,10 +121,10 @@ export default function RegisterForm() {
 
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            Already have an account? <Link href="/login">Sign In</Link>
+            Already have an account? <Link useTransition={false} href="/login">Sign In</Link>
           </span>
           <span className="block mt-1">
-            <Link href="/password-reset">Forgot your password?</Link>
+            <Link useTransition={false} href="/password-reset">Forgot your password?</Link>
           </span>
         </p>
       </Form>

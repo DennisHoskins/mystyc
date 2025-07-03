@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useUser, useBusy } from '@/components/layout/context/AppContext';
-import Mystyc from './(mystyc)/mystyc';
-import Home from './(website)/home';
+// import { useUser, useBusy } from '@/components/layout/context/AppContext';
+import { useBusy } from '@/components/layout/context/AppContext';
+// import Mystyc from './(mystyc)/mystyc';
+import WebsiteHome from "@/components/app/website/WebsiteHome";
 
 export default function Page() {
-  const user = useUser();
+  // const user = useUser();
   const { setBusy } = useBusy();
 
   useEffect(() => {
@@ -14,8 +15,9 @@ export default function Page() {
   }, [setBusy])
 
   return (
-    <>
-      { (user) ? <Mystyc /> : <Home /> }
-    </>
+    <WebsiteHome />
+    // <>
+    //   { (user) ? <Mystyc /> : <WebsiteHome /> }
+    // </>
   );
 }

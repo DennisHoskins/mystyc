@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import { useAuth } from '@/hooks/useAuth';
 import { useInitialized, useUser, useSetUser, useBusy } from '@/components/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
@@ -108,10 +109,10 @@ export default function LoginForm() {
         </Button>
         <p className="text-center text-sm mt-2 text-gray-600">
           <span className="block">
-            <Link href="/password-reset">Forgot your password?</Link>
+            <Link useTransition={false} href="/password-reset">Forgot your password?</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <Link href="/register">Register</Link>
+            Don&apos;t have an account? <Link useTransition={false} href="/register">Register</Link>
           </span>
         </p>
       </Form>
