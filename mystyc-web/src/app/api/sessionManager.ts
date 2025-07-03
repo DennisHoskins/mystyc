@@ -1,7 +1,10 @@
 import { createClient } from 'redis';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
-import { extractDeviceFingerprint } from './auth/deviceManager';
+
+import { getAuth } from 'firebase-admin/auth';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+
 import { 
   getSessionCookieName, 
   encryptCookieValue, 
@@ -9,11 +12,22 @@ import {
   validateSessionId,
   generateDeviceId 
 } from './keyManager';
+import { IdTokens } from './authTokenManager';
+import { extractDeviceFingerprint } from './auth/deviceManager';
 
 import { Session } from '@/interfaces/session.interface';
 import { logger } from '@/util/logger';
 
-import { IdTokens } from './authTokenManager';
+const firebaseAdminApp = getApps().find(app => app.name === 'firebase-admin-app') || 
+  initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+    })
+  }, 'firebase-admin-app');
+  
+  const adminAuth = getAuth(firebaseAdminApp!);
 
 // custom error for any tampered / out-of-sync session
 export class InvalidSessionError extends Error {
@@ -81,7 +95,7 @@ export const sessionManager = {
     });
 
     // Create device mapping
-    await this.setDeviceSession(deviceId, sessionId);
+    await this.setDeviceSession(deviceId, sessionId, uid);
 
     // Set cookie
     const cookieStore = await cookies();
@@ -97,13 +111,14 @@ export const sessionManager = {
     return sessionId;
   },
 
-  async setDeviceSession(deviceId: string, sessionId: string): Promise<void> {
+  async setDeviceSession(deviceId: string, sessionId: string, uid: string): Promise<void> {
     await ensureConnection();
     await redis.set(`mystyc_device_session::${deviceId}`, sessionId);
+    await redis.set(`mystyc_device_session::${deviceId}::uid`, uid);
     logger.log('[sessionManager] Device session mapping created:', deviceId.substring(0, 8));
   },
 
-  async getCurrentSession(request: NextRequest | Headers, deviceInfo : any): Promise<Session | null> {
+  async getCurrentSession(request: NextRequest | Headers, deviceInfo: any): Promise<Session | null> {
     await ensureConnection();
 
     logger.log('');
@@ -132,6 +147,7 @@ export const sessionManager = {
 
     if (!sessionId) {
       logger.error('[sessionManager] Failed to decrypt session cookie');
+      await this.clearSession()
       throw new InvalidSessionError('cookie decryption failed');
     }
 
@@ -160,12 +176,40 @@ export const sessionManager = {
     // Make sure session cookie matches deviceId and uid
     if (!validateSessionId(sessionId, deviceId, uid)) {
       logger.error('[sessionManager] Session validation failed - possible tampering');
-      await this.clearSession();
       throw new InvalidSessionError('session validation failed');
     }
 
-    // Use shared method to get session data
-    return await this.getSessionData(sessionId, deviceId, uid, true);
+    // Get session data
+    const session = await this.getSessionData(sessionId, deviceId, uid, true);
+    if (!session) {
+      logger.error('[sessionManager] Session data missing');
+      throw new InvalidSessionError('session data missing');
+    }
+
+    try {
+      await adminAuth.verifyIdToken(session.authToken, false); // No revocation check
+      logger.log('[sessionManager] Token validated successfully');
+      return session;
+    } catch (error: any) {
+      logger.log('[sessionManager] Token validation failed:', error.code);
+      
+      if (error.code === 'auth/id-token-expired') {
+        // Token expired, try to refresh
+        logger.log('[sessionManager] Token expired, attempting refresh');
+        const refreshedSession = await this.refreshAuthToken(session);
+        if (refreshedSession) {
+          logger.log('[sessionManager] Token refresh successful');
+          return refreshedSession;
+        }
+        // Refresh failed
+        logger.error('[sessionManager] Token refresh failed');
+        throw new InvalidSessionError('refresh failed');
+      }
+      
+      // Token invalid for other reasons
+      logger.error('[sessionManager] Token invalid:', error.code);
+      throw new InvalidSessionError(error.code || 'invalid token');
+    }
   },
 
   async getSession(sessionId: string): Promise<Session | null> {
@@ -259,6 +303,52 @@ export const sessionManager = {
     };
   },
 
+  async refreshAuthToken(session: Session): Promise<Session | null> {
+    logger.log('[sessionManager] Attempting token refresh for uid:', session.uid);
+    
+    try {
+      const response = await fetch(
+        `https://securetoken.googleapis.com/v1/token?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `grant_type=refresh_token&refresh_token=${session.refreshToken}`
+        }
+      );
+
+      if (!response.ok) {
+        logger.error('[sessionManager] Token refresh failed with status:', response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      logger.log('[sessionManager] Token refreshed successfully');
+      
+      // Update tokens in Redis
+      await this.updateSession(
+        session.sessionId,
+        session.deviceId,
+        session.uid,
+        data.id_token,
+        data.refresh_token
+      );
+      logger.log('[sessionManager] Updated tokens in Redis');
+
+      // Return updated session
+      return {
+        ...session,
+        authToken: data.id_token,
+        refreshToken: data.refresh_token,
+        authTokenTimestamp: Date.now(),
+        refreshTokenTimestamp: Date.now(),
+        lastUpdated: Date.now()
+      };
+    } catch (error) {
+      logger.error('[sessionManager] Token refresh failed:', error);
+      return null;
+    }
+  },
+
   async getSessionAuthKey(sessionId: string) {
     await ensureConnection();
 
@@ -274,6 +364,11 @@ export const sessionManager = {
   async getDeviceSession(deviceId: string): Promise<string | null> {
     await ensureConnection();
     return await redis.get(`mystyc_device_session::${deviceId}`);
+  },  
+
+  async getDeviceUid(deviceId: string): Promise<string | null> {
+    await ensureConnection();
+    return await redis.get(`mystyc_device_session::${deviceId}::uid`);
   },  
 
   async getSessions(limit: number = 20, offset: number = 0) {

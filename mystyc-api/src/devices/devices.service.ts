@@ -346,17 +346,17 @@ export class DevicesService {
    * @returns Promise<DeviceInterface> - Updated device record with cleared FCM token
    * @throws NotFoundException when device is not found
    */
-  async logoutDevice(firebaseUid: string, logoutDto: AuthEventLogoutDto): Promise<DeviceInterface> {
+  async logoutDevice(firebaseUid: string, deviceId: string, clientTimestamp: string): Promise<DeviceInterface> {
     logger.info('Clearing FCM token', {
       firebaseUid,
-      deviceId: logoutDto.device.deviceId
+      deviceId: deviceId
     }, 'DeviceService');
 
     try {
       const device = await this.deviceModel.findOneAndUpdate(
         { 
           firebaseUid, 
-          deviceId: logoutDto.device.deviceId 
+          deviceId: deviceId 
         },
         {
           fcmToken: null,
@@ -371,7 +371,7 @@ export class DevicesService {
       if (!device) {
         logger.warn('Clear FCM token update failed - device not found', {
           firebaseUid,
-          deviceId: logoutDto.device.deviceId
+          deviceId
         }, 'DeviceService');
         
         throw new NotFoundException('Device not found');
@@ -379,14 +379,14 @@ export class DevicesService {
 
       logger.info('FCM token cleared successfully', {
         firebaseUid,
-        deviceId: device.deviceId,
+        deviceId,
       }, 'DeviceService');
 
       return this.transformToDevice(device);
     } catch (error) {
       logger.error('FCM token update failed', {
         firebaseUid,
-        deviceId: logoutDto.device.deviceId,
+        deviceId: deviceId,
         error: error.message
       }, 'DeviceService');
 

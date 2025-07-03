@@ -3,11 +3,10 @@
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
 import { logger } from '@/util/logger';
 
-import { useUser, useClearUser, useAuthenticated } from '@/components/layout/context/AppContext';
+import { useUser } from '@/components/layout/context/AppContext';
 import { TransitionProvider } from '@/components/layout/context/TransitionContext';
 import AppTransition from '@/components/layout/transition/AppTransition';
 import WebsiteHeader from '@/components/app/website/WebsiteHeader';
@@ -29,10 +28,7 @@ import AdminSidebar from '@/components/app/mystyc/admin/ui/AdminSidebar';
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useUser();
-  const clearUser = useClearUser();
-  const authenticated = useAuthenticated();
   const isLoggedOutByServer = useAppStore((s) => s.isLoggedOutByServer);
-  const setLoggedOutByServer = useAppStore((s) => s.setLoggedOutByServer);
   const isWebsite = !user;
   const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((s) => s.setSidebarCollapsed);
@@ -62,22 +58,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   const FooterContent = isWebsite ? WebsiteFooter : AppFooter;
-
-  useEffect(() => {
-    if (!user && authenticated) {
-      const logout = async () => {
-        await apiClient.serverLogout()
-        clearUser();
-      };
-
-      setLoggedOutByServer(true);
-      logout();
-
-      if (window.location.pathname !== '/') {
-        window.location.href = '/';
-      }
-    }
-  }, [user, authenticated, clearUser, setLoggedOutByServer]);
 
   const isAdminPath = pathname.startsWith('/admin');  
   const isAdmin = user && user.isAdmin && isAdminPath;

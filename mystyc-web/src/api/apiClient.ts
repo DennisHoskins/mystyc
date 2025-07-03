@@ -1,5 +1,4 @@
 import { User } from '@/interfaces/user.interface';
-import { ServerUser } from '@/interfaces/serverUser.interface';
 import { logger } from '@/util/logger'
 
 const serverRoot: string = '/api';
@@ -160,16 +159,28 @@ export const apiClient = {
     }
   },
 
-  async getUser(): Promise<ServerUser | null> {
-    const response = await fetch(`${serverRoot}/users`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        deviceInfo: getDeviceInfo(),
-      })
-    });
+  async getUser(): Promise<User | null> {
+    try {
+      const response = await fetch(`${serverRoot}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceInfo: getDeviceInfo() })
+      });
 
-    return response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data?.error === 'InvalidSession') {
+        throw new Error('InvalidSession');
+      }
+      
+      return data;
+    } catch (err) {
+      throw err;
+    }
   },
 
   async updateFcmToken(deviceId: string, fcmToken: string): Promise<void> {

@@ -10,6 +10,7 @@ import { createUserStore, UserState } from '@/store/userStore';
 import Layout from '@/components/layout/Layout';
 import Working from '@/components/ui/working/Working';
 import Toast from '@/components/ui/toast/Toast';
+import { logger } from '@/util/logger';
 
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
 
@@ -28,16 +29,36 @@ export default function AppContext({ children }: AppContextProps) {
     const getServerUser = async () => {
       if (document.readyState !== 'complete') {
         await new Promise(resolve => window.addEventListener('load', resolve));
-      }      
-      
-      const user = await apiClient.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
       }
+      
+      try {
+        const user = await apiClient.getUser();
+        if (!user) {
+          setLoading(false);
+          return;
+        }
 
-      storeRef.current = createUserStore(user);
-      setLoading(false);
+        storeRef.current = createUserStore(user);
+      } catch(err: any) {
+        logger.log("[AppContext] getServerUser", err);
+        
+        if (err.message?.includes('InvalidSession') || 
+            err.message?.includes('session') || 
+            err.message?.includes('HTTP 500')) {
+          
+          try {
+            await apiClient.serverLogout();
+          } catch (logoutErr) {
+            logger.log("[AppContext] Server logout failed:", logoutErr);
+          }
+
+          const appStore = useAppStore.getState();
+          appStore.clearBusy();
+          appStore.setLoggedOutByServer(true);
+        }
+      } finally {
+        setLoading(false);
+      }
     }
 
     getServerUser();
@@ -76,12 +97,6 @@ export const useUserProfile = () => {
   return useStore(store, (state: UserState) => state.user?.userProfile || null);
 };
 
-export const useAuthenticated = () => {
-  const store = useContext(UserStoreContext);
-  if (!store) throw new Error('useAuthenticated must be used within UserStoreProvider');
-  return useStore(store, (state: UserState) => state.authenticated);
-};
-
 export const useIsLoggedIn = () => {
   const store = useContext(UserStoreContext);
   if (!store) throw new Error('useIsLoggedIn must be used within UserStoreProvider');
@@ -104,12 +119,6 @@ export const useClearUser = () => {
   const store = useContext(UserStoreContext);
   if (!store) throw new Error('useClearUser must be used within UserStoreProvider');
   return useStore(store, (state: UserState) => state.clearUser);
-};
-
-export const useSetAuthenticated = () => {
-  const store = useContext(UserStoreContext);
-  if (!store) throw new Error('useSetAuthenticated must be used within UserStoreProvider');
-  return useStore(store, (state: UserState) => state.setAuthenticated);
 };
 
 export const useBusy = () => {

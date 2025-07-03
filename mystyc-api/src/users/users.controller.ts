@@ -1,6 +1,7 @@
-import { Controller, UseGuards, Post, Patch, Get, Body, Headers, UnauthorizedException, Req } from '@nestjs/common';
+import { Controller, UseGuards, Post, Patch, Get, Body, Req, Headers, UnauthorizedException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
+import { Public } from '@/common/decorators/public.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 
 import { FirebaseUser } from '@/common/decorators/user.decorator';
@@ -13,6 +14,7 @@ import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-register.dto';
 import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
 import { createServiceLogger } from '@/common/util/logger';
+import { logger } from '@/common/util/logger';
 
 @Controller('users')
 export class UsersController {
@@ -176,57 +178,54 @@ export class UsersController {
   }
 
   /**
-   * Logs out user by clearing device FCM token and recording logout event
-   * @param firebaseUserFromDecorator - Firebase user from auth guard
-   * @param logoutDto - Logout data with device ID and client timestamp
-   * @param request - Express request object for IP extraction
-   * @returns Promise<{success: boolean, message: string}> - Logout confirmation
+   * Internal server logout - called when session corruption is detected
+   * Uses internal secret instead of Firebase auth since token is corrupted
    */
   @Post('server-logout')
-  @UseGuards(FirebaseAuthGuard)
+  @Public()
   @Throttle({ auth: { limit: 10, ttl: 60000 } })
   async serverLogout(
-    @FirebaseUser() firebaseUserFromDecorator,
-    @Body() logoutDto: AuthEventLogoutDto,
+    @Body() body: { firebaseUid: string, deviceId: string; timestamp: string },
+    @Headers('x-internal-secret') internalSecret: string,
     @Req() request: Request
   ): Promise<{ success: boolean; message: string }> {
-    this.logger.info('Server logout via POST /users/server-logout', {
-      uid: firebaseUserFromDecorator.uid,
-      deviceId: logoutDto.device.deviceId,
+
+    console.log("SECRET: ", process.env.INTERNAL_API_SECRET);
+    
+    // Verify internal secret
+    if (!internalSecret || internalSecret !== process.env.INTERNAL_API_SECRET) {
+      throw new UnauthorizedException('Invalid internal secret');
+    }
+
+    logger.info('Internal server logout initiated', {
+      firebaseUid: body.firebaseUid,
+      deviceId: body.deviceId,
+      timestamp: body.timestamp
     });
 
-    const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
-    
     // Extract server IP from request
     const serverIp = this.getClientIp(request);
     
     try {
-      await this.userService.serverLogout(
-        firebaseUser,
-        logoutDto,
-        serverIp
-      );
-
-      this.logger.info('Server Logout recorded successfully via controller', {
-        uid: firebaseUser.uid,
-        deviceId: logoutDto.device.deviceId,
-        serverIp
+      await this.userService.serverLogout(body.firebaseUid, body.deviceId, body.timestamp, serverIp);
+      logger.info('Server logout completed', {
+        deviceId: body.deviceId,
       });
 
       return {
         success: true,
-        message: 'Server Logout recorded successfully'
+        message: 'Internal server logout completed'
       };
     } catch (error) {
-      this.logger.error('Server Logout recording failed via controller', {
-        uid: firebaseUser.uid,
-        deviceId: logoutDto.device.deviceId,
+      logger.error('Server logout failed', {
+        firebaseUid: body.firebaseUid,
+        deviceId: body.deviceId,
         error: error.message
       });
 
       throw error;
     }
-  }
+  }  
 
   /**
    * Gets user profile data without full user object (lighter endpoint)

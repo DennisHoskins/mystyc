@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { sessionManager } from '../sessionManager';
+import { sessionManager, InvalidSessionError } from '../sessionManager';
 import { authTokenManager } from '../authTokenManager';
 import { logger } from '@/util/logger';
 
@@ -34,9 +34,23 @@ export async function handleAdmin(
     const body = requestBody || await request.json();
     const { deviceInfo } = body;    
 
-    // Get current session
+    // Get current session with error handling
     const headersList = await headers();
-    const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
+    let session;
+    
+    try {
+      session = await sessionManager.getCurrentSession(headersList, deviceInfo);
+    } catch (error) {
+      if (error instanceof InvalidSessionError) {
+        logger.error(`[admin/${finalEndpoint}] Invalid session detected:`, error.message);
+        await sessionManager.clearSession();
+        return NextResponse.json(
+          { message: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+      throw error; // Re-throw other errors
+    }
     
     if (!session) {
       logger.error(`[admin/${finalEndpoint}] No session found`);

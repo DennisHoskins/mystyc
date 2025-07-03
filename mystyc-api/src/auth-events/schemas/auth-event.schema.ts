@@ -15,8 +15,8 @@ export class AuthEvent {
   @Prop({ required: true, index: true })
   deviceName: string;
 
-  @Prop({ required: true, enum: ['login', 'logout', 'create'], index: true })
-  type: 'login' | 'logout' | 'create';
+  @Prop({ required: true, enum: ['create', 'login', 'logout', 'server-logout'], index: true })
+  type: 'create' | 'login' | 'logout' | 'server-logout';
 
   @Prop({ required: true })
   ip: string;

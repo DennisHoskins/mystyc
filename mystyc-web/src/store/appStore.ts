@@ -105,7 +105,8 @@ export const useAppStore = create<AppState>()(
     {
       name: 'app-storage',
       partialize: (state) => ({ 
-        sidebarCollapsed: state.sidebarCollapsed
+        sidebarCollapsed: state.sidebarCollapsed,
+        isLoggedOutByServer: state.isLoggedOutByServer 
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

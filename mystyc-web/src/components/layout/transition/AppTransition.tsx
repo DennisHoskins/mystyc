@@ -8,7 +8,6 @@ import {
   ReactNode,
 } from 'react';
 
-import { useUser } from '@/components/layout/context/AppContext';
 import { useTransitions } from '@/components/layout/context/TransitionContext';
 import { logger } from '@/util/logger';
 
@@ -19,7 +18,6 @@ export interface AppTransitionRef extends TransitionRef {
 }
 
 export default function AppTransition({ children }: { children: ReactNode }) {
-  const user = useUser();
   const {
     appTransitionRef,
     isAppTransitioning,
@@ -28,10 +26,6 @@ export default function AppTransition({ children }: { children: ReactNode }) {
   } = useTransitions();
   const transitionRef = useRef<TransitionRef>(null);
   const isFirstRender = useRef(true);
-
-  const isOnboard = user?.isOnboard === true;
-  const view = isOnboard ? 'onboard' : 'guest';
-  const prevView = useRef(view);
 
   const contentPromiseRef = useRef<{ resolve: () => void; promise?: Promise<void>; } | null>(null);
 

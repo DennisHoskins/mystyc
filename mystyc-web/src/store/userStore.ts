@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { User } from '@/interfaces/user.interface';
 import { AppUser } from '@/interfaces/appUser.interface';
-import { ServerUser } from '@/interfaces/serverUser.interface';
 
 const transformUserToAppUser = (user: User): AppUser => ({
   ...user,
@@ -9,23 +8,20 @@ const transformUserToAppUser = (user: User): AppUser => ({
   isOnboard: user.userProfile.zodiacSign != null
 });
 
-const getInitialState = (serverUser: ServerUser | null) => {
+const getInitialState = (serverUser: User | null) => {
   if (serverUser === null) {
     return {
       user: null,
-      authenticated: false,
       initialized: true
     };
-  } else if (serverUser.user) {
+  } else if (serverUser) {
     return {
-      user: transformUserToAppUser(serverUser.user),
-      authenticated: true,
+      user: transformUserToAppUser(serverUser),
       initialized: true
     };
   } else {
     return {
       user: null,
-      authenticated: true,
       initialized: true
     };
   }
@@ -34,16 +30,14 @@ const getInitialState = (serverUser: ServerUser | null) => {
 export interface UserState {
   // State
   user: AppUser | null;
-  authenticated: boolean | null;
   initialized: boolean;
 
   // Actions
   setUser: (user: User | null) => void;
-  setAuthenticated: (authenticated: boolean) => void;
   clearUser: () => void;
 }
 
-export const createUserStore = (serverUser: ServerUser | null) => {
+export const createUserStore = (serverUser: User | null) => {
   const initialState = getInitialState(serverUser);
 
   return create<UserState>((set) => ({
@@ -53,26 +47,23 @@ export const createUserStore = (serverUser: ServerUser | null) => {
     setUser: (user: User | null) => set({ 
       user: user ? transformUserToAppUser(user) : null 
     }),
-    setAuthenticated: (authenticated: boolean) => set({ authenticated }),
-    clearUser: () => set({ user: null, authenticated: false })
+    clearUser: () => set({ user: null })
   }));
 };
 
 export const useUserStore = create<UserState>((set) => ({
   // Default state
   user: null,
-  authenticated: false,
   initialized: false,
 
   // Actions
   setUser: (user: User | null) => set({ 
     user: user ? transformUserToAppUser(user) : null 
   }),
-  setAuthenticated: (authenticated: boolean) => set({ authenticated }),
-  clearUser: () => set({ user: null, authenticated: false }),
+  clearUser: () => set({ user: null }),
   
   // Initialize from server user
-  initializeUser: (serverUser: ServerUser | null) => {
+  initializeUser: (serverUser: User | null) => {
     const initialState = getInitialState(serverUser);
     set(initialState);
   }
