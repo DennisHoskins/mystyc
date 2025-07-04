@@ -6,6 +6,7 @@ import { useStore } from 'zustand';
 import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
 import { createUserStore, UserState } from '@/store/userStore';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 
 import Layout from '@/components/layout/Layout';
 import Working from '@/components/ui/working/Working';
@@ -19,6 +20,7 @@ interface AppContextProps {
 }
 
 export default function AppContext({ children }: AppContextProps) {
+  const { handleSessionError } = useSessionErrorHandler();
   const [loading, setLoading] = useState(true);
   const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
   if (!storeRef.current) {
@@ -40,21 +42,9 @@ export default function AppContext({ children }: AppContextProps) {
 
         storeRef.current = createUserStore(user);
       } catch(err: any) {
-        logger.log("[AppContext] getServerUser", err);
-        
-        if (err.message?.includes('InvalidSession') || 
-            err.message?.includes('session') || 
-            err.message?.includes('HTTP 500')) {
-          
-          try {
-            await apiClient.serverLogout();
-          } catch (logoutErr) {
-            logger.log("[AppContext] Server logout failed:", logoutErr);
-          }
-
-          const appStore = useAppStore.getState();
-          appStore.clearBusy();
-          appStore.setLoggedOutByServer(true);
+        const sessionError = await handleSessionError(err, 'AppContext');
+        if (!sessionError) {
+          logger.error("[AppContext] getServerUser", err);
         }
       } finally {
         setLoading(false);
@@ -62,7 +52,7 @@ export default function AppContext({ children }: AppContextProps) {
     }
 
     getServerUser();
-  }, [])
+  }, [handleSessionError])
 
   const hasHydrated = useAppStore((state) => state.hasHydrated);  
   if (!hasHydrated) {

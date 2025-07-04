@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -12,6 +13,7 @@ import AuthenticationsTable from './AuthenticationsTable';
 import AuthenticationIcon from '@/components/app/mystyc/admin/ui/icons/AuthenticationIcon';
 
 export default function AuthenticationsPage() {
+  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,13 +48,16 @@ export default function AuthenticationsPage() {
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
     } catch (err) {
-      logger.error('Failed to load Auth Events:', err);
-      setError('Failed to load Auth Events. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load Auth Events:', err);
+        setError('Failed to load Auth Events. Please try again.');
+      }
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy]);
+  }, [setBusy, handleSessionError]);
 
   useEffect(() => {
     loadAuthEvents(0);

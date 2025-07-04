@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
@@ -15,6 +16,7 @@ import UserInfoPanel from '@/components/app/mystyc/admin/content/users/user/User
 import DeviceInfoPanel from '@/components/app/mystyc/admin/content/devices/device/DeviceInfoPanel';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
+  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [notification, setNotification] = useState<Notification | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,13 +31,16 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       const data = await apiClientAdmin.getNotification(notificationId);
       setNotification(data);
     } catch (err) {
-      logger.error('Failed to load notification:', err);
-      setError('Failed to load notification. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load notification:', err);
+        setError('Failed to load notification. Please try again.');
+      }
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [notificationId, setBusy]);
+  }, [notificationId, setBusy, handleSessionError]);
 
   useEffect(() => {
     loadNotification();

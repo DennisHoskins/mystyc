@@ -43,7 +43,7 @@ return (
             className={`${styles.menu} ${isOpen ? styles.open : styles.closed}`}
           >
           <div
-              className="flex flex-col h-full p-4 pt-14 lg:pt-4"
+              className="flex flex-col h-full p-4"
             >
               {children}
             </div>

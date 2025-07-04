@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -12,6 +13,7 @@ import NotificationsTable from './NotificationsTable';
 import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
 
 export default function NotificationsPage() {
+  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,13 +48,16 @@ export default function NotificationsPage() {
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
     } catch (err) {
-      logger.error('Failed to load Notifications:', err);
-      setError('Failed to load Notifications. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load Notifications:', err);
+        setError('Failed to load Notifications. Please try again.');
+      }
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy]);
+  }, [setBusy, handleSessionError]);
 
   useEffect(() => {
     loadNotifications(0);

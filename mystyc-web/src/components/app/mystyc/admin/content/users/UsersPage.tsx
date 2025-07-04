@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -11,6 +12,7 @@ import UsersTable from './UsersTable';
 import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon';
 
 export default function UsersPage() {
+  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,13 +47,16 @@ export default function UsersPage() {
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
     } catch (err) {
-      logger.error('Failed to load users:', err);
-      setError('Failed to load users. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load users:', err);
+        setError('Failed to load users. Please try again.');
+      }
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy]);
+  }, [setBusy, handleSessionError]);
 
   useEffect(() => {
     loadUsers(0);

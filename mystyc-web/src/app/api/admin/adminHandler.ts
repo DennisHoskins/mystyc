@@ -36,36 +36,15 @@ export async function handleAdmin(
 
     // Get current session with error handling
     const headersList = await headers();
-    let session;
-    
-    try {
-      session = await sessionManager.getCurrentSession(headersList, deviceInfo);
-    } catch (error) {
-      if (error instanceof InvalidSessionError) {
-        logger.error(`[admin/${finalEndpoint}] Invalid session detected:`, error.message);
-        await sessionManager.clearSession();
-        return NextResponse.json(
-          { message: 'Unauthorized' },
-          { status: 401 }
-        );
-      }
-      throw error; // Re-throw other errors
-    }
-    
+    const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
     if (!session) {
       logger.error(`[admin/${finalEndpoint}] No session found`);
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
+      throw new InvalidSessionError(`[admin/${finalEndpoint}] No session found`);
     }
 
     if (!session.isAdmin) {
       logger.warn(`[admin/${finalEndpoint}] Non-admin user attempted access:`, session.email);
-      return NextResponse.json(
-        { message: 'Forbidden - Admin access required' },
-        { status: 403 }
-      );
+      throw new InvalidSessionError(`[admin/${finalEndpoint}] No session found`);
     }
 
     logger.log(`[admin/${finalEndpoint}] Admin access granted to:`, session.email);
@@ -118,9 +97,6 @@ export async function handleAdmin(
 
   } catch (error) {
     logger.error(`[admin/${finalEndpoint}] Error:`, error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    );
+    throw error;
   }
 }

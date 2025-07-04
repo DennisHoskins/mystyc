@@ -15,15 +15,11 @@ export async function POST(request: NextRequest): Promise<Response> {
   logger.log("[getUser] DeviceInfo destructured:", deviceInfo);
 
   const headersList = await headers();
-
   
   let session;
   try {
     session = await sessionManager.getCurrentSession(headersList, deviceInfo);
   } catch (err) {
-    if (err instanceof InvalidSessionError) {
-      throw err;
-    }
     throw err;
   }
 

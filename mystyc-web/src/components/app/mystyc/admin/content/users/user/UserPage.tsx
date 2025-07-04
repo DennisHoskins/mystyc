@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
@@ -16,6 +17,7 @@ import UserDevicesPanel from './content/UserDevicesPanel';
 import UserTabPanel from './content/UserTabPanel';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
+  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,13 +32,16 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       const data = await apiClientAdmin.getUser(firebaseUid);
       setUser(data);
     } catch (err) {
-      logger.error('Failed to load user:', err);
-      setError('Failed to load user. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load user:', err);
+        setError('Failed to load user. Please try again.');
+      }
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [firebaseUid, setBusy]);
+  }, [firebaseUid, setBusy, handleSessionError]);
 
   useEffect(() => {
     loadUser();

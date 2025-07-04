@@ -21,30 +21,41 @@ export interface PaginatedResponse<T> {
 
 class AdminApiClient {
   private async fetchWithAuth(url: string, options: RequestInit = {}) {
-    const response = await fetch(url, {
-      method: 'POST',
-      ...options,
-      body: options.body ? JSON.stringify({
-        ...JSON.parse(options.body as string),
-        deviceInfo: getDeviceInfo(),
-        clientTimestamp: new Date().toISOString()
-      }) : JSON.stringify({
-        deviceInfo: getDeviceInfo(),
-        clientTimestamp: new Date().toISOString()
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      credentials: 'include',
-    });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        ...options,
+        body: options.body ? JSON.stringify({
+          ...JSON.parse(options.body as string),
+          deviceInfo: getDeviceInfo(),
+          clientTimestamp: new Date().toISOString()
+        }) : JSON.stringify({
+          deviceInfo: getDeviceInfo(),
+          clientTimestamp: new Date().toISOString()
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
+      if (!response.ok) {
+
+        const errorData = await response.json().catch(() => null);
+
+        if (errorData?.error === 'InvalidSession') {
+          throw new Error('InvalidSession');
+        }
+
+        throw new Error(errorData?.message || `HTTP ${response.status}`);
+      }
+
+      return response.json();
+    } catch(err) {
+      logger.error('fetchWithAuth failed:', err);
+      throw err;
     }
-
-    return response.json();
   }
 
   private buildQueryString(query?: AdminQuery): string {

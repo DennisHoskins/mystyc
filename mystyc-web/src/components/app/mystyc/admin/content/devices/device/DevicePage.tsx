@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { DeviceSession } from '@/interfaces';
 import { useBusy, useToast } from '@/components/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
@@ -18,6 +19,7 @@ import DeviceTabPanel from './content/DeviceTabPanel';
 import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon'
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
+  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const showToast = useToast();
   const [deviceSession, setDeviceSession] = useState<DeviceSession | null>(null);
@@ -33,13 +35,16 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       const data = await apiClientAdmin.getDeviceSession(deviceId);
       setDeviceSession(data);
     } catch (err) {
-      logger.error('Failed to load device:', err);
-      setError('Failed to load device. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load device:', err);
+        setError('Failed to load device. Please try again.');
+      }
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [deviceId, setBusy]);
+  }, [deviceId, setBusy, handleSessionError]);
 
   useEffect(() => {
     loadDevice();

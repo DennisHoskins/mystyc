@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Session } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
@@ -15,6 +16,7 @@ import UserInfoPanel from '@/components/app/mystyc/admin/content/users/user/User
 import DeviceInfoPanel from '@/components/app/mystyc/admin/content/devices/device/DeviceInfoPanel';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
+  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,13 +31,16 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       const data = await apiClientAdmin.getSession(sessionId);
       setSession(data);
     } catch (err) {
-      logger.error('Failed to load session:', err);
-      setError('Failed to load session. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load session:', err);
+        setError('Failed to load session. Please try again.');
+      }
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [sessionId, setBusy]);
+  }, [sessionId, setBusy, handleSessionError]);
 
   useEffect(() => {
     loadSession();
