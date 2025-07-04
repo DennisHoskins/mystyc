@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { User } from '@/interfaces/user.interface';
 import { AppUser } from '@/interfaces/appUser.interface';
 
@@ -40,31 +41,45 @@ export interface UserState {
 export const createUserStore = (serverUser: User | null) => {
   const initialState = getInitialState(serverUser);
 
-  return create<UserState>((set) => ({
-    ...initialState,
+  return create<UserState>()(
+    persist(
+      (set) => ({
+        ...initialState,
 
-    // Actions
-    setUser: (user: User | null) => set({ 
-      user: user ? transformUserToAppUser(user) : null 
-    }),
-    clearUser: () => set({ user: null })
-  }));
+        // Actions
+        setUser: (user: User | null) => set({ 
+          user: user ? transformUserToAppUser(user) : null 
+        }),
+        clearUser: () => set({ user: null })
+      }),
+      {
+        name: 'user-storage'
+      }
+    )
+  );
 };
 
-export const useUserStore = create<UserState>((set) => ({
-  // Default state
-  user: null,
-  initialized: false,
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      // Default state
+      user: null,
+      initialized: false,
 
-  // Actions
-  setUser: (user: User | null) => set({ 
-    user: user ? transformUserToAppUser(user) : null 
-  }),
-  clearUser: () => set({ user: null }),
-  
-  // Initialize from server user
-  initializeUser: (serverUser: User | null) => {
-    const initialState = getInitialState(serverUser);
-    set(initialState);
-  }
-}));
+      // Actions
+      setUser: (user: User | null) => set({ 
+        user: user ? transformUserToAppUser(user) : null 
+      }),
+      clearUser: () => set({ user: null }),
+      
+      // Initialize from server user
+      initializeUser: (serverUser: User | null) => {
+        const initialState = getInitialState(serverUser);
+        set(initialState);
+      }
+    }),
+    {
+      name: 'user-storage'
+    }
+  )
+);

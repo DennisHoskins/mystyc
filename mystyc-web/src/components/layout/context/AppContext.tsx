@@ -33,6 +33,12 @@ export default function AppContext({ children }: AppContextProps) {
         await new Promise(resolve => window.addEventListener('load', resolve));
       }
       
+      const currentUser = storeRef.current?.getState().user;
+      if (currentUser) {
+        setLoading(false);
+        return;
+      }
+      
       try {
         const user = await apiClient.getUser();
         if (!user) {
