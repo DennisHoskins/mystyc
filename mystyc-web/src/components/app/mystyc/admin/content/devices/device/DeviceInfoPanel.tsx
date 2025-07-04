@@ -12,7 +12,7 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import DeviceIcon from '@/components/app/mystyc/admin/ui/icons/DeviceIcon'
 
-export default function DeviceInfoPanel({ deviceId }: { deviceId: string }) {
+export default function DeviceInfoPanel({ deviceId, onLoad }: { deviceId: string, onLoad?: (device: Device) => void; }) {
   const [device, setDevice] = useState<Device | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +24,8 @@ export default function DeviceInfoPanel({ deviceId }: { deviceId: string }) {
 
       const data = await apiClientAdmin.getDevice(deviceId);
       setDevice(data);
+      
+      onLoad?.(data);
     } catch (err) {
       logger.error('Failed to load device:', err);
       setError('Failed to load device. Please try again.');
@@ -82,7 +84,7 @@ export default function DeviceInfoPanel({ deviceId }: { deviceId: string }) {
     <Card className='min-h-22'>
       <div className="flex items-center space-x-4">
         <Avatar size={'medium'} icon={(props) => <DeviceIcon {...props} device={device} />} />
-        <div>
+        <div className='overflow-hidden'>
           <Heading level={5}>{device.deviceName ? device.deviceName.split(" (")[0] : "Unknown Device"}</Heading>
           <Heading level={6}>Device Id: <Link href={`/admin/devices/${device.deviceId}`}>{device.deviceId}</Link></Heading>
         </div>

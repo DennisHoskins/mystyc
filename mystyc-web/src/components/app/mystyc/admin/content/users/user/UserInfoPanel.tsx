@@ -82,7 +82,7 @@ export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string }) 
     <Card className='min-h-22'>
       <div className="flex items-center space-x-4">
         <Avatar size='medium' icon={UserIcon} />
-        <div>
+        <div className='overflow-hidden'>
           <Heading level={5}>{user.fullName || 'Unknown User'}</Heading>
           <Heading level={6}>FirebaseUid: <Link href={`/admin/users/${user.firebaseUid}`}>{user.firebaseUid}</Link></Heading>
         </div>

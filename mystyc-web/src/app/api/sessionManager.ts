@@ -187,8 +187,17 @@ export const sessionManager = {
     }
 
     try {
-      await adminAuth.verifyIdToken(session.authToken, false); // No revocation check
+      await adminAuth.verifyIdToken(session.authToken, false);
       logger.log('[sessionManager] Token validated successfully');
+
+      cookieStore.set(getSessionCookieName(), encryptedSessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 365 * 24 * 60 * 60,
+      });      
+
       return session;
     } catch (error: any) {
       logger.log('[sessionManager] Token validation failed:', error.code);
@@ -264,14 +273,14 @@ export const sessionManager = {
       return null;
     }
 
-    // Get FCM token
-    const fcmKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenFcm`;
-    const fcmToken = await redis.get(fcmKey);
+    // // Get FCM token
+    // const fcmKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenFcm`;
+    // const fcmToken = await redis.get(fcmKey);
+    // const fcmTokenUpdatedAt = await redis.get(`${fcmKey}:date`);
 
     // Get timestamps
     const authTimestamp = await redis.get(`${authKey}:timestamp`);
     const refreshTimestamp = await redis.get(`${refreshKey}:timestamp`);
-    const fcmTimestamp = await redis.get(`${fcmKey}:timestamp`);
 
     // Get session metadata
     const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
@@ -291,10 +300,8 @@ export const sessionManager = {
       uid,
       authToken,
       refreshToken,
-      fcmToken: fcmToken || 'Not Set',
       authTokenTimestamp: authTimestamp ? parseInt(authTimestamp) : 0,
       refreshTokenTimestamp: refreshTimestamp ? parseInt(refreshTimestamp) : 0,
-      fcmTokenTimestamp: fcmTimestamp ? parseInt(fcmTimestamp) : 0,
       email: metadata.email,
       deviceName: metadata.deviceName || 'Unknown Device',
       isAdmin: metadata.isAdmin === 'true',

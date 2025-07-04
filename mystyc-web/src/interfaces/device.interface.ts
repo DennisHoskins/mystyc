@@ -9,4 +9,5 @@ export interface Device {
   userAgent?: string;
   userAgentParsed?: Record<string, any>;
   fcmToken?: string;
+  fcmTokenUpdatedAt?: Date;
 }

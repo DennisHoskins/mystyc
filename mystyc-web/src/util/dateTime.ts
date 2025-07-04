@@ -47,10 +47,14 @@ export function formatTimestampForComponent(timestamp: number): string {
   return formatDateForComponent(date);
 }
   
-export function formatDateForComponent(date: Date): string {
+export function formatDateForComponent(dateValue: string | Date | null | undefined): string {
+  if (!dateValue) return '';
+
+  const parsedDate = parseApiDate(dateValue);
+  if (!parsedDate || isNaN(parsedDate.getTime())) return '';
 
   const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
+  const diffMs = now.getTime() - parsedDate.getTime();
   
   // Calculate time differences
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -71,12 +75,12 @@ export function formatDateForComponent(date: Date): string {
   }
   
   // Format absolute time
-  const timeStr = date.toLocaleTimeString('en-US', { 
+  const timeStr = parsedDate.toLocaleTimeString('en-US', { 
     hour: 'numeric', 
     minute: '2-digit',
     hour12: false 
   });
-  const dateStr = date.toLocaleDateString('en-US', { 
+  const dateStr = parsedDate.toLocaleDateString('en-US', { 
     month: 'long', 
     day: 'numeric', 
     year: 'numeric' 

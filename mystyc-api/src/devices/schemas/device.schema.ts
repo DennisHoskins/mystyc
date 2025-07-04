@@ -19,6 +19,9 @@ export class Device {
   fcmToken: string;
 
   @Prop()
+  fcmTokenUpdatedAt: Date;
+
+  @Prop()
   appVersion: string;
 
   @Prop({ required: true })

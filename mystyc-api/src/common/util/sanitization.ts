@@ -227,6 +227,34 @@ export class SanitizationUtil {
   }
 
   /**
+   * Sanitizes FCM token updated-at value and returns a Date instance.
+   * @param value - Date or ISO-string to sanitize
+   * @param options - Optional configuration
+   */
+  static sanitizeFcmTokenUpdatedAt(
+    value: Date | string,
+    options: { allowEmpty?: boolean; fieldName?: string; firebaseUid?: string } = {}
+  ): Date | null {
+    if (!value) {
+      if (options.allowEmpty) return null;
+      throw new Error(`${options.fieldName || 'fcmTokenUpdatedAt'} is required`);
+    }
+
+    let date: Date;
+    if (typeof value === 'string') {
+      date = new Date(value);
+    } else {
+      date = value;
+    }
+
+    if (isNaN(date.getTime())) {
+      throw new Error(`Invalid date for ${options.fieldName || 'fcmTokenUpdatedAt'}: ${value}`);
+    }
+
+    return date;
+  }
+
+  /**
    * Sanitizes user agent string with lenient approach for special characters
    * User agents contain many legitimate special characters, so uses relaxed detection
    * @param value - User agent string to sanitize

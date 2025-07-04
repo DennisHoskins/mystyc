@@ -54,7 +54,6 @@ export async function POST(request: NextRequest): Promise<Response> {
     firebaseUid: user.firebaseUser.uid,
     deviceId: session.deviceId,
     deviceName: session.deviceName,
-    fcmToken: session.fcmToken
   }
   
   return NextResponse.json(user, { status: 200 });

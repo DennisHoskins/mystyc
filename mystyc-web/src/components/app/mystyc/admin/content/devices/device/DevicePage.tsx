@@ -106,18 +106,18 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       button={
         <Button
           onClick={sendNotification}
-          className='flex justify-center items-center -mt-4 py-[0.8rem] min-w-20 w-auto'
-          disabled={deviceSession.session?.fcmToken == null && deviceSession.device.fcmToken == null}
+          className='flex justify-center items-center -mt-4 py-[0.8rem] min-w-20 sm:min-w-44 w-auto'
+          disabled={deviceSession.device.fcmToken == null}
         >
           <NotificationIcon size={4} className='text-white'/>
-          <span className='hidden lg:inline ml-2'>Send Notification</span>
+          <span className='hidden sm:inline-block ml-2'>Send Notification</span>
         </Button>
       }
       icon={deviceSession && <DeviceIcon size={6} device={deviceSession.device}/>}
       title={deviceSession && deviceSession.device.deviceName ? deviceSession.device.deviceName : `Unknown Device`}
       headerContent={<DeviceDetailsPanel device={deviceSession && deviceSession.device} />}
       sectionsContent={[
-        <Card key='users' className='h-[22rem]'>
+        <Card key='users' className='h-[15rem]'>
           <DeviceUsersPanel deviceId={deviceSession.device.deviceId} />
         </Card>
       ]}

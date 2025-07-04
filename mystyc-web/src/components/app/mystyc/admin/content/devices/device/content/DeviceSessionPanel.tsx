@@ -1,7 +1,7 @@
 'use client';
 
 import { DeviceSession } from '@/interfaces';
-import { formatTimestampForComponent } from '@/util/dateTime';
+import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
@@ -28,7 +28,7 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession: D
             <AdminDetailField
               label="Fcm Token"
               value={deviceSession.device.fcmToken || 'Not set'}
-//              text={formatTimestampForComponent(deviceSession.device.fcmTokenTimestamp)}
+              text={deviceSession.device.fcmToken && deviceSession.device.fcmTokenUpdatedAt ? formatDateForComponent(deviceSession.device.fcmTokenUpdatedAt) : '-'}
             />
           </AdminDetailGroup>
         </div>
@@ -88,8 +88,8 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession: D
           />
           <AdminDetailField
             label="Fcm Token"
-            value={deviceSession.session.fcmToken || 'Not set'}
-            text={formatTimestampForComponent(deviceSession.session.fcmTokenTimestamp)}
+            value={deviceSession.device.fcmToken || 'Not set'}
+            text={deviceSession.device.fcmToken && deviceSession.device.fcmTokenUpdatedAt ? formatDateForComponent(deviceSession.device.fcmTokenUpdatedAt) : '-'}
           />
         </AdminDetailGroup>
       </div>

@@ -5,6 +5,7 @@ import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
 import { DevicesService } from './devices.service';
+import { Device } from '@/common/interfaces/device.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('devices')
@@ -24,7 +25,7 @@ export class DevicesController {
   async updateFcmToken(
     @FirebaseUser() firebaseUser,
     @Body() updateFcmTokenDto: UpdateFcmTokenDto
-  ) {
+  ): Promise<Device> {
     logger.info('Updating FCM token via controller', {
       uid: firebaseUser.uid,
       deviceId: updateFcmTokenDto.deviceId
@@ -41,11 +42,7 @@ export class DevicesController {
         deviceId: device.deviceId
       }, 'DevicesController');
 
-      return {
-        success: true,
-        message: 'FCM token updated successfully',
-        deviceId: device.deviceId
-      };
+      return device;
     } catch (error) {
       logger.error('FCM token update failed via controller', {
         uid: firebaseUser.uid,

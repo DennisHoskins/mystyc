@@ -6,8 +6,6 @@ export interface Session {
   authTokenTimestamp: number;
   refreshToken: string; 
   refreshTokenTimestamp: number;
-  fcmToken: string; 
-  fcmTokenTimestamp: number;
   email: string;
   deviceName: string;
   isAdmin: boolean;

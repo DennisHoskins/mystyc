@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useRef } from 'react';
 
 import { apiClient } from '@/api/apiClient';
 import { useAuth } from '@/hooks/useAuth';

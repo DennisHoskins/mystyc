@@ -20,19 +20,21 @@ export default function MystycMenu() {
   if (!user.isOnboard) {
     return (
       <>
-        {user.isAdmin && (
           <div className='h-full border-b mb-4'>
-            <div className='pb-4 sm:hidden'>
-              <AdminMenu />
-            </div>
-            <div className='pb-4 hidden sm:block'>
-              <MenuItem className='mt-auto pb-0 items-end' onClick={() => router.push('/admin')}>
-                <LayoutDashboard className="inline-block mr-2 h-4 w-4" />
-                Admin Dashboard
-              </MenuItem>
-            </div>
+            {user.isAdmin && (
+              <>
+                <div className='pb-4 block md:hidden'>
+                  <AdminMenu />
+                </div>
+                <div className='pb-4 hidden sm:block'>
+                  <MenuItem className='mt-auto pb-0 items-end' onClick={() => router.push('/admin')}>
+                    <LayoutDashboard className="inline-block mr-2 h-4 w-4" />
+                    Admin Dashboard
+                  </MenuItem>
+                </div>
+              </>
+            )}
           </div>
-        )}
         <div className="flex flex-col">
           <MenuItem className='mt-auto pb-0 items-end' onClick={() => router.push('/logout')}>
             <LogOut className="inline-block mr-2 h-4 w-4" />

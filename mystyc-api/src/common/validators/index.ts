@@ -72,6 +72,35 @@ export class IsValidFCMToken implements ValidatorConstraintInterface {
     return 'FCM token format is invalid';
   }
 }
+@ValidatorConstraint({ name: 'validFcmTokenUpdatedAt', async: false })
+export class IsValidFcmTokenUpdatedAt implements ValidatorConstraintInterface {
+  validate(value: string | Date, args: ValidationArguments): boolean {
+    if (value == null) return true; // optional
+
+    let date: Date;
+    if (value instanceof Date) {
+      date = value;
+    } else if (typeof value === 'string') {
+      date = new Date(value);
+    } else {
+      return false;
+    }
+
+    const now = new Date();
+    const minDate = new Date('1900-01-01');
+
+    if (isNaN(date.getTime())) return false;
+    if (date > now) return false;
+    if (date < minDate) return false;
+
+    return true;
+  }
+
+  defaultMessage(args: ValidationArguments): string {
+    return 'FcmTokenUpdatedAt must be a valid date between January 1, 1900 and now';
+  }
+}
+
 
 @ValidatorConstraint({ name: 'validFirebaseToken', async: false })
 export class IsValidFirebaseToken implements ValidatorConstraintInterface {

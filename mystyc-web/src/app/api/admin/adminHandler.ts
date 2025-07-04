@@ -31,8 +31,11 @@ export async function handleAdmin(
     logger.log('');
     logger.log(`[admin/${finalEndpoint}] ${method} request started`);
 
-    const body = requestBody || await request.json();
-    const { deviceInfo } = body;    
+    const incoming = requestBody !== undefined
+      ? requestBody
+      : await request.json();
+
+    const { deviceInfo, ...forwardBody } = incoming;
 
     // Get current session with error handling
     const headersList = await headers();
@@ -74,8 +77,8 @@ export async function handleAdmin(
           'Content-Type': 'application/json',
           'Authorization': authTokenManager.createAuthHeader(session.authToken),
         },
-        ...(method !== 'GET' && requestBody && {
-          body: JSON.stringify(requestBody)
+          ...(method !== 'GET' && forwardBody && {
+          body: JSON.stringify(forwardBody)
         })
       }
     );

@@ -251,6 +251,7 @@ export class NotificationsService {
    * @returns Promise<string> - Firebase message ID
    */
   async sendNotification(
+    deviceId: string,
     token: string,
     title: string,
     body: string,
@@ -270,11 +271,23 @@ export class NotificationsService {
           title,
           body,
           icon: '/favicon/favicon.ico',
+          badge: '/favicon/favicon.ico'
         }
       }
     };
 
-    return firebaseAdmin.messaging().send(message);
+    try {
+      return await firebaseAdmin.messaging().send(message);
+    } catch (err: any) {
+      logger.error(`[sendNotification] Error sending to ${token}:`, err.code);
+      if (err.code === 'messaging/registration-token-not-registered') {
+        // remove stale token
+        await this.deviceService.removeInvalidFcmToken(deviceId)
+        logger.info(`[sendNotification] Deleted stale FCM token: ${token}`);
+        return;
+      }
+      throw err;
+    }
   }
 
   /**
@@ -309,7 +322,7 @@ export class NotificationsService {
     });
 
     try {
-      const messageId = await this.sendNotification(token, title, body);
+      const messageId = await this.sendNotification(deviceId, token, title, body);
       
       // Update notification as sent
       await this.updateNotificationStatus(notification._id.toString(), 'sent', messageId);
@@ -415,7 +428,7 @@ export class NotificationsService {
     });
 
     try {
-      const messageId = await this.sendNotification(device.fcmToken, title, body);
+      const messageId = await this.sendNotification(device.deviceId, device.fcmToken, title, body);
       
       // Update notification as sent
       await this.updateNotificationStatus(notification._id.toString(), 'sent', messageId);
@@ -465,6 +478,13 @@ export class NotificationsService {
     sentBy: string
   ): Promise<void> {
     const device = await this.deviceService.findByDeviceId(deviceId);
+
+
+console.log("[sendToDevice]");
+console.log("[sendToDevice] deviceId", device.deviceId);
+console.log("[sendToDevice] fcmToken", device.fcmToken);
+console.log("[sendToDevice] updatedAt", device.fcmTokenUpdatedAt);
+console.log("[sendToDevice]");
     
     if (!device) {
       throw new NotFoundException('Device not found');

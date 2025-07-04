@@ -305,6 +305,7 @@ export class DevicesService {
         },
         {
           fcmToken: updateFcmTokenDto.fcmToken,
+          fcmTokenUpdatedAt: new Date(),
           updatedAt: new Date()
         },
         { 
@@ -439,6 +440,7 @@ export class DevicesService {
       userAgent: doc.userAgent,
       userAgentParsed: doc.userAgentParsed,
       fcmToken: doc.fcmToken,
+      fcmTokenUpdatedAt: doc.fcmTokenUpdatedAt,
       appVersion: doc.appVersion,
     };
   }

@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { useAppStore } from '@/store/appStore';
-import { logger } from '@/util/logger';
 
 import { useUser } from '@/components/layout/context/AppContext';
 import { TransitionProvider } from '@/components/layout/context/TransitionContext';
@@ -34,6 +33,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const setOnline = useAppStore((state) => state.setOnline);  
   const isOnline = useAppStore((state) => state.isOnline);
 
+  console.log("");
+  console.log("mystyc: v2025-07-04:3:16");
+  console.log("");
+
   useEffect(() => {
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
@@ -50,10 +53,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       window.removeEventListener('offline', handleOffline);
     };
   }, [setOnline]);  
-
-  useEffect(() => {
-    logger.log('[LAYOUT] pathname', pathname);
-  }, [pathname]);
 
   const FooterContent = isWebsite ? WebsiteFooter : AppFooter;
 

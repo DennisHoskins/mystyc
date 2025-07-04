@@ -1,8 +1,9 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
 import { sessionManager } from '../../../sessionManager';
 import { authTokenManager } from '../../../authTokenManager';
+import { Device } from '@/interfaces/device.interface';
 import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest) {
@@ -34,12 +35,11 @@ export async function POST(request: NextRequest) {
     });
 
     sessionManager.updateSessionFcmToken(session.sessionId, session.deviceId, session.uid, fcmToken);
-    console.log("[updateFcomToken] Updated fcmToken in Redis", session, fcmToken)
+    console.log("[updateFcomToken] Updated fcmToken in Redis", session, fcmToken);
 
-    return new Response(nestResponse.body, { 
-      status: nestResponse.status,
-      headers: nestResponse.headers 
-    });
+    const device: Device = await nestResponse.json();
+    
+    return NextResponse.json(device, { status: nestResponse.status });
   } catch (error) {
     logger.error('[updateFcmToken] Error:', error);
     return new Response('Internal Server Error', { status: 500 });

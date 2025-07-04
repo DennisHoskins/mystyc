@@ -1,7 +1,7 @@
 'use client';
 
-import { Session } from '@/interfaces';
-import { formatTimestampForComponent } from '@/util/dateTime';
+import { Session, Device } from '@/interfaces';
+import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
@@ -10,7 +10,7 @@ import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetai
 import AdminDetailGrid from '@/components/app/mystyc/admin/ui/detail/AdminDetailGrid';
 import TokensIcon from '@/components/app/mystyc/admin/ui/icons/TokensIcon';
 
-export default function DeviceTokensPanel({ session }: { session: Session }) {
+export default function DeviceTokensPanel({ session, device }: { session: Session, device?: Device | null }) {
   return (
     <div className='flex flex-col'>
       <div className="flex items-center space-x-2">
@@ -37,12 +37,12 @@ export default function DeviceTokensPanel({ session }: { session: Session }) {
             />
           </AdminDetailGroup>
           <AdminDetailGroup>
-            <AdminDetailField
-              label="Fcm Token"
-              value={session.fcmToken || 'Not set'}
-              text={formatTimestampForComponent(session.fcmTokenTimestamp)}
-            />
-          </AdminDetailGroup>
+              <AdminDetailField
+                label="FcmToken"
+                value={device && device.fcmToken ? device.fcmToken : ''}
+                text={device && device.fcmToken && device.fcmTokenUpdatedAt ? formatDateForComponent(device.fcmTokenUpdatedAt) : ''}
+              />
+            </AdminDetailGroup>
         </AdminDetailGrid>
       </div>
     </div>

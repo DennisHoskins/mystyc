@@ -21,6 +21,7 @@ import {
   IsValidDeviceId,
   IsValidDeviceName,
   IsValidFCMToken,
+  IsValidFcmTokenUpdatedAt,
   IsValidFirebaseToken,
   IsValidFirebaseUid,
   IsValidPlatform,
@@ -44,6 +45,7 @@ import {
   SanitizeTimezone,
   SanitizeLanguage,
   SanitizeFcmToken,
+  SanitizeFcmTokenUpdatedAt,
   SanitizeUserAgent,
   SanitizeVersion,
   SanitizeFirebaseUid,
@@ -118,6 +120,19 @@ export function ValidateFcmTokenOptional() {
     MaxLength(500, { message: 'FCM token too long' }),
     Validate(IsValidFCMToken),
     SanitizeFcmToken()
+  );
+}
+
+/**
+ * Complete FCM token UpdatedAt validation - optional version
+ */
+export function ValidateFcmTokenUpdatedAtOptional() {
+  return applyDecorators(
+    IsOptional(),
+    IsISO8601({ strict: true }, { message: 'Fcm Update Date must be in YYYY-MM-DD format' }),
+    Validate(IsValidFcmTokenUpdatedAt),
+    SanitizeDateParam('fcmUpdate'),
+    SanitizeFcmTokenUpdatedAt()
   );
 }
 

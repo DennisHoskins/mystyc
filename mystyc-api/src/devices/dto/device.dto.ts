@@ -8,6 +8,7 @@ import {
   ValidateLanguageCode,
   ValidateUserAgent,
   ValidateAppVersion,
+  ValidateFcmTokenUpdatedAtOptional
 } from '@/common/decorators/validation.decorators';
 
 export class DeviceDto {
@@ -22,6 +23,9 @@ export class DeviceDto {
 
   @ValidateFcmTokenOptional()
   fcmToken?: string;
+
+  @ValidateFcmTokenUpdatedAtOptional()
+  fcmTokenUpdatedAt?: Date;
 
   @ValidatePlatform()
   platform: string;

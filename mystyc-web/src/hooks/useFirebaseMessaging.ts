@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { Messaging, getMessaging, getToken, onMessage } from 'firebase/messaging';
 
-import { useUser, useInitialized } from '@/components/layout/context/AppContext';
-import { useAppStore } from '@/store/appStore';
+import { useUser, useInitialized, useSetUser } from '@/components/layout/context/AppContext';
 import { apiClient } from '@/api/apiClient';
 import { logger } from '@/util/logger';
 
@@ -27,37 +26,93 @@ if (typeof window !== 'undefined') {
 }
 export { messaging };
 
+const REFRESH_INTERVAL = 7 * 24 * 60 * 60 * 1000;
+
 export function useFirebaseMessaging() {
 
   const initialized = useInitialized();
   const user = useUser();
-  // const { fcmToken, setFcmToken, lastTokenUpdate } = useAppStore();
-  const { fcmToken, setFcmToken } = useAppStore();
+  const setUser = useSetUser();
+
+  const enableMessaging = async () => {    
+    if (!user || !user.device) {
+      return;
+    }
+
+    if (!messaging) {
+      logger.warn('[useFirebaseMessaging] Firebase Messaging not initialized');
+      return;
+    }
+    try {
+      let permission = Notification.permission;
+      if (permission === 'default') {
+        permission = await Notification.requestPermission();
+      }
+      if (permission !== 'granted') {
+        logger.warn('[useFirebaseMessaging] Notification permission not granted');
+        return;
+      }
+
+      const swPath = '/firebase-sw.js';
+
+      // See if there’s already a registration for that URL
+      const existing = await navigator.serviceWorker.getRegistration(swPath);
+
+      // If not, register once—using module mode so your ES imports work
+      const registration =
+        existing ||
+        (await navigator.serviceWorker.register(swPath));
+
+      logger.log('[useFirebaseMessaging] Service-worker ready:', registration);
+
+      const newToken = await getToken(messaging, {
+        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: registration
+      });
+      logger.log('[useFirebaseMessaging] FCM Token received:', newToken);
+
+      const updatedDevice = await apiClient.updateFcmToken(user.device.deviceId, newToken);
+
+      user.device = updatedDevice;
+      setUser(user);
+
+      logger.log('[useFirebaseMessaging] FCM Token updated on server successfully');
+    } catch (err) {
+      logger.error('[useFirebaseMessaging] Error enabling Firebase Messaging:', err);
+      return;
+    }
+  }
+
+  //
+  // keep fcmToken fresh
+  //
+  useEffect(() => {
+    if (!initialized || !user?.device) return;
+
+    const { fcmToken, fcmTokenUpdatedAt } = user.device;
+    if (!fcmToken ||!fcmTokenUpdatedAt) {
+      return;
+    }
+
+    const last = new Date(fcmTokenUpdatedAt).getTime();
+    if (fcmToken && Date.now() - last < REFRESH_INTERVAL) {
+      logger.log("[useFirebaseMessaging] FCM token still fresh");
+      return;
+    }
+
+    logger.log("[useFirebaseMessaging] FCM token stale, refreshing");
+    enableMessaging();
+  }, [initialized, user]);  
 
   //
   // register fcmToken
   //
   useEffect(() => {
-
-    logger.log("register fcmToken")
-
     if (!initialized || !user || !user.device) {
       return;
     }
 
     if (user.device.fcmToken) {
-      if (fcmToken) {
-        if (user.device.fcmToken === fcmToken) {
-          logger.info("[useFirebaseMessaging] fcmToken loaded from Server", fcmToken);
-        } else {
-          logger.info("[useFirebaseMessaging] fcmToken Mismatch: App is out of sync", fcmToken, user.device.fcmToken);
-        }
-      } else {
-        logger.info("[useFirebaseMessaging] fcmToken Mismatch, App is out of sync", fcmToken, user.device.fcmToken);
-      }
-      return;
-    } else if (fcmToken) {
-      logger.info("[useFirebaseMessaging] fcmToken Mismatch: Redis is out of sync", fcmToken, user.device.fcmToken);
       return;
     }
 
@@ -66,96 +121,8 @@ export function useFirebaseMessaging() {
       return;
     }
 
-    const enableMessaging = async () => {    
-      if (!user || !user.device) {
-        return;
-      }
-
-      if (!messaging) {
-        logger.warn('[useFirebaseMessaging] Firebase Messaging not initialized');
-        return;
-      }
-      try {
-        let permission = Notification.permission;
-        if (permission === 'default') {
-          permission = await Notification.requestPermission();
-        }
-        if (permission !== 'granted') {
-          logger.warn('[useFirebaseMessaging] Notification permission not granted');
-          return;
-        }
-
-        const swPath = '/firebase-sw.js';
-        const existing = await navigator.serviceWorker.getRegistration(swPath);
-        const registration = existing ?? await navigator.serviceWorker.register(swPath);
-        logger.log('[useFirebaseMessaging] Service‑worker ready:', registration);
-
-        const newToken = await getToken(messaging, {
-          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-          serviceWorkerRegistration: registration
-        });
-        logger.log('[useFirebaseMessaging] FCM Token received:', newToken);
-
-        if (newToken && newToken !== fcmToken) {
-          await apiClient.updateFcmToken(user.device.deviceId, newToken);
-          setFcmToken(newToken);
-          logger.log('[useFirebaseMessaging] FCM Token updated on server successfully');
-        }
-      } catch (err) {
-        logger.error('[useFirebaseMessaging] Error enabling Firebase Messaging:', err);
-        return;
-      }
-    }
     enableMessaging();
-  }, [initialized, user, fcmToken, setFcmToken]);
-
-  //
-  // refresh fcmToken
-  //
-  // useEffect(() => {
-  //   if (!initialized) {
-  //     return;
-  //   }
-
-  //   if (!messaging || !fcmToken || !user) return;
-
-  //   const handleTokenRefresh = async () => {
-  //     if (!user || !user.device) {
-  //       return;
-  //     }
-      
-  //     try {
-  //       // Only refresh if token is older than 24 hours
-  //       if (lastTokenUpdate && (Date.now() - lastTokenUpdate < 24 * 60 * 60 * 1000)) {
-  //         return;
-  //       }
-
-  //       if (!messaging) return;
-
-  //       const swPath = '/firebase-sw.js';
-  //       const registration = await navigator.serviceWorker.getRegistration(swPath);
-  //       if (!registration) return;
-
-  //       const newToken = await getToken(messaging, {
-  //         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-  //         serviceWorkerRegistration: registration
-  //       });
-
-  //       if (newToken && newToken !== fcmToken) {
-  //         logger.log('[useFirebaseMessaging] FCM token refreshed:', newToken);
-  //         await apiClient.updateFcmToken(user.device?.deviceId, newToken);
-  //         setFcmToken(newToken);
-  //         logger.log('[useFirebaseMessaging] Refreshed token updated on server successfully');
-  //       }
-  //     } catch (err) {
-  //       logger.error('[useFirebaseMessaging] Token refresh failed:', err);
-  //     }
-  //   };
-
-  //   // Check for token refresh every 24 hours
-  //   const refreshInterval = setInterval(handleTokenRefresh, 24 * 60 * 60 * 1000);
-  //   return () => clearInterval(refreshInterval);
-  // }, [initialized, fcmToken, user, setFcmToken, lastTokenUpdate]);
+  }, [initialized, user, setUser]);
 
   //
   // message received

@@ -107,6 +107,23 @@ export const SanitizeFcmToken = (fieldName: string = 'fcmToken') =>
   });
 
 /**
+ * FCM UpdatedAt token sanitization
+ * Transforms input (string or Date) into a validated Date instance (or leaves null/undefined).
+ */
+export const SanitizeFcmTokenUpdatedAt = (fieldName: string = 'fcmTokenUpdatedAt') =>
+  Transform(({ value, obj }) => {
+    if (value == null) {
+      return value;
+    }
+    // sanitizeFcmTokenUpdatedAt now returns a Date (or throws on invalid)
+    return SanitizationUtil.sanitizeFcmTokenUpdatedAt(value, {
+      fieldName,
+      firebaseUid: obj?.firebaseUid,
+      allowEmpty: true
+    });
+  });
+  
+/**
  * User agent sanitization
  */
 export const SanitizeUserAgent = (fieldName: string = 'userAgent') =>

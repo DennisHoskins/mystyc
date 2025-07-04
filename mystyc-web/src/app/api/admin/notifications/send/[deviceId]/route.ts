@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { handleAdmin } from '../../../adminHandler';
+import { logger } from '@/util/logger';
 
 export async function POST(
   request: NextRequest,
@@ -7,12 +8,14 @@ export async function POST(
 ) {
   const { deviceId } = await params;
   const body = await request.json();
-  const { title, body: messageBody } = body;
+  const { deviceInfo, title, notification } = body;
+
+  logger.log('[sendNotification] deviceInfo', deviceInfo);
   
   return handleAdmin(
     request, 
     { endpoint: `notifications/send/${deviceId}`, method: 'POST' },
     undefined,
-    { title, body: messageBody }
+    { deviceInfo, title, body: notification }
   );
 }

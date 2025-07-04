@@ -12,10 +12,6 @@ export interface AppState {
   toasts: { id: string; message: string; type: 'success' | 'error' | 'info'; timestamp: number }[];
   hasHydrated: boolean;
 
-  // FCM state
-  fcmToken: string | null;
-  lastTokenUpdate: number | null;
-
   // Admin state
   sidebarCollapsed: boolean;
 
@@ -30,10 +26,6 @@ export interface AppState {
   hideToast: (id: string) => void;
   setHasHydrated: (isHydrated: boolean) => void;
   clearAppState: () => void;
-  
-  // FCM actions
-  setFcmToken: (token: string | null) => void;
-  clearFcmToken: () => void;
 
   // Admin actions
   setSidebarCollapsed: (collapsed: boolean) => void;
@@ -49,10 +41,6 @@ const initialState = {
   busyTimer: null,
   toasts: [],
   hasHydrated: false,
-  
-  // FCM initial state
-  fcmToken: null,
-  lastTokenUpdate: null,
 
   // Admin initial state
   sidebarCollapsed: false,
@@ -94,10 +82,6 @@ export const useAppStore = create<AppState>()(
         set(initialState as any);
       },
       setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
-      
-      // FCM actions
-      setFcmToken: (token) => set({ fcmToken: token, lastTokenUpdate: Date.now() }),
-      clearFcmToken: () => set({ fcmToken: null, lastTokenUpdate: null }),
 
       // Admin actions
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),

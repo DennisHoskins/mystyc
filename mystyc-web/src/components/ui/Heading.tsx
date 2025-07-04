@@ -36,7 +36,7 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
       `h${level}`,
       {
         ref,
-        className: clsx(sizeClasses[actualSize!], 'text-gray-900', className),
+        className: clsx(sizeClasses[actualSize!], 'truncate text-gray-900', className),
         ...props,
       }
     );

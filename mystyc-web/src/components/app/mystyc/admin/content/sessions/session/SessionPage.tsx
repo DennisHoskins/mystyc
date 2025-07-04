@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Session } from '@/interfaces';
+import { Session, Device } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -19,6 +19,7 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [session, setSession] = useState<Session | null>(null);
+  const [device, setDevice] = useState<Device | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,9 +81,9 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       headerContent={<SessionDetailsPanel session={session} />}
       sectionsContent={[
         <UserInfoPanel key='user' firebaseUid={session.uid} />,
-        <DeviceInfoPanel key='device' deviceId={session.deviceId} />
+        <DeviceInfoPanel key='device' deviceId={session.deviceId} onLoad={(device) => setDevice(device) } />
       ]}
-      sidebarContent={<SessionTokensPanel session={session} />}
+      sidebarContent={<SessionTokensPanel session={session} device={device} />}
     />
   );    
 }

@@ -328,15 +328,15 @@ class AdminApiClient {
   sendNotification = async (
     deviceId:string,
     title:string,
-    body:string
+    notification:string
   ): Promise<any> => {
-    logger.log('sendNotification called', deviceId, title, body);
+    logger.log('sendNotification called', deviceId, title, notification);
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/send/${deviceId}`, {
         method: 'POST',
         body: JSON.stringify({
           title,
-          body
+          notification
         }),
       });
     } catch (error) {

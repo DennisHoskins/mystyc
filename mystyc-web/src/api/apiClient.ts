@@ -1,4 +1,5 @@
 import { User } from '@/interfaces/user.interface';
+import { Device } from '@/interfaces/device.interface';
 import { logger } from '@/util/logger'
 
 const serverRoot: string = '/api';
@@ -183,19 +184,30 @@ export const apiClient = {
     }
   },
 
-  async updateFcmToken(deviceId: string, fcmToken: string): Promise<void> {
-    const response = await fetch(`${serverRoot}/devices/[${deviceId}]/updateFcmToken`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        deviceInfo: getDeviceInfo(),
-        fcmToken
-      })
-    });
+  async updateFcmToken(deviceId: string, fcmToken: string): Promise<Device> {
+    try {
+      const response = await fetch(`${serverRoot}/devices/[${deviceId}]/updateFcmToken`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          deviceInfo: getDeviceInfo(),
+          fcmToken
+        })
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(errorData.message || 'updateFcmToken failed', response.status, errorData.type);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data?.error === 'InvalidSession') {
+        throw new Error('InvalidSession');
+      }
+      
+      return data;
+    } catch (err) {
+      throw err;
     }
   }
 };
