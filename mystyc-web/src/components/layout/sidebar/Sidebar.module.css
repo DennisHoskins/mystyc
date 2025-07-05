@@ -72,10 +72,3 @@
     width: 280px;
   }
 }
-
-/* Mobile - sidebar is in hamburger menu */
-@media (max-width: 767px) {
-  .sidebar {
-    display: none;
- }
-}

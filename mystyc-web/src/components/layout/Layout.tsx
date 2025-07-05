@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isOnline = useAppStore((state) => state.isOnline);
 
   console.log("");
-  console.log("mystyc: v2025-07-04:3:16");
+  console.log("mystyc: v2025-07-04:12:00");
   console.log("");
 
   useEffect(() => {
