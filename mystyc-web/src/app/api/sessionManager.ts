@@ -378,6 +378,54 @@ export const sessionManager = {
     return await redis.get(`mystyc_device_session::${deviceId}::uid`);
   },  
 
+  async getTotalSessions(): Promise<number> {
+    await ensureConnection();
+    
+    logger.log('[sessionManager] Getting total sessions count');
+    
+    let count = 0;
+    let cursor = '0';
+    
+    do {
+      const result = await redis.scan(cursor, {
+        MATCH: 'mystyc::*::*::*::metadata',
+        COUNT: 1000
+      });
+      
+      cursor = result.cursor;
+      count += result.keys.length;
+      
+    } while (cursor !== '0');
+    
+    logger.log('[sessionManager] Total sessions:', count);
+    return count;
+  },
+
+  async getTotalDevices(): Promise<number> {
+    await ensureConnection();
+    
+    logger.log('[sessionManager] Getting total devices count');
+    
+    let count = 0;
+    let cursor = '0';
+    
+    do {
+      const result = await redis.scan(cursor, {
+        MATCH: 'mystyc_device_session::*',
+        COUNT: 1000
+      });
+      
+      cursor = result.cursor;
+      // Filter out the UID keys since we want to count devices, not individual keys
+      const deviceKeys = result.keys.filter(key => !key.endsWith('::uid'));
+      count += deviceKeys.length;
+      
+    } while (cursor !== '0');
+    
+    logger.log('[sessionManager] Total devices:', count);
+    return count;
+  },
+
   async getSessions(limit: number = 20, offset: number = 0) {
     await ensureConnection();
 

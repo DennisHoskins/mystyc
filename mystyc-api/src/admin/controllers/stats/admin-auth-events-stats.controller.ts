@@ -12,7 +12,7 @@ import {
   AuthenticationPatternsStats,
   SessionDurationStats,
   GeographicDistributionStats
-} from '@/common/interfaces/admin/adminAuthEventsStats.interface';
+} from '@/common/interfaces/admin/adminAuthEventStats.interface';
 import { AdminController } from '../admin.controller';
 import { AuthEventStatsQueryDto } from '../../dto/stats/admin-auth-event-stats-query.dto';
 

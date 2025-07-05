@@ -1,6 +1,6 @@
 import { RegistrationStatsResponse, ProfileCompletionStats, UserActivityStats } from './adminUserStats.interface'
 import { PlatformStatsResponse, FcmTokenStats, DeviceActivityStats, DeviceUserAgentStats } from './adminDeviceStats.interface'
-import { AuthEventSummaryStats, AuthenticationPatternsStats, SessionDurationStats, GeographicDistributionStats } from './adminAuthEventsStats.interface'
+import { AuthEventSummaryStats, AuthenticationPatternsStats, SessionDurationStats, GeographicDistributionStats } from './adminAuthEventStats.interface'
 import { NotificationDeliveryStats, NotificationTypeStats, NotificationEngagementStats, NotificationPatternsStats } from './adminNotificationStats.interface'
 
 export interface AdminStatsResponse {

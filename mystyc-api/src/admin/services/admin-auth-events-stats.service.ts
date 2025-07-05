@@ -10,9 +10,8 @@ import {
   AuthenticationPatternsStats,
   SessionDurationStats,
   GeographicDistributionStats
-} from '@/common/interfaces/admin/adminAuthEventsStats.interface';
+} from '@/common/interfaces/admin/adminAuthEventStats.interface';
 import { AuthEventStatsQueryDto } from '@/admin/dto/stats/admin-auth-event-stats-query.dto';
-import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class AdminAuthEventsStatsService {
