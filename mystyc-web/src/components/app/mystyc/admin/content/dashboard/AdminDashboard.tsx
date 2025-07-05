@@ -13,7 +13,7 @@ export default function AdminDashboard({ data } : { data?: AdminStatsResponse | 
   }
 
   return(
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <AdminDashboardUsers data={data.users} />
       <AdminDashboardDevices data={data.devices} />
       <AdminDashboardAuthentication data={data.authEvents} />
