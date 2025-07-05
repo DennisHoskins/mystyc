@@ -35,7 +35,12 @@ export type AuthEventDocument = AuthEvent & Document;
 
 export const AuthEventSchema = SchemaFactory.createForClass(AuthEvent);
 
-// Additional indexes for queries
+// Basic functional indexes
 AuthEventSchema.index({ firebaseUid: 1, timestamp: -1 });
-AuthEventSchema.index({ deviceId: 1, timestamp: -1 });
+AuthEventSchema.index({ deviceId: 1, timestamp: -1 });  
 AuthEventSchema.index({ type: 1, timestamp: -1 });
+
+// Admin stats performance indexes
+AuthEventSchema.index({ timestamp: -1 }); // All events by time (most important for admin stats)
+AuthEventSchema.index({ ip: 1, timestamp: -1 }); // Geographic distribution
+AuthEventSchema.index({ firebaseUid: 1, deviceId: 1, timestamp: 1 }); // Session duration analysis

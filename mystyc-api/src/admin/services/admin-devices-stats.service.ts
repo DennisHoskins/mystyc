@@ -28,7 +28,7 @@ export class AdminDevicesStatsService {
     
     const pipeline: any[] = [
       {
-        $sort: { updatedAt: -1 } // Get most recent record per deviceId
+        $sort: { updatedAt: -1 }
       },
       {
         $group: {
@@ -82,7 +82,7 @@ export class AdminDevicesStatsService {
     
     const pipeline: any[] = [
       {
-        $sort: { updatedAt: -1 } // Get most recent record per deviceId
+        $sort: { updatedAt: -1 }
       },
       {
         $group: {

@@ -42,3 +42,10 @@ export interface NotificationPatternsStats {
     count: number;
   }>;
 }
+
+export interface NotificationStats {
+  delivery: NotificationDeliveryStats,
+  type: NotificationTypeStats,
+  engagement: NotificationEngagementStats,
+  pattern: NotificationPatternsStats
+}

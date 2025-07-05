@@ -44,8 +44,14 @@ export type DeviceDocument = Device & Document;
 
 export const DeviceSchema = SchemaFactory.createForClass(Device);
 
-// Compound index for firebaseUid + deviceId
+// Basic functional indexes
 DeviceSchema.index({ firebaseUid: 1, deviceId: 1 }, { unique: true });
-
-// Additional index for notification-ready devices
 DeviceSchema.index({ fcmToken: 1 });
+
+// Admin stats performance indexes
+DeviceSchema.index({ deviceId: 1 }); // For notifications lookup (if not already exists)
+DeviceSchema.index({ platform: 1, updatedAt: -1 }); // Platform stats over time
+DeviceSchema.index({ fcmToken: 1, fcmTokenUpdatedAt: -1 }); // FCM token stats  
+DeviceSchema.index({ updatedAt: -1 }); // Recent device activity
+DeviceSchema.index({ 'userAgentParsed.browser.name': 1, updatedAt: -1 }); // Browser stats
+DeviceSchema.index({ 'userAgentParsed.os.name': 1, updatedAt: -1 }); // OS stats

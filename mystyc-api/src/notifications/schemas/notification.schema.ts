@@ -50,8 +50,14 @@ export type NotificationDocument = Notification & Document;
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
 
-// Compound indexes for common queries
+// Basic functional indexes
 NotificationSchema.index({ firebaseUid: 1, createdAt: -1 });
+NotificationSchema.index({ deviceId: 1, createdAt: -1 });
 NotificationSchema.index({ sentBy: 1, createdAt: -1 });
 NotificationSchema.index({ status: 1, createdAt: -1 });
 NotificationSchema.index({ type: 1, source: 1, createdAt: -1 });
+
+// Admin stats performance indexes
+NotificationSchema.index({ createdAt: -1 }); // All notifications by time (most important for admin stats)
+NotificationSchema.index({ type: 1, status: 1, createdAt: -1 }); // Combined type + status analysis
+NotificationSchema.index({ status: 1, sentAt: 1, createdAt: 1 }); // Delivery time calculation

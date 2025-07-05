@@ -33,3 +33,17 @@ export class UserProfile {
 export type UserProfileDocument = UserProfile & Document;
 
 export const UserProfileSchema = SchemaFactory.createForClass(UserProfile);
+
+// Basic functional indexes
+UserProfileSchema.index({ firebaseUid: 1 }, { unique: true });
+UserProfileSchema.index({ email: 1 });
+
+// Admin stats performance indexes
+UserProfileSchema.index({ createdAt: -1 }); // Registration trends
+UserProfileSchema.index({ roles: 1, createdAt: -1 }); // Admin users over time
+UserProfileSchema.index({ updatedAt: -1 }); // Activity tracking
+
+// Profile completion stats indexes
+UserProfileSchema.index({ fullName: 1, createdAt: -1 }); // Users with names
+UserProfileSchema.index({ dateOfBirth: 1, createdAt: -1 }); // Users with birthdays  
+UserProfileSchema.index({ zodiacSign: 1, createdAt: -1 }); // Users with zodiac signs

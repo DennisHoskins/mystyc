@@ -48,3 +48,10 @@ export interface DeviceUserAgentStats {
     percentage: number;
   }>;
 }
+
+export interface DeviceStats{
+  platforms: PlatformStatsResponse,
+  fcmTokens: FcmTokenStats,
+  activity: DeviceActivityStats,
+  userAgents: DeviceUserAgentStats
+}

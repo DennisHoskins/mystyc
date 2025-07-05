@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { authTokenManager } from '../../authTokenManager';
-import { AdminStatsResponse } from '@/interfaces/admin/adminStats.interface';
+import { AdminStatsResponse } from '@/interfaces/admin/adminStatsResponse.interface';
 import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest): Promise<Response> {

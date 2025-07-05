@@ -29,3 +29,9 @@ export interface UserActivityStats {
   };
   inactiveUsers: number;
 }
+
+export interface UserStats {
+  registrations: RegistrationStatsResponse,
+  profiles: ProfileCompletionStats,
+  activity: UserActivityStats,
+}

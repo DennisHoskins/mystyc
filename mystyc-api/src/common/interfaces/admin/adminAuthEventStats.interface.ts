@@ -43,3 +43,10 @@ export interface GeographicDistributionStats {
     percentage: number;
   }>;
 }
+
+export interface AuthEventStats {
+  summary: AuthEventSummaryStats,
+  pattern: AuthenticationPatternsStats,
+  duration: SessionDurationStats,
+  distribution: GeographicDistributionStats
+}
