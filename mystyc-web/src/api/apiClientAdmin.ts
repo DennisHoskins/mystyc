@@ -1,4 +1,4 @@
-import { AdminQuery, Session, SessionDevice, UserProfile, Device, DeviceSession, AuthEvent, Notification } from '@/interfaces';
+import { AdminQuery, AdminStatsQuery, Session, SessionDevice, UserProfile, Device, DeviceSession, AuthEvent, Notification, AdminStatsResponse } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
 
@@ -71,14 +71,37 @@ class AdminApiClient {
     return queryString ? `?${queryString}` : '';
   }
 
+  private buildStatsQueryString(query?: AdminStatsQuery): string {
+    if (!query) return '';
+    
+    // const params = new URLSearchParams();
+    // if (query.limit) params.append('limit', query.limit.toString());
+    // if (query.offset) params.append('offset', query.offset.toString());
+    // if (query.sortBy) params.append('sortBy', query.sortBy);
+    // if (query.sortOrder) params.append('sortOrder', query.sortOrder);
+    
+    // const queryString = params.toString();
+    // return queryString ? `?${queryString}` : '';
 
+    return "";
+  }
 
   // 
-  // todo: dashboard
+  // dashboard
   //
+  getDashboard = async (query?: AdminStatsQuery): Promise<AdminStatsResponse> => {
+    logger.log('geDashboard called', { query });
+    try {
 
-  // get better summary
+      // todo
+      const queryString = this.buildStatsQueryString(query);
 
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats${queryString}`);
+    } catch (error) {
+      logger.error('getDashboard failed:', error);
+      throw error;
+    }
+  };
 
   //
   // Session Management

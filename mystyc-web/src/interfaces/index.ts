@@ -12,5 +12,7 @@ export * from './authEventLoginRegister.interface';
 export * from './authEventLogout.interface';
 export * from './updateFcmToken.interface';
 export * from './notification.interface';
-export * from './adminQuery.interface';
+export * from './admin/adminQuery.interface';
+export * from './admin/adminStats.interface';
+export * from './admin/adminStatsQuery.interface';
 

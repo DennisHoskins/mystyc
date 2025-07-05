@@ -14,7 +14,7 @@ import { AuthEvent } from '@/common/interfaces/authEvent.interface';
 import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/adminQuery.interface';
+import { AdminListResponse } from '@/common/interfaces/admin/adminQuery.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/users')

@@ -3,3 +3,4 @@ export { AdminDevicesController } from './admin-devices.controller';
 export { AdminAuthEventsController } from './admin-auth-events.controller';
 export { AdminNotificationsController } from './admin-notifications.controller';
 export { AdminNotificationsSendController } from './admin-notifications-send.controller';
+export { AdminStatsController } from './stats/admin-stats.controller';

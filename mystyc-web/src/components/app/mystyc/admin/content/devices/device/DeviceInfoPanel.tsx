@@ -32,7 +32,7 @@ export default function DeviceInfoPanel({ deviceId, onLoad }: { deviceId: string
     } finally {
       setLoading(false);
     }
-  }, [deviceId]);
+  }, [deviceId, onLoad]);
 
   useEffect(() => {
     loadDevice();
