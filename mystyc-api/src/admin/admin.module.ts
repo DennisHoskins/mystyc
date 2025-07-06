@@ -8,6 +8,10 @@ import {
   AdminNotificationsController,
   AdminNotificationsSendController,
   AdminStatsController,
+  AdminUsersStatsController,
+  AdminDevicesStatsController,
+  AdminAuthEventsStatsController,
+  AdminNotificationsStatsController,
 } from './controllers';
 import { UsersModule } from '@/users/users.module';
 import { DevicesModule } from '@/devices/devices.module';
@@ -45,6 +49,10 @@ import { NotificationSchema } from '@/notifications/schemas/notification.schema'
     AdminNotificationsController,
     AdminNotificationsSendController,
     AdminStatsController,
+    AdminUsersStatsController,
+    AdminDevicesStatsController,
+    AdminAuthEventsStatsController,
+    AdminNotificationsStatsController,
   ],
   providers: [
     AdminUsersStatsService,

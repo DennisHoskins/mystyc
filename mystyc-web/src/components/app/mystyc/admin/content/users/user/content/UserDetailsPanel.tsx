@@ -15,13 +15,11 @@ export default function UserDetailsPanel({ user }: { user: UserProfile }) {
 
   return (
     <div className='flex flex-col min-h-36'>
-      <hr />
-
-      <Text variant="muted" className='pt-4 mb-2'>
+      <Text variant="muted" className='mb-4'>
         FirebaseUid: <strong>{user && user.firebaseUid}</strong>
       </Text>
 
-      <div className="grid grid-cols-2 gap-6 pt-4">
+      <div className="grid grid-cols-2 gap-6">
         <AdminDetailGroup>
           <AdminDetailField
             label="Contact Information"

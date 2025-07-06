@@ -4,3 +4,7 @@ export { AdminAuthEventsController } from './admin-auth-events.controller';
 export { AdminNotificationsController } from './admin-notifications.controller';
 export { AdminNotificationsSendController } from './admin-notifications-send.controller';
 export { AdminStatsController } from './stats/admin-stats.controller';
+export { AdminUsersStatsController } from './stats/admin-users-stats.controller';
+export { AdminDevicesStatsController } from './stats/admin-devices-stats.controller';
+export { AdminAuthEventsStatsController } from './stats/admin-auth-events-stats.controller';
+export { AdminNotificationsStatsController } from './stats/admin-notifications-stats.controller';

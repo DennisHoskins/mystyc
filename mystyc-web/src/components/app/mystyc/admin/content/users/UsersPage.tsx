@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { UserProfile } from '@/interfaces';
+import { UserStats, UserProfile } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -10,11 +10,13 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import UsersTable from './UsersTable';
 import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon';
+import UsersDashboard from '../dashboard/UsersDashboard';
 
 export default function UsersPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [data, setData] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -46,6 +48,9 @@ export default function UsersPage() {
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
+
+      const data = await apiClientAdmin.getUserStats();
+      setData(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -66,9 +71,28 @@ export default function UsersPage() {
    <AdminListLayout
       breadcrumbs={breadcrumbs}
       icon={UsersIcon}
-      title={`Users`}
       total={totalItems}
       description="Manage user accounts, permissions, and profile information"
+      sideContent={
+        <UsersDashboard 
+          data={data} 
+          charts={['stats']}
+        />
+      }
+      itemContent={[
+        <UsersDashboard 
+          data={data} 
+          charts={['profile']}
+        />,
+        <UsersDashboard 
+          data={data} 
+          charts={['registrations']}
+        />,
+        <UsersDashboard 
+          data={data} 
+          charts={['activity']}
+        />
+      ]}
       tableContent={
         <UsersTable 
           data={users}

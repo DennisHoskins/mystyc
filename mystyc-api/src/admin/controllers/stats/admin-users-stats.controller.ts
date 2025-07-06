@@ -10,12 +10,13 @@ import { UserProfile } from '@/common/interfaces/userProfile.interface';
 import { 
   RegistrationStatsResponse,
   ProfileCompletionStats,
-  UserActivityStats
+  UserActivityStats,
+  UserStats
 } from '@/common/interfaces/admin/adminUserStats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminUserStatsQueryDto } from '../../dto/stats/admin-user-stats-query.dto';
 
-@Controller('admin/users')
+@Controller('admin/stats/users')
 export class AdminUsersStatsController extends AdminController<UserProfile> {
   protected serviceName = 'Users';
 
@@ -24,6 +25,22 @@ export class AdminUsersStatsController extends AdminController<UserProfile> {
     private readonly adminUsersStatsService: AdminUsersStatsService,
   ) {
     super();
+  }
+
+  @Get()
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getStats(@Query() query: AdminUserStatsQueryDto): Promise<UserStats> {
+    const [registrations, profiles, activity] = await Promise.all([
+      this.adminUsersStatsService.getRegistrationStats(query),
+      this.adminUsersStatsService.getProfileCompletionStats(query),
+      this.adminUsersStatsService.getActivityStats(query),
+    ]);
+    return {
+      registrations,
+      profiles,
+      activity
+    }
   }
 
   @Get('stats/registration')

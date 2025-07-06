@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Device } from '@/interfaces';
+import { Device, DeviceStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -11,11 +11,13 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import DevicesTable from './DevicesTable';
 import DevicesIcon from '@/components/app/mystyc/admin/ui/icons/DevicesIcon';
+import DevicesDashboard from '../dashboard/DevicesDashboard';
 
 export default function DevicesPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [devices, setDevices] = useState<Device[]>([]);
+  const [data, setData] = useState<DeviceStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -47,6 +49,9 @@ export default function DevicesPage() {
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
+
+      const data = await apiClientAdmin.getDeviceStats();
+      setData(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -70,6 +75,26 @@ export default function DevicesPage() {
       title={`Devices`}
       total={totalItems}
       description="Monitor and control connected devices, view status device configurations"
+      sideContent={
+        <DevicesDashboard 
+          data={data} 
+          charts={['stats']}
+        />
+      }
+      itemContent={[
+        <DevicesDashboard 
+          data={data} 
+          charts={['activity']}
+        />,
+        <DevicesDashboard 
+          data={data} 
+          charts={['platforms']}
+        />,
+        <DevicesDashboard 
+          data={data} 
+          charts={['browsers']}
+        />
+      ]}
       tableContent={
         <DevicesTable
           data={devices}

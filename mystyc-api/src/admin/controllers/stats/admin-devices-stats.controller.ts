@@ -11,12 +11,13 @@ import {
   PlatformStatsResponse,
   FcmTokenStats,
   DeviceActivityStats,
-  DeviceUserAgentStats  
+  DeviceUserAgentStats,
+  DeviceStats
 } from '@/common/interfaces/admin/adminDeviceStats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminDeviceStatsQueryDto } from '../../dto/stats/admin-device-stats-query.dto';
 
-@Controller('admin/devices')
+@Controller('admin/stats/devices')
 export class AdminDevicesStatsController extends AdminController<Device> {
   protected serviceName = 'Devices';
 
@@ -25,6 +26,24 @@ export class AdminDevicesStatsController extends AdminController<Device> {
     private readonly adminDevicesStatsService: AdminDevicesStatsService,
   ) {
     super();
+  }
+
+  @Get()
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getStats(@Query() query: AdminDeviceStatsQueryDto): Promise<DeviceStats> {
+     const [platforms, fcmTokens, activity, userAgents] = await Promise.all([
+      this.adminDevicesStatsService.getPlatformStats(query),
+      this.adminDevicesStatsService.getFcmTokenStats(query),
+      this.adminDevicesStatsService.getDeviceActivityStats(query),
+      this.adminDevicesStatsService.getUserAgentStats(query),
+    ]);
+    return {
+      platforms,
+      fcmTokens,
+      activity,
+      userAgents
+    }
   }
 
   @Get('stats/platform')

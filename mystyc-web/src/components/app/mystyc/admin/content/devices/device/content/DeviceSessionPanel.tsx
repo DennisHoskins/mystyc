@@ -1,6 +1,8 @@
 'use client';
 
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { DeviceSession } from '@/interfaces';
+import { useBusy, useToast } from '@/components/layout/context/AppContext';
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 
 import Avatar from '@/components/ui/Avatar';
@@ -9,18 +11,52 @@ import Text from '@/components/ui/Text';
 import AdminDetailGroup from '@/components/app/mystyc/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetailField';
 import SessionIcon from '@/components/app/mystyc/admin/ui/icons/SessionIcon';
+import Button from '@/components/ui/Button';
+import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon'
 
 export default function DeviceSessionPanel({ deviceSession }: { deviceSession: DeviceSession }) {
+  const { setBusy } = useBusy();
+  const showToast = useToast();
 
+  const sendNotification = async () => {
+    setBusy(true);
+    try {
+      const results = await apiClientAdmin.sendNotification(
+        deviceSession.device.deviceId,
+        'Message from Mystyc Admin',
+        'You are beautiful'
+      );
+      setBusy(false);
+
+      if (results.success) {
+        showToast('Notification sent', 'success');
+      } else {
+        console.error("Error sending Notification", results);
+        showToast('Error sending Notification', 'error');
+      }
+    } catch(err) {
+      console.error("Error sending Notification", err);
+      showToast('Error sending Notification', 'error');
+    } finally {
+      setBusy(false);
+    }
+  }  
 
   if (!deviceSession.session && deviceSession.device.fcmToken) {
     return (
       <div className='flex flex-col'>
         <div className="flex items-center space-x-2">
           <Avatar size={'small'} icon={SessionIcon} />
-          <div>
-            <Heading level={5}>Session</Heading>
-          </div>
+            <Heading level={5} className='flex-1'>Session</Heading>
+
+            <Button
+              onClick={sendNotification}
+              className='flex justify-center items-center'
+              disabled={deviceSession.device.fcmToken == null}
+            >
+              <NotificationIcon size={4} className='text-white'/>
+              <span className='hidden xl:block ml-2'>Send Notification</span>
+            </Button>
         </div>
 
         <div className="pt-4">
@@ -55,13 +91,6 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession: D
   
   return (
     <div className='flex flex-col'>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={SessionIcon} />
-        <div>
-          <Heading level={5}>Session</Heading>
-        </div>
-      </div>
-
       <div className="pt-4">
         <AdminDetailGroup>
           <AdminDetailField

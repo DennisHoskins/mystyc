@@ -51,7 +51,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
     { label: 'Admin', href: '/admin' },
     { label: 'Users', href: '/admin/users' },
     { 
-      label: user ? `${firebaseUid}` : ``
+      label: user ? `${user.fullName || user.email}` : `${firebaseUid}`
     },
   ], [user, firebaseUid]);
 

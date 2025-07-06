@@ -11,7 +11,7 @@ import { AdminNotificationsStatsService } from '@/admin/services/admin-notificat
 import { AdminStatsQueryDto } from '@/admin/dto/stats/admin-stats-query.dto'; 
 import { AdminStatsResponse } from '@/common/interfaces/admin/adminStats.interface';
 
-@Controller('admin')
+@Controller('admin/stats')
 export class AdminStatsController {
   constructor(
     private readonly adminUsersStatsService: AdminUsersStatsService,
@@ -20,31 +20,31 @@ export class AdminStatsController {
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
   ) {}
 
-  @Get('stats')
+  @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getAdminSummaryStats(@Query() query: AdminStatsQueryDto): Promise<AdminStatsResponse> {
-   const [registrations, profiles, userActivity] = await Promise.all([
+    const [registrations, profiles, userActivity] = await Promise.all([
       this.adminUsersStatsService.getRegistrationStats(query.user),
       this.adminUsersStatsService.getProfileCompletionStats(query.user),
       this.adminUsersStatsService.getActivityStats(query.user),
     ]);
 
-   const [platforms, fcmTokens, deviceActivity, userAgents] = await Promise.all([
+    const [platforms, fcmTokens, deviceActivity, userAgents] = await Promise.all([
       this.adminDevicesStatsService.getPlatformStats(query.device),
       this.adminDevicesStatsService.getFcmTokenStats(query.device),
       this.adminDevicesStatsService.getDeviceActivityStats(query.device),
       this.adminDevicesStatsService.getUserAgentStats(query.device),
     ]);
 
-   const [summary, duration, authEventsPattern, distribution] = await Promise.all([
+    const [summary, duration, authEventsPattern, distribution] = await Promise.all([
       this.adminAuthEventsStatsService.getSummaryStats(query.authEvent),
       this.adminAuthEventsStatsService.getSessionDurationStats(query.authEvent),
       this.adminAuthEventsStatsService.getPatternStats(query.authEvent),
       this.adminAuthEventsStatsService.getGeographicStats(query.authEvent)
     ]);
 
-   const [delivery, notificationType, engagement, notificaitionPattern] = await Promise.all([
+    const [delivery, notificationType, engagement, notificaitionPattern] = await Promise.all([
       this.adminNotificationsStatsService.getDeliveryStats(query.notification),
       this.adminNotificationsStatsService.getTypeStats(query.notification),
       this.adminNotificationsStatsService.getEngagementStats(query.notification),

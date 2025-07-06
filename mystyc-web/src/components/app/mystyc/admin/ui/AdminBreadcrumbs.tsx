@@ -9,8 +9,8 @@ interface AdminBreadcrumbsProps {
 
 export default function AdminBreadcrumbs({ breadcrumbs }: AdminBreadcrumbsProps) {
   return (
-    <Card className='mb-4 w-fit'>
-      <Breadcrumbs items={breadcrumbs} />
-    </Card>
+    <div className='w-fit overflow-hidden'>
+      <Breadcrumbs level={2} items={breadcrumbs} />
+    </div>
   );
 }

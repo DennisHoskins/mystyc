@@ -4,18 +4,20 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { useBusy } from '@/components/layout/context/AppContext';
-import { Session } from '@/interfaces';
+import { Session, SessionStats } from '@/interfaces';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import SessionsTable from './SessionsTable';
 import SessionIcon from '@/components/app/mystyc/admin/ui/icons/SessionIcon';
+import SessionsDashboard from '../dashboard/SessionsDashboard';
 
 export default function SessionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [data, setData] = useState<SessionStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -43,6 +45,9 @@ export default function SessionsPage() {
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalItems(response.pagination.totalItems);
+
+      const data = await apiClientAdmin.getSessionStats();
+      setData(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -66,6 +71,11 @@ export default function SessionsPage() {
       title={`Sessions`}
       total={totalItems}
       description="View active user sessions and devices, monitor login activity, and manage session security settings"
+       sideContent={
+         <SessionsDashboard 
+           data={data} 
+         />
+       }
       tableContent={
         <SessionsTable 
           data={sessions}

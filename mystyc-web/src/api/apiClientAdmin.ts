@@ -1,6 +1,27 @@
-import { AdminQuery, AdminStatsQuery, Session, SessionDevice, UserProfile, Device, DeviceSession, AuthEvent, Notification, AdminStatsResponse } from '@/interfaces';
+import { 
+  AdminQuery, 
+  AdminStatsQuery, 
+  Session, 
+  SessionDevice, 
+  UserProfile, 
+  Device, 
+  DeviceSession, 
+  AuthEvent, 
+  Notification, 
+  AdminStatsResponse, 
+  SessionStats, 
+  UserStats, 
+  DeviceStats, 
+  AuthEventStats, 
+  NotificationStats,
+} from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
+import { AdminSessionStatsQuery } from '@/interfaces/admin/adminSessionStatsQuery.interface';
+import { AdminUserStatsQuery } from '@/interfaces/admin/adminUserStatsQuery.interface';
+import { AdminDeviceStatsQuery } from '@/interfaces/admin/adminDeviceStatsQuery.interface';
+import { AdminAuthEventStatsQuery } from '@/interfaces/admin/adminAuthEventStatsQuery.interface';
+import { AdminNotificationStatsQuery } from '@/interfaces/admin/adminNotificationStatsQuery.interface';
 
 const API_BASE_URL = '/api';
 
@@ -87,7 +108,7 @@ class AdminApiClient {
   }
 
   // 
-  // dashboard
+  // dashboard/stats
   //
   getDashboard = async (query?: AdminStatsQuery): Promise<AdminStatsResponse> => {
     logger.log('geDashboard called', { query });
@@ -99,6 +120,81 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats${queryString}`);
     } catch (error) {
       logger.error('getDashboard failed:', error);
+      throw error;
+    }
+  };
+
+  getSessionStats = async (query?: AdminSessionStatsQuery): Promise<SessionStats> => {
+    logger.log('geSessionStats called', { query });
+    try {
+
+      // todo
+//      const queryString = this.buildStatsQueryString(query);
+      const queryString = '';
+
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/sessions${queryString}`);
+    } catch (error) {
+      logger.error('getSessionStats failed:', error);
+      throw error;
+    }
+  };
+
+  getUserStats = async (query?: AdminUserStatsQuery): Promise<UserStats> => {
+    logger.log('geUserStats called', { query });
+    try {
+
+      // todo
+//      const queryString = this.buildStatsQueryString(query);
+      const queryString = '';
+
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/users${queryString}`);
+    } catch (error) {
+      logger.error('getUserStats failed:', error);
+      throw error;
+    }
+  };
+
+  getDeviceStats = async (query?: AdminDeviceStatsQuery): Promise<DeviceStats> => {
+    logger.log('geDeviceStats called', { query });
+    try {
+
+      // todo
+//      const queryString = this.buildStatsQueryString(query);
+      const queryString = '';
+
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/devices${queryString}`);
+    } catch (error) {
+      logger.error('getDeviceStats failed:', error);
+      throw error;
+    }
+  };
+
+  getAuthenticationStats = async (query?: AdminAuthEventStatsQuery): Promise<AuthEventStats> => {
+    logger.log('geAuthenticationStats called', { query });
+    try {
+
+      // todo
+//      const queryString = this.buildStatsQueryString(query);
+      const queryString = '';
+
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/auth-events${queryString}`);
+    } catch (error) {
+      logger.error('getAuthenticationStats failed:', error);
+      throw error;
+    }
+  };
+
+  getNotificationStats = async (query?: AdminNotificationStatsQuery): Promise<NotificationStats> => {
+    logger.log('geNotificationStats called', { query });
+    try {
+
+      // todo
+//      const queryString = this.buildStatsQueryString(query);
+      const queryString = '';
+
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/notifications${queryString}`);
+    } catch (error) {
+      logger.error('getNotificationStats failed:', error);
       throw error;
     }
   };

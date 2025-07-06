@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { AuthEvent } from '@/interfaces';
+import { AuthEvent, AuthEventStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -11,11 +11,13 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import AuthenticationsTable from './AuthenticationsTable';
 import AuthenticationIcon from '@/components/app/mystyc/admin/ui/icons/AuthenticationIcon';
+import AuthenticationDashboard from '../dashboard/AuthenticationDashboard';
 
 export default function AuthenticationsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
+  const [data, setData] = useState<AuthEventStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -47,6 +49,9 @@ export default function AuthenticationsPage() {
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
+
+      const data = await apiClientAdmin.getAuthenticationStats();
+      setData(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -70,6 +75,26 @@ export default function AuthenticationsPage() {
       title={`Authentication`}
       total={totalItems}
       description="Track user login and logout events, monitor authentication patterns, and review access history"
+      sideContent={
+        <AuthenticationDashboard 
+          data={data} 
+          charts={['stats']}
+        />
+      }
+      itemContent={[
+        <AuthenticationDashboard 
+          data={data} 
+          charts={['events']}
+        />,
+        <AuthenticationDashboard 
+          data={data} 
+          charts={['peak']}
+        />,
+        <AuthenticationDashboard 
+          data={data} 
+          charts={['duration']}
+        />
+      ]}
       tableContent={
         <AuthenticationsTable 
           data={authEvents}

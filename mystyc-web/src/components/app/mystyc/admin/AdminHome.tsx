@@ -14,7 +14,7 @@ import Text from '@/components/ui/Text';
 import DashboardIcon from '@/components/app/mystyc/admin/ui/icons/DashboardIcon'
 import AdminDashboard from './content/dashboard/AdminDashboard';
 import { AdminStatsResponse } from '@/interfaces';
-import AdminDashboardSessions from './content/dashboard/AdminDashboardSessions';
+import SessionsDashboard from './content/dashboard/SessionsDashboard';
 
 export default function AdminHome() {
   const { setBusy } = useBusy();
@@ -52,14 +52,14 @@ export default function AdminHome() {
             <div className='mt-1'>
               <Avatar size={'medium'} icon={<DashboardIcon />} />
             </div>
-            <Heading level={2}>Admin Dashboard</Heading>
+            <Heading level={2}>Admin</Heading>
           </div>
           <hr />
             <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
         </Card>
 
         <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
-          <AdminDashboardSessions data={data?.sessions} />
+          <SessionsDashboard data={data?.sessions} />
         </Card>
       </div>
       <AdminDashboard data={data} />

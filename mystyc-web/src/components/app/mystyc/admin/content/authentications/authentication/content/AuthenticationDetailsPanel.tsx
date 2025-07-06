@@ -9,8 +9,13 @@ import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetai
 export default function AuthenticationDetailsPanel({ authentication}: { authentication: AuthEvent }) {
   return (
     <>
-      <hr />
-      <div className="grid grid-cols-2 gap-6 pt-4">
+      <div className="grid grid-cols-3 gap-6">
+        <AdminDetailGroup>
+          <AdminDetailField
+            label="Type"
+            value={authentication.type}
+          />
+        </AdminDetailGroup>
         <AdminDetailGroup>
           <AdminDetailField
             label="Sent"

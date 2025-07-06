@@ -15,7 +15,6 @@ interface AdminDetailLayoutProps {
   error?: string | null;
   onRetry: () => void;
   breadcrumbs: Breadcrumb[];
-  button?: ReactNode;
   icon: ReactNode;
   title: string;
   headerContent?: ReactNode | null;
@@ -28,7 +27,6 @@ export default function AdminDetailLayout({
   error,
   onRetry,
   breadcrumbs,
-  button,
   icon,
   title,
   headerContent,
@@ -40,7 +38,20 @@ export default function AdminDetailLayout({
   if (error) {
     return (
       <>
-        <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+        <Card className={`order-1 lg:col-span-2 lg:order-none`}>
+          <div className='flex space-x-3 items-center mb-4'>
+            {icon && (
+              <div className='mt-1'>
+                <Avatar size={'medium'} icon={icon} />
+              </div>
+            )}
+            {breadcrumbs ? (
+              <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+            ) : (
+              <Heading level={2}>{title}</Heading>
+            )}
+          </div>
+        </Card>
         <AdminError 
           title={title}
           error={error} 
@@ -52,23 +63,23 @@ export default function AdminDetailLayout({
 
   return (
     <>
-      <div className='flex items-center justify-between w-full'>
-        <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
-        <div className='ml-4'>
-          {button}
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className={`order-1 lg:col-span-2 lg:order-none`}>
-          <div className='flex space-x-3 items-center'>
+          <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
               <div className='mt-1'>
                 <Avatar size={'medium'} icon={icon} />
               </div>
             )}
-            <Heading level={2}>{title}</Heading>
+            {breadcrumbs ? (
+              <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+            ) : (
+              <Heading level={2}>{title}</Heading>
+            )}
           </div>
+
+          <hr />
+
           <div className="space-y-1 mt-4">
             {headerContent}
           </div>

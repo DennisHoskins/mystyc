@@ -6,7 +6,7 @@ import { SessionStats } from '@/interfaces';
 
 import Link from '@/components/ui/Link';
 
-export default function AdminDashboardSessions({ data } : { data?: SessionStats | null }) {
+export default function SessionsDashboard({ data } : { data?: SessionStats | null }) {
   if (!data) {
     return null;
   }
@@ -52,12 +52,12 @@ export default function AdminDashboardSessions({ data } : { data?: SessionStats 
     >
       <div className="flex-1 flex flex-col">
         {/* Health Indicator */}
-        <div className={`flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg ${healthStatus.bgColor} mt-2`}>
+        <div className={`flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg ${healthStatus.bgColor}`}>
           <HeartPulse className={`w-6 h-6 mr-2 ${healthStatus.iconColor}`} />
           
           {/* Large screens and small screens: Full layout */}
           <div className="block md:hidden lg:block">
-            <div className={`text-sm font-medium ${healthStatus.textColor}`}>
+            <div className={`font-medium text-xs ${healthStatus.textColor}`}>
               {healthStatus.status}
             </div>
             <div className="text-xs text-gray-600">
@@ -67,7 +67,7 @@ export default function AdminDashboardSessions({ data } : { data?: SessionStats 
           
           {/* Medium screens only: Compact horizontal layout */}
           <div className="hidden md:block lg:hidden">
-            <div className={`text-sm font-medium ${healthStatus.textColor} flex items-center`}>
+            <div className={`font-medium text-xs ${healthStatus.textColor} flex items-center`}>
               {healthStatus.status}
               {!healthy && (
                 <span className="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">
@@ -81,16 +81,16 @@ export default function AdminDashboardSessions({ data } : { data?: SessionStats 
         {/* Session Details */}
         {/* Large screens and small screens: Two column grid */}
         <div className="mt-3 grid-cols-2 gap-3 text-sm grid md:hidden lg:grid">
-          <div className="bg-gray-50 px-3 py-2 rounded-md">
-            <div className="font-medium text-gray-700 flex justify-center items-center">
+          <div className="bg-gray-50 px-3 py-1 rounded-md">
+            <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
               Sessions:
-              <span className="text-lg font-bold text-blue-600 ml-2">{data.summary.totalSessions}</span>
+              <span className="text-sm font-bold text-blue-600 ml-2">{data.summary.totalSessions}</span>
             </div>              
           </div>
-          <div className="bg-gray-50 px-3 py-2 rounded-md">
-            <div className="font-medium text-gray-700 flex justify-center items-center">
+          <div className="bg-gray-50 px-3 py-1 rounded-md">
+            <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
               Devices:
-              <span className="ml-4 text-lg font-bold text-green-600">{data.summary.totalDevices}</span>
+              <span className="ml-4 text-sm font-bold text-green-600">{data.summary.totalDevices}</span>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function AdminDashboardSessions({ data } : { data?: SessionStats 
         {/* Medium screens only: Single line format */}
         <div className="mt-3 hidden md:block lg:hidden">
           <div className="bg-gray-50 px-3 py-2 rounded-md text-center">
-            <div className="font-medium text-gray-700">
+            <div className="font-medium text-xs text-gray-700">
               Sessions: <span className="text-blue-600 font-bold">{data.summary.totalSessions}</span> / <span className="text-green-600 font-bold">{data.summary.totalDevices}</span>
             </div>
           </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Notification } from '@/interfaces';
+import { Notification, NotificationStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -11,11 +11,13 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import NotificationsTable from './NotificationsTable';
 import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
+import NotificationsDashboard from '../dashboard/NotificationsDashboard';
 
 export default function NotificationsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [data, setData] = useState<NotificationStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -47,6 +49,9 @@ export default function NotificationsPage() {
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
+
+      const data = await apiClientAdmin.getNotificationStats();
+      setData(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -70,6 +75,26 @@ export default function NotificationsPage() {
       title={`Notifications`}
       total={totalItems}
       description="View sent push notifications, message history, and delivery status for user communications"
+      sideContent={
+        <NotificationsDashboard 
+          data={data} 
+          charts={['stats']}
+        />
+      }
+      itemContent={[
+        <NotificationsDashboard 
+          data={data} 
+          charts={['volume']}
+        />,
+        <NotificationsDashboard 
+          data={data} 
+          charts={['platforms']}
+        />,
+        <NotificationsDashboard 
+          data={data} 
+          charts={['delivery']}
+        />
+      ]}
       tableContent={
         <NotificationsTable 
           data={notifications}

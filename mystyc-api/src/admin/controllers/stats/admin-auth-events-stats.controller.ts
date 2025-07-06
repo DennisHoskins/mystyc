@@ -11,12 +11,13 @@ import {
   AuthEventSummaryStats,
   AuthenticationPatternsStats,
   SessionDurationStats,
-  GeographicDistributionStats
+  GeographicDistributionStats,
+  AuthEventStats
 } from '@/common/interfaces/admin/adminAuthEventStats.interface';
 import { AdminController } from '../admin.controller';
 import { AuthEventStatsQueryDto } from '../../dto/stats/admin-auth-event-stats-query.dto';
 
-@Controller('admin/auth-events')
+@Controller('admin/stats/auth-events')
 export class AdminAuthEventsStatsController extends AdminController<AuthEvent> {
   protected serviceName = 'AuthEvents';
 
@@ -25,6 +26,24 @@ export class AdminAuthEventsStatsController extends AdminController<AuthEvent> {
     private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
   ) {
     super();
+  }
+
+  @Get()
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getStats(@Query() query: AuthEventStatsQueryDto): Promise<AuthEventStats> {
+    const [summary, duration, pattern, distribution] = await Promise.all([
+      this.adminAuthEventsStatsService.getSummaryStats(query),
+      this.adminAuthEventsStatsService.getSessionDurationStats(query),
+      this.adminAuthEventsStatsService.getPatternStats(query),
+      this.adminAuthEventsStatsService.getGeographicStats(query)
+    ]);
+    return {
+      summary,
+      duration,
+      pattern,
+      distribution
+    }
   }
 
   @Get('stats/summary')

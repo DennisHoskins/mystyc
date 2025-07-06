@@ -11,12 +11,13 @@ import {
   NotificationDeliveryStats,
   NotificationTypeStats,
   NotificationEngagementStats,
-  NotificationPatternsStats
+  NotificationPatternsStats,
+  NotificationStats
 } from '@/common/interfaces/admin/adminNotificationStats.interface';
 import { AdminController } from '../admin.controller';
 import { NotificationStatsQueryDto } from '../../dto/stats/admin-notification-stats-query.dto';
 
-@Controller('admin/notifications')
+@Controller('admin/stats/notifications')
 export class AdminNotificationsStatsController extends AdminController<Notification> {
   protected serviceName = 'Notifications';
 
@@ -25,6 +26,24 @@ export class AdminNotificationsStatsController extends AdminController<Notificat
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
   ) {
     super();
+  }
+
+  @Get()
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationStats> {
+    const [delivery, notificationType, engagement, pattern] = await Promise.all([
+      this.adminNotificationsStatsService.getDeliveryStats(query),
+      this.adminNotificationsStatsService.getTypeStats(query),
+      this.adminNotificationsStatsService.getEngagementStats(query),
+      this.adminNotificationsStatsService.getPatternStats(query),
+    ]);
+    return {
+      delivery,
+      type: notificationType,
+      engagement,
+      pattern
+    }
   }
 
   @Get('stats/delivery')

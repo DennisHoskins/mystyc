@@ -9,9 +9,13 @@ import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetai
 export default function NotificationDetailsPanel({ notification}: { notification: Notification }) {
   return (
     <>
-      <hr />
-
-      <div className="grid grid-cols-2 gap-6 pt-4">
+      <div className="grid grid-cols-3 gap-6">
+        <AdminDetailGroup>
+          <AdminDetailField
+            label="type"
+            value={notification.type}
+          />
+        </AdminDetailGroup>
         <AdminDetailGroup>
           <AdminDetailField
             label="Created"

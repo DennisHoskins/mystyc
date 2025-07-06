@@ -55,6 +55,10 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
     },
   ], [session, sessionId]);
 
+  const handleDeviceLoad = useCallback((device: Device) => {
+    setDevice(device);
+  }, []);
+
   if (loading) {
     return null;
   }
@@ -81,7 +85,7 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       headerContent={<SessionDetailsPanel session={session} />}
       sectionsContent={[
         <UserInfoPanel key='user' firebaseUid={session.uid} />,
-        <DeviceInfoPanel key='device' deviceId={session.deviceId} onLoad={(device) => setDevice(device) } />
+        <DeviceInfoPanel key='device' deviceId={session.deviceId} onLoad={handleDeviceLoad} />
       ]}
       sidebarContent={<SessionTokensPanel session={session} device={device} />}
     />
