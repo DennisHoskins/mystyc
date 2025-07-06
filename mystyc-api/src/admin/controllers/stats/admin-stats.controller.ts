@@ -8,6 +8,7 @@ import { AdminUsersStatsService } from '@/admin/services/admin-users-stats.servi
 import { AdminDevicesStatsService } from '@/admin/services/admin-devices-stats.service';
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from '@/admin/services/admin-notifications-stats.service';
+import { AdminDailyContentStatsService } from '@/admin/services/admin-daily-content-stats.service';
 import { AdminStatsQueryDto } from '@/admin/dto/stats/admin-stats-query.dto'; 
 import { AdminStatsResponse } from '@/common/interfaces/admin/adminStats.interface';
 
@@ -18,6 +19,7 @@ export class AdminStatsController {
     private readonly adminDevicesStatsService: AdminDevicesStatsService,
     private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
+    private readonly adminDailyContentStatsService: AdminDailyContentStatsService,
   ) {}
 
   @Get()
@@ -37,7 +39,7 @@ export class AdminStatsController {
       this.adminDevicesStatsService.getUserAgentStats(query.device),
     ]);
 
-    const [summary, duration, authEventsPattern, distribution] = await Promise.all([
+    const [authSummary, duration, authEventsPattern, distribution] = await Promise.all([
       this.adminAuthEventsStatsService.getSummaryStats(query.authEvent),
       this.adminAuthEventsStatsService.getSessionDurationStats(query.authEvent),
       this.adminAuthEventsStatsService.getPatternStats(query.authEvent),
@@ -49,6 +51,10 @@ export class AdminStatsController {
       this.adminNotificationsStatsService.getTypeStats(query.notification),
       this.adminNotificationsStatsService.getEngagementStats(query.notification),
       this.adminNotificationsStatsService.getPatternStats(query.notification),
+    ]);
+
+    const [dailyContentSummary] = await Promise.all([
+      this.adminDailyContentStatsService.getSummaryStats(query.dailyContent),
     ]);
 
     return {
@@ -64,7 +70,7 @@ export class AdminStatsController {
         userAgents
       },
       authEvents: {
-        summary,
+        summary: authSummary,
         duration,
         pattern: authEventsPattern,
         distribution
@@ -74,6 +80,9 @@ export class AdminStatsController {
         type: notificationType,
         engagement,
         pattern: notificaitionPattern
+      },
+      dailyContent: {
+        summary: dailyContentSummary
       }
     };
   }

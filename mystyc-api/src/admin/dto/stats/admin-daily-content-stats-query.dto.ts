@@ -1,11 +1,7 @@
 import { IsOptional, IsIn, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class AuthEventStatsQueryDto {
-  @IsOptional()
-  @IsIn(['daily', 'weekly', 'monthly'])
-  period?: 'daily' | 'weekly' | 'monthly' = 'daily';
-
+export class DailyContentStatsQueryDto {
   @IsOptional()
   @Type(() => Number)
   @Min(1)
