@@ -22,7 +22,6 @@ export default function DevicesPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -48,7 +47,6 @@ export default function DevicesPage() {
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
-      setTotalItems(response.pagination.totalItems);
 
       const data = await apiClientAdmin.getDeviceStats();
       setData(data);
@@ -73,7 +71,6 @@ export default function DevicesPage() {
       breadcrumbs={breadcrumbs}
       icon={DevicesIcon}
       title={`Devices`}
-      total={totalItems}
       description="Monitor and control connected devices, view status device configurations"
       sideContent={
         <DevicesDashboard 
@@ -83,17 +80,20 @@ export default function DevicesPage() {
       }
       itemContent={[
         <DevicesDashboard 
+          key={'activity'}
           data={data} 
           charts={['activity']}
         />,
         <DevicesDashboard 
+          key={'browsers'}
+          data={data} 
+          charts={['browsers']}
+        />,
+        <DevicesDashboard 
+          key={'platforms'}
           data={data} 
           charts={['platforms']}
         />,
-        <DevicesDashboard 
-          data={data} 
-          charts={['browsers']}
-        />
       ]}
       tableContent={
         <DevicesTable

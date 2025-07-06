@@ -5,7 +5,7 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
-export default function WebsiteHero() {
+export default function Hero() {
  const router = useTransitionRouter();
 
  return (

@@ -1,5 +1,6 @@
 import { User } from '@/interfaces/user.interface';
 import { Device } from '@/interfaces/device.interface';
+import { DailyContent } from '@/interfaces/dailyContent.interface';
 import { logger } from '@/util/logger'
 
 const serverRoot: string = '/api';
@@ -73,6 +74,24 @@ class ApiError extends Error {
 }
 
 export const apiClient = {
+  async getDailyContent(): Promise<DailyContent> {
+    const response = await fetch(`${serverRoot}/daily-content`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        deviceInfo: getDeviceInfo(),
+        clientTimestamp: new Date().toISOString() 
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'getDailyContent failed', response.status, errorData.type);
+    }
+
+    return response.json();
+  },
+
   async register(email: string, password: string): Promise<User> {
     const response = await fetch(`${serverRoot}/auth/register`, {
       method: 'POST',
@@ -162,7 +181,7 @@ export const apiClient = {
 
   async getUser(): Promise<User | null> {
     try {
-      const response = await fetch(`${serverRoot}/users`, {
+      const response = await fetch(`${serverRoot}/mystyc/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ deviceInfo: getDeviceInfo() })
@@ -186,7 +205,7 @@ export const apiClient = {
 
   async updateFcmToken(deviceId: string, fcmToken: string): Promise<Device> {
     try {
-      const response = await fetch(`${serverRoot}/devices/[${deviceId}]/updateFcmToken`, {
+      const response = await fetch(`${serverRoot}/mystyc/devices/[${deviceId}]/updateFcmToken`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

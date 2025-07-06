@@ -8,12 +8,14 @@ import {
   DeviceSession, 
   AuthEvent, 
   Notification, 
+  DailyContent, 
   AdminStatsResponse, 
   SessionStats, 
   UserStats, 
   DeviceStats, 
   AuthEventStats, 
   NotificationStats,
+  DailyContentStats,
 } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
@@ -22,6 +24,7 @@ import { AdminUserStatsQuery } from '@/interfaces/admin/adminUserStatsQuery.inte
 import { AdminDeviceStatsQuery } from '@/interfaces/admin/adminDeviceStatsQuery.interface';
 import { AdminAuthEventStatsQuery } from '@/interfaces/admin/adminAuthEventStatsQuery.interface';
 import { AdminNotificationStatsQuery } from '@/interfaces/admin/adminNotificationStatsQuery.interface';
+import { AdminDailyContentStatsQuery } from '@/interfaces/admin/adminDailyContentStatsQuery.interface';
 
 const API_BASE_URL = '/api';
 
@@ -117,7 +120,7 @@ class AdminApiClient {
       // todo
       const queryString = this.buildStatsQueryString(query);
 
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats${queryString}`);
     } catch (error) {
       logger.error('getDashboard failed:', error);
       throw error;
@@ -132,9 +135,24 @@ class AdminApiClient {
 //      const queryString = this.buildStatsQueryString(query);
       const queryString = '';
 
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/sessions${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/sessions${queryString}`);
     } catch (error) {
       logger.error('getSessionStats failed:', error);
+      throw error;
+    }
+  };
+
+  getDailyContentStats = async (query?: AdminDailyContentStatsQuery): Promise<DailyContentStats> => {
+    logger.log('geDailyContentStats called', { query });
+    try {
+
+      // todo
+//      const queryString = this.buildStatsQueryString(query);
+      const queryString = '';
+
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/daily-content${queryString}`);
+    } catch (error) {
+      logger.error('getDailyContentStats failed:', error);
       throw error;
     }
   };
@@ -147,7 +165,7 @@ class AdminApiClient {
 //      const queryString = this.buildStatsQueryString(query);
       const queryString = '';
 
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/users${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/users${queryString}`);
     } catch (error) {
       logger.error('getUserStats failed:', error);
       throw error;
@@ -162,7 +180,7 @@ class AdminApiClient {
 //      const queryString = this.buildStatsQueryString(query);
       const queryString = '';
 
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/devices${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/devices${queryString}`);
     } catch (error) {
       logger.error('getDeviceStats failed:', error);
       throw error;
@@ -177,7 +195,7 @@ class AdminApiClient {
 //      const queryString = this.buildStatsQueryString(query);
       const queryString = '';
 
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/auth-events${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/auth-events${queryString}`);
     } catch (error) {
       logger.error('getAuthenticationStats failed:', error);
       throw error;
@@ -192,7 +210,7 @@ class AdminApiClient {
 //      const queryString = this.buildStatsQueryString(query);
       const queryString = '';
 
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/notifications${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/notifications${queryString}`);
     } catch (error) {
       logger.error('getNotificationStats failed:', error);
       throw error;
@@ -206,7 +224,7 @@ class AdminApiClient {
     logger.log('getSessions called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions${queryString}`);
     } catch (error) {
       logger.error('getSessions failed:', error);
       throw error;
@@ -216,7 +234,7 @@ class AdminApiClient {
   getSession = async (sessionId: string): Promise<Session> => {
     logger.log('getSession called', { sessionId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/${sessionId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions/${sessionId}`);
     } catch (error) {
       logger.error('getSession failed:', error);
       throw error;
@@ -227,7 +245,7 @@ class AdminApiClient {
     logger.log('getSessionsDevices called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devices${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions/devices${queryString}`);
     } catch (error) {
       logger.error('getSessionsDevices failed:', error);
       throw error;
@@ -237,9 +255,34 @@ class AdminApiClient {
   getSessionDevice = async (deviceId: string): Promise<Session> => {
     logger.log('getSession called', { deviceId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devces/${deviceId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions/devces/${deviceId}`);
     } catch (error) {
       logger.error('getSession failed:', error);
+      throw error;
+    }
+  };
+
+
+  //
+  // Daily Content Management
+  //
+  getDailyContents = async (query?: AdminQuery): Promise<PaginatedResponse<DailyContent>> => {
+    logger.log('getDailyContents called', { query });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/daily-content${queryString}`);
+    } catch (error) {
+      logger.error('getDailyContents failed:', error);
+      throw error;
+    }
+  };
+
+  getDailyContent = async (firebaseUid: string): Promise<DailyContent> => {
+    logger.log('getDailyContent called', { firebaseUid });
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/daily-content/${firebaseUid}`);
+    } catch (error) {
+      logger.error('getDailyContent failed:', error);
       throw error;
     }
   };
@@ -253,7 +296,7 @@ class AdminApiClient {
   }> => {
     logger.log('getUserSummary called', { firebaseUid });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/summary`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/summary`);
     } catch (error) {
       logger.error('getUserSummary failed:', error);
       throw error;
@@ -264,7 +307,7 @@ class AdminApiClient {
     logger.log('getUsers called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users${queryString}`);
     } catch (error) {
       logger.error('getUsers failed:', error);
       throw error;
@@ -274,7 +317,7 @@ class AdminApiClient {
   getUser = async (firebaseUid: string): Promise<UserProfile> => {
     logger.log('getUser called', { firebaseUid });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}`);
     } catch (error) {
       logger.error('getUser failed:', error);
       throw error;
@@ -285,7 +328,7 @@ class AdminApiClient {
     logger.log('getUserDevices called', { firebaseUid, query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/devices${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/devices${queryString}`);
     } catch (error) {
       logger.error('getUserDevices failed:', error);
       throw error;
@@ -296,7 +339,7 @@ class AdminApiClient {
     logger.log('getUserAuthEvents called', { firebaseUid });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/auth-events${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/auth-events${queryString}`);
     } catch (error) {
       logger.error('getUserAuthEvents failed:', error);
       throw error;
@@ -307,7 +350,7 @@ class AdminApiClient {
     logger.log('getUserNotifications called', { firebaseUid });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/notifications${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/notifications${queryString}`);
     } catch (error) {
       logger.error('getUserNotifications failed:', error);
       throw error;
@@ -323,7 +366,7 @@ class AdminApiClient {
   }> => {
     logger.log('getDeviceSummary called', { deviceId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/summary`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/summary`);
     } catch (error) {
       logger.error('getDeviceSummary failed:', error);
       throw error;
@@ -334,7 +377,7 @@ class AdminApiClient {
     logger.log('getDevices called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices${queryString}`);
     } catch (error) {
       logger.error('getDevices failed:', error);
       throw error;
@@ -344,7 +387,7 @@ class AdminApiClient {
   getDeviceSession = async (deviceId: string): Promise<DeviceSession> => {
     logger.log('getDeviceSession called', { deviceId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/session`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/session`);
     } catch (error) {
       logger.error('getDeviceSession failed:', error);
       throw error;
@@ -354,7 +397,7 @@ class AdminApiClient {
   getDevice = async (deviceId: string): Promise<Device> => {
     logger.log('getDevice called', { deviceId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}`);
     } catch (error) {
       logger.error('getDevice failed:', error);
       throw error;
@@ -365,7 +408,7 @@ class AdminApiClient {
     logger.log('getDeviceUsers called', { deviceId });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/users${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/users${queryString}`);
     } catch (error) {
       logger.error('getDeviceUsers failed:', error);
       throw error;
@@ -376,7 +419,7 @@ class AdminApiClient {
     logger.log('getDeviceAuthEvents called', { deviceId });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/auth-events${queryString}`
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/auth-events${queryString}`
       );
     } catch (error) {
       logger.error('getDeviceAuthEvents failed:', error);
@@ -388,7 +431,7 @@ class AdminApiClient {
     logger.log('getDeviceNotifications called', { deviceId });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/notifications${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/notifications${queryString}`);
     } catch (error) {
       logger.error('getUserNotifications failed:', error);
       throw error;
@@ -402,7 +445,7 @@ class AdminApiClient {
     logger.log('getAuthEvents called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/auth-events${queryString}`);
     } catch (error) {
       logger.error('getAuthEvents failed:', error);
       throw error;
@@ -412,7 +455,7 @@ class AdminApiClient {
   getAuthEvent = async (eventId: string): Promise<AuthEvent> => {
     logger.log('getAuthEvent called', { eventId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events/${eventId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/auth-events/${eventId}`);
     } catch (error) {
       logger.error('getAuthEvent failed:', error);
       throw error;
@@ -426,7 +469,7 @@ class AdminApiClient {
     logger.log('getNotifications called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/notifications${queryString}`);
       return response;
     } catch (error) {
       logger.error('getNotifications failed:', error);
@@ -437,7 +480,7 @@ class AdminApiClient {
   getNotification = async (notificationId: string): Promise<Notification> => {
     logger.log('getNotification called', { notificationId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/${notificationId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/notifications/${notificationId}`);
     } catch (error) {
       logger.error('getNotification failed:', error);
       throw error;
@@ -451,7 +494,7 @@ class AdminApiClient {
   ): Promise<any> => {
     logger.log('sendNotification called', deviceId, title, notification);
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/send/${deviceId}`, {
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/notifications/send/${deviceId}`, {
         method: 'POST',
         body: JSON.stringify({
           title,

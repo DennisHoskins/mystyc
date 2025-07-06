@@ -8,7 +8,7 @@ import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetai
 
 export default function AuthenticationDetailsPanel({ authentication}: { authentication: AuthEvent }) {
   return (
-    <>
+    <div className='min-h-10'>
       <div className="grid grid-cols-3 gap-6">
         <AdminDetailGroup>
           <AdminDetailField
@@ -29,6 +29,6 @@ export default function AuthenticationDetailsPanel({ authentication}: { authenti
           />
         </AdminDetailGroup>
      </div>
-    </>
+    </div>
   );
 }

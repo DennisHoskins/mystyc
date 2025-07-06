@@ -3,6 +3,10 @@ import { Type } from 'class-transformer';
 
 export class AdminDeviceStatsQueryDto {
   @IsOptional()
+  @IsIn(['daily', 'weekly', 'monthly'])
+  period?: 'daily' | 'weekly' | 'monthly' = 'daily';
+  @IsOptional()
+  
   @Type(() => Number)
   @Min(1)
   @Max(365)

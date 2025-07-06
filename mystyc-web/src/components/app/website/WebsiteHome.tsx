@@ -1,21 +1,21 @@
 'use client';
 
 import Section from "@/components/ui/Section";
-import WebsiteHero from "@/components/app/website/content/hero";
-import WebsiteFeatures from "@/components/app/website/content/features";
-import WebsitePricing from "@/components/app/website/content/pricing";
+import Hero from "@/components/app/website/content/Hero";
+import Features from "@/components/app/website/content/Features";
+import DailyContent from "@/components/app/website/content/DailyContent";
 
 export default function Home() {
   return (
     <>
       <Section background="blue">
-        <WebsiteHero />
+        <Hero />
       </Section>
       <Section background="white">
-        <WebsiteFeatures />
+        <Features />
       </Section>
       <Section background="gray">
-        <WebsitePricing />
+        <DailyContent />
       </Section>
     </>
   );

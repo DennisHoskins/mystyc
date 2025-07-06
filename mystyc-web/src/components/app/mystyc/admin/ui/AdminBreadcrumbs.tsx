@@ -1,6 +1,5 @@
 'use client';
 
-import Card from '@/components/ui/Card';
 import Breadcrumbs, { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
 
 interface AdminBreadcrumbsProps {

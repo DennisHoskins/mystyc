@@ -1,4 +1,6 @@
 export interface AdminSessionStatsQuery {
+  period?: 'daily' | 'weekly' | 'monthly';
+
   limit?: number;
 
   maxRecords?: number;

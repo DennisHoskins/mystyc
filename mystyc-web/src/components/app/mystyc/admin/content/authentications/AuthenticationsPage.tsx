@@ -22,7 +22,6 @@ export default function AuthenticationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -48,7 +47,6 @@ export default function AuthenticationsPage() {
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
-      setTotalItems(response.pagination.totalItems);
 
       const data = await apiClientAdmin.getAuthenticationStats();
       setData(data);
@@ -73,7 +71,6 @@ export default function AuthenticationsPage() {
       breadcrumbs={breadcrumbs}
       icon={AuthenticationIcon}
       title={`Authentication`}
-      total={totalItems}
       description="Track user login and logout events, monitor authentication patterns, and review access history"
       sideContent={
         <AuthenticationDashboard 
@@ -82,18 +79,21 @@ export default function AuthenticationsPage() {
         />
       }
       itemContent={[
-        <AuthenticationDashboard 
-          data={data} 
-          charts={['events']}
-        />,
-        <AuthenticationDashboard 
+        <AuthenticationDashboard
+          key={'peak'}  
           data={data} 
           charts={['peak']}
         />,
         <AuthenticationDashboard 
+          key={'duration'}  
           data={data} 
           charts={['duration']}
-        />
+        />,
+        <AuthenticationDashboard 
+          key={'events'}  
+          data={data} 
+          charts={['events']}
+        />,
       ]}
       tableContent={
         <AuthenticationsTable 

@@ -1,4 +1,6 @@
 export interface AdminDeviceStatsQuery {
+  period?: 'daily' | 'weekly' | 'monthly';
+
   limit?: number;
 
   maxRecords?: number;

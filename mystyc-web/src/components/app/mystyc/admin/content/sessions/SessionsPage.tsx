@@ -22,7 +22,6 @@ export default function SessionsPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [totalItems, setTotalItems] = useState(0);
   const LIMIT = 20;
 
   const breadcrumbs = [
@@ -44,7 +43,6 @@ export default function SessionsPage() {
       setSessions(response.data);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
-      setTotalItems(response.pagination.totalItems);
 
       const data = await apiClientAdmin.getSessionStats();
       setData(data);
@@ -69,7 +67,6 @@ export default function SessionsPage() {
       breadcrumbs={breadcrumbs}
       icon={SessionIcon}
       title={`Sessions`}
-      total={totalItems}
       description="View active user sessions and devices, monitor login activity, and manage session security settings"
        sideContent={
          <SessionsDashboard 

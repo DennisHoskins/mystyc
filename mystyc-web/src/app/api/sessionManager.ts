@@ -1,4 +1,4 @@
-import { createClient } from 'redis';
+import redis from './redisClient';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
@@ -27,7 +27,7 @@ const firebaseAdminApp = getApps().find(app => app.name === 'firebase-admin-app'
     })
   }, 'firebase-admin-app');
   
-  const adminAuth = getAuth(firebaseAdminApp!);
+const adminAuth = getAuth(firebaseAdminApp!);
 
 // custom error for any tampered / out-of-sync session
 export class InvalidSessionError extends Error {
@@ -36,21 +36,6 @@ export class InvalidSessionError extends Error {
     this.name = 'InvalidSessionError';
   }
 }
-
-// Create Redis client
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
-
-// Connect to Redis (only connect once)
-let isConnected = false;
-async function ensureConnection() {
-  if (!isConnected && !redis.isOpen) {
-    await redis.connect();
-    isConnected = true;
-    logger.log('[sessionManager] Redis connected');
-  }
-} 
 
 export const sessionManager = {
 
@@ -63,8 +48,6 @@ export const sessionManager = {
     deviceName: string,
     isAdmin: boolean = false    
   ): Promise<string> {
-    await ensureConnection();
-
     // Check for existing session on this device
     const existingSessionId = await this.getDeviceSession(deviceId);
     if (existingSessionId && existingSessionId !== sessionId) {
@@ -112,15 +95,12 @@ export const sessionManager = {
   },
 
   async setDeviceSession(deviceId: string, sessionId: string, uid: string): Promise<void> {
-    await ensureConnection();
     await redis.set(`mystyc_device_session::${deviceId}`, sessionId);
     await redis.set(`mystyc_device_session::${deviceId}::uid`, uid);
     logger.log('[sessionManager] Device session mapping created:', deviceId.substring(0, 8));
   },
 
   async getCurrentSession(request: NextRequest | Headers, deviceInfo: any): Promise<Session | null> {
-    await ensureConnection();
-
     logger.log('');
     logger.log('[sessionManager] Getting current session');
 
@@ -147,7 +127,7 @@ export const sessionManager = {
 
     if (!sessionId) {
       logger.error('[sessionManager] Failed to decrypt session cookie');
-      await this.clearSession()
+      await this.clearSession();
       throw new InvalidSessionError('cookie decryption failed');
     }
 
@@ -222,8 +202,6 @@ export const sessionManager = {
   },
 
   async getSession(sessionId: string): Promise<Session | null> {
-    await ensureConnection();
-
     logger.log('[sessionManager] Getting session by sessionId:', sessionId.substring(0, 8));
 
     // Find auth token key for this sessionId
@@ -273,11 +251,6 @@ export const sessionManager = {
       return null;
     }
 
-    // // Get FCM token
-    // const fcmKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenFcm`;
-    // const fcmToken = await redis.get(fcmKey);
-    // const fcmTokenUpdatedAt = await redis.get(`${fcmKey}:date`);
-
     // Get timestamps
     const authTimestamp = await redis.get(`${authKey}:timestamp`);
     const refreshTimestamp = await redis.get(`${refreshKey}:timestamp`);
@@ -312,7 +285,6 @@ export const sessionManager = {
 
   async refreshAuthToken(session: Session): Promise<Session | null> {
     logger.log('[sessionManager] Attempting token refresh for uid:', session.uid);
-    
     try {
       const response = await fetch(
         `https://securetoken.googleapis.com/v1/token?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
@@ -322,15 +294,12 @@ export const sessionManager = {
           body: `grant_type=refresh_token&refresh_token=${session.refreshToken}`
         }
       );
-
       if (!response.ok) {
         logger.error('[sessionManager] Token refresh failed with status:', response.status);
         return null;
       }
-
       const data = await response.json();
       logger.log('[sessionManager] Token refreshed successfully');
-      
       // Update tokens in Redis
       await this.updateSession(
         session.sessionId,
@@ -340,8 +309,6 @@ export const sessionManager = {
         data.refresh_token
       );
       logger.log('[sessionManager] Updated tokens in Redis');
-
-      // Return updated session
       return {
         ...session,
         authToken: data.id_token,
@@ -357,107 +324,65 @@ export const sessionManager = {
   },
 
   async getSessionAuthKey(sessionId: string) {
-    await ensureConnection();
-
     const authKeys = await redis.keys(`mystyc::${sessionId}::*::*::tokenAuth`);
     if (authKeys.length === 0) {
       logger.error('[getSessionAuthKey] No auth token found for session');
       return null;
     }
-
-    return  await redis.get(authKeys[0]);
+    return await redis.get(authKeys[0]);
   },
 
   async getDeviceSession(deviceId: string): Promise<string | null> {
-    await ensureConnection();
     return await redis.get(`mystyc_device_session::${deviceId}`);
-  },  
+  },
 
   async getDeviceUid(deviceId: string): Promise<string | null> {
-    await ensureConnection();
     return await redis.get(`mystyc_device_session::${deviceId}::uid`);
-  },  
+  },
 
   async getTotalSessions(): Promise<number> {
-    await ensureConnection();
-    
     logger.log('[sessionManager] Getting total sessions count');
-    
     let count = 0;
     let cursor = '0';
-    
     do {
-      const result = await redis.scan(cursor, {
-        MATCH: 'mystyc::*::*::*::metadata',
-        COUNT: 1000
-      });
-      
+      const result = await redis.scan(cursor, { MATCH: 'mystyc::*::*::*::metadata', COUNT: 1000 });
       cursor = result.cursor;
       count += result.keys.length;
-      
     } while (cursor !== '0');
-    
     logger.log('[sessionManager] Total sessions:', count);
     return count;
   },
 
   async getTotalDevices(): Promise<number> {
-    await ensureConnection();
-    
     logger.log('[sessionManager] Getting total devices count');
-    
     let count = 0;
     let cursor = '0';
-    
     do {
-      const result = await redis.scan(cursor, {
-        MATCH: 'mystyc_device_session::*',
-        COUNT: 1000
-      });
-      
+      const result = await redis.scan(cursor, { MATCH: 'mystyc_device_session::*', COUNT: 1000 });
       cursor = result.cursor;
-      // Filter out the UID keys since we want to count devices, not individual keys
-      const deviceKeys = result.keys.filter(key => !key.endsWith('::uid'));
-      count += deviceKeys.length;
-      
+      count += result.keys.filter(key => !key.endsWith('::uid')).length;
     } while (cursor !== '0');
-    
     logger.log('[sessionManager] Total devices:', count);
     return count;
   },
 
   async getSessions(limit: number = 20, offset: number = 0) {
-    await ensureConnection();
-
     logger.log('[sessionManager] Getting sessions with limit:', limit, 'offset:', offset);
-
     const sessions = [];
     let cursor = '0';
     let totalFound = 0;
-
     do {
-      const result = await redis.scan(cursor, {
-        MATCH: 'mystyc::*::*::*::metadata',
-        COUNT: 100
-      });
-
+      const result = await redis.scan(cursor, { MATCH: 'mystyc::*::*::*::metadata', COUNT: 100 });
       cursor = result.cursor;
-      const metadataKeys = result.keys;
-
-      for (const metadataKey of metadataKeys) {
+      for (const metadataKey of result.keys) {
         totalFound++;
-        
         if (totalFound <= offset) continue;
         if (sessions.length >= limit) break;
-
-        const keyParts = metadataKey.split('::');
-        const sessionId = keyParts[1];
-        const deviceId = keyParts[2];
-        const uid = keyParts[3];
-
-        // Get metadata
+        const parts = metadataKey.split('::');
+        const sessionId = parts[1];
+        const deviceId = parts[2];
+        const uid = parts[3];
         const metadata = await redis.hGetAll(metadataKey);
-
         sessions.push({
           sessionId,
           deviceId,
@@ -468,67 +393,29 @@ export const sessionManager = {
           createdAt: metadata.createdAt ? new Date(parseInt(metadata.createdAt)) : null
         });
       }
-
-      if (sessions.length >= limit || cursor === '0') break;
-
-    } while (cursor !== '0');
-
-    return {
-      data: sessions,
-      pagination: {
-        offset,
-        limit,
-        totalItems: totalFound
-      }
-    };
+    } while (cursor !== '0' && sessions.length < limit);
+    return { data: sessions, pagination: { offset, limit, totalItems: totalFound } };
   },
 
   async getSessionsDevices(limit: number = 20, offset: number = 0) {
-    await ensureConnection();
-
     logger.log('[sessionManager] Getting sessions devices with limit:', limit, 'offset:', offset);
-
     const sessionsDevices = [];
     let cursor = '0';
     let totalFound = 0;
-
     do {
-      const result = await redis.scan(cursor, {
-        MATCH: 'mystyc_device_session::*',
-        COUNT: 100
-      });
-
+      const result = await redis.scan(cursor, { MATCH: 'mystyc_device_session::*', COUNT: 100 });
       cursor = result.cursor;
-      const metadataKeys = result.keys;
-
-      for (const metadataKey of metadataKeys) {
+      for (const metadataKey of result.keys) {
         totalFound++;
-        
         if (totalFound <= offset) continue;
         if (sessionsDevices.length >= limit) break;
-
-        const keyParts = metadataKey.split('::');
-        const deviceId = keyParts[1];
+        const parts = metadataKey.split('::');
+        const deviceId = parts[1];
         const sessionId = await redis.get(metadataKey);
-
-        sessionsDevices.push({
-          deviceId,
-          sessionId,
-        });
+        sessionsDevices.push({ deviceId, sessionId });
       }
-
-      if (sessionsDevices.length >= limit || cursor === '0') break;
-
-    } while (cursor !== '0');
-
-    return {
-      data: sessionsDevices,
-      pagination: {
-        offset,
-        limit,
-        total: totalFound
-      }
-    };
+    } while (cursor !== '0' && sessionsDevices.length < limit);
+    return { data: sessionsDevices, pagination: { offset, limit, total: totalFound } };
   },
 
   async updateSession(
@@ -538,25 +425,17 @@ export const sessionManager = {
     authToken: string,
     refreshToken: string
   ) {
-    await ensureConnection();
-
     logger.log('[sessionManager] Updating session tokens for uid:', uid);
-
     const now = Date.now().toString();
-
     const authTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenAuth`;
     await redis.set(authTokenKey, authToken);
     await redis.set(`${authTokenKey}:timestamp`, now);
     logger.log('[sessionManager] Auth token updated');
-
     const refreshTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenRefresh`;
     await redis.set(refreshTokenKey, refreshToken);
     await redis.set(`${refreshTokenKey}:timestamp`, now);
     logger.log('[sessionManager] Refresh token updated');
-
-    // Update metadata lastUpdated
-    const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
-    await redis.hSet(metadataKey, 'lastUpdated', now);
+    await redis.hSet(`mystyc::${sessionId}::${deviceId}::${uid}::metadata`, 'lastUpdated', now);
   },
 
   async updateSessionFcmToken(
@@ -565,76 +444,48 @@ export const sessionManager = {
     uid: string,
     fcmToken: string,
   ) {
-    await ensureConnection();
-
     logger.log('[sessionManager] Updating session fcm token for uid:', uid);
-
     const now = Date.now().toString();
-
     const fcmTokenKey = `mystyc::${sessionId}::${deviceId}::${uid}::tokenFcm`;
     await redis.set(fcmTokenKey, fcmToken);
     await redis.set(`${fcmTokenKey}:timestamp`, now);
     logger.log('[sessionManager] Fcm token updated');
-
-    // Update metadata lastUpdated
-    const metadataKey = `mystyc::${sessionId}::${deviceId}::${uid}::metadata`;
-    await redis.hSet(metadataKey, 'lastUpdated', now);
-    logger.log('[sessionManager] Fcm token update OK');
+    await redis.hSet(`mystyc::${sessionId}::${deviceId}::${uid}::metadata`, 'lastUpdated', now);
   },
 
   async clearSession(): Promise<void> {
-    await ensureConnection();
-
+    logger.log('[sessionManager] Clearing session');
     const cookieStore = await cookies();
-    const cookieKeySession = getSessionCookieName();
-    const encryptedSessionId = cookieStore.get(cookieKeySession)?.value;
-
-    logger.log('[sessionManager] Clearing session', cookieKeySession, encryptedSessionId);
-
+    const encryptedSessionId = cookieStore.get(getSessionCookieName())?.value;
     if (encryptedSessionId) {
       const sessionId = decryptCookieValue(encryptedSessionId);
-      const pattern = `mystyc::${sessionId}::*`;
-      const keys = await redis.keys(pattern);
-      
-      if (keys.length > 0) {
-        // Extract deviceId from first key to clear device mapping
-        const firstKey = keys.find(key => key.endsWith('::tokenAuth'));
-        if (firstKey) {
-          const keyParts = firstKey.split('::');
-          const deviceId = keyParts[2];
-          await this.clearDeviceSession(deviceId);
-        }
-        
+      const keys = await redis.keys(`mystyc::${sessionId}::*`);
+      if (keys.length) {
+        const authKey = keys.find(key => key.endsWith('::tokenAuth'))!;
+        const deviceId = authKey.split('::')[2];
+        await this.clearDeviceSession(deviceId);
         await redis.del(keys);
         logger.log('[sessionManager] Deleted', keys.length, 'Redis keys and device mapping');
       }
     }
-    
-    cookieStore.delete(cookieKeySession);
+    cookieStore.delete(getSessionCookieName());
     logger.log('[sessionManager] Session cookie cleared');
   },
 
   async clearDeviceSession(deviceId: string): Promise<void> {
-    await ensureConnection();
     await redis.del(`mystyc_device_session::${deviceId}`);
     logger.log('[sessionManager] Device session mapping cleared:', deviceId.substring(0, 8));
   },
 
   async clearSessionByDeviceId(deviceId: string): Promise<void> {
-    await ensureConnection();
-    
     const sessionId = await this.getDeviceSession(deviceId);
     if (sessionId) {
-      // Clear all session data
-      const pattern = `mystyc::${sessionId}::*`;
-      const keys = await redis.keys(pattern);
-      if (keys.length > 0) {
+      const keys = await redis.keys(`mystyc::${sessionId}::*`);
+      if (keys.length) {
         await redis.del(keys);
         logger.log('[sessionManager] Cleared session by deviceId:', deviceId.substring(0, 8));
       }
-      
-      // Clear device mapping
-      await this.clearDeviceSession(deviceId);
+      await redis.del(`mystyc_device_session::${deviceId}`);
     }
   }
 };

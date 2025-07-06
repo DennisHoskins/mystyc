@@ -49,28 +49,28 @@ export class AdminAuthEventsStatsController extends AdminController<AuthEvent> {
   @Get('stats/summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getEventSummaryStats(@Query() query: AuthEventStatsQueryDto): Promise<AuthEventSummaryStats> {
+  async getSummaryStats(@Query() query: AuthEventStatsQueryDto): Promise<AuthEventSummaryStats> {
     return this.adminAuthEventsStatsService.getSummaryStats(query);
   }
 
   @Get('stats/pattern')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getEventPatternStats(@Query() query: AuthEventStatsQueryDto): Promise<AuthenticationPatternsStats> {
+  async getPatternStats(@Query() query: AuthEventStatsQueryDto): Promise<AuthenticationPatternsStats> {
     return this.adminAuthEventsStatsService.getPatternStats(query);
   }
 
   @Get('stats/duration')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getEventDurationStats(@Query() query: AuthEventStatsQueryDto): Promise<SessionDurationStats> {
+  async getDurationStats(@Query() query: AuthEventStatsQueryDto): Promise<SessionDurationStats> {
     return this.adminAuthEventsStatsService.getSessionDurationStats(query);
   }
 
   @Get('stats/distribution')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getEventDistributionStats(@Query() query: AuthEventStatsQueryDto): Promise<GeographicDistributionStats> {
+  async getDistributionStats(@Query() query: AuthEventStatsQueryDto): Promise<GeographicDistributionStats> {
     return this.adminAuthEventsStatsService.getGeographicStats(query);
   }
 }

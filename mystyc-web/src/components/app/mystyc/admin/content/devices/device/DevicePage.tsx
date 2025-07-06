@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { DeviceSession } from '@/interfaces';
-import { useBusy, useToast } from '@/components/layout/context/AppContext';
+import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 

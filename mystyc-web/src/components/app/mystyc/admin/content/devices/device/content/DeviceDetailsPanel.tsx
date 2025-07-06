@@ -9,9 +9,14 @@ import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetai
 export default function DeviceDetailsPanel({ device }: { device: Device }) {
   return (
     <div className='flex flex-col min-h-16'>
-      <Text variant="muted" className='mb-2 overflow-hidden text-nowrap overflow-ellipsis'>
-        <strong> {device && device.userAgent}</strong>
-      </Text>
+      <div className='flex items-center mb-4'>
+        <Text variant="small" className="font-light text-gray-500 uppercase tracking-wide mr-2">
+          User Agent
+        </Text>
+        <Text variant="muted" className='overflow-hidden text-nowrap overflow-ellipsis'>
+          <strong>{device && device.userAgent}</strong>
+        </Text>
+      </div>
 
       <div className="grid grid-cols-2 gap-6">
         <AdminDetailGroup>

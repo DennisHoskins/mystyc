@@ -22,7 +22,6 @@ export default function NotificationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -48,7 +47,6 @@ export default function NotificationsPage() {
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
-      setTotalItems(response.pagination.totalItems);
 
       const data = await apiClientAdmin.getNotificationStats();
       setData(data);
@@ -73,7 +71,6 @@ export default function NotificationsPage() {
       breadcrumbs={breadcrumbs}
       icon={NotificationIcon}
       title={`Notifications`}
-      total={totalItems}
       description="View sent push notifications, message history, and delivery status for user communications"
       sideContent={
         <NotificationsDashboard 
@@ -83,14 +80,17 @@ export default function NotificationsPage() {
       }
       itemContent={[
         <NotificationsDashboard 
+          key={'volume'}
           data={data} 
           charts={['volume']}
         />,
         <NotificationsDashboard 
+          key={'platforms'}
           data={data} 
           charts={['platforms']}
         />,
         <NotificationsDashboard 
+          key={'delivery'}
           data={data} 
           charts={['delivery']}
         />

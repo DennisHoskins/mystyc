@@ -49,28 +49,28 @@ export class AdminNotificationsStatsController extends AdminController<Notificat
   @Get('stats/delivery')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getNotificationDeliveryStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationDeliveryStats> {
+  async getDeliveryStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationDeliveryStats> {
     return this.adminNotificationsStatsService.getDeliveryStats(query);
   }
 
   @Get('stats/type')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getNotificationTypeStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationTypeStats> {
+  async getTypeStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationTypeStats> {
     return this.adminNotificationsStatsService.getTypeStats(query);
   }
 
   @Get('stats/engagement')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getNotificationEngagementStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationEngagementStats> {
+  async getEngagementStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationEngagementStats> {
     return this.adminNotificationsStatsService.getEngagementStats(query);
   }
 
   @Get('stats/pattern')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getNotificationPatternStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationPatternsStats> {
+  async getPatternStats(@Query() query: NotificationStatsQueryDto): Promise<NotificationPatternsStats> {
     return this.adminNotificationsStatsService.getPatternStats(query);
   }
 }

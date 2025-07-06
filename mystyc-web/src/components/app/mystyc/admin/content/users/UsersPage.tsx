@@ -71,7 +71,6 @@ export default function UsersPage() {
    <AdminListLayout
       breadcrumbs={breadcrumbs}
       icon={UsersIcon}
-      total={totalItems}
       description="Manage user accounts, permissions, and profile information"
       sideContent={
         <UsersDashboard 
@@ -81,17 +80,20 @@ export default function UsersPage() {
       }
       itemContent={[
         <UsersDashboard 
-          data={data} 
-          charts={['profile']}
-        />,
-        <UsersDashboard 
+          key={'registrations'}
           data={data} 
           charts={['registrations']}
         />,
         <UsersDashboard 
+          key={'activity'}
           data={data} 
           charts={['activity']}
-        />
+        />,
+        <UsersDashboard 
+          key={'profile'}
+          data={data} 
+          charts={['profile']}
+        />,
       ]}
       tableContent={
         <UsersTable 

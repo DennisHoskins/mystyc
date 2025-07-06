@@ -43,6 +43,18 @@ export default function AdminDashboard({ data } : { data?: AdminStatsResponse | 
           height={100}
         />
       </AdminDashboardItemLayout>
+      
+      <AdminDashboardItemLayout
+        icon={<NotificationIcon />}
+        title="Notifications"
+        link="/admin/notifications"
+      >
+        <NotificationsDashboard 
+          data={data.notifications} 
+          charts={['stats', 'volume', 'platforms']}
+          height={100}
+        />
+      </AdminDashboardItemLayout>
 
       <AdminDashboardItemLayout
         icon={<AuthenticationIcon />}
@@ -54,18 +66,6 @@ export default function AdminDashboard({ data } : { data?: AdminStatsResponse | 
           charts={['stats', 'peak', 'duration']}
           height={100}
         />
-      </AdminDashboardItemLayout>
-      
-      <AdminDashboardItemLayout
-        icon={<NotificationIcon />}
-        title="Notifications"
-        link="/admin/notifications"
-      >
-        <NotificationsDashboard 
-          data={data.notifications} 
-          charts={['stats', 'volume', 'platforms']}
-          height={100}
-      />
       </AdminDashboardItemLayout>
     </div>
   );

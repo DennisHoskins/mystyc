@@ -9,7 +9,10 @@ import { AdminDailyContentStatsService } from '@/admin/services/admin-daily-cont
 import { DailyContent } from '@/common/interfaces/dailyContent.interface';
 import { 
   DailyContentSummaryStats,
-  DailyContentStats
+  DailyContentStats,
+  DailyContentSourceStats,
+  DailyContentGenerationStats,
+  DailyContentTimelineStats
 } from '@/common/interfaces/admin/adminDailyContentStats.interface';
 import { AdminController } from '../admin.controller';
 import { DailyContentStatsQueryDto } from '../../dto/stats/admin-daily-content-stats-query.dto';
@@ -29,18 +32,45 @@ export class AdminDailyContentStatsController extends AdminController<DailyConte
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getStats(@Query() query: DailyContentStatsQueryDto): Promise<DailyContentStats> {
-    const [summary] = await Promise.all([
+    const [summary, sources, generation, timeline] = await Promise.all([
       this.adminDailyContentStatsService.getSummaryStats(query),
+      this.adminDailyContentStatsService.getSourceStats(query),
+      this.adminDailyContentStatsService.getGenerationStats(query),
+      this.adminDailyContentStatsService.getTimelineStats(query),
     ]);
     return {
       summary,
+      sources,
+      generation,
+      timeline
     }
   }
 
   @Get('stats/summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getEventSummaryStats(@Query() query: DailyContentStatsQueryDto): Promise<DailyContentSummaryStats> {
+  async getSummaryStats(@Query() query: DailyContentStatsQueryDto): Promise<DailyContentSummaryStats> {
     return this.adminDailyContentStatsService.getSummaryStats(query);
+  }
+
+  @Get('stats/sources')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getSourceStats(@Query() query: DailyContentStatsQueryDto): Promise<DailyContentSourceStats> {
+    return this.adminDailyContentStatsService.getSourceStats(query);
+  }
+
+  @Get('stats/generation')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getGenerationStats(@Query() query: DailyContentStatsQueryDto): Promise<DailyContentGenerationStats> {
+    return this.adminDailyContentStatsService.getGenerationStats(query);
+  }
+
+  @Get('stats/timeline')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getTimelineStats(@Query() query: DailyContentStatsQueryDto): Promise<DailyContentTimelineStats> {
+    return this.adminDailyContentStatsService.getTimelineStats(query);
   }
 }

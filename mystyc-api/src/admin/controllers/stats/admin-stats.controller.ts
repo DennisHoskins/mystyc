@@ -53,8 +53,11 @@ export class AdminStatsController {
       this.adminNotificationsStatsService.getPatternStats(query.notification),
     ]);
 
-    const [dailyContentSummary] = await Promise.all([
+    const [dailyContentSummary, sources, generation, timeline] = await Promise.all([
       this.adminDailyContentStatsService.getSummaryStats(query.dailyContent),
+      this.adminDailyContentStatsService.getSourceStats(query.dailyContent),
+      this.adminDailyContentStatsService.getGenerationStats(query.dailyContent),
+      this.adminDailyContentStatsService.getTimelineStats(query.dailyContent),
     ]);
 
     return {
@@ -82,7 +85,10 @@ export class AdminStatsController {
         pattern: notificaitionPattern
       },
       dailyContent: {
-        summary: dailyContentSummary
+        summary: dailyContentSummary,
+        sources,
+        generation,
+        timeline
       }
     };
   }

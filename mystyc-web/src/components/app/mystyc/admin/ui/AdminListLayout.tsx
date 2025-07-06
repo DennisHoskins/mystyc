@@ -14,7 +14,6 @@ interface AdminListLayoutProps {
   icon: IconComponent
   breadcrumbs?: BreadcrumbItem[];
   title?: string;
-  total: number;
   description?: string;
   sideContent?: ReactNode;
   itemContent?: ReactNode[],
@@ -25,7 +24,6 @@ export default function AdminListLayout({
   breadcrumbs, 
   icon, 
   title, 
-  total, 
   description, 
   sideContent, 
   itemContent, 
