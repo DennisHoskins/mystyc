@@ -28,20 +28,22 @@ export default function AdminDashboard({ data } : { data?: AdminStatsResponse | 
         link="/admin/traffic"
       >
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 min-h-[10em]">
-          <div className='col-span-2 flex'>
-            <div className="w-1/4 flex mr-4">
+          <div className='col-span-2 flex flex-col md:flex-row'>
+          
+            <div className="w-full md:w-1/4 flex md:mr-4">
               <TrafficDashboard 
                 data={data.traffic} 
                 charts={['stats']} 
               />
             </div>
             
-            <div className="w-3/4 flex">
+            <div className="w-full md:w-3/4 flex mt-4 md:mt-0">
               <TrafficDashboard 
                 data={data.traffic} 
                 charts={['visitors']} 
               />
             </div>
+
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TrafficDashboard 

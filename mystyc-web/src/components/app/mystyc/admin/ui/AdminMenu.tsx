@@ -1,6 +1,6 @@
 'use client'
 
-import { LayoutDashboard, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Globe, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
@@ -20,6 +20,14 @@ export default function AdminMenu() {
         <MenuItem onClick={() => router.push('/admin/sessions')}>
           <Activity className="inline-block mr-2 h-4 w-4" />
           Sessions
+        </MenuItem>
+        <MenuItem onClick={() => router.push('/admin/traffic')}>
+          <Globe className="inline-block mr-2 h-4 w-4" />
+          Traffic
+        </MenuItem>
+        <MenuItem onClick={() => router.push('/admin/traffic')}>
+          <CalendarDays className="inline-block mr-2 h-4 w-4" />
+          Daily Content
         </MenuItem>
         <MenuItem onClick={() => router.push('/admin/users')}>
           <Users className="inline-block mr-2 h-4 w-4" />
