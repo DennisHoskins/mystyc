@@ -10,6 +10,7 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import DailyContentTable from './DailyContentTable';
 import DailyContentIcon from '@/components/app/mystyc/admin/ui/icons/DailyContentIcon';
+import DailyContentDashboard from '../dashboard/DailyContentDashboard';
 
 export default function DailyContentPage() {
   const { handleSessionError } = useSessionErrorHandler();
@@ -38,8 +39,8 @@ export default function DailyContentPage() {
       const response = await apiClientAdmin.getDailyContents({
         limit: LIMIT,
         offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'asc',
+        sortBy: 'date',
+        sortOrder: 'desc',
       });
 
       setContent(response.data);
@@ -51,12 +52,10 @@ export default function DailyContentPage() {
       const data = await apiClientAdmin.getDailyContentStats();
       setData(data);
 
-console.log(data);
-
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'DailyContentsPage');
       if (!wasSessionError) {
-        logger.error('Failed to load users:', err);
+        logger.error('Failed to load daily content:', err);
         setError('Failed to load daily content. Please try again.');
       }
     } finally {
@@ -70,12 +69,34 @@ console.log(data);
   }, [loadContent]);
 
   return (
-    <>
-    <p>{data ? data.summary.totalEvents : ""}</p>
    <AdminListLayout
       breadcrumbs={breadcrumbs}
       icon={DailyContentIcon}
+      title="Daily Content"
       description="Manage daily content entries: view, edit, and monitor generation status, sources, and performance metrics"
+      sideContent={
+        <DailyContentDashboard 
+          data={data} 
+          charts={['stats']}
+        />
+      }
+      itemContent={[
+        <DailyContentDashboard 
+          key={'timeline'}
+          data={data} 
+          charts={['timeline']}
+        />,
+        <DailyContentDashboard 
+          key={'performance'}
+          data={data} 
+          charts={['performance']}
+        />,
+        <DailyContentDashboard 
+          key={'coverage'}
+          data={data} 
+          charts={['coverage']}
+        />
+      ]}
       tableContent={
         <DailyContentTable 
           data={content}
@@ -90,7 +111,6 @@ console.log(data);
           onRefresh={() => loadContent(currentPage)}
         />
       }
-    />
-    </>    
+    />   
   );
 }

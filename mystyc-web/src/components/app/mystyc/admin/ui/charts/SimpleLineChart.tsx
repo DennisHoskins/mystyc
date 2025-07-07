@@ -8,7 +8,7 @@ interface LineDataItem {
 
 interface SimpleLineChartProps {
   title: string;
-  data: LineDataItem[];
+  data?: LineDataItem[] | null;
   dataKey: string;
   xAxisKey: string;
   color?: string;
@@ -34,27 +34,29 @@ export default function SimpleLineChart({
   return (
     <div className='flex flex-col flex-1'>
       <h4 className="text-sm font-medium text-gray-700 mb-2">{title}</h4>
-      <ResponsiveContainer width="100%" height={height} className="bg-gray-50 pt-4 rounded-md grow">
-        <LineChart data={data}>
-          <XAxis 
-            dataKey={xAxisKey} 
-            tick={showXAxisTicks}
-            axisLine={false}
-          />
-          <YAxis hide />
-          <Tooltip
-            labelFormatter={(value) => `${xAxisKey}: ${value}`}
-            formatter={(value) => [value, tooltipLabel || dataKey]}
-          />
-          <Line 
-            type="monotone" 
-            dataKey={dataKey} 
-            stroke={color} 
-            strokeWidth={strokeWidth}
-            dot={showDots}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      {data && (
+        <ResponsiveContainer width="100%" height={height} className="bg-gray-50 pt-4 rounded-md grow">
+          <LineChart data={data}>
+            <XAxis 
+              dataKey={xAxisKey} 
+              tick={showXAxisTicks}
+              axisLine={false}
+            />
+            <YAxis hide />
+            <Tooltip
+              labelFormatter={(value) => `${xAxisKey}: ${value}`}
+              formatter={(value) => [value, tooltipLabel || dataKey]}
+            />
+            <Line 
+              type="monotone" 
+              dataKey={dataKey} 
+              stroke={color} 
+              strokeWidth={strokeWidth}
+              dot={showDots}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 }

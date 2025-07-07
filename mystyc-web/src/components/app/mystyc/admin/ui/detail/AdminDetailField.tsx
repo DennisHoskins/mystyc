@@ -1,11 +1,12 @@
 'use client';
 
+import { ReactNode } from 'react';
 import Text from '@/components/ui/Text';
 import Link from '@/components/ui/Link';
 
 interface AdminDetailFieldProps {
   label: string;
-  value?: string | null;
+  value?: string | ReactNode | null;
   href?: string | null;
   text?: string | null;  
 }
@@ -17,7 +18,11 @@ export default function AdminDetailField({ label, value, href, text }: AdminDeta
         {label}
       </Text>
 
-      {href ? <Link href={href} className='block truncate'>{value || ''}</Link> : <Text className='truncate'>{value || ''}</Text>}
+      {href ? (
+        <Link href={href} className='block truncate'>{value || ''}</Link>
+      ) : (
+        <div className='truncate'>{value || ''}</div>
+      )}
 
       {text && <Text variant='small' className='text-gray-400'>{text}</Text>}
     </div>

@@ -21,19 +21,72 @@ export default function AdminHome() {
   const { handleSessionError } = useSessionErrorHandler();
   const [data, setData] = useState<AdminStatsResponse | null>(null);
 
+  // Default query parameters for comprehensive dashboard view
+  const getDefaultDashboardQuery = () => {
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 29); // 30 days total including today
+
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+    
+    return {
+      traffic: {
+        startDate: startDateStr,
+        endDate: endDateStr,
+        maxRecords: 10000
+      },
+      users: {
+        period: 'daily' as const,
+        limit: 60,
+        maxRecords: 10000
+      },
+      devices: {
+        startDate: startDateStr,
+        endDate: endDateStr,
+        maxRecords: 5000
+      },
+      authEvents: {
+        startDate: startDateStr,
+        endDate: endDateStr,
+        maxRecords: 50000
+      },
+      notifications: {
+        period: 'daily' as const,
+        limit: 60,
+        startDate: startDateStr,
+        endDate: endDateStr,
+        maxRecords: 50000
+      },
+      dailyContent: {
+        period: 'daily' as const,
+        limit: 60,
+        startDate: startDateStr,
+        endDate
+      },
+      sessions: {
+        startDate: startDateStr,
+        endDate
+      }
+    };
+  };
+
   const loadDashboard = useCallback(async () => {
     try {
       console.log("[AdminHome] loadDashboard");
       setBusy(true);
 
-      const response = await apiClientAdmin.getDashboard({});
+      const defaultQuery = getDefaultDashboardQuery();
+      console.log("[AdminHome] Using query parameters:", defaultQuery);
+
+      const response = await apiClientAdmin.getDashboard(defaultQuery);
       console.log("[AdminHome] loadDashboard --> response: ", response);
 
       setData(response)
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'AdminHome');
       if (!wasSessionError) {
-        logger.error('Failed to load users:', err);
+        logger.error('Failed to load dashboard:', err);
       }
     } finally {
       setBusy(false)
@@ -62,6 +115,7 @@ export default function AdminHome() {
           <SessionsDashboard data={data?.sessions} />
         </Card>
       </div>
+      
       <AdminDashboard data={data} />
     </>
   );

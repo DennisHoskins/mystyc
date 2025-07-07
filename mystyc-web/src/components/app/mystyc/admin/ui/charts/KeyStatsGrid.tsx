@@ -15,7 +15,7 @@ export default function KeyStatsGrid({ stats }: KeyStatsGridProps) {
     <div className="@container flex grow">
       <div className={`grow grid gap-4 grid-cols-1 @[150px]:grid-cols-2`}>
         {stats.map((stat, index) => (
-          <div key={index} className="text-center bg-gray-50 py-2 rounded-md">
+          <div key={index} className="text-center bg-gray-50 py-2 rounded-md flex flex-col justify-center">
             <div className={`text-2xl font-bold ${stat.color || 'text-blue-600'}`}>
               {stat.value}
             </div>
@@ -23,6 +23,6 @@ export default function KeyStatsGrid({ stats }: KeyStatsGridProps) {
           </div>
         ))}
       </div>
-    </div>
+    </div>  
   );
 }

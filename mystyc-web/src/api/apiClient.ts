@@ -74,13 +74,24 @@ class ApiError extends Error {
 }
 
 export const apiClient = {
+  registerVisit(pathname: string) {
+    fetch(`${serverRoot}/register-visit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        deviceInfo: getDeviceInfo(),
+        pathname,
+        clientTimestamp: new Date().toISOString() 
+      })
+    });
+  },
+
   async getDailyContent(): Promise<DailyContent> {
     const response = await fetch(`${serverRoot}/daily-content`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         deviceInfo: getDeviceInfo(),
-        clientTimestamp: new Date().toISOString() 
       })
     });
 

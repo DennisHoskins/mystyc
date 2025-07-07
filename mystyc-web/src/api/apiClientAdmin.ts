@@ -11,6 +11,7 @@ import {
   DailyContent, 
   AdminStatsResponse, 
   SessionStats, 
+  TrafficStats, 
   UserStats, 
   DeviceStats, 
   AuthEventStats, 
@@ -20,6 +21,7 @@ import {
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
 import { AdminSessionStatsQuery } from '@/interfaces/admin/adminSessionStatsQuery.interface';
+import { AdminTrafficStatsQuery } from '@/interfaces/admin/adminTrafficStatsQuery.interface';
 import { AdminUserStatsQuery } from '@/interfaces/admin/adminUserStatsQuery.interface';
 import { AdminDeviceStatsQuery } from '@/interfaces/admin/adminDeviceStatsQuery.interface';
 import { AdminAuthEventStatsQuery } from '@/interfaces/admin/adminAuthEventStatsQuery.interface';
@@ -44,19 +46,20 @@ export interface PaginatedResponse<T> {
 }
 
 class AdminApiClient {
-  private async fetchWithAuth(url: string, options: RequestInit = {}) {
+private async fetchWithAuth(url: string, options: RequestInit = {}) {
     try {
+      // Build the body with deviceInfo and any existing body data
+      const bodyData = options.body ? JSON.parse(options.body as string) : {};
+      const requestBody = {
+        ...bodyData,
+        deviceInfo: getDeviceInfo(),
+        clientTimestamp: new Date().toISOString()
+      };
+
       const response = await fetch(url, {
         method: 'POST',
         ...options,
-        body: options.body ? JSON.stringify({
-          ...JSON.parse(options.body as string),
-          deviceInfo: getDeviceInfo(),
-          clientTimestamp: new Date().toISOString()
-        }) : JSON.stringify({
-          deviceInfo: getDeviceInfo(),
-          clientTimestamp: new Date().toISOString()
-        }),
+        body: JSON.stringify(requestBody),
         headers: {
           'Content-Type': 'application/json',
           ...options.headers,
@@ -65,7 +68,6 @@ class AdminApiClient {
       });
 
       if (!response.ok) {
-
         const errorData = await response.json().catch(() => null);
 
         if (errorData?.error === 'InvalidSession') {
@@ -95,31 +97,72 @@ class AdminApiClient {
     return queryString ? `?${queryString}` : '';
   }
 
+  /**
+   * Dynamically builds query parameters from any nested object structure
+   * Handles arrays, nested objects, and primitive values
+   */
+  private buildQueryParams(obj: any, prefix = ''): URLSearchParams {
+    const params = new URLSearchParams();
+    
+    if (!obj || typeof obj !== 'object') return params;
+    
+    Object.entries(obj).forEach(([key, value]) => {
+      const paramKey = prefix ? `${prefix}.${key}` : key;
+      
+      if (value === null || value === undefined) {
+        // Skip null/undefined values
+        return;
+      } else if (Array.isArray(value)) {
+        // Handle arrays by joining with commas
+        if (value.length > 0) {
+          params.append(paramKey, value.join(','));
+        }
+      } else if (typeof value === 'object' && value.constructor === Object) {
+        // Recursively handle nested objects
+        const nestedParams = this.buildQueryParams(value, paramKey);
+        nestedParams.forEach((val, nestedKey) => {
+          params.append(nestedKey, val);
+        });
+      } else {
+        // Handle primitive values (string, number, boolean)
+        params.append(paramKey, String(value));
+      }
+    });
+    
+    return params;
+  }
+
+  /**
+   * Builds a query string from any query object structure
+   */
   private buildStatsQueryString(query?: AdminStatsQuery): string {
     if (!query) return '';
     
-    // const params = new URLSearchParams();
-    // if (query.limit) params.append('limit', query.limit.toString());
-    // if (query.offset) params.append('offset', query.offset.toString());
-    // if (query.sortBy) params.append('sortBy', query.sortBy);
-    // if (query.sortOrder) params.append('sortOrder', query.sortOrder);
-    
-    // const queryString = params.toString();
-    // return queryString ? `?${queryString}` : '';
+    const params = this.buildQueryParams(query);
+    const queryString = params.toString();
+    return queryString ? `?${queryString}` : '';
+  }
 
-    return "";
+  /**
+   * Generic method to build query string for individual stats endpoints
+   */
+  private buildSingleStatsQuery<T>(queryType: string, query?: T): string {
+    if (!query) return '';
+    
+    const wrappedQuery = { [queryType]: query };
+    return this.buildStatsQueryString(wrappedQuery);
   }
 
   // 
   // dashboard/stats
   //
   getDashboard = async (query?: AdminStatsQuery): Promise<AdminStatsResponse> => {
-    logger.log('geDashboard called', { query });
+    logger.log('getDashboard called', { query });
     try {
-
-      // todo
       const queryString = this.buildStatsQueryString(query);
-
+      console.log('[getDashboard] Built query string:', queryString);
+      console.log('[getDashboard] Full URL:', `${API_BASE_URL}/mystyc/admin/stats${queryString}`);
+      
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats${queryString}`);
     } catch (error) {
       logger.error('getDashboard failed:', error);
@@ -128,13 +171,9 @@ class AdminApiClient {
   };
 
   getSessionStats = async (query?: AdminSessionStatsQuery): Promise<SessionStats> => {
-    logger.log('geSessionStats called', { query });
+    logger.log('getSessionStats called', { query });
     try {
-
-      // todo
-//      const queryString = this.buildStatsQueryString(query);
-      const queryString = '';
-
+      const queryString = this.buildSingleStatsQuery('sessions', query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/sessions${queryString}`);
     } catch (error) {
       logger.error('getSessionStats failed:', error);
@@ -142,14 +181,21 @@ class AdminApiClient {
     }
   };
 
-  getDailyContentStats = async (query?: AdminDailyContentStatsQuery): Promise<DailyContentStats> => {
-    logger.log('geDailyContentStats called', { query });
+  getTrafficStats = async (query?: AdminTrafficStatsQuery): Promise<TrafficStats> => {
+    logger.log('getTrafficStats called', { query });
     try {
+      const queryString = this.buildSingleStatsQuery('traffic', query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/traffic${queryString}`);
+    } catch (error) {
+      logger.error('getTrafficStats failed:', error);
+      throw error;
+    }
+  };
 
-      // todo
-//      const queryString = this.buildStatsQueryString(query);
-      const queryString = '';
-
+  getDailyContentStats = async (query?: AdminDailyContentStatsQuery): Promise<DailyContentStats> => {
+    logger.log('getDailyContentStats called', { query });
+    try {
+      const queryString = this.buildSingleStatsQuery('dailyContent', query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/daily-content${queryString}`);
     } catch (error) {
       logger.error('getDailyContentStats failed:', error);
@@ -158,13 +204,9 @@ class AdminApiClient {
   };
 
   getUserStats = async (query?: AdminUserStatsQuery): Promise<UserStats> => {
-    logger.log('geUserStats called', { query });
+    logger.log('getUserStats called', { query });
     try {
-
-      // todo
-//      const queryString = this.buildStatsQueryString(query);
-      const queryString = '';
-
+      const queryString = this.buildSingleStatsQuery('users', query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/users${queryString}`);
     } catch (error) {
       logger.error('getUserStats failed:', error);
@@ -173,13 +215,9 @@ class AdminApiClient {
   };
 
   getDeviceStats = async (query?: AdminDeviceStatsQuery): Promise<DeviceStats> => {
-    logger.log('geDeviceStats called', { query });
+    logger.log('getDeviceStats called', { query });
     try {
-
-      // todo
-//      const queryString = this.buildStatsQueryString(query);
-      const queryString = '';
-
+      const queryString = this.buildSingleStatsQuery('devices', query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/devices${queryString}`);
     } catch (error) {
       logger.error('getDeviceStats failed:', error);
@@ -188,13 +226,9 @@ class AdminApiClient {
   };
 
   getAuthenticationStats = async (query?: AdminAuthEventStatsQuery): Promise<AuthEventStats> => {
-    logger.log('geAuthenticationStats called', { query });
+    logger.log('getAuthenticationStats called', { query });
     try {
-
-      // todo
-//      const queryString = this.buildStatsQueryString(query);
-      const queryString = '';
-
+      const queryString = this.buildSingleStatsQuery('authEvents', query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/auth-events${queryString}`);
     } catch (error) {
       logger.error('getAuthenticationStats failed:', error);
@@ -203,13 +237,9 @@ class AdminApiClient {
   };
 
   getNotificationStats = async (query?: AdminNotificationStatsQuery): Promise<NotificationStats> => {
-    logger.log('geNotificationStats called', { query });
+    logger.log('getNotificationStats called', { query });
     try {
-
-      // todo
-//      const queryString = this.buildStatsQueryString(query);
-      const queryString = '';
-
+      const queryString = this.buildSingleStatsQuery('notifications', query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/notifications${queryString}`);
     } catch (error) {
       logger.error('getNotificationStats failed:', error);

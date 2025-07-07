@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
+import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
 
 import { useUser } from '@/components/layout/context/AppContext';
@@ -36,6 +37,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   console.log("");
   console.log("mystyc: v2025-07-04:12:00");
   console.log("");
+
+  useEffect(() => {
+    apiClient.registerVisit(pathname)
+  }, [pathname])  
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);

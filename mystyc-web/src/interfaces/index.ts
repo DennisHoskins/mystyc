@@ -22,4 +22,5 @@ export * from './admin/adminAuthEventStats.interface';
 export * from './admin/adminNotificationStats.interface';
 export * from './admin/adminDailyContentStats.interface';
 export * from './admin/adminSessionStats.interface';
+export * from './admin/adminTrafficStats.interface';
 

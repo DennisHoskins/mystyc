@@ -9,7 +9,11 @@ import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
-import DailyContentIcon from '@/components/app/mystyc/admin/ui/icons//DailyContentIcon';
+import DailyContentIcon from '@/components/app/mystyc/admin/ui/icons/DailyContentIcon';
+import DailyContentDetailsPanel from './content/DailyContentDetailsPanel';
+import DailyContentPreviewPanel from './content/DailyContentPreviewPanel';
+import DailyContentSidebarPanel from './content/DailyContentSidebarPanel';
+import DailyContentDataPanel from './content/DailyContentDataPanel';
 
 export default function DailyContentPage({ contentId }: { contentId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -44,10 +48,8 @@ export default function DailyContentPage({ contentId }: { contentId: string }) {
 
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
-    { label: 'Daily Content', href: '/admin/daily-contents' },
-    { 
-      label: content ? `${content.title || content.title}` : `${contentId}`
-    },
+    { label: 'Daily Content', href: '/admin/daily-content' },
+    { label: content ? content.date : `Content ${contentId}` },
   ], [content, contentId]);
 
   if (loading) {
@@ -72,7 +74,11 @@ export default function DailyContentPage({ contentId }: { contentId: string }) {
       onRetry={loadContent}
       breadcrumbs={breadcrumbs}
       icon={<DailyContentIcon size={6}/>}
-      title={content && content.title ? content.title : `Unknown Content`}
+      title={content.title}
+      headerContent={<DailyContentDetailsPanel content={content} />}
+      sectionsContent={[<DailyContentPreviewPanel key='preview' content={content} />]}
+      sidebarContent={<DailyContentSidebarPanel content={content} />}
+      mainContent={<DailyContentDataPanel content={content} />}
     />
   );    
 }
