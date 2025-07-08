@@ -444,4 +444,12 @@ export class DevicesService {
       appVersion: doc.appVersion,
     };
   }
+
+  /**
+   * Get all unique device TimeZone strings
+   * @returns Array of distinct device TimeZone strings
+   */
+  async getUniqueTimezones(): Promise<string[]> {
+    return await this.deviceModel.distinct('timezone');
+  }
 }
