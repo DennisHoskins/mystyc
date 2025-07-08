@@ -6,6 +6,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { logger } from '@/util/logger';
 
+import AdminErrorPage from '../../../../ui/AdminError';
 import UsersTable from '@/components/app/mystyc/admin/content/users/UsersTable';
 import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon'
 
@@ -48,19 +49,27 @@ export default function DeviceUsersPanel({ deviceId }: { deviceId: string}) {
     loadDeviceUsers(0);
   }, [loadDeviceUsers]);
 
+  if (error) {
+    return (
+      <AdminErrorPage
+        title='Unable to load device users'
+        error={error}
+        onRetry={() => loadDeviceUsers(0)}
+      />
+    )
+  }
+
   return (
       <UsersTable
         icon={UsersIcon}
         label={`Users`}
         data={users}
         loading={loading}
-        error={error}
         currentPage={currentPage}
         totalPages={totalPages}
         totalItems={totalItems}
         hasMore={hasMore}
         onPageChange={loadDeviceUsers}
-        onRetry={() => loadDeviceUsers(currentPage)}
         onRefresh={() => loadDeviceUsers(currentPage)}
       />
   );

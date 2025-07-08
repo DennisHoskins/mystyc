@@ -160,9 +160,6 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     logger.log('getDashboard called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      console.log('[getDashboard] Built query string:', queryString);
-      console.log('[getDashboard] Full URL:', `${API_BASE_URL}/mystyc/admin/stats${queryString}`);
-      
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats${queryString}`);
     } catch (error) {
       logger.error('getDashboard failed:', error);
@@ -184,7 +181,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getTrafficStats = async (query?: AdminTrafficStatsQuery): Promise<TrafficStats> => {
     logger.log('getTrafficStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('traffic', query);
+      const queryString = this.buildSingleStatsQuery('', query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/traffic${queryString}`);
     } catch (error) {
       logger.error('getTrafficStats failed:', error);

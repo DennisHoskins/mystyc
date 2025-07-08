@@ -38,8 +38,6 @@ export async function POST(request: NextRequest): Promise<Response> {
     },
   });
 
-console.log(nestResponse);
-
   if (!nestResponse.ok) {
     logger.error('[getDailyContentStats] Failed to fetch user from Nest:', nestResponse.status);
     throw new Error(`[getDailyContentStats] Failed to fetch user from Nest: ${nestResponse.status}`);

@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 import { DailyContent } from '@/interfaces';
 
 import Card from '@/components/ui/Card';
@@ -27,7 +25,7 @@ export default function DailyContentPreviewPanel({ content }: { content: DailyCo
               Image Preview
             </Text>
             <div className="bg-gray-100 rounded-lg overflow-hidden">
-              <Image
+              <img
                 src={content.imageUrl} 
                 alt={content.title}
                 className="w-full h-64 object-cover"

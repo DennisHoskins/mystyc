@@ -5,12 +5,15 @@ import { ReactNode } from 'react';
 import Card from '@/components/ui/Card';
 import { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
 import AdminBreadcrumbs from './AdminBreadcrumbs';
+import AdminError from '@/components/app/mystyc/admin/ui/AdminError';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Avatar from '@/components/ui/Avatar';
 import { IconComponent } from '@/components/ui/icons/Icon';
 
 interface AdminListLayoutProps {
+  error?: string | null;
+  onRetry: () => void;
   icon: IconComponent
   breadcrumbs?: BreadcrumbItem[];
   title?: string;
@@ -21,6 +24,8 @@ interface AdminListLayoutProps {
 }
 
 export default function AdminListLayout({ 
+  error,
+  onRetry,
   breadcrumbs, 
   icon, 
   title, 
@@ -29,6 +34,34 @@ export default function AdminListLayout({
   itemContent, 
   tableContent 
 }: AdminListLayoutProps) {
+  if (error) {
+    return (
+      <>
+        <div className="flex flex-col mb-4">
+          <Card className='grow mb-4'>
+            <div className='flex space-x-3 items-center mb-4'>
+              {icon && (
+                <div className='mt-1'>
+                  <Avatar size={'medium'} icon={icon} />
+                </div>
+              )}
+              {breadcrumbs ? (
+                <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+              ) : (
+                <Heading level={2}>{title}</Heading>
+              )}
+            </div>
+          </Card>
+          <AdminError 
+            title={"Unable to load data"}
+            error={error} 
+            onRetry={onRetry}
+          />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="flex flex-col sm:flex-row mb-4">

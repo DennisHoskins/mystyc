@@ -27,36 +27,42 @@ export default function AdminDashboard({ data } : { data?: AdminStatsResponse | 
         title="Website Traffic"
         link="/admin/traffic"
       >
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 min-h-[10em]">
-          <div className='col-span-2 flex flex-col md:flex-row'>
-          
-            <div className="w-full md:w-1/4 flex md:mr-4">
-              <TrafficDashboard 
-                data={data.traffic} 
-                charts={['stats']} 
-              />
-            </div>
-            
-            <div className="w-full md:w-3/4 flex mt-4 md:mt-0">
-              <TrafficDashboard 
-                data={data.traffic} 
-                charts={['visitors']} 
-              />
-            </div>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 h-[30em] xl:h-full">
 
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="col-span-1 sm:col-span-2 xl:col-span-3 h-full flex space-x-4">
+          <div className='w-32 h-full flex'>
             <TrafficDashboard 
               data={data.traffic} 
-              charts={['platforms']} 
-            />
-            <TrafficDashboard 
-              data={data.traffic} 
-              charts={['browsers']} 
+              charts={['stats']} 
+              height="100%"
             />
           </div>
+
+          <TrafficDashboard 
+            data={data.traffic} 
+            charts={['visitors']} 
+            height="100%"
+          />
         </div>
-      </AdminDashboardItemLayout>
+        
+        <div className="h-full flex">
+          <TrafficDashboard 
+            data={data.traffic} 
+            charts={['browsers']} 
+            height="100%"
+          />
+        </div>
+        
+        <div className="h-full flex">
+          <TrafficDashboard 
+            data={data.traffic} 
+            charts={['types']} 
+            height="100%"
+          />
+        </div>
+
+      </div>
+    </AdminDashboardItemLayout>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mt-4">
         <AdminDashboardItemLayout

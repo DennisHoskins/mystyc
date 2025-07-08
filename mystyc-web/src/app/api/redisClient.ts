@@ -1,4 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
+import { logger } from '@/util/logger';
 
 const url = process.env.REDIS_URL;
 if (!url) {
@@ -8,16 +9,16 @@ if (!url) {
 const redis: RedisClientType = createClient({ url });
 
 redis.on('error', (err) => {
-  console.error('Redis Client Error', err);
+  logger.error('Redis Client Error', err);
 });
 
 // Immediately initiate connection
 (async () => {
   try {
     await redis.connect();
-    console.log('Redis client connected');
+    logger.log('Redis client connected');
   } catch (err) {
-    console.error('Failed to connect Redis client', err);
+    logger.error('Failed to connect Redis client', err);
   }
 })();
 

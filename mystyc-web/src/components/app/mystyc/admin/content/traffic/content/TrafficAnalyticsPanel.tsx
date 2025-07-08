@@ -1,0 +1,21 @@
+'use client';
+
+import { TrafficStats } from '@/interfaces';
+
+import Card from '@/components/ui/Card';
+import Heading from '@/components/ui/Heading';
+import TrafficDashboard from '@/components/app/mystyc/admin/content/dashboard/TrafficDashboard';
+
+export default function TrafficAnalyticsPanel({ trafficStats }: { trafficStats: TrafficStats }) {
+  return (
+    <Card className='flex-1'>
+      <Heading level={4} className="mb-4 text-blue-900">Visitor Analytics</Heading>
+      <div className='flex h-full min-h-[17em]'>
+        <TrafficDashboard 
+          data={trafficStats} 
+          charts={['visitors']}
+        />
+      </div>        
+    </Card>
+  );
+}

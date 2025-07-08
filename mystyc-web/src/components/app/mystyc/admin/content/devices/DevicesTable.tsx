@@ -10,13 +10,11 @@ interface DevicesTableProps {
   label?: string;
   data: Device[];
   loading: boolean;
-  error: string | null;
   currentPage: number;
   totalPages: number;
   totalItems?: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
-  onRetry: () => void;
   onRefresh: () => void;
 }
 
@@ -25,13 +23,11 @@ export default function DevicesTable({
   label,
   data,
   loading,
-  error,
   currentPage,
   totalPages,
   totalItems,
   hasMore,
   onPageChange,
-  onRetry,
   onRefresh
 }: DevicesTableProps) {
   const columns: Column<Device>[] = [
@@ -48,13 +44,11 @@ export default function DevicesTable({
       data={data}
       columns={columns}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
       hasMore={hasMore}
       onPageChange={onPageChange}
-      onRetry={onRetry}
       onRefresh={onRefresh}
       emptyMessage="No Devices found."
     />

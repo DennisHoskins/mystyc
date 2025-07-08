@@ -9,12 +9,10 @@ interface NotificationsTableProps {
   label?: string;
   data: Notification[];
   loading: boolean;
-  error: string | null;
   currentPage: number;
   totalPages: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
-  onRetry: () => void;
   onRefresh: () => void;
   hideUserColumn?: boolean;
 }
@@ -23,12 +21,10 @@ export default function NotificationsTable({
   label,
   data,
   loading,
-  error,
   currentPage,
   totalPages,
   hasMore,
   onPageChange,
-  onRetry,
   onRefresh,
   hideUserColumn = false
 }: NotificationsTableProps) {
@@ -61,12 +57,10 @@ export default function NotificationsTable({
       data={data}
       columns={columns}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       totalPages={totalPages}
       hasMore={hasMore}
       onPageChange={onPageChange}
-      onRetry={onRetry}
       onRefresh={onRefresh}
       emptyMessage="No Notifications found."
     />

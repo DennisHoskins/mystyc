@@ -7,6 +7,7 @@ import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import NotificationsTable from '@/components/app/mystyc/admin/content/notifications/NotificationsTable';
+import AdminErrorPage from '../../../../ui/AdminError';
 
 interface UserNotificationsTableProps {
   firebaseUid: string;
@@ -60,18 +61,26 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
     return null;
   }
 
+  if (error) {
+    return (
+      <AdminErrorPage
+        title='Unable to load device notifications'
+        error={error}
+        onRetry={() => loadUserNotifications(0)}
+      />
+    )
+  }
+
   return (
     <div>
       <NotificationsTable
         hideUserColumn={true}
         data={notifications}
         loading={loading}
-        error={error}
         currentPage={currentPage}
         totalPages={totalPages}
         hasMore={hasMore}
         onPageChange={loadUserNotifications}
-        onRetry={() => loadUserNotifications(currentPage)}
         onRefresh={() => loadUserNotifications(currentPage)}
       />
     </div>

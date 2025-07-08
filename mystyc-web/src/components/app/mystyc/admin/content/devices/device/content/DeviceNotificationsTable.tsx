@@ -7,6 +7,7 @@ import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import NotificationsTable from '@/components/app/mystyc/admin/content/notifications/NotificationsTable';
+import AdminErrorPage from '../../../../ui/AdminError';
 
 interface DeviceNotificationsTableProps {
   deviceId: string;
@@ -60,17 +61,25 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
     return null;
   }
 
+  if (error) {
+    return (
+      <AdminErrorPage
+        title='Unable to load device notifications'
+        error={error}
+        onRetry={() => loadDeviceNotifications(0)}
+      />
+    )
+  }
+
   return (
     <div>
       <NotificationsTable
         data={notifications}
         loading={loading}
-        error={error}
         currentPage={currentPage}
         totalPages={totalPages}
         hasMore={hasMore}
         onPageChange={loadDeviceNotifications}
-        onRetry={() => loadDeviceNotifications(currentPage)}
         onRefresh={() => loadDeviceNotifications(currentPage)}
       />
     </div>

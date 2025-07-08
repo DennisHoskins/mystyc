@@ -187,7 +187,9 @@ export class AuthEventsService {
       deviceId: doc.deviceId,
       deviceName: doc.deviceName,
       ip: doc.ip,
-      clientTimestamp: doc.clientTimestamp.toISOString(),
+      clientTimestamp: doc.clientTimestamp instanceof Date 
+        ? doc.clientTimestamp.toISOString() 
+        : doc.clientTimestamp || 'unknown',
       type: doc.type,
       timestamp: doc.timestamp,
       createdAt: doc.createdAt,

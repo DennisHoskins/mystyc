@@ -64,6 +64,8 @@ export default function SessionsPage() {
 
   return (
     <AdminListLayout
+      error={error}
+      onRetry={() => loadSessions(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={SessionIcon}
       title={`Sessions`}
@@ -77,11 +79,9 @@ export default function SessionsPage() {
         <SessionsTable 
           data={sessions}
           loading={loading}
-          error={error}
           currentPage={currentPage}
           hasMore={hasMore}
           onPageChange={loadSessions}
-          onRetry={() => loadSessions(currentPage)}
           onRefresh={() => loadSessions(currentPage)}
         />
       }

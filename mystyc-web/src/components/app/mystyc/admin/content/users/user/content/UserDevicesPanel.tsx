@@ -6,6 +6,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces';
 import { logger } from '@/util/logger';
 
+import AdminErrorPage from '../../../../ui/AdminError';
 import DevicesTable from '@/components/app/mystyc/admin/content/devices/DevicesTable';
 import DeviceIcon from '@/components/app/mystyc/admin/ui/icons/DeviceIcon'
 
@@ -48,19 +49,27 @@ export default function UserDevicesPanel({ firebaseUid }: { firebaseUid: string 
     loadUserDevices(0);
   }, [loadUserDevices]);
 
+  if (error) {
+    return (
+      <AdminErrorPage
+        title='Unable to load user devices'
+        error={error}
+        onRetry={() => loadUserDevices(0)}
+      />
+    )
+  }
+
   return (
       <DevicesTable
         icon={DeviceIcon}
         label={`Devices`}
         data={devices}
         loading={loading}
-        error={error}
         currentPage={currentPage}
         totalPages={totalPages}
         totalItems={totalItems}
         hasMore={hasMore}
         onPageChange={loadUserDevices}
-        onRetry={() => loadUserDevices(currentPage)}
         onRefresh={() => loadUserDevices(currentPage)}
       />
   );

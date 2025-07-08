@@ -11,13 +11,11 @@ interface UsersTableProps {
   label?: string,
   data: UserProfile[];
   loading: boolean;
-  error: string | null;
   currentPage: number;
   totalPages: number;
   totalItems: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
-  onRetry: () => void;
   onRefresh: () => void;
 }
 
@@ -26,13 +24,11 @@ export default function UsersTable({
   label,
   data,
   loading,
-  error,
   currentPage,
   totalPages,
   totalItems,
   hasMore,
   onPageChange,
-  onRetry,
   onRefresh
 }: UsersTableProps) {
   const columns: Column<UserProfile>[] = [
@@ -49,13 +45,11 @@ export default function UsersTable({
       data={data}
       columns={columns}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
       hasMore={hasMore}
       onPageChange={onPageChange}
-      onRetry={onRetry}
       onRefresh={onRefresh}
       emptyMessage="No Users found."
     />

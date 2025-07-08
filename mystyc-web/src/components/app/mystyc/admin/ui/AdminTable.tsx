@@ -6,6 +6,8 @@ import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
+import Avatar from '@/components/ui/Avatar';
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import TablePagination from '@/components/ui/table/TablePagination';
 import {
@@ -17,8 +19,6 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { IconComponent } from '@/components/ui/icons/Icon';
-import Avatar from '@/components/ui/Avatar';
-import Badge from '@/components/ui/Badge';
 
 export interface Column<T> {
   key: keyof T | string;
@@ -64,13 +64,11 @@ interface AdminTableProps<T> {
   columns: Column<T>[];
   getRowId?: (row: T) => string;
   loading?: boolean;
-  error?: string | null;
   currentPage?: number;
   totalPages?: number;
   totalItems?: number;
   hasMore?: boolean;
   onPageChange?: (page: number) => void;
-  onRetry?: () => void;
   onRefresh?: () => void;
   emptyMessage?: string;
 }
@@ -82,13 +80,11 @@ export default function AdminTable<T>({
   columns,
   getRowId,
   loading = false,
-  error = null,
   currentPage = 0,
   totalPages,
   totalItems,
   hasMore = false,
   onPageChange,
-  onRetry,
   onRefresh,
   emptyMessage = 'No data found.',
 }: AdminTableProps<T>) {
@@ -131,28 +127,6 @@ export default function AdminTable<T>({
 
   if (loading && currentPage === 0) {
     return null;
-  }
-
-  if (error) {
-    return (
-      <>
-        {label && (
-          <div className='flex justify-between items-center mb-2'>
-            <div className='flex space-x-2 items-center'>
-              {icon && <Avatar size={'small'} icon={icon} />}
-              <Heading level={5}>{label}</Heading>
-            </div>
-            {totalItems && <Badge total={totalItems} />}
-          </div>
-        )}        
-        <Text className="text-red-600">{error}</Text>
-        {onRetry && (
-          <Button onClick={onRetry} className="mt-4">
-            Retry
-          </Button>
-        )}
-      </>
-    );
   }
 
   if (data.length === 0) {

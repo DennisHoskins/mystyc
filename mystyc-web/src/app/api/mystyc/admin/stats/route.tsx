@@ -16,11 +16,6 @@ export async function POST(request: NextRequest): Promise<Response> {
     const body = await request.json();
     const { deviceInfo } = body;
 
-    // Debug what we're getting
-    console.log('URL:', url.href);
-    console.log('Query params:', url.search);
-    console.log('All params:', Object.fromEntries(url.searchParams));
-
     // Validate session
     const headersList = await headers();
     let session;
@@ -55,8 +50,6 @@ export async function POST(request: NextRequest): Promise<Response> {
     if (url.searchParams.has('traffic.limit')) {
       trafficQuery.limit = parseInt(url.searchParams.get('traffic.limit') || '30');
     }
-
-    console.log('Parsed traffic query:', trafficQuery);
 
     // Fetch data
     const [nestResponse, sessionSummary, trafficStats] = await Promise.all([

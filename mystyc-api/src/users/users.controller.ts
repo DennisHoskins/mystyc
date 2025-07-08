@@ -189,9 +189,6 @@ export class UsersController {
     @Headers('x-internal-secret') internalSecret: string,
     @Req() request: Request
   ): Promise<{ success: boolean; message: string }> {
-
-    console.log("SECRET: ", process.env.INTERNAL_API_SECRET);
-    
     // Verify internal secret
     if (!internalSecret || internalSecret !== process.env.INTERNAL_API_SECRET) {
       throw new UnauthorizedException('Invalid internal secret');

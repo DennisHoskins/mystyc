@@ -8,11 +8,9 @@ interface SessionsDevicesTableProps {
   label?: string;
   data: SessionDevice[];
   loading: boolean;
-  error: string | null;
   currentPage: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
-  onRetry: () => void;
   onRefresh: () => void;
 }
 
@@ -20,11 +18,9 @@ export default function SessionsDevicesTable({
   label,
   data,
   loading,
-  error,
   currentPage,
   hasMore,
   onPageChange,
-  onRetry,
   onRefresh
 }: SessionsDevicesTableProps) {
   const columns: Column<SessionDevice>[] = [
@@ -38,11 +34,9 @@ export default function SessionsDevicesTable({
       data={data}
       columns={columns}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       hasMore={hasMore}
       onPageChange={onPageChange}
-      onRetry={onRetry}
       onRefresh={onRefresh}
       emptyMessage="No Session Devices found."
     />

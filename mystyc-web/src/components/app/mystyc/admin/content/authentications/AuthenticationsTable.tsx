@@ -9,12 +9,10 @@ interface AuthenticationsTableProps {
   label?: string;
   data: AuthEvent[];
   loading: boolean;
-  error: string | null;
   currentPage: number;
   totalPages: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
-  onRetry: () => void;
   onRefresh: () => void;
   hideUserColumn?: boolean;
 }
@@ -23,12 +21,10 @@ export default function AuthenticationsTable({
   label,
   data,
   loading,
-  error,
   currentPage,
   totalPages,
   hasMore,
   onPageChange,
-  onRetry,
   onRefresh,
   hideUserColumn = false
 }: AuthenticationsTableProps) {
@@ -59,12 +55,10 @@ export default function AuthenticationsTable({
       data={data}
       columns={columns}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       totalPages={totalPages}
       hasMore={hasMore}
       onPageChange={onPageChange}
-      onRetry={onRetry}
       onRefresh={onRefresh}
       emptyMessage="No Authentications found."
     />

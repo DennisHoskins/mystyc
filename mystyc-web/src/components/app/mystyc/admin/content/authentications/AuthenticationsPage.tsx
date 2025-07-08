@@ -68,6 +68,8 @@ export default function AuthenticationsPage() {
 
   return (
     <AdminListLayout
+      error={error}
+      onRetry={() => loadAuthEvents(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={AuthenticationIcon}
       title={`Authentication`}
@@ -99,12 +101,10 @@ export default function AuthenticationsPage() {
         <AuthenticationsTable 
           data={authEvents}
           loading={loading}
-          error={error}
           currentPage={currentPage}
           totalPages={totalPages}
           hasMore={hasMore}
           onPageChange={loadAuthEvents}
-          onRetry={() => loadAuthEvents(currentPage)}
           onRefresh={() => loadAuthEvents(currentPage)}
         />
       }

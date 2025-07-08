@@ -68,6 +68,8 @@ export default function NotificationsPage() {
 
   return (
    <AdminListLayout
+      error={error}
+      onRetry={() => loadNotifications(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={NotificationIcon}
       title={`Notifications`}
@@ -99,12 +101,10 @@ export default function NotificationsPage() {
         <NotificationsTable 
           data={notifications}
           loading={loading}
-          error={error}
           currentPage={currentPage}
           totalPages={totalPages}
           hasMore={hasMore}
           onPageChange={loadNotifications}
-          onRetry={() => loadNotifications(currentPage)}
           onRefresh={() => loadNotifications(currentPage)}
         />
       }

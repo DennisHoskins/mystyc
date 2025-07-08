@@ -7,6 +7,7 @@ import { AuthEvent } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import AuthenticationsTable from '@/components/app/mystyc/admin/content/authentications/AuthenticationsTable';
+import AdminErrorPage from '../../../../ui/AdminError';
 
 interface DeviceAuthEventsTableProps {
   deviceId: string;
@@ -65,16 +66,24 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
     return null;
   }
 
+  if (error) {
+    return (
+      <AdminErrorPage
+        title='Unable to load device auth events'
+        error={error}
+        onRetry={() => loadDeviceAuthEvents(0)}
+      />
+    )
+  }
+
   return (
     <AuthenticationsTable
       data={authEvents}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       totalPages={totalPages}
       hasMore={hasMore}
       onPageChange={loadDeviceAuthEvents}
-      onRetry={() => loadDeviceAuthEvents(currentPage)}
       onRefresh={() => loadDeviceAuthEvents(currentPage)}
     />
   );

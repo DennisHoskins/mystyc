@@ -69,6 +69,8 @@ export default function UsersPage() {
 
   return (
    <AdminListLayout
+      error={error}
+      onRetry={() => loadUsers(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={UsersIcon}
       description="Manage user accounts, permissions, and profile information"
@@ -99,13 +101,11 @@ export default function UsersPage() {
         <UsersTable 
           data={users}
           loading={loading}
-          error={error}
           currentPage={currentPage}
           totalPages={totalPages}
           totalItems={totalItems}
           hasMore={hasMore}
           onPageChange={loadUsers}
-          onRetry={() => loadUsers(currentPage)}
           onRefresh={() => loadUsers(currentPage)}
         />
       }

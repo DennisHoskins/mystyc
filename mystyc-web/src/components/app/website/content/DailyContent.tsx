@@ -14,9 +14,6 @@ export default function DailyContent() {
 
   const loadDailyContent = async () => {
     const reply = await apiClient.getDailyContent();
-
-console.log("DAILY CONTENT:", reply);
-
     setData(reply);
   }
 

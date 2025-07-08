@@ -11,26 +11,28 @@ interface PieDataItem {
 
 interface PieChartWithLegendProps {
   title: string;
+  label?: boolean;
   data: PieDataItem[];
   colors?: string[];
   showPercentage?: boolean;
-  height?: number;
+  height?: number | string;
 }
 
 const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
 
 export default function PieChartWithLegend({ 
   title, 
+  label = true,
   data, 
   colors = DEFAULT_COLORS, 
   showPercentage = true,
-  height
+  height = '100%'
 }: PieChartWithLegendProps) {
   return (
-    <div className='flex flex-col flex-1'>
-      <h4 className="text-sm font-medium text-gray-700 mb-2">{title}</h4>
-      <div className="flex items-center justify-between bg-gray-50 py-2 rounded-md grow">
-        <ResponsiveContainer width="60%" height={height}>
+    <div className='flex flex-col flex-1 bg-gray-50 py-2 rounded-md'>
+      {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mb-2">{title}</h4>}
+      <div className="flex items-center justify-between grow">
+        <ResponsiveContainer width="50%" height={height}>
           <PieChart>
             <Pie
               data={data}
@@ -63,7 +65,7 @@ export default function PieChartWithLegend({
                 className="w-2 h-2 rounded-full mr-2" 
                 style={{ backgroundColor: item.color || colors[index % colors.length] }}
               />
-              <span>
+              <span className='text-[10px]'>
                 {item.name}: {showPercentage && item.percentage ? `${item.percentage}%` : item.value}
               </span>
             </div>

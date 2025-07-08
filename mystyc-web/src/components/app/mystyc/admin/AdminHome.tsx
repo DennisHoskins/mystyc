@@ -6,6 +6,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
+import { AdminStatsResponse } from '@/interfaces';
 
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
@@ -13,12 +14,14 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import DashboardIcon from '@/components/app/mystyc/admin/ui/icons/DashboardIcon'
 import AdminDashboard from './content/dashboard/AdminDashboard';
-import { AdminStatsResponse } from '@/interfaces';
+import AdminError from '@/components/app/mystyc/admin/ui/AdminError';
 import SessionsDashboard from './content/dashboard/SessionsDashboard';
 
 export default function AdminHome() {
   const { setBusy } = useBusy();
   const { handleSessionError } = useSessionErrorHandler();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AdminStatsResponse | null>(null);
 
   // Default query parameters for comprehensive dashboard view
@@ -73,15 +76,12 @@ export default function AdminHome() {
 
   const loadDashboard = useCallback(async () => {
     try {
-      console.log("[AdminHome] loadDashboard");
-      setBusy(true);
+      setError(null);
+      setBusy(1000);
+      setLoading(true);
 
       const defaultQuery = getDefaultDashboardQuery();
-      console.log("[AdminHome] Using query parameters:", defaultQuery);
-
       const response = await apiClientAdmin.getDashboard(defaultQuery);
-      console.log("[AdminHome] loadDashboard --> response: ", response);
-
       setData(response)
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'AdminHome');
@@ -89,13 +89,40 @@ export default function AdminHome() {
         logger.error('Failed to load dashboard:', err);
       }
     } finally {
-      setBusy(false)
+      setBusy(false);
+      setLoading(false);
     }
   }, [setBusy, handleSessionError]);
 
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  if (loading) {
+    return null;
+  }
+
+  if (error) {
+    return(
+      <>
+        <Card className='mb-4'>
+          <div className='flex space-x-3 items-center mb-4'>
+            <div className='mt-1'>
+              <Avatar size={'medium'} icon={<DashboardIcon />} />
+            </div>
+            <Heading level={2}>Admin</Heading>
+          </div>
+          <hr />
+            <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+        </Card>
+        <AdminError 
+          title={"Unable to load dashboard"}
+          error={error} 
+          onRetry={loadDashboard}
+        />
+      </>
+    );
+  }
 
   return(
     <>
@@ -110,12 +137,10 @@ export default function AdminHome() {
           <hr />
             <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
         </Card>
-
         <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
           <SessionsDashboard data={data?.sessions} />
         </Card>
       </div>
-      
       <AdminDashboard data={data} />
     </>
   );

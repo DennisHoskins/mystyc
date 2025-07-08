@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 import AdminBreadcrumbs from '@/components/app/mystyc/admin/ui/AdminBreadcrumbs';
-import AdminError from '@/components/app/mystyc/admin/ui/AdminError'
+import AdminError from '@/components/app/mystyc/admin/ui/AdminError';
 import Heading from '@/components/ui/Heading';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
@@ -38,8 +38,8 @@ export default function AdminDetailLayout({
   if (error) {
     return (
       <>
-        <Card className={`order-1 lg:col-span-2 lg:order-none`}>
-          <div className='flex space-x-3 items-center mb-4'>
+        <Card className='mb-4'>
+          <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
               <div className='mt-1'>
                 <Avatar size={'medium'} icon={icon} />
@@ -91,7 +91,7 @@ export default function AdminDetailLayout({
           </Card>
         )}
 
-        <div className={`order-3 lg:col-span-2 lg:order-none space-y-4`}>
+        <div className={`order-3 lg:col-span-2 lg:order-none space-y-4 flex-1 grow`}>
           {sectionsContent}
         </div>
       </div>

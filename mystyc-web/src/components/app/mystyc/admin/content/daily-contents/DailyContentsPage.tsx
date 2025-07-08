@@ -70,6 +70,8 @@ export default function DailyContentPage() {
 
   return (
    <AdminListLayout
+      error={error}
+      onRetry={() => loadContent(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={DailyContentIcon}
       title="Daily Content"
@@ -101,13 +103,11 @@ export default function DailyContentPage() {
         <DailyContentTable 
           data={content}
           loading={loading}
-          error={error}
           currentPage={currentPage}
           totalPages={totalPages}
           totalItems={totalItems}
           hasMore={hasMore}
           onPageChange={loadContent}
-          onRetry={() => loadContent(currentPage)}
           onRefresh={() => loadContent(currentPage)}
         />
       }

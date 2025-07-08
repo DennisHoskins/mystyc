@@ -28,8 +28,6 @@ export async function POST(request: NextRequest) {
       logger.error('[server-logout] Unable to get Device Uid:', deviceId);
       return;
     }
-
-    console.log("SECRET: ", process.env.INTERNAL_API_SECRET);
     
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/server-logout`, {

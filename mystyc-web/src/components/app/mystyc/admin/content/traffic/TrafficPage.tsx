@@ -1,60 +1,101 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { TrafficStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
-import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
+import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import TrafficIcon from '@/components/app/mystyc/admin/ui/icons/TrafficIcon';
-import TrafficDashboard from '../dashboard/TrafficDashboard';
+import TrafficDetailsPanel from './content/TrafficDetailsPanel';
+import TrafficAnalyticsPanel from './content/TrafficAnalyticsPanel';
+import TrafficSidebarPanel from './content/TrafficSidebarPanel';
+import TrafficMainPanel from './content/TrafficMainPanel';
 
-export default function UsersPage() {
+export default function TrafficPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [data, setData] = useState<TrafficStats | null>(null);
+  const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const breadcrumbs = [
-    { label: 'Admin', href: '/admin' },
-    { label: 'Website Traffic' },
-  ];
-
-  const loadData = useCallback(async () => {
+  const loadTrafficStats = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
+      setLoading(true);
 
-      const data = await apiClientAdmin.getTrafficStats({});
-      setData(data);
+      const endDate = new Date();
+      const startDate = new Date(endDate);
+      startDate.setDate(endDate.getDate() - 29); // 30 days total including today
+
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+
+      const data = await apiClientAdmin.getTrafficStats({
+        startDate: startDateStr,
+        endDate: endDateStr,
+        maxRecords: 10000
+      });
+
+      setTrafficStats(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'TrafficPage');
       if (!wasSessionError) {
-        logger.error('Failed to load traffic:', err);
-        setError('Failed to load traffic. Please try again.');
+        logger.error('Failed to load traffic stats:', err);
+        setError('Failed to load traffic stats. Please try again.');
       }
     } finally {
       setBusy(false);
+      setLoading(false);
     }
   }, [setBusy, handleSessionError]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadTrafficStats();
+  }, [loadTrafficStats]);
+
+  const breadcrumbs = useMemo(() => [
+    { label: 'Admin', href: '/admin' },
+    { label: 'Website Traffic' },
+  ], []);
+
+  if (loading) {
+    return null;
+  }
+
+  if (!trafficStats) {
+    return (
+      <AdminItemLayout
+        error={'Traffic Statistics Not Found'}
+        onRetry={loadTrafficStats}
+        breadcrumbs={breadcrumbs}
+        icon={<TrafficIcon size={6}/>}
+        title={'Unknown Traffic Data'}
+      />
+    );
+  }
 
   return (
-   <AdminListLayout
+
+
+
+
+    <AdminItemLayout
+      error={error}
+      onRetry={loadTrafficStats}
       breadcrumbs={breadcrumbs}
-      icon={TrafficIcon}
-      description="Need a description"
-      sideContent={
-        <TrafficDashboard 
-          data={data} 
-          charts={['stats']}
-        />
-      }
+      icon={<TrafficIcon size={6} />}
+      title="Website Traffic Analytics"
+      headerContent={<TrafficDetailsPanel trafficStats={trafficStats} />}
+      sidebarContent={<TrafficSidebarPanel trafficStats={trafficStats} />}
+      sectionsContent={[
+        <TrafficAnalyticsPanel key='analytics' trafficStats={trafficStats} />
+      ]}
+      mainContent={<TrafficMainPanel trafficStats={trafficStats} />}
     />
   );
 }

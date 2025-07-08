@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
   const serverTimestamp = new Date();
   const clientDate = new Date(clientTimestamp);
 
-  // Enhanced deduplication - 30 minute window to catch strict mode and refreshes
+  // Deduplication - 30 minute window to catch strict mode and refreshes
   const THRESHOLD_SECS = 30 * 60; // 30 minutes
   const visitorId = session?.sessionId ?? session?.deviceId ?? 'anon';
   const dedupeKey = createDedupeKey(visitorId, pathname, userAgent, serverTimestamp);
@@ -153,6 +153,19 @@ export async function POST(request: NextRequest) {
     pipeline.hIncrBy(`analytics:browser_counts:${dateKey}`, parsedUA.browser, 1);
     pipeline.hIncrBy(`analytics:os_counts:${dateKey}`, parsedUA.os, 1);
     pipeline.hIncrBy(`analytics:devicetype_counts:${dateKey}`, parsedUA.deviceType, 1);
+    
+    // High-level browser-device combination
+    const simpleCombination = `${parsedUA.browser} ${parsedUA.deviceType}`;
+    pipeline.hIncrBy(`analytics:browser_device_counts:${dateKey}`, simpleCombination, 1);
+
+    // Detailed browser-device combinations
+    const browserDevice = `${parsedUA.browser}${parsedUA.browserVersion ? ` ${parsedUA.browserVersion.split('.')[0]}` : ''} ${parsedUA.deviceType}`;
+    const platformDevice = `${parsedUA.os}${parsedUA.osVersion ? ` ${parsedUA.osVersion.split('.')[0]}` : ''} ${parsedUA.deviceType}`;
+    const fullCombination = `${parsedUA.browser} ${parsedUA.os} ${parsedUA.deviceType}`;
+
+    pipeline.hIncrBy(`analytics:browser_device_detailed_counts:${dateKey}`, browserDevice, 1);
+    pipeline.hIncrBy(`analytics:platform_device_counts:${dateKey}`, platformDevice, 1);
+    pipeline.hIncrBy(`analytics:full_combination_counts:${dateKey}`, fullCombination, 1);
     
     // Timezone counters
     if (deviceInfo.timezone) {

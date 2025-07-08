@@ -7,18 +7,22 @@ import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChart
 import SimpleLineChart from '@/components/app/mystyc/admin/ui/charts/SimpleLineChart';
 import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarChart';
 
-type ChartType = 'stats' | 'visitors' | 'pages' | 'platforms' | 'browsers' | 'hourly' | 'dayofweek' | 'usertype';
+type ChartType = 'stats' | 'visitors' | 'pages' | 'types' | 'browsers' | 'hourly' | 'dayofweek' | 'usertype' | 'platform' | 'browserversions';
 
 interface TrafficDashboardProps {
   data?: TrafficStats | null;
   charts?: ChartType[];
-  height?: number;
+  height?: number | string;
+  layout?: string;
+  label?: boolean;
 }
 
 export default function TrafficDashboard({ 
   data, 
-  charts = ['stats', 'visitors', 'pages', 'platforms', 'browsers', 'hourly', 'dayofweek', 'usertype'],
-  height = 100
+  charts = ['stats', 'visitors', 'pages', 'types', 'browsers', 'hourly', 'dayofweek', 'usertype'],
+  height = '100%',
+  layout = 'horizontal',
+  label = true
 }: TrafficDashboardProps) {
   if (!data) {
     return null;
@@ -53,8 +57,8 @@ export default function TrafficDashboard({
     percentage: browser.percentage
   }));
 
-  // Transform device types/platforms for pie chart
-  const platformData = data.deviceTypes.map(device => ({
+  // Transform device types/types for pie chart
+  const typeData = data.deviceTypes.map(device => ({
     name: device.type.charAt(0).toUpperCase() + device.type.slice(1), // Capitalize
     value: device.count,
     percentage: device.percentage
@@ -75,6 +79,21 @@ export default function TrafficDashboard({
     visits: day.count
   }));
 
+  // Transform browser-device combinations for pie chart (top 6)
+  const browserDeviceData = data.browserDevices.slice(0, 6).map(combo => ({
+    name: combo.combination,
+    value: combo.count,
+    percentage: combo.percentage
+  }));
+
+  // Transform browser-device detailed for bar chart (top 8)
+  const browserVersionData = data.browserDevicesDetailed
+    .slice(0, 8)
+    .map(combo => ({
+      name: combo.combination.length > 15 ? combo.combination.substring(0, 15) + '...' : combo.combination,
+      visits: combo.count
+    }));
+
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
@@ -87,10 +106,11 @@ export default function TrafficDashboard({
     visitors: (
       <SimpleLineChart 
         title={`Visitor Trend (${data.visitors.dailyVisits.length} days)`}
+        label={label}
         data={visitorData}
-        height={height}
         dataKey="visits"
         xAxisKey="date"
+        height={height}
         color="#3b82f6"
         tooltipLabel="Visits"
         showXAxisTicks={false}
@@ -101,8 +121,10 @@ export default function TrafficDashboard({
     pages: (
       <SimpleBarChart 
         title="Top Pages"
+        label={label}
         data={pageData}
         height={height}
+        layout={layout}
         dataKey="visits"
         xAxisKey="name"
         color="#8b5cf6"
@@ -110,10 +132,11 @@ export default function TrafficDashboard({
         fontSize={10}
       />
     ),
-    platforms: (
+    types: (
       <PieChartWithLegend 
         title="Device Types"
-        data={platformData}
+        label={label}
+        data={typeData}
         height={height}
         showPercentage={true}
       />
@@ -121,6 +144,7 @@ export default function TrafficDashboard({
     browsers: (
       <PieChartWithLegend 
         title="Top Browsers"
+        label={label}
         data={browserData}
         height={height}
         showPercentage={true}
@@ -129,8 +153,10 @@ export default function TrafficDashboard({
     hourly: (
       <SimpleBarChart 
         title="Peak Hours (Top 12)"
+        label={label}
         data={hourlyData}
         height={height}
+        layout={layout}
         dataKey="visits"
         xAxisKey="hour"
         color="#f59e0b"
@@ -141,8 +167,10 @@ export default function TrafficDashboard({
     dayofweek: (
       <SimpleBarChart 
         title="Day of Week"
+        label={label}
         data={dayOfWeekData}
         height={height}
+        layout={layout}
         dataKey="visits"
         xAxisKey="day"
         color="#06b6d4"
@@ -153,16 +181,40 @@ export default function TrafficDashboard({
     usertype: (
       <PieChartWithLegend 
         title="User Types"
+        label={label}
         data={userTypeData}
         height={height}
         showPercentage={false}
         colors={['#3b82f6', '#10b981']}
       />
+    ),
+    platform: (
+      <PieChartWithLegend 
+        title="Top Platforms"
+        label={label}
+        data={browserDeviceData}
+        height={height}
+        showPercentage={true}
+      />
+    ),
+    browserversions: (
+      <SimpleBarChart 
+        title="Browser Versions"
+        label={label}
+        data={browserVersionData}
+        height={height}
+        layout={layout}
+        dataKey="visits"
+        xAxisKey="name"
+        color="#ef4444"
+        tooltipLabel="Visits"
+        fontSize={9}
+      />
     )
   };
 
   return (
-    <div className="@container grow flex flex-col">
+    <div className="@container w-full flex-1 flex flex-col">
       <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
         {charts.map((chartType) => (
           <div key={chartType} className='flex h-full'>

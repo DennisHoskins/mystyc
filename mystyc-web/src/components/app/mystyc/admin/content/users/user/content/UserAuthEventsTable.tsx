@@ -6,6 +6,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent } from '@/interfaces';
 import { logger } from '@/util/logger';
 
+import AdminErrorPage from '../../../../ui/AdminError';
 import AuthenticationsTable from '@/components/app/mystyc/admin/content/authentications/AuthenticationsTable';
 
 interface UserAuthEventsTableProps {
@@ -65,17 +66,25 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
     return null;
   }
 
+  if (error) {
+    return (
+      <AdminErrorPage
+        title='Unable to load user auth events'
+        error={error}
+        onRetry={() => loadUserAuthEvents(0)}
+      />
+    )
+  }
+
   return (
     <AuthenticationsTable
       hideUserColumn={true}
       data={authEvents}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       totalPages={totalPages}
       hasMore={hasMore}
       onPageChange={loadUserAuthEvents}
-      onRetry={() => loadUserAuthEvents(currentPage)}
       onRefresh={() => loadUserAuthEvents(currentPage)}
     />
   );

@@ -9,11 +9,9 @@ interface SessionsTableProps {
   label?: string;
   data: Session[];
   loading: boolean;
-  error: string | null;
   currentPage: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
-  onRetry: () => void;
   onRefresh: () => void;
 }
 
@@ -21,11 +19,9 @@ export default function SessionsTable({
   label,
   data,
   loading,
-  error,
   currentPage,
   hasMore,
   onPageChange,
-  onRetry,
   onRefresh
 }: SessionsTableProps) {
   const columns: Column<Session>[] = [
@@ -41,11 +37,9 @@ export default function SessionsTable({
       data={data}
       columns={columns}
       loading={loading}
-      error={error}
       currentPage={currentPage}
       hasMore={hasMore}
       onPageChange={onPageChange}
-      onRetry={onRetry}
       onRefresh={onRefresh}
       emptyMessage="No Sessions found."
     />

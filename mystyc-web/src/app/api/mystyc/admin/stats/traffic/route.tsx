@@ -11,12 +11,19 @@ export async function POST(request: NextRequest): Promise<Response> {
   logger.log('[getTrafficStats] Request started');
 
   try {
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    const query: AdminTrafficStatsQuery = {
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      maxRecords: searchParams.get('maxRecords') ? parseInt(searchParams.get('maxRecords')!) : undefined
+    };
+
     // Parse request body
     const body = await request.json();
-    const { deviceInfo, clientTimestamp, ...query } = body as { 
-      deviceInfo: any; 
-      clientTimestamp: string; 
-    } & AdminTrafficStatsQuery;
+    const { deviceInfo, clientTimestamp } = body;    
 
     logger.log('[getTrafficStats] Query parameters:', query);
 
@@ -67,7 +74,11 @@ export async function POST(request: NextRequest): Promise<Response> {
       oses: [],
       deviceTypes: [],
       timezones: [],
-      languages: []
+      languages: [],
+      browserDevices: [],
+      browserDevicesDetailed: [],
+      platformDevices: [],
+      fullCombinations: []
     };
 
     return NextResponse.json(emptyStats);

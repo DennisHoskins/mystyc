@@ -17,16 +17,8 @@ type AggregatedData<T = string> = Array<{ name: T; count: number; percentage?: n
 export async function buildTrafficStats(
   query: AdminTrafficStatsQuery = {}
 ): Promise<TrafficStats> {
-  console.log('[buildTrafficStats] STARTING with query:', query);
-  
   const dateRange = calculateDateRange(query);
   const maxRecords = query.maxRecords ?? 50;
-
-  console.log('[buildTrafficStats] Date range calculated:', {
-    startDate: dateRange.startDate.toISOString().split('T')[0],
-    endDate: dateRange.endDate.toISOString().split('T')[0],
-    totalDays: dateRange.dateKeys.length
-  });
 
   try {
     // Fetch all data in parallel for better performance
@@ -42,7 +34,11 @@ export async function buildTrafficStats(
       oses,
       deviceTypes,
       timezones,
-      languages
+      languages,
+      browserDevices,
+      browserDevicesDetailed,
+      platformDevices,
+      fullCombinations
     ] = await Promise.all([
       getDailyVisits(dateRange),
       getAggregatedData('path_counts', dateRange, maxRecords),
@@ -55,7 +51,11 @@ export async function buildTrafficStats(
       getAggregatedData('os_counts', dateRange, maxRecords),
       getAggregatedData('devicetype_counts', dateRange, maxRecords),
       getAggregatedData('timezone_counts', dateRange, maxRecords),
-      getAggregatedData('language_counts', dateRange, maxRecords)
+      getAggregatedData('language_counts', dateRange, maxRecords),
+      getAggregatedData('browser_device_counts', dateRange, maxRecords),
+      getAggregatedData('browser_device_detailed_counts', dateRange, maxRecords),
+      getAggregatedData('platform_device_counts', dateRange, maxRecords),
+      getAggregatedData('full_combination_counts', dateRange, maxRecords)
     ]);
 
     const totalVisits = dailyVisits.reduce((sum, v) => sum + v.count, 0);
@@ -72,7 +72,27 @@ export async function buildTrafficStats(
       oses: addPercentages(oses, totalVisits).map(o => ({ os: o.name, count: o.count, percentage: o.percentage })),
       deviceTypes: addPercentages(deviceTypes, totalVisits).map(dt => ({ type: dt.name, count: dt.count, percentage: dt.percentage })),
       timezones: addPercentages(timezones, totalVisits).map(tz => ({ timezone: tz.name, count: tz.count, percentage: tz.percentage })),
-      languages: addPercentages(languages, totalVisits).map(l => ({ language: l.name, count: l.count, percentage: l.percentage }))
+      languages: addPercentages(languages, totalVisits).map(l => ({ language: l.name, count: l.count, percentage: l.percentage })),
+      browserDevices: addPercentages(browserDevices, totalVisits).map(bd => ({ 
+        combination: bd.name, 
+        count: bd.count, 
+        percentage: bd.percentage 
+      })),
+      browserDevicesDetailed: addPercentages(browserDevicesDetailed, totalVisits).map(bd => ({ 
+        combination: bd.name, 
+        count: bd.count, 
+        percentage: bd.percentage 
+      })),
+      platformDevices: addPercentages(platformDevices, totalVisits).map(pd => ({ 
+        combination: pd.name, 
+        count: pd.count, 
+        percentage: pd.percentage 
+      })),
+      fullCombinations: addPercentages(fullCombinations, totalVisits).map(fc => ({ 
+        combination: fc.name, 
+        count: fc.count, 
+        percentage: fc.percentage 
+      }))
     };
 
     logger.log('[buildTrafficStats] Stats generated successfully', {
@@ -125,14 +145,6 @@ function calculateDateRange(query: AdminTrafficStatsQuery): DateRange {
   for (let dt = new Date(startDate); dt <= endDate; dt.setDate(dt.getDate() + 1)) {
     dateKeys.push(dt.toISOString().split('T')[0]);
   }
-
-  // Debug logging
-  console.log('[calculateDateRange] Date range calculated:', {
-    startDate: startDate.toISOString().split('T')[0],
-    endDate: endDate.toISOString().split('T')[0],
-    totalDays: dateKeys.length,
-    sampleDates: dateKeys.slice(0, 5)
-  });
 
   return { startDate, endDate, dateKeys };
 }
@@ -262,7 +274,11 @@ function getEmptyStats(): TrafficStats {
     oses: [],
     deviceTypes: [],
     timezones: [],
-    languages: []
+    languages: [],
+    browserDevices: [],
+    browserDevicesDetailed: [],
+    platformDevices: [],
+    fullCombinations: []
   };
 }
 

@@ -68,6 +68,8 @@ export default function DevicesPage() {
 
   return (
     <AdminListLayout
+      error={error}
+      onRetry={() => loadDevices(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={DevicesIcon}
       title={`Devices`}
@@ -99,12 +101,10 @@ export default function DevicesPage() {
         <DevicesTable
           data={devices}
           loading={loading}
-          error={error}
           currentPage={currentPage}
           totalPages={totalPages}
           hasMore={hasMore}
           onPageChange={loadDevices}
-          onRetry={() => loadDevices(currentPage)}
           onRefresh={() => loadDevices(currentPage)}
         />
       }

@@ -20,9 +20,9 @@ export default function MystycMenu() {
   if (!user.isOnboard) {
     return (
       <>
-        <div className='h-full border-b mb-4'>
+        <div className='h-full'>
           {user.isAdmin && (
-            <>
+            <div className='h-full mb-4 border-b '>
               <div className='pb-4 block md:hidden'>
                 <AdminMenu />
               </div>
@@ -32,7 +32,7 @@ export default function MystycMenu() {
                   Admin Dashboard
                 </MenuItem>
               </div>
-            </>
+            </div>
           )}
         </div>
         <div className="flex flex-col">

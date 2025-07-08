@@ -23,6 +23,7 @@ import ServerLogoutForm from '@/components/app/auth/ServerLogoutForm';
 import GlobalError from '@/components/layout/GlobalError';
 import Offline from '@/components/layout/Offline';
 import AdminSidebar from '@/components/app/mystyc/admin/ui/AdminSidebar';
+import { logger } from '@/util/logger'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -34,9 +35,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const setOnline = useAppStore((state) => state.setOnline);  
   const isOnline = useAppStore((state) => state.isOnline);
 
-  console.log("");
-  console.log("mystyc: v2025-07-04:12:00");
-  console.log("");
+  logger.log("");
+  logger.log("mystyc: v2025-07-04:12:00");
+  logger.log("");
 
   useEffect(() => {
     apiClient.registerVisit(pathname)

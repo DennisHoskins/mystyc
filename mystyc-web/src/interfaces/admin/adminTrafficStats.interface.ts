@@ -63,6 +63,30 @@ export interface LanguageCount {
   percentage: number;
 }
 
+export interface BrowserDeviceCount {
+  combination: string; // e.g. "chrome mobile", "safari desktop"
+  count: number;
+  percentage: number;
+}
+
+export interface BrowserDeviceDetailedCount {
+  combination: string; // e.g. "chrome 120 mobile", "safari 17 desktop"
+  count: number;
+  percentage: number;
+}
+
+export interface PlatformDeviceCount {
+  combination: string; // e.g. "iOS 17 mobile", "Windows 11 desktop"
+  count: number;
+  percentage: number;
+}
+
+export interface FullCombinationCount {
+  combination: string; // e.g. "chrome iOS mobile", "firefox Windows desktop"
+  count: number;
+  percentage: number;
+}
+
 export interface UserTypeCounts {
   visitor: number;
   authenticated: number;
@@ -84,4 +108,8 @@ export interface TrafficStats {
   deviceTypes: DeviceTypeCount[];
   timezones: TimezoneCount[];
   languages: LanguageCount[];
+  browserDevices: BrowserDeviceCount[];
+  browserDevicesDetailed: BrowserDeviceDetailedCount[];
+  platformDevices: PlatformDeviceCount[];
+  fullCombinations: FullCombinationCount[];
 }
