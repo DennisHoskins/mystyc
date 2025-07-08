@@ -3,7 +3,7 @@
 import Section from "@/components/ui/Section";
 import Hero from "@/components/app/website/content/Hero";
 import Features from "@/components/app/website/content/Features";
-import DailyContent from "@/components/app/website/content/DailyContent";
+import WebsiteContent from "@/components/app/website/content/Content";
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
         <Features />
       </Section>
       <Section background="gray">
-        <DailyContent />
+        <WebsiteContent />
       </Section>
     </>
   );

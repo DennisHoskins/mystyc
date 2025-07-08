@@ -20,7 +20,7 @@ export default function AdminSidebar({
     { icon: <LayoutDashboard />, label: 'Dashboard', href: '/admin' },
     { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
     { icon: <Globe />, label: 'Traffic', href: '/admin/traffic' },
-    { icon: <CalendarDays />, label: 'Daily Content', href: '/admin/daily-content' },
+    { icon: <CalendarDays />, label: 'Content', href: '/admin/content' },
     { icon: <Users />, label: 'Users', href: '/admin/users' },
     { icon: <MonitorSmartphone />, label: 'Devices', href: '/admin/devices' },
     { icon: <Bell />, label: 'Notifications', href: '/admin/notifications' },

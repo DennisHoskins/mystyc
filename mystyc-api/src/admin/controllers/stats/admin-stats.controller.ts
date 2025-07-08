@@ -8,7 +8,7 @@ import { AdminUsersStatsService } from '@/admin/services/admin-users-stats.servi
 import { AdminDevicesStatsService } from '@/admin/services/admin-devices-stats.service';
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from '@/admin/services/admin-notifications-stats.service';
-import { AdminDailyContentStatsService } from '@/admin/services/admin-daily-content-stats.service';
+import { AdminContentStatsService } from '@/admin/services/admin-content-stats.service';
 import { AdminStatsQueryDto } from '@/admin/dto/stats/admin-stats-query.dto'; 
 import { AdminStatsResponse } from '@/common/interfaces/admin/adminStats.interface';
 
@@ -19,7 +19,7 @@ export class AdminStatsController {
     private readonly adminDevicesStatsService: AdminDevicesStatsService,
     private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
-    private readonly adminDailyContentStatsService: AdminDailyContentStatsService,
+    private readonly adminContentStatsService: AdminContentStatsService,
   ) {}
 
   @Get()
@@ -53,11 +53,11 @@ export class AdminStatsController {
       this.adminNotificationsStatsService.getPatternStats(query.notification),
     ]);
 
-    const [dailyContentSummary, sources, generation, timeline] = await Promise.all([
-      this.adminDailyContentStatsService.getSummaryStats(query.dailyContent),
-      this.adminDailyContentStatsService.getSourceStats(query.dailyContent),
-      this.adminDailyContentStatsService.getGenerationStats(query.dailyContent),
-      this.adminDailyContentStatsService.getTimelineStats(query.dailyContent),
+    const [contentSummary, sources, generation, timeline] = await Promise.all([
+      this.adminContentStatsService.getSummaryStats(query.content),
+      this.adminContentStatsService.getSourceStats(query.content),
+      this.adminContentStatsService.getGenerationStats(query.content),
+      this.adminContentStatsService.getTimelineStats(query.content),
     ]);
 
     return {
@@ -84,8 +84,8 @@ export class AdminStatsController {
         engagement,
         pattern: notificaitionPattern
       },
-      dailyContent: {
-        summary: dailyContentSummary,
+      content: {
+        summary: contentSummary,
         sources,
         generation,
         timeline

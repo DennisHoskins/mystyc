@@ -1,6 +1,6 @@
 import { User } from '@/interfaces/user.interface';
 import { Device } from '@/interfaces/device.interface';
-import { DailyContent } from '@/interfaces/dailyContent.interface';
+import { Content } from '@/interfaces/content.interface';
 import { logger } from '@/util/logger'
 
 const serverRoot: string = '/api';
@@ -86,8 +86,8 @@ export const apiClient = {
     });
   },
 
-  async getDailyContent(): Promise<DailyContent> {
-    const response = await fetch(`${serverRoot}/daily-content`, {
+  async getContent(): Promise<Content> {
+    const response = await fetch(`${serverRoot}/content`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -97,7 +97,7 @@ export const apiClient = {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(errorData.message || 'getDailyContent failed', response.status, errorData.type);
+      throw new ApiError(errorData.message || 'getContent failed', response.status, errorData.type);
     }
 
     return response.json();

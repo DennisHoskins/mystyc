@@ -41,7 +41,7 @@ export default function AdminHome() {
       },
       users: {
         period: 'daily' as const,
-        limit: 60,
+        limit: 10000,
         maxRecords: 10000
       },
       devices: {
@@ -56,20 +56,20 @@ export default function AdminHome() {
       },
       notifications: {
         period: 'daily' as const,
-        limit: 60,
+        limit: 10000,
         startDate: startDateStr,
         endDate: endDateStr,
         maxRecords: 50000
       },
-      dailyContent: {
+      content: {
         period: 'daily' as const,
-        limit: 60,
+        limit: 10000,
         startDate: startDateStr,
-        endDate
+        endDate: endDateStr
       },
       sessions: {
         startDate: startDateStr,
-        endDate
+        endDate: endDateStr
       }
     };
   };

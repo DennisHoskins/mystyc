@@ -48,6 +48,9 @@ export const DeviceSchema = SchemaFactory.createForClass(Device);
 DeviceSchema.index({ firebaseUid: 1, deviceId: 1 }, { unique: true });
 DeviceSchema.index({ fcmToken: 1 });
 
+// Notification Broadcast index
+DeviceSchema.index({ timezone: 1, fcmToken: 1 });
+
 // Admin stats performance indexes
 DeviceSchema.index({ deviceId: 1 }); // For notifications lookup (if not already exists)
 DeviceSchema.index({ platform: 1, updatedAt: -1 }); // Platform stats over time

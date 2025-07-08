@@ -12,7 +12,7 @@ export * from './authEventLoginRegister.interface';
 export * from './authEventLogout.interface';
 export * from './updateFcmToken.interface';
 export * from './notification.interface';
-export * from './dailyContent.interface';
+export * from './content.interface';
 export * from './admin/adminQuery.interface';
 export * from './admin/adminStatsQuery.interface';
 export * from './admin/adminStatsResponse.interface';
@@ -20,7 +20,7 @@ export * from './admin/adminUserStats.interface';
 export * from './admin/adminDeviceStats.interface';
 export * from './admin/adminAuthEventStats.interface';
 export * from './admin/adminNotificationStats.interface';
-export * from './admin/adminDailyContentStats.interface';
+export * from './admin/adminContentStats.interface';
 export * from './admin/adminSessionStats.interface';
 export * from './admin/adminTrafficStats.interface';
 

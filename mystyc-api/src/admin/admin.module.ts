@@ -5,7 +5,7 @@ import {
   AdminUsersController,
   AdminDevicesController,
   AdminAuthEventsController,
-  AdminDailyContentController,
+  AdminContentController,
   AdminNotificationsController,
   AdminNotificationsSendController,
   AdminStatsController,
@@ -13,25 +13,25 @@ import {
   AdminDevicesStatsController,
   AdminAuthEventsStatsController,
   AdminNotificationsStatsController,
-  AdminDailyContentStatsController,
+  AdminContentStatsController,
 } from './controllers';
 import { UsersModule } from '@/users/users.module';
 import { DevicesModule } from '@/devices/devices.module';
 import { AuthEventsModule } from '@/auth-events/auth-events.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
-import { DailyContentModule } from '@/daily-content/daily-content.module';
+import { ContentModule } from '@/content/content.module';
 import { AdminUsersStatsService } from './services/admin-users-stats.service';
 import { AdminDevicesStatsService } from './services/admin-devices-stats.service';
 import { AdminAuthEventsStatsService } from './services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from './services/admin-notifications-stats.service';
-import { AdminDailyContentStatsService } from './services/admin-daily-content-stats.service';
+import { AdminContentStatsService } from './services/admin-content-stats.service';
 import { FirebaseModule } from '@/auth/firebase.module';
 
 import { UserProfileSchema } from '@/users/schemas/userProfile.schema';
 import { DeviceSchema } from '@/devices/schemas/device.schema';
 import { AuthEventSchema } from '@/auth-events/schemas/auth-event.schema';
 import { NotificationSchema } from '@/notifications/schemas/notification.schema';
-import { DailyContentSchema } from '@/daily-content/schemas/daily-content.schema';
+import { ContentSchema } from '@/content/schemas/content.schema';
 
 @Module({
   imports: [
@@ -39,21 +39,21 @@ import { DailyContentSchema } from '@/daily-content/schemas/daily-content.schema
     DevicesModule, 
     AuthEventsModule, 
     NotificationsModule, 
-    DailyContentModule, 
+    ContentModule, 
     FirebaseModule,
     MongooseModule.forFeature([
       { name: 'UserProfile', schema: UserProfileSchema },
       { name: 'Device', schema: DeviceSchema },
       { name: 'AuthEvent', schema: AuthEventSchema },
       { name: 'Notification', schema: NotificationSchema },
-      { name: 'DailyContent', schema: DailyContentSchema },
+      { name: 'Content', schema: ContentSchema },
     ])
   ],
   controllers: [
     AdminUsersController,
     AdminDevicesController,
     AdminAuthEventsController,
-    AdminDailyContentController,
+    AdminContentController,
     AdminNotificationsController,
     AdminNotificationsSendController,
     AdminStatsController,
@@ -61,14 +61,14 @@ import { DailyContentSchema } from '@/daily-content/schemas/daily-content.schema
     AdminDevicesStatsController,
     AdminAuthEventsStatsController,
     AdminNotificationsStatsController,
-    AdminDailyContentStatsController,
+    AdminContentStatsController,
   ],
   providers: [
     AdminUsersStatsService,
     AdminDevicesStatsService,
     AdminAuthEventsStatsService,
     AdminNotificationsStatsService,
-    AdminDailyContentStatsService,
+    AdminContentStatsService,
   ]
 })
 export class AdminModule {}

@@ -12,7 +12,7 @@ import { DevicesModule } from '@/devices/devices.module';
 import { AuthEventsModule } from '@/auth-events/auth-events.module';
 import { AdminModule } from '@/admin/admin.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
-import { DailyContentModule } from '@/daily-content/daily-content.module';
+import { ContentModule } from '@/content/content.module';
 
 import { AppController } from '@/app.controller';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
@@ -44,7 +44,7 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
     AuthEventsModule,
     AdminModule,
     NotificationsModule,
-    DailyContentModule,
+    ContentModule,
   ],
   controllers: [AppController],
   providers: [

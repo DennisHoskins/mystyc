@@ -2,12 +2,12 @@ import { UserStats } from './adminUserStats.interface'
 import { DeviceStats } from './adminDeviceStats.interface'
 import { AuthEventStats } from './adminAuthEventStats.interface'
 import { NotificationStats } from './adminNotificationStats.interface'
-import { DailyContentStats } from './adminDailyContentStats.interface'
+import { ContentStats } from './adminContentStats.interface'
 
 export interface AdminStatsResponse {
   users : UserStats,
   devices : DeviceStats
   authEvents : AuthEventStats,
   notifications : NotificationStats,
-  dailyContent : DailyContentStats,
+  content : ContentStats,
 }

@@ -91,8 +91,8 @@ export class AdminUsersStatsService {
        dateLabel = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
      }
 
-     const count = resultMap.get(dateLabel) || 0;
-     data.push({ date: dateLabel, count });
+    const count = (resultMap.get(dateLabel) as number) || 0;
+    data.push({ date: dateLabel, count });
    }
 
    return {

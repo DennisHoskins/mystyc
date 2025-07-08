@@ -8,7 +8,7 @@ import {
   DeviceSession, 
   AuthEvent, 
   Notification, 
-  DailyContent, 
+  Content, 
   AdminStatsResponse, 
   SessionStats, 
   TrafficStats, 
@@ -16,7 +16,7 @@ import {
   DeviceStats, 
   AuthEventStats, 
   NotificationStats,
-  DailyContentStats,
+  ContentStats,
 } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
@@ -26,7 +26,7 @@ import { AdminUserStatsQuery } from '@/interfaces/admin/adminUserStatsQuery.inte
 import { AdminDeviceStatsQuery } from '@/interfaces/admin/adminDeviceStatsQuery.interface';
 import { AdminAuthEventStatsQuery } from '@/interfaces/admin/adminAuthEventStatsQuery.interface';
 import { AdminNotificationStatsQuery } from '@/interfaces/admin/adminNotificationStatsQuery.interface';
-import { AdminDailyContentStatsQuery } from '@/interfaces/admin/adminDailyContentStatsQuery.interface';
+import { AdminContentStatsQuery } from '@/interfaces/admin/adminContentStatsQuery.interface';
 
 const API_BASE_URL = '/api';
 
@@ -189,13 +189,13 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getDailyContentStats = async (query?: AdminDailyContentStatsQuery): Promise<DailyContentStats> => {
-    logger.log('getDailyContentStats called', { query });
+  getContentStats = async (query?: AdminContentStatsQuery): Promise<ContentStats> => {
+    logger.log('getContentStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('dailyContent', query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/daily-content${queryString}`);
+      const queryString = this.buildSingleStatsQuery('content', query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/content${queryString}`);
     } catch (error) {
-      logger.error('getDailyContentStats failed:', error);
+      logger.error('getContentStats failed:', error);
       throw error;
     }
   };
@@ -291,25 +291,25 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
 
   //
-  // Daily Content Management
+  //  Content Management
   //
-  getDailyContents = async (query?: AdminQuery): Promise<PaginatedResponse<DailyContent>> => {
-    logger.log('getDailyContents called', { query });
+  getContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+    logger.log('getContents called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/daily-content${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/content${queryString}`);
     } catch (error) {
-      logger.error('getDailyContents failed:', error);
+      logger.error('getContents failed:', error);
       throw error;
     }
   };
 
-  getDailyContent = async (firebaseUid: string): Promise<DailyContent> => {
-    logger.log('getDailyContent called', { firebaseUid });
+  getContent = async (firebaseUid: string): Promise<Content> => {
+    logger.log('getContent called', { firebaseUid });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/daily-content/${firebaseUid}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/content/${firebaseUid}`);
     } catch (error) {
-      logger.error('getDailyContent failed:', error);
+      logger.error('getContent failed:', error);
       throw error;
     }
   };
