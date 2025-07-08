@@ -82,6 +82,7 @@ export default function AdminHome() {
 
       const defaultQuery = getDefaultDashboardQuery();
       const response = await apiClientAdmin.getDashboard(defaultQuery);
+
       setData(response)
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'AdminHome');
