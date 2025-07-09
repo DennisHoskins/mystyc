@@ -1,7 +1,7 @@
 import redis from '@/app/api/redisClient';
 import { logger } from '@/util/logger';
 import { TrafficStats } from '@/interfaces';
-import { AdminStatsQuery } from '@/interfaces/admin/adminStatsQuery.interface';
+import { AdminStatsQuery } from '@/interfaces/admin/stats/adminStatsQuery.interface';
 
 type DateRange = {
   startDate: Date;

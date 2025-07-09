@@ -1,6 +1,6 @@
 'use client';
 
-import { AdminStatsResponse } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
@@ -22,7 +22,7 @@ import ContentDashboard from './ContentDashboard';
 import AuthenticationDashboard from './AuthenticationDashboard';
 import NotificationsDashboard from './NotificationsDashboard';
 
-export default function AdminDashboard({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponse> | null }) {
+export default function AdminDashboard({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
     return;
   }

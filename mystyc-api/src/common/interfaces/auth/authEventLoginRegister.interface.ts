@@ -1,4 +1,4 @@
-import { Device } from './device.interface';
+import { Device } from '../device.interface';
 
 export interface AuthEventLoginRegister {
   device: Device;

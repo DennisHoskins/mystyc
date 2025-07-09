@@ -12,7 +12,7 @@ import {
   ProfileCompletionStats,
   UserActivityStats,
   UserStats
-} from '@/common/interfaces/admin/adminUserStats.interface';
+} from '@/common/interfaces/admin/stats/adminUserStats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 

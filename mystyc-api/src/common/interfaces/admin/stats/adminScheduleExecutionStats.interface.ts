@@ -18,7 +18,27 @@ export interface ScheduleExecutionStats {
   eventType: 'content' | 'notification';
 }
 
-export interface ScheduleExecutionHistoryStats {
+export interface ScheduleStatsResponse {
+  overall: {
+    totalExecutions: number;
+    successRate: number;
+    contentGenerationRate: number;
+    notificationDeliveryRate: number;
+  };
+  byEventType: Array<{
+    eventName: string;
+    executions: number;
+    successRate: number;
+  }>;
+  recentExecutions: Array<{
+    executedAt: Date;
+    eventName: string;
+    status: string;
+    timezone?: string;
+  }>;
+}
+
+export interface ScheduleHistoryStats {
   scheduleId: string;
   eventName: string;
   eventType: 'content' | 'notification';

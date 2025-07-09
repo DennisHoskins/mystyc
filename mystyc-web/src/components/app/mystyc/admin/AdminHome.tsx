@@ -6,7 +6,7 @@ import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
-import { AdminStatsResponse } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces';
 
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
@@ -39,7 +39,7 @@ export default function AdminHome() {
   const { handleSessionError } = useSessionErrorHandler();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState<StatsResponseWithQuery<AdminStatsResponse> | null>(null);
+  const [stats, setStats] = useState<StatsResponseWithQuery<AdminStatsResponseExtended> | null>(null);
 
   const loadDashboard = useCallback(async () => {
     try {

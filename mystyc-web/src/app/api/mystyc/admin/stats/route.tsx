@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { authTokenManager } from '@/app/api/authTokenManager';
 import { buildTrafficStats } from './trafficStats.service';
-import { AdminStatsResponse } from '@/interfaces/admin/adminStatsResponse.interface';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats/adminStatsResponseWithSessions.interface';
 import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       buildTrafficStats(queryParams)
     ]);
 
-    const response: AdminStatsResponse = {
+    const response: AdminStatsResponseExtended = {
       ...nestResponse,
       sessions: sessionSummary,
       traffic: trafficStats

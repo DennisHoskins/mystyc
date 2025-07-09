@@ -3,8 +3,8 @@ import { headers } from 'next/headers';
 
 import { sessionManager } from '@/app/api/sessionManager';
 import { authTokenManager } from '@/app/api/authTokenManager';
-import { logger } from '@/util/logger';
 import { ContentStats } from '@/interfaces';
+import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest): Promise<Response> {
   logger.log(`[getContentStats] Get attempt started`);

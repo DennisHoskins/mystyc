@@ -5,7 +5,7 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/adminQuery.interface';
+import { AdminListResponse } from '@/common/interfaces/admin/adminListResponse.interface';
 import { logger } from '@/common/util/logger';
 
 export abstract class AdminController<T> {

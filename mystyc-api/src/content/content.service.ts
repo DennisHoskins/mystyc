@@ -157,7 +157,7 @@ export class ContentService {
 
       const contentData = {
         date,
-        scheduleId, // Store the scheduleId if provided
+        scheduleId,
         ...template,
         data: dataItems,
         sources: ['static'],
@@ -205,9 +205,86 @@ export class ContentService {
   }
 
   /**
+   * Generate content update for a specific date
+   */
+  async generateUpdate(date: string, scheduleId?: string): Promise<ContentInterface> {
+    logger.info('Generating new content update', { date, scheduleId }, 'ContentService');
+
+    const startTime = Date.now();
+
+    try {
+      // Use date as seed for consistent content
+      const dateHash = date.split('-').reduce((acc, part) => acc + parseInt(part), 0);
+      const template = this.contentTemplates[dateHash % this.contentTemplates.length];
+
+      const dataItems = template.data.map(obj => {
+        const key = Object.keys(obj)[0];
+        return { key, value: obj[key] };
+      });      
+
+      const contentData = {
+        date,
+        scheduleId,
+        ...template,
+        data: dataItems,
+        sources: ['static'],
+        status: 'generated' as const,
+        generatedAt: new Date(),
+        generationDuration: Date.now() - startTime
+      };
+
+      contentData.title += " --  Update";
+
+      const content = new this.contentModel(contentData);
+      const saved = await content.save();
+
+      logger.info('Content update generated successfully', { 
+        date, 
+        scheduleId,
+        contentId: saved._id.toString(),
+        duration: saved.generationDuration 
+      }, 'ContentService');
+
+      return this.transformToInterface(saved);
+    } catch (error) {
+      logger.error('Content update generation failed', {
+        date,
+        scheduleId,
+        error: error.message
+      }, 'ContentService');
+
+      // Save failed attempt
+      const failedContent = new this.contentModel({
+        date,
+        scheduleId, // Store scheduleId even for failed content
+        title: 'Content Unavailable',
+        message: 'We apologize, today\'s mystical updates are clouded. Please return tomorrow.',
+        imageUrl: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229',
+        data: [],
+        sources: ['static'],
+        status: 'failed',
+        error: error.message,
+        generatedAt: new Date(),
+        generationDuration: Date.now() - startTime
+      });
+
+      const saved = await failedContent.save();
+      return this.transformToInterface(saved);
+    }
+  }
+
+  /**
    * Get today's content (convenience method)
    */
   async getTodaysContent(): Promise<ContentInterface> {
+    const today = new Date().toISOString().split('T')[0];
+    return this.getOrGenerateContent(today);
+  }
+
+  /**
+   * Get today's content (convenience method)
+   */
+  async getTodaysUpdate(): Promise<ContentInterface> {
     const today = new Date().toISOString().split('T')[0];
     return this.getOrGenerateContent(today);
   }
@@ -260,7 +337,7 @@ export class ContentService {
     return {
       _id: doc._id.toString(),
       date: doc.date,
-      scheduleId: doc.scheduleId, // Include scheduleId in interface
+      scheduleId: doc.scheduleId,
       title: doc.title,
       message: doc.message,
       data: doc.data,

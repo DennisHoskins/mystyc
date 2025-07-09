@@ -11,7 +11,7 @@ import { NotificationsService } from '@/notifications/notifications.service';
 import { Device } from '@/common/interfaces/device.interface';
 import { UserProfile } from '@/common/interfaces/userProfile.interface';
 import { AdminController } from './admin.controller';
-import { AdminListResponse } from '@/common/interfaces/admin/adminQuery.interface';
+import { AdminListResponse } from '@/common/interfaces/admin/adminListResponse.interface';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 

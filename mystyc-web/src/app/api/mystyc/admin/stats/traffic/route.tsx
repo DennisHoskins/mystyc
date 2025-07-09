@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { sessionManager } from '@/app/api/sessionManager';
 import { buildTrafficStats } from '../trafficStats.service';
 import { TrafficStats } from '@/interfaces';
-import { AdminStatsQuery } from '@/interfaces/admin/adminStatsQuery.interface';
+import { AdminStatsQuery } from '@/interfaces/admin/stats/adminStatsQuery.interface';
 import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest): Promise<Response> {

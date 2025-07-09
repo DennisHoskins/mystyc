@@ -3,52 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ScheduleService } from '@/schedule/schedule.service';
 import { ScheduleDocument } from '@/schedule/schemas/schedule.schema';
+import { 
+  ScheduleSummaryStats,
+  SchedulePerformanceStats,
+  ScheduleFailureStats,
+  ScheduleStats
+} from '@/common/interfaces/admin/stats/adminScheduleStats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
-
-export interface ScheduleSummaryStats {
-  totalSchedules: number;
-  enabledSchedules: number;
-  disabledSchedules: number;
-  timezoneAwareSchedules: number;
-  globalSchedules: number;
-  schedulesByEventName: Array<{
-    eventName: string;
-    count: number;
-    enabled: number;
-    disabled: number;
-  }>;
-}
-
-export interface SchedulePerformanceStats {
-  totalSchedules: number;
-  executionStats: Array<{
-    eventName: string;
-    timezoneAware: boolean;
-    scheduledTime: string; // "HH:MM" format
-    enabled: boolean;
-    lastUpdated: Date;
-  }>;
-  upcomingExecutions: Array<{
-    eventName: string;
-    scheduledTime: string;
-    nextExecution: Date;
-    timezoneAware: boolean;
-  }>;
-}
-
-export interface ScheduleFailureStats {
-  // Note: We don't currently track execution failures in the schedule collection
-  // This would require a separate execution log collection in the future
-  totalSchedules: number;
-  monitoringNote: string;
-}
-
-export interface ScheduleStats {
-  summary: ScheduleSummaryStats;
-  performance: SchedulePerformanceStats;
-  failures: ScheduleFailureStats;
-}
 
 @Injectable()
 export class AdminScheduleStatsService {
@@ -77,8 +39,7 @@ export class AdminScheduleStatsService {
             },
             globalSchedules: {
               $sum: { $cond: [{ $eq: ['$timezone_aware', false] }, 1, 0] }
-            },
-            eventNames: { $addToSet: '$event_name' }
+            }
           }
         }
       ];
@@ -108,7 +69,7 @@ export class AdminScheduleStatsService {
             _id: 0
           }
         },
-        { $sort: { count: -1 } }
+        { $sort: { count: -1 as -1 } }
       ];
 
       const eventNameResults = await this.scheduleModel.aggregate(eventNamePipeline);
@@ -164,7 +125,6 @@ export class AdminScheduleStatsService {
       }));
 
       // Calculate upcoming executions (next 24 hours)
-      const now = new Date();
       const upcomingExecutions = schedules
         .filter(schedule => schedule.enabled)
         .map(schedule => {
@@ -204,11 +164,9 @@ export class AdminScheduleStatsService {
     try {
       const totalSchedules = await this.scheduleModel.countDocuments();
 
-      // Note: Currently we don't track execution failures in a separate collection
-      // This is a placeholder for future enhancement
       return {
         totalSchedules,
-        monitoringNote: 'Schedule execution failures are currently logged but not tracked in database. Consider implementing execution log collection for detailed failure analysis.'
+        monitoringNote: 'Schedule execution tracking is now available via AdminScheduleExecutionStatsService. This service provides basic schedule configuration data.'
       };
 
     } catch (error) {

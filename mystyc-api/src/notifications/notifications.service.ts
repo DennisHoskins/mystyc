@@ -47,7 +47,7 @@ export class NotificationsService {
       const content = await this.contentService.getTodaysContent();
       
       // Prepare notification content
-      const title = content.title || 'Daily Mystyc Update';
+      const title = content.title || 'Daily Mystyc Insights';
       const body = this.truncateMessage(content.message, 100) || 'Your daily mystical insights are ready!';
 
       logger.debug('Prepared notification content', {
@@ -85,6 +85,76 @@ export class NotificationsService {
 
     } catch (error) {
       logger.error('Scheduled notifications failed', {
+        scheduleId: payload.scheduleId,
+        taskId: payload.taskId,
+        timezone: payload.timezone || 'global',
+        error: error.message,
+        scheduledTime: payload.scheduledTime,
+        executionId: payload.executionId
+      }, 'NotificationsService');
+
+      // Don't throw - we don't want to crash the scheduler
+    }
+  }
+  /**
+   * Handles scheduled notification update sending events from Schedule Service
+   * @param payload - Event payload containing schedule context and scheduleId
+   */
+  @OnEvent('notifications.send.update')
+  async handleScheduledUpdate(payload: any): Promise<void> {
+    logger.info('Handling scheduled notification updates', {
+      scheduleId: payload.scheduleId,
+      taskId: payload.taskId,
+      eventName: payload.eventName,
+      timezone: payload.timezone || 'global',
+      scheduledTime: payload.scheduledTime,
+      executedAt: payload.executedAt,
+      executionId: payload.executionId
+    }, 'NotificationsService');
+
+    try {
+      // Get today's content for notification
+      const content = await this.contentService.getTodaysUpdate();
+      
+      // Prepare notification content
+      const title = 'Daily Mystyc Update';
+      const body = this.truncateMessage(content.message, 100) || 'Your daily mystical pdate is ready!';
+
+      logger.debug('Prepared notification update content', {
+        scheduleId: payload.scheduleId,
+        title,
+        bodyLength: body.length,
+        contentDate: content.date,
+        contentStatus: content.status
+      }, 'NotificationsService');
+
+      const results = {
+        success: true,
+        sent: 0,
+        failed: 0,
+        details: []
+      };
+
+      if (payload.timezone) {
+        // Send to devices in specific timezone
+        await this.sendToTimezone(payload.timezone, title, body, results, payload.scheduleId);
+      } else {
+        // Send broadcast to all devices
+        await this.sendBroadcast(title, body, results, 'system', payload.scheduleId);
+      }
+
+      logger.info('Scheduled notification updates completed', {
+        scheduleId: payload.scheduleId,
+        taskId: payload.taskId,
+        timezone: payload.timezone || 'global',
+        sent: results.sent,
+        failed: results.failed,
+        totalAttempts: results.sent + results.failed,
+        executionId: payload.executionId
+      }, 'NotificationsService');
+
+    } catch (error) {
+      logger.error('Scheduled notificatio updates failed', {
         scheduleId: payload.scheduleId,
         taskId: payload.taskId,
         timezone: payload.timezone || 'global',

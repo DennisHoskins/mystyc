@@ -16,7 +16,7 @@ import { AdminController } from './admin.controller';
 import { CreateScheduleDto } from '@/schedule/dto/create-schedule.dto';
 import { UpdateScheduleDto } from '@/schedule/dto/update-schedule.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/adminQuery.interface';
+import { AdminListResponse } from '@/common/interfaces/admin/adminListResponse.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/schedules')

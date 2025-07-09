@@ -10,8 +10,9 @@ import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-
 import { AdminNotificationsStatsService } from '@/admin/services/admin-notifications-stats.service';
 import { AdminContentStatsService } from '@/admin/services/admin-content-stats.service';
 import { AdminScheduleStatsService } from '@/admin/services/admin-schedule-stats.service';
+import { AdminScheduleExecutionStatsService } from '@/admin/services/admin-schedule-execution-stats.service';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
-import { AdminStatsResponse } from '@/common/interfaces/admin/adminStats.interface';
+import { AdminStatsResponse } from '@/common/interfaces/admin/stats/adminStatsResponse.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/stats')
@@ -23,6 +24,7 @@ export class AdminStatsController {
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
     private readonly adminContentStatsService: AdminContentStatsService,
     private readonly adminScheduleStatsService: AdminScheduleStatsService,
+    private readonly adminScheduleExecutionStatsService: AdminScheduleExecutionStatsService,
   ) {}
 
   @Get()
@@ -68,10 +70,12 @@ export class AdminStatsController {
       this.adminContentStatsService.getTimelineStats(query),
     ]);
 
-    const [scheduleSummary, performance, failures] = await Promise.all([
+    // Original schedule stats + NEW execution stats
+    const [scheduleSummary, performance, failures, executions] = await Promise.all([
       this.adminScheduleStatsService.getSummaryStats(query),
       this.adminScheduleStatsService.getPerformanceStats(query),
       this.adminScheduleStatsService.getFailureStats(query),
+      this.adminScheduleExecutionStatsService.getOverallScheduleStats(query),
     ]);
 
     return {
@@ -101,7 +105,8 @@ export class AdminStatsController {
       schedule: {
         summary: scheduleSummary,
         performance,
-        failures
+        failures,
+        executions
       },
       content: {
         summary: contentSummary,

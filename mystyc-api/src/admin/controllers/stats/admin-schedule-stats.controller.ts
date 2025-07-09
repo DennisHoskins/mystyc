@@ -13,7 +13,7 @@ import {
   SchedulePerformanceStats,
   ScheduleFailureStats,
   ScheduleStats
-} from '@/admin/services/admin-schedule-stats.service';
+} from '@/common/interfaces/admin/stats/adminScheduleStats.interface';
 import { AdminController } from '../admin.controller';
 
 @Controller('admin/stats/schedules')
