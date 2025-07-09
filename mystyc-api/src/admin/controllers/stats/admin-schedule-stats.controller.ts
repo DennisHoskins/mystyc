@@ -7,7 +7,7 @@ import { UserRole } from '@/common/enums/roles.enum';
 import { ScheduleService } from '@/schedule/schedule.service';
 import { AdminScheduleStatsService } from '@/admin/services/admin-schedule-stats.service';
 import { Schedule } from '@/common/interfaces/schedule.interface';
-import { ScheduleStatsQueryDto } from '@/admin/dto/stats/admin-schedule-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { 
   ScheduleSummaryStats,
   SchedulePerformanceStats,
@@ -30,7 +30,7 @@ export class AdminScheduleStatsController extends AdminController<Schedule> {
   @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getStats(@Query() query: ScheduleStatsQueryDto): Promise<ScheduleStats> {
+  async getStats(@Query() query: AdminStatsQueryDto): Promise<ScheduleStats> {
     const [summary, performance, failures] = await Promise.all([
       this.adminScheduleStatsService.getSummaryStats(query),
       this.adminScheduleStatsService.getPerformanceStats(query),
@@ -46,21 +46,21 @@ export class AdminScheduleStatsController extends AdminController<Schedule> {
   @Get('summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getSummaryStats(@Query() query: ScheduleStatsQueryDto): Promise<ScheduleSummaryStats> {
+  async getSummaryStats(@Query() query: AdminStatsQueryDto): Promise<ScheduleSummaryStats> {
     return this.adminScheduleStatsService.getSummaryStats(query);
   }
 
   @Get('performance')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getPerformanceStats(@Query() query: ScheduleStatsQueryDto): Promise<SchedulePerformanceStats> {
+  async getPerformanceStats(@Query() query: AdminStatsQueryDto): Promise<SchedulePerformanceStats> {
     return this.adminScheduleStatsService.getPerformanceStats(query);
   }
 
   @Get('failures')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getFailureStats(@Query() query: ScheduleStatsQueryDto): Promise<ScheduleFailureStats> {
+  async getFailureStats(@Query() query: AdminStatsQueryDto): Promise<ScheduleFailureStats> {
     return this.adminScheduleStatsService.getFailureStats(query);
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock } from 'lucide-react';
+import { Clock, Calendar } from 'lucide-react';
 
 import { ScheduleStats } from '@/interfaces';
 
@@ -8,18 +8,20 @@ import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChartWithLegend';
 import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarChart';
 
-type ChartType = 'stats' | 'events' | 'upcoming' | 'status';
+type ChartType = 'stats' | 'events' | 'upcoming' | 'status' | 'health' | 'next';
 
 interface ScheduleDashboardProps {
   data?: ScheduleStats | null;
   charts?: ChartType[];
   height?: number;
+  className?: string | null;
 }
 
 export default function ScheduleDashboard({ 
   data, 
-  charts = ['stats', 'events', 'upcoming', 'status'],
-  height = 100
+  charts = ['stats', 'events', 'upcoming', 'health', 'status', 'next'], 
+  height = 100,
+  className
 }: ScheduleDashboardProps) {
   if (!data) {
     return null;
@@ -35,11 +37,12 @@ export default function ScheduleDashboard({
   // Transform upcoming executions for bar chart (next 5)
   const upcomingData = data.performance.upcomingExecutions.slice(0, 5).map(execution => {
     const now = new Date();
-    const diff = execution.nextExecution.getTime() - now.getTime();
+    const nextExecution = new Date(execution.nextExecution); // Convert to Date
+    const diff = nextExecution.getTime() - now.getTime();
     const hoursUntil = Math.max(0, Math.round(diff / (1000 * 60 * 60)));
     
     return {
-      name: execution.eventName.split('.').pop() || execution.eventName, // Get last part
+      name: execution.eventName.split('.').pop() || execution.eventName,
       hoursUntil: hoursUntil
     };
   });
@@ -93,61 +96,93 @@ export default function ScheduleDashboard({
         showPercentage={false}
         colors={['#10b981', '#ef4444']}
       />
+    ), 
+    health: (
+      <div className="@container grow flex flex-col">
+        {/* Schedule Health Indicator */}
+        <div className={`inline-flex items-center w-full p-4 rounded-lg justify-center md:justify-start ${
+          data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'
+        }`}>
+          <Clock className={`w-6 h-6 mr-4 ${
+            data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'
+          }`} />
+          <div>
+            <div className={`overflow-hidden font-medium text-sm leading-relaxed ${
+              data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'
+            }`}>
+              <span className='@[200px]:hidden'>
+                {data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
+              </span>
+              <span className='hidden @[200px]:inline'>
+                {data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
+              </span>
+            </div>
+
+            <div className="text-xs text-gray-600 leading-relaxed">
+              <span className='@[200px]:hidden'>
+                {data.summary.enabledSchedules > 0 
+                  ? `${data.summary.enabledSchedules} running`
+                  : 'All disabled'
+                }
+              </span>
+              <span className='hidden @[200px]:inline'>
+                {data.summary.enabledSchedules > 0 
+                  ? `${data.summary.enabledSchedules} schedules running`
+                  : 'All schedules are disabled'
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+    next: (
+      <div className="@container grow flex flex-col">
+        {/* Schedule Health Indicator */}
+        <div className={`inline-flex items-center w-full p-4 rounded-lg bg-gray-50 justify-center md:justify-start `}>
+          <Calendar className="w-6 h-6 mr-4 text-gray-500" />
+          <div>
+            <div className={`overflow-hidden font-medium text-sm `}>
+              <span className='@[200px]:hidden'>
+                Next:
+              </span>
+              <span className='hidden @[200px]:inline'>
+                Next Execution:
+              </span>
+            </div>
+
+            <div className="text-xs text-gray-600 leading-relaxed">
+              <span className='@[200px]:hidden'>
+                {data.performance.upcomingExecutions[0].scheduledTime}
+                <br />
+                {data.performance.upcomingExecutions[0].timezoneAware && (
+                  <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone</span>
+                )}
+              </span>
+              <span className='hidden @[200px]:inline'>
+                {data.performance.upcomingExecutions[0].eventName}
+                <br />
+                {data.performance.upcomingExecutions[0].scheduledTime}
+                {data.performance.upcomingExecutions[0].timezoneAware && (
+                  <span className=" ml-2 text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone-aware</span>
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     )
   };
 
   return (
-    <div className="@container grow flex flex-col">
-      {/* Schedule Health Indicator */}
-      <div className="mb-4 flex items-center justify-center">
-        <div className={`inline-flex items-center px-4 py-2 rounded-lg ${
-          data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'
-        }`}>
-          <Clock className={`w-5 h-5 mr-2 ${
-            data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'
-          }`} />
-          <div className="text-center">
-            <div className={`font-medium text-sm ${
-              data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'
-            }`}>
-              {data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
-            </div>
-            <div className="text-xs text-gray-600">
-              {data.summary.enabledSchedules > 0 
-                ? `${data.summary.enabledSchedules} schedules running`
-                : 'All schedules are disabled'
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Charts Grid */}
-      <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
+    <div className={`@container grow flex flex-col ${className}`}>
+      <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-2`}>
         {charts.map((chartType) => (
-          <div key={chartType} className='flex h-full'>
-            {chartComponents[chartType]}
+            <div key={chartType} className='flex h-full'>
+          {chartComponents[chartType]}
           </div>
         ))}
       </div>
-
-      {/* Next Execution Details */}
-      {data.performance.upcomingExecutions.length > 0 && (
-        <div className="mt-4 bg-gray-50 rounded-lg p-3">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center">
-              <Clock className="w-4 h-4 mr-1 text-gray-500" />
-              <span className="font-medium text-gray-700">Next Execution:</span>
-            </div>
-            <div className="text-gray-600">
-              {data.performance.upcomingExecutions[0].eventName} at {data.performance.upcomingExecutions[0].scheduledTime}
-              {data.performance.upcomingExecutions[0].timezoneAware && (
-                <span className="ml-1 text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone-aware</span>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

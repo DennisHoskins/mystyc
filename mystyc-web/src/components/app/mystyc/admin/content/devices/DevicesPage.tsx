@@ -72,7 +72,6 @@ export default function DevicesPage() {
       onRetry={() => loadDevices(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={DevicesIcon}
-      title={`Devices`}
       description="Monitor and control connected devices, view status device configurations"
       sideContent={
         <DevicesDashboard 

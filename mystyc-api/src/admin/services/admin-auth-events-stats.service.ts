@@ -11,7 +11,7 @@ import {
   SessionDurationStats,
   GeographicDistributionStats
 } from '@/common/interfaces/admin/adminAuthEventStats.interface';
-import { AuthEventStatsQueryDto } from '@/admin/dto/stats/admin-auth-event-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AdminAuthEventsStatsService {
     private readonly userProfilesService: UserProfilesService,
   ) {}
 
-  async getSummaryStats(query?: AuthEventStatsQueryDto): Promise<AuthEventSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQueryDto): Promise<AuthEventSummaryStats> {
     logger.info('Generating auth event summary stats', { query }, 'AdminAuthEventsStatsService');
     
     try {
@@ -107,7 +107,7 @@ export class AdminAuthEventsStatsService {
     }
   }
 
-  async getPatternStats(query?: AuthEventStatsQueryDto): Promise<AuthenticationPatternsStats> {
+  async getPatternStats(query?: AdminStatsQueryDto): Promise<AuthenticationPatternsStats> {
     logger.info('Generating auth event pattern stats', { query }, 'AdminAuthEventsStatsService');
     
     try {
@@ -245,7 +245,7 @@ export class AdminAuthEventsStatsService {
     }
   }
 
-  async getSessionDurationStats(query?: AuthEventStatsQueryDto): Promise<SessionDurationStats> {
+  async getSessionDurationStats(query?: AdminStatsQueryDto): Promise<SessionDurationStats> {
     logger.info('Generating session duration stats', { query }, 'AdminAuthEventsStatsService');
     
     try {
@@ -456,7 +456,7 @@ export class AdminAuthEventsStatsService {
     }
   }
 
-  async getGeographicStats(query?: AuthEventStatsQueryDto): Promise<GeographicDistributionStats> {
+  async getGeographicStats(query?: AdminStatsQueryDto): Promise<GeographicDistributionStats> {
     logger.info('Generating geographic distribution stats', { query }, 'AdminAuthEventsStatsService');
     
     try {

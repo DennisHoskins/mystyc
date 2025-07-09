@@ -9,7 +9,7 @@ import {
   ContentSourceStats,
   ContentTimelineStats
 } from '@/common/interfaces/admin/adminContentStats.interface';
-import { ContentStatsQueryDto } from '@/admin/dto/stats/admin-content-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class AdminContentStatsService {
     private readonly contentService: ContentService,
   ) {}
 
-  async getSummaryStats(query?: ContentStatsQueryDto): Promise<ContentSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQueryDto): Promise<ContentSummaryStats> {
     logger.info('Generating content summary stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -113,7 +113,7 @@ export class AdminContentStatsService {
     }
   }
 
-  async getGenerationStats(query?: ContentStatsQueryDto): Promise<ContentGenerationStats> {
+  async getGenerationStats(query?: AdminStatsQueryDto): Promise<ContentGenerationStats> {
     logger.info('Generating content generation stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -226,7 +226,7 @@ export class AdminContentStatsService {
     }
   }
 
-  async getSourceStats(query?: ContentStatsQueryDto): Promise<ContentSourceStats> {
+  async getSourceStats(query?: AdminStatsQueryDto): Promise<ContentSourceStats> {
     logger.info('Generating content source stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -295,7 +295,7 @@ export class AdminContentStatsService {
     }
   }
 
-  async getTimelineStats(query?: ContentStatsQueryDto): Promise<ContentTimelineStats> {
+  async getTimelineStats(query?: AdminStatsQueryDto): Promise<ContentTimelineStats> {
     logger.info('Generating content timeline stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -365,7 +365,7 @@ export class AdminContentStatsService {
     }
   }
 
-  private buildDateFilter(query?: ContentStatsQueryDto): any {
+  private buildDateFilter(query?: AdminStatsQueryDto): any {
     if (!query?.startDate && !query?.endDate) return null;
     
     const filter: any = {};

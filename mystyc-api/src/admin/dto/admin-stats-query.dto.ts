@@ -1,7 +1,7 @@
-import { IsOptional, IsIn, Min, Max } from 'class-validator';
+import { IsOptional, IsIn, Min, Max, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class ScheduleStatsQueryDto {
+export class AdminStatsQueryDto {
   @IsOptional()
   @IsIn(['daily', 'weekly', 'monthly'])
   period?: 'daily' | 'weekly' | 'monthly' = 'daily';
@@ -18,8 +18,10 @@ export class ScheduleStatsQueryDto {
   maxRecords?: number = 10000;
 
   @IsOptional()
+  @IsString()
   startDate?: string;
 
   @IsOptional()
+  @IsString()
   endDate?: string;
 }

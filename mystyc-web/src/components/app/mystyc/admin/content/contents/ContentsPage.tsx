@@ -74,7 +74,6 @@ export default function ContentPage() {
       onRetry={() => loadContent(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={ContentIcon}
-      title=" Content"
       description="Manage content entries: view, edit, and monitor generation status, sources, and performance metrics"
       sideContent={
         <ContentDashboard 

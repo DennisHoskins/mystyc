@@ -80,10 +80,6 @@ export default function TrafficPage() {
   }
 
   return (
-
-
-
-
     <AdminItemLayout
       error={error}
       onRetry={loadTrafficStats}

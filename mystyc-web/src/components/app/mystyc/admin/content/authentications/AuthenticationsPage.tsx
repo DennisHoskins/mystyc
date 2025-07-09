@@ -72,7 +72,6 @@ export default function AuthenticationsPage() {
       onRetry={() => loadAuthEvents(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={AuthenticationIcon}
-      title={`Authentication`}
       description="Track user login and logout events, monitor authentication patterns, and review access history"
       sideContent={
         <AuthenticationDashboard 

@@ -15,7 +15,7 @@ import {
   DeviceStats
 } from '@/common/interfaces/admin/adminDeviceStats.interface';
 import { AdminController } from '../admin.controller';
-import { AdminDeviceStatsQueryDto } from '../../dto/stats/admin-device-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 
 @Controller('admin/stats/devices')
 export class AdminDevicesStatsController extends AdminController<Device> {
@@ -31,7 +31,7 @@ export class AdminDevicesStatsController extends AdminController<Device> {
   @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getStats(@Query() query: AdminDeviceStatsQueryDto): Promise<DeviceStats> {
+  async getStats(@Query() query: AdminStatsQueryDto): Promise<DeviceStats> {
      const [platforms, fcmTokens, activity, userAgents] = await Promise.all([
       this.adminDevicesStatsService.getPlatformStats(query),
       this.adminDevicesStatsService.getFcmTokenStats(query),
@@ -49,28 +49,28 @@ export class AdminDevicesStatsController extends AdminController<Device> {
   @Get('stats/platform')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getPlatformStats(@Query() query: AdminDeviceStatsQueryDto): Promise<PlatformStatsResponse> {
+  async getPlatformStats(@Query() query: AdminStatsQueryDto): Promise<PlatformStatsResponse> {
     return this.adminDevicesStatsService.getPlatformStats(query);
   }
 
   @Get('stats/fcmToken')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getFcmTokenStats(@Query() query: AdminDeviceStatsQueryDto): Promise<FcmTokenStats> {
+  async getFcmTokenStats(@Query() query: AdminStatsQueryDto): Promise<FcmTokenStats> {
     return this.adminDevicesStatsService.getFcmTokenStats(query);
   }
 
   @Get('stats/activity')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getActivityStats(@Query() query: AdminDeviceStatsQueryDto): Promise<DeviceActivityStats> {
+  async getActivityStats(@Query() query: AdminStatsQueryDto): Promise<DeviceActivityStats> {
     return this.adminDevicesStatsService.getDeviceActivityStats(query);
   }
 
   @Get('stats/userAgent')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getUserAgentStats(@Query() query: AdminDeviceStatsQueryDto): Promise<DeviceUserAgentStats> {
+  async getUserAgentStats(@Query() query: AdminStatsQueryDto): Promise<DeviceUserAgentStats> {
     return this.adminDevicesStatsService.getUserAgentStats(query);
   }
 }

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ScheduleService } from '@/schedule/schedule.service';
 import { ScheduleDocument } from '@/schedule/schemas/schedule.schema';
-import { ScheduleStatsQueryDto } from '@/admin/dto/stats/admin-schedule-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 
 export interface ScheduleSummaryStats {
@@ -57,7 +57,7 @@ export class AdminScheduleStatsService {
     private readonly scheduleService: ScheduleService,
   ) {}
 
-  async getSummaryStats(query?: ScheduleStatsQueryDto): Promise<ScheduleSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQueryDto): Promise<ScheduleSummaryStats> {
     logger.info('Generating schedule summary stats', { query }, 'AdminScheduleStatsService');
     
     try {
@@ -146,7 +146,7 @@ export class AdminScheduleStatsService {
     }
   }
 
-  async getPerformanceStats(query?: ScheduleStatsQueryDto): Promise<SchedulePerformanceStats> {
+  async getPerformanceStats(query?: AdminStatsQueryDto): Promise<SchedulePerformanceStats> {
     logger.info('Generating schedule performance stats', { query }, 'AdminScheduleStatsService');
     
     try {
@@ -198,7 +198,7 @@ export class AdminScheduleStatsService {
     }
   }
 
-  async getFailureStats(query?: ScheduleStatsQueryDto): Promise<ScheduleFailureStats> {
+  async getFailureStats(query?: AdminStatsQueryDto): Promise<ScheduleFailureStats> {
     logger.info('Generating schedule failure stats', { query }, 'AdminScheduleStatsService');
     
     try {
@@ -219,7 +219,7 @@ export class AdminScheduleStatsService {
     }
   }
 
-  async getStats(query?: ScheduleStatsQueryDto): Promise<ScheduleStats> {
+  async getStats(query?: AdminStatsQueryDto): Promise<ScheduleStats> {
     logger.info('Generating comprehensive schedule stats', { query }, 'AdminScheduleStatsService');
     
     try {

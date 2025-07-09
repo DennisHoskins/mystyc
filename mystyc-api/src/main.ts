@@ -67,6 +67,7 @@ async function bootstrap() {
   // Configure global validation pipe with transformation and detailed error handling
   app.useGlobalPipes(new ValidationPipe({
     transform: true, // Transform incoming payloads to match DTO types
+    transformOptions: { enableImplicitConversion: true },
     whitelist: true, // Strip properties that don't have decorators
     forbidNonWhitelisted: true, // Throw error if non-whitelisted properties are present
     exceptionFactory: (errors) => {

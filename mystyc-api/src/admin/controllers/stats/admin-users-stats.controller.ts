@@ -14,7 +14,7 @@ import {
   UserStats
 } from '@/common/interfaces/admin/adminUserStats.interface';
 import { AdminController } from '../admin.controller';
-import { AdminUserStatsQueryDto } from '../../dto/stats/admin-user-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 
 @Controller('admin/stats/users')
 export class AdminUsersStatsController extends AdminController<UserProfile> {
@@ -30,7 +30,7 @@ export class AdminUsersStatsController extends AdminController<UserProfile> {
   @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getStats(@Query() query: AdminUserStatsQueryDto): Promise<UserStats> {
+  async getStats(@Query() query: AdminStatsQueryDto): Promise<UserStats> {
     const [registrations, profiles, activity] = await Promise.all([
       this.adminUsersStatsService.getRegistrationStats(query),
       this.adminUsersStatsService.getProfileCompletionStats(query),
@@ -46,21 +46,21 @@ export class AdminUsersStatsController extends AdminController<UserProfile> {
   @Get('stats/registration')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getRegistrationStats(@Query() query: AdminUserStatsQueryDto): Promise<RegistrationStatsResponse> {
+  async getRegistrationStats(@Query() query: AdminStatsQueryDto): Promise<RegistrationStatsResponse> {
     return this.adminUsersStatsService.getRegistrationStats(query);
   }
 
   @Get('stats/profile-completion')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getProfileCompletionStats(@Query() query: AdminUserStatsQueryDto): Promise<ProfileCompletionStats> {
+  async getProfileCompletionStats(@Query() query: AdminStatsQueryDto): Promise<ProfileCompletionStats> {
     return this.adminUsersStatsService.getProfileCompletionStats(query);
   }
 
   @Get('stats/activity')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getActivityStats(@Query() query: AdminUserStatsQueryDto): Promise<UserActivityStats> {
+  async getActivityStats(@Query() query: AdminStatsQueryDto): Promise<UserActivityStats> {
     return this.adminUsersStatsService.getActivityStats(query);
   }
 }

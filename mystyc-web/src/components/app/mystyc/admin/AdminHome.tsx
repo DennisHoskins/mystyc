@@ -34,50 +34,10 @@ export default function AdminHome() {
     const endDateStr = endDate.toISOString().split('T')[0];
     
     return {
-      traffic: {
-        startDate: startDateStr,
-        endDate: endDateStr,
-        maxRecords: 10000
-      },
-      users: {
-        period: 'daily' as const,
-        limit: 10000,
-        maxRecords: 10000
-      },
-      devices: {
-        startDate: startDateStr,
-        endDate: endDateStr,
-        maxRecords: 5000
-      },
-      authEvents: {
-        startDate: startDateStr,
-        endDate: endDateStr,
-        maxRecords: 50000
-      },
-      notifications: {
-        period: 'daily' as const,
-        limit: 10000,
-        startDate: startDateStr,
-        endDate: endDateStr,
-        maxRecords: 50000
-      },
-      schedules: {
-        period: 'daily' as const,
-        limit: 10000,
-        startDate: startDateStr,
-        endDate: endDateStr
-      },
-      content: {
-        period: 'daily' as const,
-        limit: 10000,
-        startDate: startDateStr,
-        endDate: endDateStr
-      },
-      sessions: {
-        startDate: startDateStr,
-        endDate: endDateStr
-      }
-    };
+      startDate: startDateStr,
+      endDate: endDateStr,
+      maxRecords: 10000
+    }
   };
 
   const loadDashboard = useCallback(async () => {

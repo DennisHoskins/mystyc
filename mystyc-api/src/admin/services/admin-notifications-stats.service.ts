@@ -11,7 +11,7 @@ import {
   NotificationEngagementStats,
   NotificationPatternsStats
 } from '@/common/interfaces/admin/adminNotificationStats.interface';
-import { NotificationStatsQueryDto } from '@/admin/dto/stats/admin-notification-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AdminNotificationsStatsService {
     private readonly devicesService: DevicesService,
   ) {}
 
-  async getDeliveryStats(query?: NotificationStatsQueryDto): Promise<NotificationDeliveryStats> {
+  async getDeliveryStats(query?: AdminStatsQueryDto): Promise<NotificationDeliveryStats> {
     logger.info('Generating notification delivery stats', { query }, 'AdminNotificationsStatsService');
     
     try {
@@ -150,7 +150,7 @@ export class AdminNotificationsStatsService {
     }
   }
 
-  async getTypeStats(query?: NotificationStatsQueryDto): Promise<NotificationTypeStats> {
+  async getTypeStats(query?: AdminStatsQueryDto): Promise<NotificationTypeStats> {
     logger.info('Generating notification type stats', { query }, 'AdminNotificationsStatsService');
     
     try {
@@ -265,7 +265,7 @@ export class AdminNotificationsStatsService {
     }
   }
 
-  async getEngagementStats(query?: NotificationStatsQueryDto): Promise<NotificationEngagementStats> {
+  async getEngagementStats(query?: AdminStatsQueryDto): Promise<NotificationEngagementStats> {
     logger.info('Generating notification engagement stats', { query }, 'AdminNotificationsStatsService');
     
     try {
@@ -441,7 +441,7 @@ export class AdminNotificationsStatsService {
     }
   }
 
-  async getPatternStats(query?: NotificationStatsQueryDto): Promise<NotificationPatternsStats> {
+  async getPatternStats(query?: AdminStatsQueryDto): Promise<NotificationPatternsStats> {
     logger.info('Generating notification pattern stats', { query }, 'AdminNotificationsStatsService');
     
     try {

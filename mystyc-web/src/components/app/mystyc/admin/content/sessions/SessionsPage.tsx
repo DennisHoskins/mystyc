@@ -68,7 +68,6 @@ export default function SessionsPage() {
       onRetry={() => loadSessions(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={SessionIcon}
-      title={`Sessions`}
       description="View active user sessions and devices, monitor login activity, and manage session security settings"
        sideContent={
          <SessionsDashboard 

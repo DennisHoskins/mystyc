@@ -32,29 +32,14 @@ export async function POST(request: NextRequest): Promise<Response> {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    // Parse traffic query parameters from URL  
-    const trafficQuery: any = {};
-    
-    if (url.searchParams.has('traffic.startDate')) {
-      trafficQuery.startDate = url.searchParams.get('traffic.startDate');
-    }
-    if (url.searchParams.has('traffic.endDate')) {
-      trafficQuery.endDate = url.searchParams.get('traffic.endDate');
-    }
-    if (url.searchParams.has('traffic.maxRecords')) {
-      trafficQuery.maxRecords = parseInt(url.searchParams.get('traffic.maxRecords') || '50');
-    }
-    if (url.searchParams.has('traffic.period')) {
-      trafficQuery.period = url.searchParams.get('traffic.period');
-    }
-    if (url.searchParams.has('traffic.limit')) {
-      trafficQuery.limit = parseInt(url.searchParams.get('traffic.limit') || '30');
-    }
+    // Extract all query parameters
+    const queryParams = Object.fromEntries(url.searchParams.entries());
+    const queryString = url.searchParams.toString();
 
     // Fetch data
     const [nestResponse, sessionSummary, trafficStats] = await Promise.all([
-      // Nest backend
-      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/stats`, {
+      // Nest backend - pass through all query parameters
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/stats${queryString ? `?${queryString}` : ''}`, {
         method: 'GET',
         headers: {
           'Authorization': authTokenManager.createAuthHeader(session.authToken),
@@ -74,8 +59,8 @@ export async function POST(request: NextRequest): Promise<Response> {
         summary: { totalSessions, totalDevices }
       })),
 
-      // Traffic stats with parsed query
-      buildTrafficStats(trafficQuery)
+      // Traffic stats with same query parameters
+      buildTrafficStats(queryParams)
     ]);
 
     const response: AdminStatsResponse = {

@@ -25,13 +25,13 @@ export default function AdminMenu() {
           <Globe className="inline-block mr-2 h-4 w-4" />
           Traffic
         </MenuItem>
-        <MenuItem onClick={() => router.push('/admin/schedules')}>
+        <MenuItem onClick={() => router.push('/admin/scheduler')}>
           <Clock className="inline-block mr-2 h-4 w-4" />
-          Schedules
+          Scheduler
         </MenuItem>
         <MenuItem onClick={() => router.push('/admin/content')}>
           <Hash className="inline-block mr-2 h-4 w-4" />
-          Content
+          Content Generation
         </MenuItem>
         <MenuItem onClick={() => router.push('/admin/users')}>
           <Users className="inline-block mr-2 h-4 w-4" />

@@ -10,16 +10,18 @@ interface DashboardItemLayoutProps {
   title: string;
   link?: string | null;
   children: ReactNode;
+  className?: string | null;
 }
 
 export default function AdminDashboardItemLayout({
   icon,
   title,
   link,
-  children
+  children,
+  className,
 }: DashboardItemLayoutProps) {
   return (
-    <Card className="@container">
+    <Card className={`@container grow ${className}`}>
       <AdminDashboardHeader
         icon={icon}
         title={title}
@@ -28,7 +30,7 @@ export default function AdminDashboardItemLayout({
 
       <hr />
       
-      <div className="space-y-6 pt-4 mt-2 flex flex-1">
+      <div className="space-y-2 pt-4 flex flex-1 flex-col">
         {children}
       </div>
     </Card>

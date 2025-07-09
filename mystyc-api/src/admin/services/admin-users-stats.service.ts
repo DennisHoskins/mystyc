@@ -10,7 +10,7 @@ import {
  ProfileCompletionStats,
  UserActivityStats
 } from '@/common/interfaces/admin/adminUserStats.interface';
-import { AdminUserStatsQueryDto } from '@/admin/dto/stats/admin-user-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class AdminUsersStatsService {
    private readonly authEventsService: AuthEventsService,
  ) {}
 
- async getRegistrationStats(query?: AdminUserStatsQueryDto): Promise<RegistrationStatsResponse> {
+ async getRegistrationStats(query?: AdminStatsQueryDto): Promise<RegistrationStatsResponse> {
    logger.info('Generating registration stats', { query }, 'AdminUsersStatsService');
 
    const { period = 'daily', limit = 30 } = query || {};
@@ -102,7 +102,7 @@ export class AdminUsersStatsService {
    };
  }
 
-  async getProfileCompletionStats(query?: AdminUserStatsQueryDto): Promise<ProfileCompletionStats> {
+  async getProfileCompletionStats(query?: AdminStatsQueryDto): Promise<ProfileCompletionStats> {
     logger.info('Generating profile completion stats', { query }, 'AdminUsersStatsService');
 
     const { maxRecords = 10000 } = query || {};
@@ -142,7 +142,7 @@ export class AdminUsersStatsService {
     return stats;
   }
 
- async getActivityStats(query?: AdminUserStatsQueryDto): Promise<UserActivityStats> {
+ async getActivityStats(query?: AdminStatsQueryDto): Promise<UserActivityStats> {
    logger.info('Generating user activity stats', { query }, 'AdminUsersStatsService');
 
    const now = new Date();

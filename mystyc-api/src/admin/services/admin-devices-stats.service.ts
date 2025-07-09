@@ -11,7 +11,7 @@ import {
   DeviceActivityStats,
   DeviceUserAgentStats
 } from '@/common/interfaces/admin/adminDeviceStats.interface';
-import { AdminDeviceStatsQueryDto } from '@/admin/dto/stats/admin-device-stats-query.dto';
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AdminDevicesStatsService {
     private readonly authEventsService: AuthEventsService,
   ) {}
 
-  async getPlatformStats(query?: AdminDeviceStatsQueryDto): Promise<PlatformStatsResponse> {
+  async getPlatformStats(query?: AdminStatsQueryDto): Promise<PlatformStatsResponse> {
     logger.info('Generating platform stats', { query }, 'AdminDevicesStatsService');
     
     const pipeline: any[] = [
@@ -77,7 +77,7 @@ export class AdminDevicesStatsService {
     };
   }
 
-  async getFcmTokenStats(query?: AdminDeviceStatsQueryDto): Promise<FcmTokenStats> {
+  async getFcmTokenStats(query?: AdminStatsQueryDto): Promise<FcmTokenStats> {
     logger.info('Generating FCM token stats', { query }, 'AdminDevicesStatsService');
     
     const pipeline: any[] = [
@@ -161,7 +161,7 @@ export class AdminDevicesStatsService {
     };
   }
 
-  async getDeviceActivityStats(query?: AdminDeviceStatsQueryDto): Promise<DeviceActivityStats> {
+  async getDeviceActivityStats(query?: AdminStatsQueryDto): Promise<DeviceActivityStats> {
     logger.info('Generating device activity stats', { query }, 'AdminDevicesStatsService');
     
     const now = new Date();
@@ -264,7 +264,7 @@ export class AdminDevicesStatsService {
     };
   }
 
-  async getUserAgentStats(query?: AdminDeviceStatsQueryDto): Promise<DeviceUserAgentStats> {
+  async getUserAgentStats(query?: AdminStatsQueryDto): Promise<DeviceUserAgentStats> {
     logger.info('Generating user agent stats', { query }, 'AdminDevicesStatsService');
     
     const pipeline: any[] = [

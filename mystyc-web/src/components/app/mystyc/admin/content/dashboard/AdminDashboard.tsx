@@ -7,11 +7,17 @@ import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon';
 import DevicesIcon from '@/components/app/mystyc/admin/ui/icons/DevicesIcon';
 import AuthenticationIcon from '@/components/app/mystyc/admin/ui/icons/AuthenticationIcon';
 import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
+import ScheduleIcon from '@/components/app/mystyc/admin/ui/icons/ScheduleIcon'
+import ContentIcon from '@/components/app/mystyc/admin/ui/icons/ContentIcon'
+import SubscriberIcon from '@/components/app/mystyc/admin/ui/icons/SubscriberIcon'
+import AiIcon from '@/components/app/mystyc/admin/ui/icons/AiIcon'
 import TrafficIcon from '@/components/app/mystyc/admin/ui/icons/TrafficIcon'
 
 import TrafficDashboard from './TrafficDashboard';
 import UsersDashboard from './UsersDashboard';
 import DevicesDashboard from './DevicesDashboard';
+import ScheduleDashboard from './ScheduleDashboard';
+import ContentDashboard from './ContentDashboard';
 import AuthenticationDashboard from './AuthenticationDashboard';
 import NotificationsDashboard from './NotificationsDashboard';
 
@@ -67,9 +73,57 @@ console.log(data);
               height="100%"
             />
           </div>
-
-        </div>    
+      </div>    
       </AdminDashboardItemLayout>
+
+      <div className="grid grid-cols-1 md:grid-cols-5 xl:grid-cols-10 gap-4 my-4">
+        <AdminDashboardItemLayout
+          className='col-span-1 md:col-span-2 xl:col-span-2 flex flex-col'
+          icon={<ScheduleIcon />}
+          title="Scheduler"
+          link="/admin/scheduler"
+        >
+          <ScheduleDashboard
+            className="mb-2"
+            data={data.schedule} 
+            charts={['health']}
+          />
+          <ScheduleDashboard 
+            data={data.schedule} 
+            charts={['next']}
+          />
+        </AdminDashboardItemLayout>
+
+        <AdminDashboardItemLayout
+          className='col-span-1 md:col-span-3 xl:col-span-3 flex flex-col'
+          icon={<ContentIcon />}
+          title="Content Generation"
+          link="/admin/content"
+        >
+          <ContentDashboard 
+            data={data.content} 
+            charts={['timeline']}
+          />
+        </AdminDashboardItemLayout>
+
+        <AdminDashboardItemLayout
+          className='col-span-1 md:col-span-3 xl:col-span-3 flex flex-col'
+          icon={<SubscriberIcon />}
+          title="Subscriptions"
+          link="/admin/subscriptions"
+        >
+          Subscriptions
+        </AdminDashboardItemLayout>
+
+        <AdminDashboardItemLayout
+          className='col-span-1 md:col-span-2 xl:col-span-2 flex flex-col'
+          icon={<AiIcon />}
+          title="Open AI"
+          link="/admin/content"
+        >
+          Tokens
+        </AdminDashboardItemLayout>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mt-4">
         <AdminDashboardItemLayout

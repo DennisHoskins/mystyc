@@ -72,7 +72,6 @@ export default function NotificationsPage() {
       onRetry={() => loadNotifications(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={NotificationIcon}
-      title={`Notifications`}
       description="View sent push notifications, message history, and delivery status for user communications"
       sideContent={
         <NotificationsDashboard 

@@ -20,13 +20,6 @@ import {
 } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
-import { AdminSessionStatsQuery } from '@/interfaces/admin/adminSessionStatsQuery.interface';
-import { AdminTrafficStatsQuery } from '@/interfaces/admin/adminTrafficStatsQuery.interface';
-import { AdminUserStatsQuery } from '@/interfaces/admin/adminUserStatsQuery.interface';
-import { AdminDeviceStatsQuery } from '@/interfaces/admin/adminDeviceStatsQuery.interface';
-import { AdminAuthEventStatsQuery } from '@/interfaces/admin/adminAuthEventStatsQuery.interface';
-import { AdminNotificationStatsQuery } from '@/interfaces/admin/adminNotificationStatsQuery.interface';
-import { AdminContentStatsQuery } from '@/interfaces/admin/adminContentStatsQuery.interface';
 
 const API_BASE_URL = '/api';
 
@@ -143,16 +136,6 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     return queryString ? `?${queryString}` : '';
   }
 
-  /**
-   * Generic method to build query string for individual stats endpoints
-   */
-  private buildSingleStatsQuery<T>(queryType: string, query?: T): string {
-    if (!query) return '';
-    
-    const wrappedQuery = { [queryType]: query };
-    return this.buildStatsQueryString(wrappedQuery);
-  }
-
   // 
   // dashboard/stats
   //
@@ -160,6 +143,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     logger.log('getDashboard called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
+      console.log("QS: " + queryString)
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats${queryString}`);
     } catch (error) {
       logger.error('getDashboard failed:', error);
@@ -167,10 +151,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getSessionStats = async (query?: AdminSessionStatsQuery): Promise<SessionStats> => {
+  getSessionStats = async (query?: AdminStatsQuery): Promise<SessionStats> => {
     logger.log('getSessionStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('sessions', query);
+      const queryString = this.buildStatsQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/sessions${queryString}`);
     } catch (error) {
       logger.error('getSessionStats failed:', error);
@@ -178,10 +162,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getTrafficStats = async (query?: AdminTrafficStatsQuery): Promise<TrafficStats> => {
+  getTrafficStats = async (query?: AdminStatsQuery): Promise<TrafficStats> => {
     logger.log('getTrafficStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('', query);
+      const queryString = this.buildStatsQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/traffic${queryString}`);
     } catch (error) {
       logger.error('getTrafficStats failed:', error);
@@ -189,10 +173,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getContentStats = async (query?: AdminContentStatsQuery): Promise<ContentStats> => {
+  getContentStats = async (query?: AdminStatsQuery): Promise<ContentStats> => {
     logger.log('getContentStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('content', query);
+      const queryString = this.buildStatsQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/content${queryString}`);
     } catch (error) {
       logger.error('getContentStats failed:', error);
@@ -200,10 +184,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getUserStats = async (query?: AdminUserStatsQuery): Promise<UserStats> => {
+  getUserStats = async (query?: AdminStatsQuery): Promise<UserStats> => {
     logger.log('getUserStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('users', query);
+      const queryString = this.buildStatsQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/users${queryString}`);
     } catch (error) {
       logger.error('getUserStats failed:', error);
@@ -211,10 +195,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getDeviceStats = async (query?: AdminDeviceStatsQuery): Promise<DeviceStats> => {
+  getDeviceStats = async (query?: AdminStatsQuery): Promise<DeviceStats> => {
     logger.log('getDeviceStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('devices', query);
+      const queryString = this.buildStatsQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/devices${queryString}`);
     } catch (error) {
       logger.error('getDeviceStats failed:', error);
@@ -222,10 +206,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getAuthenticationStats = async (query?: AdminAuthEventStatsQuery): Promise<AuthEventStats> => {
+  getAuthenticationStats = async (query?: AdminStatsQuery): Promise<AuthEventStats> => {
     logger.log('getAuthenticationStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('authEvents', query);
+      const queryString = this.buildStatsQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/auth-events${queryString}`);
     } catch (error) {
       logger.error('getAuthenticationStats failed:', error);
@@ -233,10 +217,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-  getNotificationStats = async (query?: AdminNotificationStatsQuery): Promise<NotificationStats> => {
+  getNotificationStats = async (query?: AdminStatsQuery): Promise<NotificationStats> => {
     logger.log('getNotificationStats called', { query });
     try {
-      const queryString = this.buildSingleStatsQuery('notifications', query);
+      const queryString = this.buildStatsQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/notifications${queryString}`);
     } catch (error) {
       logger.error('getNotificationStats failed:', error);
