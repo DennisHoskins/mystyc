@@ -1,6 +1,7 @@
 'use client';
 
 import { AdminStatsResponse } from '@/interfaces';
+import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon';
@@ -21,12 +22,12 @@ import ContentDashboard from './ContentDashboard';
 import AuthenticationDashboard from './AuthenticationDashboard';
 import NotificationsDashboard from './NotificationsDashboard';
 
-export default function AdminDashboard({ data } : { data?: AdminStatsResponse | null }) {
-  if (!data) {
+export default function AdminDashboard({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponse> | null }) {
+  if (!stats) {
     return;
   }
 
-console.log(data);
+console.log(stats);
 
   return(
     <>
@@ -40,7 +41,7 @@ console.log(data);
           <div className="col-span-1 sm:col-span-2 xl:col-span-3 h-full flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <div className='w-full sm:w-32 h-full flex'>
               <TrafficDashboard 
-                data={data.traffic} 
+                data={stats.data.traffic} 
                 charts={['stats']} 
                 height="100%"
               />
@@ -49,7 +50,7 @@ console.log(data);
             <div className="flex-1 md:h-full flex">
               <TrafficDashboard 
                 className={'min-h-40'}
-                data={data.traffic} 
+                data={stats.data.traffic} 
                 charts={['visitors']} 
                 height="100%"
               />
@@ -59,7 +60,7 @@ console.log(data);
           <div className="h-full flex">
             <TrafficDashboard 
               className={'min-h-40'}
-              data={data.traffic} 
+              data={stats.data.traffic} 
               charts={['browsers']} 
               height="100%"
             />
@@ -68,7 +69,7 @@ console.log(data);
           <div className="h-full flex">
             <TrafficDashboard 
               className={'min-h-40'}
-              data={data.traffic} 
+              data={stats.data.traffic} 
               charts={['types']} 
               height="100%"
             />
@@ -85,11 +86,11 @@ console.log(data);
         >
           <ScheduleDashboard
             className="mb-2"
-            data={data.schedule} 
+            data={stats.data.schedule} 
             charts={['health']}
           />
           <ScheduleDashboard 
-            data={data.schedule} 
+            data={stats.data.schedule} 
             charts={['next']}
           />
         </AdminDashboardItemLayout>
@@ -101,7 +102,11 @@ console.log(data);
           link="/admin/content"
         >
           <ContentDashboard 
-            data={data.content} 
+            stats={{
+              data: stats.data.content,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
             charts={['timeline']}
           />
         </AdminDashboardItemLayout>
@@ -132,7 +137,11 @@ console.log(data);
           link="/admin/users"
         >
           <UsersDashboard 
-            data={data.users} 
+            stats={{
+              data: stats.data.users,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
             charts={['stats', 'registrations', 'activity']} 
             height={100}
           />
@@ -144,7 +153,11 @@ console.log(data);
           link="/admin/devices"
         >
           <DevicesDashboard 
-            data={data.devices} 
+            stats={{
+              data: stats.data.devices,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
             charts={['stats', 'browsers', 'activity'] }
             height={100}
           />
@@ -156,7 +169,11 @@ console.log(data);
           link="/admin/notifications"
         >
           <NotificationsDashboard 
-            data={data.notifications} 
+            stats={{
+              data: stats.data.notifications,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
             charts={['stats', 'volume', 'platforms']}
             height={100}
           />
@@ -168,7 +185,11 @@ console.log(data);
           link="/admin/authentication"
         >
           <AuthenticationDashboard 
-            data={data.authEvents} 
+            stats={{
+              data: stats.data.authEvents,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
             charts={['stats', 'peak', 'duration']}
             height={100}
           />

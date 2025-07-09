@@ -9,6 +9,7 @@ import {
   AuthEvent, 
   Notification, 
   Content, 
+  Schedule, 
   AdminStatsResponse, 
   SessionStats, 
   TrafficStats, 
@@ -17,6 +18,7 @@ import {
   AuthEventStats, 
   NotificationStats,
   ContentStats,
+  ScheduleStats,
 } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
@@ -36,6 +38,12 @@ export interface PaginatedResponse<T> {
     field: string;
     order: 'asc' | 'desc';
   };
+}
+
+export interface StatsResponseWithQuery<T> {
+  data: T;
+  query?: AdminStatsQuery;
+  queryString?: string;
 }
 
 class AdminApiClient {
@@ -139,89 +147,146 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   // 
   // dashboard/stats
   //
-  getDashboard = async (query?: AdminStatsQuery): Promise<AdminStatsResponse> => {
+ 
+  getDashboard = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<AdminStatsResponse>> => {
     logger.log('getDashboard called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
       console.log("QS: " + queryString)
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getDashboard failed:', error);
       throw error;
     }
   };
 
-  getSessionStats = async (query?: AdminStatsQuery): Promise<SessionStats> => {
+  getSessionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SessionStats>> => {
     logger.log('getSessionStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/sessions${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/sessions${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getSessionStats failed:', error);
       throw error;
     }
   };
 
-  getTrafficStats = async (query?: AdminStatsQuery): Promise<TrafficStats> => {
+  getTrafficStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<TrafficStats>> => {
     logger.log('getTrafficStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/traffic${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/traffic${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getTrafficStats failed:', error);
       throw error;
     }
   };
 
-  getContentStats = async (query?: AdminStatsQuery): Promise<ContentStats> => {
+  getContentStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ContentStats>> => {
     logger.log('getContentStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/content${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/content${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getContentStats failed:', error);
       throw error;
     }
   };
 
-  getUserStats = async (query?: AdminStatsQuery): Promise<UserStats> => {
+  getScheduleStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ScheduleStats>> => {
+    logger.log('getScheduleStats called', { query });
+    try {
+      const queryString = this.buildStatsQueryString(query);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/content${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
+    } catch (error) {
+      logger.error('getScheduleStats failed:', error);
+      throw error;
+    }
+  };
+
+  getUserStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<UserStats>> => {
     logger.log('getUserStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/users${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/users${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getUserStats failed:', error);
       throw error;
     }
   };
 
-  getDeviceStats = async (query?: AdminStatsQuery): Promise<DeviceStats> => {
+  getDeviceStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<DeviceStats>> => {
     logger.log('getDeviceStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/devices${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/devices${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getDeviceStats failed:', error);
       throw error;
     }
   };
 
-  getAuthenticationStats = async (query?: AdminStatsQuery): Promise<AuthEventStats> => {
+  getAuthenticationStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<AuthEventStats>> => {
     logger.log('getAuthenticationStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/auth-events${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/auth-events${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getAuthenticationStats failed:', error);
       throw error;
     }
   };
 
-  getNotificationStats = async (query?: AdminStatsQuery): Promise<NotificationStats> => {
+  getNotificationStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<NotificationStats>> => {
     logger.log('getNotificationStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/notifications${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/notifications${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getNotificationStats failed:', error);
       throw error;
@@ -231,6 +296,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   //
   // Session Management
   //
+
   getSessions = async (query?: AdminQuery): Promise<PaginatedResponse<Session>> => {
     logger.log('getSessions called', { query });
     try {
@@ -273,10 +339,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
-
   //
   //  Content Management
   //
+
   getContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
     logger.log('getContents called', { query });
     try {
@@ -299,8 +365,34 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   };
 
   //
+  //  Schedule Management
+  //
+
+  getSchedules = async (query?: AdminQuery): Promise<PaginatedResponse<Schedule>> => {
+    logger.log('getSchedules called', { query });
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/content${queryString}`);
+    } catch (error) {
+      logger.error('getSchedules failed:', error);
+      throw error;
+    }
+  };
+
+  getSchedule = async (firebaseUid: string): Promise<Schedule> => {
+    logger.log('getSchedule called', { firebaseUid });
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/content/${firebaseUid}`);
+    } catch (error) {
+      logger.error('getSchedule failed:', error);
+      throw error;
+    }
+  };
+
+  //
   // User Management
   //
+
   getUserSummary = async (firebaseUid: string): Promise<{
     authEvents: { total: number };
     notifications: { total: number };
@@ -371,6 +463,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   //
   // Device Management
   //
+
   getDeviceSummary = async (deviceId: string): Promise<{
     authEvents: { total: number };
     notifications: { total: number };
@@ -452,6 +545,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   //
   // Auth Events Management
   //
+  
   getAuthEvents = async (query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     logger.log('getAuthEvents called', { query });
     try {

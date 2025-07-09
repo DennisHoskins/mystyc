@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { sessionManager } from '@/app/api/sessionManager';
 import { buildTrafficStats } from '../trafficStats.service';
 import { TrafficStats } from '@/interfaces';
-import { AdminTrafficStatsQuery } from '@/interfaces/admin/adminTrafficStatsQuery.interface';
+import { AdminStatsQuery } from '@/interfaces/admin/adminStatsQuery.interface';
 import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    const query: AdminTrafficStatsQuery = {
+    const query: AdminStatsQuery = {
       startDate: startDate || undefined,
       endDate: endDate || undefined,
       maxRecords: searchParams.get('maxRecords') ? parseInt(searchParams.get('maxRecords')!) : undefined

@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { Notification, NotificationStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -17,7 +18,7 @@ export default function NotificationsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [data, setData] = useState<NotificationStats | null>(null);
+  const [stats, setStats] = useState<StatsResponseWithQuery<NotificationStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,8 +49,9 @@ export default function NotificationsPage() {
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
 
-      const data = await apiClientAdmin.getNotificationStats();
-      setData(data);
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await apiClientAdmin.getNotificationStats(statsQuery);
+      setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -75,24 +77,24 @@ export default function NotificationsPage() {
       description="View sent push notifications, message history, and delivery status for user communications"
       sideContent={
         <NotificationsDashboard 
-          data={data} 
+          stats={stats} 
           charts={['stats']}
         />
       }
       itemContent={[
         <NotificationsDashboard 
           key={'volume'}
-          data={data} 
+          stats={stats} 
           charts={['volume']}
         />,
         <NotificationsDashboard 
           key={'platforms'}
-          data={data} 
+          stats={stats} 
           charts={['platforms']}
         />,
         <NotificationsDashboard 
           key={'delivery'}
-          data={data} 
+          stats={stats} 
           charts={['delivery']}
         />
       ]}

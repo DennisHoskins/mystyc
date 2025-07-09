@@ -2,6 +2,9 @@
 
 import { ContentStats } from '@/interfaces';
 
+import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { formatDateRangeForComponent } from '@/util/dateTime'
+
 import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';
 import SimpleLineChart from '@/components/app/mystyc/admin/ui/charts/SimpleLineChart';
 import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarChart';
@@ -10,28 +13,30 @@ import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChart
 type ChartType = 'stats' | 'timeline' | 'performance' | 'coverage';
 
 interface ContentDashboardProps {
-  data?: ContentStats | null;
+  stats?: StatsResponseWithQuery<ContentStats> | null;
   charts?: ChartType[];
   height?: number;
 }
 
 export default function ContentDashboard({ 
-  data, 
+  stats,
   charts = ['stats', 'timeline', 'performance', 'coverage'],
   height = 100
 }: ContentDashboardProps) {
-  if (!data) {
+  if (!stats) {
     return null;
   }
 
+  const duration = formatDateRangeForComponent(stats.query?.startDate, stats.query?.endDate);
+
   // Transform timeline data for line chart
-  const timelineData = data.timeline.contentByPeriod.slice(-30).map(item => ({
+  const timelineData = stats.data.timeline.contentByPeriod.slice(-30).map(item => ({
     date: item.date.split('-').slice(1).join('/'), // MM/DD format
     content: item.hasContent ? 1 : 0
   }));
 
   // Transform generation time distribution for bar chart
-  const performanceData = data.generation.generationTimeDistribution.map(item => ({
+  const performanceData = stats.data.generation.generationTimeDistribution.map(item => ({
     range: item.range,
     count: item.count
   }));
@@ -40,33 +45,33 @@ export default function ContentDashboard({
   const coverageData = [
     { 
       name: 'Days with Content', 
-      value: data.timeline.contentByPeriod.filter(d => d.hasContent).length,
+      value: stats.data.timeline.contentByPeriod.filter(d => d.hasContent).length,
       color: '#10b981' 
     },
     { 
       name: 'Missing Days', 
-      value: data.timeline.missingDates.length,
+      value: stats.data.timeline.missingDates.length,
       color: '#ef4444' 
     }
   ];
 
   // Calculate coverage percentage
-  const totalDays = data.timeline.contentByPeriod.length;
-  const daysWithContent = data.timeline.contentByPeriod.filter(d => d.hasContent).length;
+  const totalDays = stats.data.timeline.contentByPeriod.length;
+  const daysWithContent = stats.data.timeline.contentByPeriod.filter(d => d.hasContent).length;
   const coveragePercentage = totalDays > 0 ? Math.round((daysWithContent / totalDays) * 100) : 0;
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: data.summary.totalContent, label: 'Total Content', color: 'text-blue-600' },
-          { value: `${data.summary.successRate}%`, label: 'Success Rate', color: 'text-green-600' }
+          { value: stats.data.summary.totalContent, label: 'Total Content', color: 'text-blue-600' },
+          { value: `${stats.data.summary.successRate}%`, label: 'Success Rate', color: 'text-green-600' }
         ]} 
       />
     ),
     timeline: (
       <SimpleLineChart 
-        title="Content Timeline (30 days)"
+        title={`Content Timeline (${duration})`}
         data={timelineData}
         height={height}
         dataKey="content"

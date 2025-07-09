@@ -1,6 +1,7 @@
 'use client';
 
 import { AuthEventStats } from '@/interfaces';
+import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChartWithLegend';
@@ -9,35 +10,35 @@ import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarCha
 type ChartType = 'stats' | 'events' | 'peak' | 'duration';
 
 interface AuthenticationDashboardProps {
-  data?: AuthEventStats | null;
+  stats?: StatsResponseWithQuery<AuthEventStats> | null;
   charts?: ChartType[];
   height?: number;
 }
 
 export default function AuthenticationDashboard({ 
-  data, 
+  stats, 
   charts = ['stats', 'events', 'peak', 'duration'],
   height = 100
 }: AuthenticationDashboardProps) {
-  if (!data) {
+  if (!stats) {
     return null;
   }
 
   // Transform event types for pie chart
-  const eventTypeData = data.summary.eventsByType.map(event => ({
+  const eventTypeData = stats.data.summary.eventsByType.map(event => ({
     name: event.type,
     value: event.count,
     percentage: event.percentage
   }));
 
   // Transform peak hours for bar chart (top 12 hours)
-  const peakHoursData = data.pattern.peakHours.slice(0, 12).map(hour => ({
+  const peakHoursData = stats.data.pattern.peakHours.slice(0, 12).map(hour => ({
     hour: `${hour.hour}:00`,
     count: hour.count
   }));
 
   // Transform session duration for bar chart
-  const sessionData = data.duration.sessionDurations.map(session => ({
+  const sessionData = stats.data.duration.sessionDurations.map(session => ({
     range: session.range,
     count: session.count,
     percentage: session.percentage
@@ -47,8 +48,8 @@ export default function AuthenticationDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: data.summary.totalEvents, label: 'Total Events', color: 'text-blue-600' },
-          { value: data.pattern.loginFrequency.averageLoginsPerUser, label: 'Avg Logins/User', color: 'text-green-600' }
+          { value: stats.data.summary.totalEvents, label: 'Total Events', color: 'text-blue-600' },
+          { value: stats.data.pattern.loginFrequency.averageLoginsPerUser, label: 'Avg Logins/User', color: 'text-green-600' }
         ]} 
       />
     ),

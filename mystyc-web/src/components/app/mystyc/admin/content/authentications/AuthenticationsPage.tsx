@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { AuthEvent, AuthEventStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -17,7 +18,7 @@ export default function AuthenticationsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
-  const [data, setData] = useState<AuthEventStats | null>(null);
+  const [stats, setStats] = useState<StatsResponseWithQuery<AuthEventStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,8 +49,9 @@ export default function AuthenticationsPage() {
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
 
-      const data = await apiClientAdmin.getAuthenticationStats();
-      setData(data);
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await apiClientAdmin.getAuthenticationStats(statsQuery);
+      setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -75,24 +77,24 @@ export default function AuthenticationsPage() {
       description="Track user login and logout events, monitor authentication patterns, and review access history"
       sideContent={
         <AuthenticationDashboard 
-          data={data} 
+          stats={stats} 
           charts={['stats']}
         />
       }
       itemContent={[
         <AuthenticationDashboard
           key={'peak'}  
-          data={data} 
+          stats={stats} 
           charts={['peak']}
         />,
         <AuthenticationDashboard 
           key={'duration'}  
-          data={data} 
+          stats={stats} 
           charts={['duration']}
         />,
         <AuthenticationDashboard 
           key={'events'}  
-          data={data} 
+          stats={stats} 
           charts={['events']}
         />,
       ]}

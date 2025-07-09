@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { Session, SessionStats } from '@/interfaces';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -17,7 +18,7 @@ export default function SessionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [data, setData] = useState<SessionStats | null>(null);
+  const [stats, setStats] = useState<StatsResponseWithQuery<SessionStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -44,8 +45,9 @@ export default function SessionsPage() {
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
 
-      const data = await apiClientAdmin.getSessionStats();
-      setData(data);
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await apiClientAdmin.getSessionStats(statsQuery);
+      setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -71,7 +73,7 @@ export default function SessionsPage() {
       description="View active user sessions and devices, monitor login activity, and manage session security settings"
        sideContent={
          <SessionsDashboard 
-           data={data} 
+           stats={stats} 
          />
        }
       tableContent={

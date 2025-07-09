@@ -3,16 +3,17 @@
 import { HeartPulse } from 'lucide-react'
 
 import { SessionStats } from '@/interfaces';
+import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import Link from '@/components/ui/Link';
 
-export default function SessionsDashboard({ data } : { data?: SessionStats | null }) {
-  if (!data) {
+export default function SessionsDashboard({ stats } : { stats?: StatsResponseWithQuery<SessionStats> | null }) {
+  if (!stats) {
     return null;
   }
 
-  const healthy = data.summary.totalSessions === data.summary.totalDevices;
-  const difference = Math.abs(data.summary.totalSessions - data.summary.totalDevices);
+  const healthy = stats.data.summary.totalSessions === stats.data.summary.totalDevices;
+  const difference = Math.abs(stats.data.summary.totalSessions - stats.data.summary.totalDevices);
   
   // Health status logic
   const getHealthStatus = () => {
@@ -84,13 +85,13 @@ export default function SessionsDashboard({ data } : { data?: SessionStats | nul
           <div className="bg-gray-50 px-3 py-1 rounded-md">
             <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
               Sessions:
-              <span className="text-sm font-bold text-blue-600 ml-2">{data.summary.totalSessions}</span>
+              <span className="text-sm font-bold text-blue-600 ml-2">{stats.data.summary.totalSessions}</span>
             </div>              
           </div>
           <div className="bg-gray-50 px-3 py-1 rounded-md">
             <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
               Devices:
-              <span className="ml-4 text-sm font-bold text-green-600">{data.summary.totalDevices}</span>
+              <span className="ml-4 text-sm font-bold text-green-600">{stats.data.summary.totalDevices}</span>
             </div>
           </div>
         </div>
@@ -99,7 +100,7 @@ export default function SessionsDashboard({ data } : { data?: SessionStats | nul
         <div className="mt-3 hidden md:block lg:hidden">
           <div className="bg-gray-50 px-3 py-2 rounded-md text-center">
             <div className="font-medium text-xs text-gray-700">
-              Sessions: <span className="text-blue-600 font-bold">{data.summary.totalSessions}</span> / <span className="text-green-600 font-bold">{data.summary.totalDevices}</span>
+              Sessions: <span className="text-blue-600 font-bold">{stats.data.summary.totalSessions}</span> / <span className="text-green-600 font-bold">{stats.data.summary.totalDevices}</span>
             </div>
           </div>
         </div>

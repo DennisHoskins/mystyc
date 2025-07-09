@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { Content, ContentStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -16,7 +17,7 @@ export default function ContentPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [content, setContent] = useState<Content[]>([]);
-  const [data, setData] = useState<ContentStats | null>(null);
+  const [stats, setStats] = useState<StatsResponseWithQuery<ContentStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -49,8 +50,9 @@ export default function ContentPage() {
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
 
-      const data = await apiClientAdmin.getContentStats();
-      setData(data);
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await apiClientAdmin.getContentStats(statsQuery);
+      setStats(stats);
 
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'ContentsPage');
@@ -77,24 +79,24 @@ export default function ContentPage() {
       description="Manage content entries: view, edit, and monitor generation status, sources, and performance metrics"
       sideContent={
         <ContentDashboard 
-          data={data} 
+          stats={stats} 
           charts={['stats']}
         />
       }
       itemContent={[
         <ContentDashboard 
           key={'timeline'}
-          data={data} 
+          stats={stats} 
           charts={['timeline']}
         />,
         <ContentDashboard 
           key={'performance'}
-          data={data} 
+          stats={stats} 
           charts={['performance']}
         />,
         <ContentDashboard 
           key={'coverage'}
-          data={data} 
+          stats={stats} 
           charts={['coverage']}
         />
       ]}

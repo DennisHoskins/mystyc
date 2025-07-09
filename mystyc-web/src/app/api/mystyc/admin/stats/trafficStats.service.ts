@@ -1,7 +1,7 @@
 import redis from '@/app/api/redisClient';
 import { logger } from '@/util/logger';
 import { TrafficStats } from '@/interfaces';
-import { AdminTrafficStatsQuery } from '@/interfaces/admin/adminTrafficStatsQuery.interface';
+import { AdminStatsQuery } from '@/interfaces/admin/adminStatsQuery.interface';
 
 type DateRange = {
   startDate: Date;
@@ -15,7 +15,7 @@ type AggregatedData<T = string> = Array<{ name: T; count: number; percentage?: n
  * Builds comprehensive traffic analytics from Redis based on the provided query.
  */
 export async function buildTrafficStats(
-  query: AdminTrafficStatsQuery = {}
+  query: AdminStatsQuery = {}
 ): Promise<TrafficStats> {
   const dateRange = calculateDateRange(query);
   const maxRecords = query.maxRecords ?? 50;
@@ -111,7 +111,7 @@ export async function buildTrafficStats(
 /**
  * Calculate date range based on query parameters
  */
-function calculateDateRange(query: AdminTrafficStatsQuery): DateRange {
+function calculateDateRange(query: AdminStatsQuery): DateRange {
   const endDate = query.endDate ? new Date(query.endDate) : new Date();
   let startDate: Date;
 

@@ -49,8 +49,8 @@ export default function SchedulerPage() {
       // setTotalPages(response.pagination.totalPages);
       // setTotalItems(response.pagination.totalItems);
 
-      // const data = await apiClientAdmin.getScheduleStats();
-      // setData(data);
+      // const stats = await apiClientAdmin.getScheduleStats();
+      // setData(stats.data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'SchedulesPage');
       if (!wasSessionError) {

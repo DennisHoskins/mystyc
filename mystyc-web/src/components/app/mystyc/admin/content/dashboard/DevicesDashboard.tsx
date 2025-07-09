@@ -1,6 +1,7 @@
 'use client';
 
 import { DeviceStats } from '@/interfaces';
+import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChartWithLegend';
@@ -9,46 +10,46 @@ import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarCha
 type ChartType = 'stats' | 'platforms' | 'browsers' | 'activity';
 
 interface DevicesDashboardProps {
-  data?: DeviceStats | null;
+  stats?: StatsResponseWithQuery<DeviceStats> | null;
   charts?: ChartType[];
   height?: number;
 }
 
 export default function DevicesDashboard({ 
-  data, 
+  stats, 
   charts = ['stats', 'platforms', 'browsers', 'activity'],
   height = 100
 }: DevicesDashboardProps) {
-  if (!data) {
+  if (!stats) {
     return null;
   }
 
   // Transform platform data for pie chart
-  const platformData = data.platforms.platforms.map(platform => ({
+  const platformData = stats.data.platforms.platforms.map(platform => ({
     name: platform.platform,
     value: platform.count,
     percentage: platform.percentage
   }));
 
   // Transform browser data for bar chart
-  const browserData = data.userAgents.browsers.slice(0, 4).map(browser => ({
+  const browserData = stats.data.userAgents.browsers.slice(0, 4).map(browser => ({
     name: browser.browser,
     count: browser.count
   }));
 
   // Transform activity data for bar chart
   const activityData = [
-    { period: '24h', devices: data.activity.activeDevices.last24Hours },
-    { period: '7d', devices: data.activity.activeDevices.last7Days },
-    { period: '30d', devices: data.activity.activeDevices.last30Days },
+    { period: '24h', devices: stats.data.activity.activeDevices.last24Hours },
+    { period: '7d', devices: stats.data.activity.activeDevices.last7Days },
+    { period: '30d', devices: stats.data.activity.activeDevices.last30Days },
   ];
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: data.platforms.totalDevices, label: 'Total Devices', color: 'text-blue-600' },
-          { value: `${data.fcmTokens.fcmTokenCoverage}%`, label: 'Push Enabled', color: 'text-green-600' }
+          { value: stats.data.platforms.totalDevices, label: 'Total Devices', color: 'text-blue-600' },
+          { value: `${stats.data.fcmTokens.fcmTokenCoverage}%`, label: 'Push Enabled', color: 'text-green-600' }
         ]} 
       />
     ),

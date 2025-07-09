@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { logger } from '@/util/logger';
@@ -17,28 +17,29 @@ import AdminDashboard from './content/dashboard/AdminDashboard';
 import AdminError from '@/components/app/mystyc/admin/ui/AdminError';
 import SessionsDashboard from './content/dashboard/SessionsDashboard';
 
+
+// Default query parameters for comprehensive dashboard view
+export function getDefaultDashboardStatsQuery() {
+  const endDate = new Date();
+  const startDate = new Date(endDate);
+  startDate.setDate(endDate.getDate() - 29); // 30 days total including today
+
+  const startDateStr = startDate.toISOString().split('T')[0];
+  const endDateStr = endDate.toISOString().split('T')[0];
+  
+  return {
+    startDate: startDateStr,
+    endDate: endDateStr,
+    maxRecords: 10000
+  }
+};
+
 export default function AdminHome() {
   const { setBusy } = useBusy();
   const { handleSessionError } = useSessionErrorHandler();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<AdminStatsResponse | null>(null);
-
-  // Default query parameters for comprehensive dashboard view
-  const getDefaultDashboardQuery = () => {
-    const endDate = new Date();
-    const startDate = new Date(endDate);
-    startDate.setDate(endDate.getDate() - 29); // 30 days total including today
-
-    const startDateStr = startDate.toISOString().split('T')[0];
-    const endDateStr = endDate.toISOString().split('T')[0];
-    
-    return {
-      startDate: startDateStr,
-      endDate: endDateStr,
-      maxRecords: 10000
-    }
-  };
+  const [stats, setStats] = useState<StatsResponseWithQuery<AdminStatsResponse> | null>(null);
 
   const loadDashboard = useCallback(async () => {
     try {
@@ -46,10 +47,9 @@ export default function AdminHome() {
       setBusy(1000);
       setLoading(true);
 
-      const defaultQuery = getDefaultDashboardQuery();
-      const response = await apiClientAdmin.getDashboard(defaultQuery);
-
-      setData(response)
+      const defaultQuery = getDefaultDashboardStatsQuery();
+      const stats = await apiClientAdmin.getDashboard(defaultQuery);
+      setStats(stats)
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'AdminHome');
       if (!wasSessionError) {
@@ -91,6 +91,10 @@ export default function AdminHome() {
     );
   }
 
+  if (!stats) {
+    return;
+  }
+
   return(
     <>
       <div className="flex flex-col sm:flex-row mb-4">
@@ -105,10 +109,16 @@ export default function AdminHome() {
           <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
         </Card>
         <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
-          <SessionsDashboard data={data?.sessions} />
+          <SessionsDashboard 
+            stats={{
+              data: stats.data.sessions,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
+          />
         </Card>
       </div>
-      <AdminDashboard data={data} />
+      <AdminDashboard stats={stats} />
     </>
   );
 };

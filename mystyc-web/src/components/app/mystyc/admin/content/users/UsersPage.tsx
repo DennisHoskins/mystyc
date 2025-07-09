@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { UserStats, UserProfile } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -16,7 +17,7 @@ export default function UsersPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [data, setData] = useState<UserStats | null>(null);
+  const [stats, setStats] = useState<StatsResponseWithQuery<UserStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -49,8 +50,9 @@ export default function UsersPage() {
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
 
-      const data = await apiClientAdmin.getUserStats();
-      setData(data);
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await apiClientAdmin.getUserStats(statsQuery);
+      setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
@@ -76,24 +78,24 @@ export default function UsersPage() {
       description="Manage user accounts, permissions, and profile information"
       sideContent={
         <UsersDashboard 
-          data={data} 
+          stats={stats} 
           charts={['stats']}
         />
       }
       itemContent={[
         <UsersDashboard 
           key={'registrations'}
-          data={data} 
+          stats={stats} 
           charts={['registrations']}
         />,
         <UsersDashboard 
           key={'activity'}
-          data={data} 
+          stats={stats} 
           charts={['activity']}
         />,
         <UsersDashboard 
           key={'profile'}
-          data={data} 
+          stats={stats} 
           charts={['profile']}
         />,
       ]}

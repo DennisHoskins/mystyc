@@ -6,6 +6,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { TrafficStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
@@ -28,20 +29,9 @@ export default function TrafficPage() {
       setBusy(1000);
       setLoading(true);
 
-      const endDate = new Date();
-      const startDate = new Date(endDate);
-      startDate.setDate(endDate.getDate() - 29); // 30 days total including today
-
-      const startDateStr = startDate.toISOString().split('T')[0];
-      const endDateStr = endDate.toISOString().split('T')[0];
-
-      const data = await apiClientAdmin.getTrafficStats({
-        startDate: startDateStr,
-        endDate: endDateStr,
-        maxRecords: 10000
-      });
-
-      setTrafficStats(data);
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await apiClientAdmin.getTrafficStats(statsQuery);
+      setTrafficStats(stats.data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'TrafficPage');
       if (!wasSessionError) {
