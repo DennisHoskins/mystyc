@@ -6,6 +6,8 @@ export interface DataItem {
 export interface Content {
   _id?: string;
   date: string; // Format: "2025-07-07"
+
+  scheduleId?: string;
   
   // Core content
   title: string;

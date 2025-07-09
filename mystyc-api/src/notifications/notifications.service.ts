@@ -28,16 +28,18 @@ export class NotificationsService {
 
   /**
    * Handles scheduled notification sending events from Schedule Service
-   * @param payload - Event payload containing schedule context
+   * @param payload - Event payload containing schedule context and scheduleId
    */
   @OnEvent('notifications.send.notification')
   async handleScheduledNotifications(payload: any): Promise<void> {
     logger.info('Handling scheduled notifications', {
+      scheduleId: payload.scheduleId,
       taskId: payload.taskId,
       eventName: payload.eventName,
       timezone: payload.timezone || 'global',
       scheduledTime: payload.scheduledTime,
-      executedAt: payload.executedAt
+      executedAt: payload.executedAt,
+      executionId: payload.executionId
     }, 'NotificationsService');
 
     try {
@@ -49,6 +51,7 @@ export class NotificationsService {
       const body = this.truncateMessage(content.message, 100) || 'Your daily mystical insights are ready!';
 
       logger.debug('Prepared notification content', {
+        scheduleId: payload.scheduleId,
         title,
         bodyLength: body.length,
         contentDate: content.date,
@@ -64,26 +67,30 @@ export class NotificationsService {
 
       if (payload.timezone) {
         // Send to devices in specific timezone
-        await this.sendToTimezone(payload.timezone, title, body, results);
+        await this.sendToTimezone(payload.timezone, title, body, results, payload.scheduleId);
       } else {
         // Send broadcast to all devices
-        await this.sendBroadcast(title, body, results, 'system');
+        await this.sendBroadcast(title, body, results, 'system', payload.scheduleId);
       }
 
       logger.info('Scheduled notifications completed', {
+        scheduleId: payload.scheduleId,
         taskId: payload.taskId,
         timezone: payload.timezone || 'global',
         sent: results.sent,
         failed: results.failed,
-        totalAttempts: results.sent + results.failed
+        totalAttempts: results.sent + results.failed,
+        executionId: payload.executionId
       }, 'NotificationsService');
 
     } catch (error) {
       logger.error('Scheduled notifications failed', {
+        scheduleId: payload.scheduleId,
         taskId: payload.taskId,
         timezone: payload.timezone || 'global',
         error: error.message,
-        scheduledTime: payload.scheduledTime
+        scheduledTime: payload.scheduledTime,
+        executionId: payload.executionId
       }, 'NotificationsService');
 
       // Don't throw - we don't want to crash the scheduler
@@ -96,14 +103,19 @@ export class NotificationsService {
    * @param title - Notification title
    * @param body - Notification body
    * @param results - Results tracking object
+   * @param scheduleId - Optional schedule ID for linking
    */
   private async sendToTimezone(
     timezone: string, 
     title: string, 
     body: string, 
-    results: any
+    results: any,
+    scheduleId?: string
   ): Promise<void> {
-    logger.info('Sending notifications to timezone', { timezone }, 'NotificationsService');
+    logger.info('Sending notifications to timezone', { 
+      timezone, 
+      scheduleId 
+    }, 'NotificationsService');
 
     try {
       // Get all devices with pagination (adjust limit as needed)
@@ -111,22 +123,24 @@ export class NotificationsService {
 
       logger.info('Found target devices for timezone', {
         timezone,
+        scheduleId,
         timezoneDevices: timezoneDevices.length
       }, 'NotificationsService');
 
       if (timezoneDevices.length === 0) {
-        logger.warn('No devices found for timezone', { timezone }, 'NotificationsService');
+        logger.warn('No devices found for timezone', { timezone, scheduleId }, 'NotificationsService');
         return;
       }
 
       // Send notifications to filtered devices
       for (const device of timezoneDevices) {
-        await this.sendToSingleDevice(device, title, body, 'broadcast', 'system', results);
+        await this.sendToSingleDevice(device, title, body, 'schedule', 'system', results, scheduleId);
       }
 
     } catch (error) {
       logger.error('Failed to send notifications to timezone', {
         timezone,
+        scheduleId,
         error: error.message
       }, 'NotificationsService');
       throw error;
@@ -147,11 +161,6 @@ export class NotificationsService {
 
   // GET Methods (Read Operations)
 
-  /**
-   * Finds notification by unique notification ID, returns null if not found
-   * @param notificationId - MongoDB ObjectId as string
-   * @returns Promise<NotificationInterface | null> - Notification if found, null if not found
-   */
   async findById(notificationId: string): Promise<NotificationInterface | null> {
     logger.debug('Finding notification by ID', { notificationId }, 'NotificationsService');
 
@@ -180,18 +189,10 @@ export class NotificationsService {
     }
   }
 
-  /**
-   * @returns number - Retrieves notification records total
-   */
   async getTotal(): Promise<number> {
     return await this.notificationModel.countDocuments();
   }  
 
-  /**
-   * Retrieves notifications with pagination, sorting, and filtering (admin use)
-   * @param query - Query parameters including limit, offset, sortBy, sortOrder
-   * @returns Promise<NotificationInterface[]> - Array of notifications with applied query params
-   */
   async findAll(query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
     const { limit = 50, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
@@ -224,20 +225,10 @@ export class NotificationsService {
     return notifications.map(notification => this.transformToNotification(notification));
   }
 
-  /**
-   * @param deviceId - Device id user unique identifier
-   * @returns number - Retrieves notifications records total
-   */
   async getTotalByDeviceId(deviceId: string): Promise<number> {
     return await this.notificationModel.countDocuments({ deviceId });
   }
 
-  /**
-   * Finds notifications by device Id
-   * @param deviceId - Device ID string
-   * @param query - Query parameters including limit, offset, sortBy, sortOrder
-   * @returns Promise<NotificationInterface[]> - Array of notification records
-   */
   async findByDeviceId(deviceId: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
@@ -276,20 +267,10 @@ export class NotificationsService {
     return notifications.map(notification => this.transformToNotification(notification));
   }
 
-  /**
-   * @param firebaseUid - Firebase user unique identifier
-   * @returns number - Retrieves notifications records total
-   */
   async getTotalByFirebaseUid(firebaseUid: string): Promise<number> {
     return await this.notificationModel.countDocuments({ firebaseUid });
   }
 
-  /**
-   * Retrieves user's notification records with pagination and sorting (admin use)
-   * @param firebaseUid - Firebase user unique identifier
-   * @param query - Query parameters including limit, offset, sortBy, sortOrder
-   * @returns Promise<NotificationInterface[]> - Array of notification records with applied query params
-   */
   async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
@@ -327,17 +308,51 @@ export class NotificationsService {
 
     return notifications.map(notification => this.transformToNotification(notification));
   }
-  
+
+  async getTotalByScheduleId(scheduleId: string): Promise<number> {
+    return await this.notificationModel.countDocuments({ scheduleId });
+  }
+
+  async findByScheduleId(scheduleId: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding schedule notifications with query', {
+      scheduleId,
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'NotificationsService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { scheduleId } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const notifications = await this.notificationModel
+      .aggregate(pipeline)
+      .exec();
+
+    logger.debug('Schedule notifications found', {
+      scheduleId,
+      count: notifications.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'NotificationsService');
+
+    return notifications.map(notification => this.transformToNotification(notification));
+  }
+
   // POST/PUT/PATCH Methods (Write Operations)
 
-  /**
-   * Sends push notification via Firebase Cloud Messaging
-   * @param token - FCM device token
-   * @param title - Notification title
-   * @param body - Notification body text
-   * @param url - Deep link URL (defaults to main site)
-   * @returns Promise<string> - Firebase message ID
-   */
   async sendNotification(
     deviceId: string,
     token: string,
@@ -378,24 +393,15 @@ export class NotificationsService {
     }
   }
 
-  /**
-   * Sends notification directly to a specific FCM token with tracking
-   * @param token - FCM device token
-   * @param title - Notification title
-   * @param body - Notification body text
-   * @param type - Notification type for tracking
-   * @param sentBy - Firebase UID of sender
-   * @param deviceId - Optional device ID for tracking
-   * @returns Promise<{messageId: string, notificationId: string}> - Message and tracking IDs
-   */
   async sendDirectTokenNotification(
     token: string,
     title: string,
     body: string,
-    type: 'test' | 'admin' | 'broadcast',
+    type: 'test' | 'admin' | 'broadcast' | 'schedule',
     sentBy: string,
     deviceId?: string,
-    deviceName?: string
+    deviceName?: string,
+    scheduleId?: string
   ): Promise<{ messageId: string; notificationId: string }> {
     // Create notification record for tracking
     const notification = await this.createNotificationRecord({
@@ -406,7 +412,8 @@ export class NotificationsService {
       title,
       body,
       type,
-      sentBy
+      sentBy,
+      scheduleId // Pass scheduleId to record creation
     });
 
     try {
@@ -426,13 +433,6 @@ export class NotificationsService {
     }
   }
 
-  /**
-   * Sends notifications to various target types based on DTO configuration
-   * @param adminFirebaseUid - Firebase UID of admin sending notification
-   * @param sendNotificationDto - Configuration specifying targets and message content
-   * @returns Promise with success status, counts, and detailed results
-   * @throws BadRequestException when multiple or no target types specified
-   */
   async sendNotificationToTargets(
     adminFirebaseUid: string,
     sendNotificationDto: SendNotificationDto
@@ -494,14 +494,16 @@ export class NotificationsService {
    * @param type - Notification type for tracking
    * @param sentBy - Firebase UID of sender
    * @param results - Results object to track success/failure counts
+   * @param scheduleId - Optional schedule ID for linking
    */
   private async sendToSingleDevice(
     device: Device,
     title: string,
     body: string,
-    type: 'test' | 'admin' | 'broadcast',
+    type: 'test' | 'admin' | 'broadcast' | 'schedule',
     sentBy: string,
-    results: any
+    results: any,
+    scheduleId?: string
   ): Promise<void> {
     // Create notification record for tracking
     const notification = await this.createNotificationRecord({
@@ -512,7 +514,8 @@ export class NotificationsService {
       title,
       body,
       type,
-      sentBy
+      sentBy,
+      scheduleId // Include scheduleId in notification record
     });
 
     try {
@@ -528,7 +531,8 @@ export class NotificationsService {
         fcmToken: device.fcmToken.substring(0, 20) + '...',
         status: 'sent',
         messageId,
-        notificationId: notification._id.toString()
+        notificationId: notification._id.toString(),
+        scheduleId
       });
     } catch (error) {
       // Update notification as failed
@@ -541,39 +545,23 @@ export class NotificationsService {
         fcmToken: device.fcmToken.substring(0, 20) + '...',
         status: 'failed',
         error: error.message,
-        notificationId: notification._id.toString()
+        notificationId: notification._id.toString(),
+        scheduleId
       });
     }
   }
 
-  /**
-   * Sends notification to a specific device by device ID
-   * @param deviceId - Unique device identifier
-   * @param title - Notification title
-   * @param body - Notification body text
-   * @param results - Results object to track success/failure counts
-   * @param type - Notification type for tracking
-   * @param sentBy - Firebase UID of sender
-   * @throws NotFoundException when device not found
-   * @throws BadRequestException when device has no FCM token
-   */
   async sendToDevice(
     deviceId: string, 
     title: string, 
     body: string, 
     results: any, 
-    type: 'test' | 'admin' | 'broadcast',
-    sentBy: string
+    type: 'test' | 'admin' | 'broadcast' | 'schedule',
+    sentBy: string,
+    scheduleId?: string
   ): Promise<void> {
     const device = await this.deviceService.findByDeviceId(deviceId);
 
-
-console.log("[sendToDevice]");
-console.log("[sendToDevice] deviceId", device.deviceId);
-console.log("[sendToDevice] fcmToken", device.fcmToken);
-console.log("[sendToDevice] updatedAt", device.fcmTokenUpdatedAt);
-console.log("[sendToDevice]");
-    
     if (!device) {
       throw new NotFoundException('Device not found');
     }
@@ -582,27 +570,17 @@ console.log("[sendToDevice]");
       throw new BadRequestException('Device does not have FCM token - notifications not enabled');
     }
 
-    await this.sendToSingleDevice(device, title, body, type, sentBy, results);
+    await this.sendToSingleDevice(device, title, body, type, sentBy, results, scheduleId);
   }
 
-  /**
-   * Sends notification to all devices belonging to a specific user
-   * @param firebaseUid - Firebase user unique identifier
-   * @param title - Notification title
-   * @param body - Notification body text
-   * @param results - Results object to track success/failure counts
-   * @param type - Notification type for tracking
-   * @param sentBy - Firebase UID of sender
-   * @throws NotFoundException when user not found or has no devices
-   * @throws BadRequestException when user has no devices with FCM tokens
-   */
   private async sendToUserDevices(
     firebaseUid: string, 
     title: string, 
     body: string, 
     results: any, 
-    type: 'test' | 'admin' | 'broadcast',
-    sentBy: string
+    type: 'test' | 'admin' | 'broadcast' | 'schedule',
+    sentBy: string,
+    scheduleId?: string
   ): Promise<void> {
     // Verify user exists
     const user = await this.userProfileService.findByFirebaseUid(firebaseUid);
@@ -624,7 +602,7 @@ console.log("[sendToDevice]");
     }
 
     for (const device of notifiableDevices) {
-      await this.sendToSingleDevice(device, title, body, type, sentBy, results);
+      await this.sendToSingleDevice(device, title, body, type, sentBy, results, scheduleId);
     }
   }
 
@@ -634,13 +612,14 @@ console.log("[sendToDevice]");
    * @param body - Notification body text
    * @param results - Results object to track success/failure counts
    * @param sentBy - Firebase UID of sender
-   * @throws BadRequestException when no devices with FCM tokens found
+   * @param scheduleId - Optional schedule ID for linking
    */
   private async sendBroadcast(
     title: string, 
     body: string, 
     results: any, 
-    sentBy: string
+    sentBy: string,
+    scheduleId?: string
   ): Promise<void> {
     // Get all devices with new query format
     const allDevices = await this.deviceService.findAll({ limit: 10000 });
@@ -656,11 +635,12 @@ console.log("[sendToDevice]");
 
     logger.info('Starting broadcast notification', {
       totalDevices: allDevices.length,
-      notifiableDevices: notifiableDevices.length
+      notifiableDevices: notifiableDevices.length,
+      scheduleId
     }, 'NotificationsService');
 
     for (const device of notifiableDevices) {
-      await this.sendToSingleDevice(device, title, body, 'broadcast', sentBy, results);
+      await this.sendToSingleDevice(device, title, body, 'broadcast', sentBy, results, scheduleId);
     }
   }
 
@@ -678,8 +658,9 @@ console.log("[sendToDevice]");
     fcmToken?: string;
     title: string;
     body: string;
-    type: 'test' | 'admin' | 'broadcast';
+    type: 'test' | 'admin' | 'broadcast' | 'schedule';
     sentBy: string;
+    scheduleId?: string; // Add scheduleId parameter
   }): Promise<NotificationDocument> {
     const notification = new this.notificationModel({
       ...data,
@@ -690,13 +671,6 @@ console.log("[sendToDevice]");
     return await notification.save();
   }
 
-  /**
-   * Updates notification status and metadata after send attempt
-   * @param notificationId - MongoDB ObjectId as string
-   * @param status - Final status after send attempt
-   * @param messageId - Firebase message ID if successful
-   * @param error - Error message if failed
-   */
   private async updateNotificationStatus(
     notificationId: string,
     status: 'sent' | 'failed',
@@ -718,11 +692,6 @@ console.log("[sendToDevice]");
     await this.notificationModel.findByIdAndUpdate(notificationId, updateData);
   }
 
-  /**
-   * Transforms MongoDB document to clean NotificationInterface object
-   * @param doc - MongoDB notification document
-   * @returns NotificationInterface - Clean notification object without MongoDB metadata
-   */
   private transformToNotification(doc: NotificationDocument): NotificationInterface {
     return {
       _id: doc._id.toString(),
@@ -739,6 +708,7 @@ console.log("[sendToDevice]");
       error: doc.error,
       sentBy: doc.sentBy,
       sentAt: doc.sentAt,
+      scheduleId: doc.scheduleId, // Include scheduleId in interface
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

@@ -21,8 +21,8 @@ export class Notification {
   @Prop({ required: true })
   body: string;
 
-  @Prop({ required: true, enum: ['test', 'admin', 'broadcast'], index: true })
-  type: 'test' | 'admin' | 'broadcast';
+  @Prop({ required: true, enum: ['test', 'admin', 'broadcast', 'schedule'], index: true })
+  type: 'test' | 'admin' | 'broadcast' | 'schedule';
 
   @Prop({ required: true, enum: ['api'], default: 'api', index: true })
   source: 'api';
@@ -42,6 +42,9 @@ export class Notification {
   @Prop()
   sentAt?: Date;
 
+  @Prop({ index: true })
+  scheduleId?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +56,7 @@ export const NotificationSchema = SchemaFactory.createForClass(Notification);
 // Basic functional indexes
 NotificationSchema.index({ firebaseUid: 1, createdAt: -1 });
 NotificationSchema.index({ deviceId: 1, createdAt: -1 });
+NotificationSchema.index({ scheduleId: 1, createdAt: -1 });
 NotificationSchema.index({ sentBy: 1, createdAt: -1 });
 NotificationSchema.index({ status: 1, createdAt: -1 });
 NotificationSchema.index({ type: 1, source: 1, createdAt: -1 });

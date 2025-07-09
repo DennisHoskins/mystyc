@@ -13,6 +13,7 @@ export interface Notification {
   error?: string;
   sentBy: string;
   sentAt?: Date;
+  scheduleId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

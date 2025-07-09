@@ -1,21 +1,34 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, NotFoundException, Query } from '@nestjs/common';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { ScheduleService } from '@/schedule/schedule.service';
+import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
+import { ContentService } from '@/content/content.service';
+import { NotificationsService } from '@/notifications/notifications.service';
 import { Schedule } from '@/common/interfaces/schedule.interface';
+import { ScheduleExecution } from '@/common/interfaces/scheduleExecution.interface';
+import { Content } from '@/common/interfaces/content.interface';
+import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
 import { CreateScheduleDto } from '@/schedule/dto/create-schedule.dto';
 import { UpdateScheduleDto } from '@/schedule/dto/update-schedule.dto';
+import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
+import { AdminListResponse } from '@/common/interfaces/admin/adminQuery.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/schedules')
 export class AdminScheduleController extends AdminController<Schedule> {
   protected serviceName = 'Schedule';
   
-  constructor(protected service: ScheduleService) {
+  constructor(
+    protected service: ScheduleService,
+    private readonly scheduleExecutionService: ScheduleExecutionService,
+    private readonly contentService: ContentService,
+    private readonly notificationsService: NotificationsService
+  ) {
     super();
   }
 
@@ -203,6 +216,262 @@ export class AdminScheduleController extends AdminController<Schedule> {
       }
       
       logger.error('Failed to delete schedule', {
+        scheduleId: id,
+        error: error.message
+      }, 'AdminScheduleController');
+      throw error;
+    }
+  }
+
+  // NEW: EXECUTION AND RELATED DATA ENDPOINTS
+
+  /**
+   * Gets execution history for a specific schedule
+   * @param id - Schedule ID
+   * @param query - Query parameters for pagination and sorting
+   * @returns Promise<AdminListResponse<ScheduleExecution>> - Paginated execution history
+   */
+  @Get(':id/executions')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getScheduleExecutions(
+    @Param('id') id: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<ScheduleExecution>> {
+    logger.info('Admin fetching schedule executions', {
+      scheduleId: id,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminScheduleController');
+
+    try {
+      // Verify schedule exists
+      const schedule = await this.service.findById(id);
+      if (!schedule) {
+        throw new NotFoundException('Schedule not found');
+      }
+
+      const [data, totalItems] = await Promise.all([
+        this.scheduleExecutionService.findByScheduleId(id, query),
+        this.scheduleExecutionService.getTotalByScheduleId(id)
+      ]);
+
+      const totalPages = Math.ceil(totalItems / (query.limit || 50));
+
+      logger.info('Schedule executions retrieved', {
+        scheduleId: id,
+        count: data.length,
+        totalItems
+      }, 'AdminScheduleController');
+
+      return {
+        data,
+        pagination: {
+          limit: query.limit || 50,
+          offset: query.offset || 0,
+          hasMore: data.length === (query.limit || 50),
+          totalItems,
+          totalPages
+        },
+        sort: query.sortBy ? {
+          field: query.sortBy,
+          order: query.sortOrder || 'desc'
+        } : undefined
+      };
+    } catch (error) {
+      logger.error('Failed to fetch schedule executions', {
+        scheduleId: id,
+        error: error.message
+      }, 'AdminScheduleController');
+      throw error;
+    }
+  }
+
+  /**
+   * Gets content created by a specific schedule
+   * @param id - Schedule ID
+   * @param query - Query parameters for pagination and sorting
+   * @returns Promise<AdminListResponse<Content>> - Paginated content list
+   */
+  @Get(':id/content')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getScheduleContent(
+    @Param('id') id: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<Content>> {
+    logger.info('Admin fetching schedule content', {
+      scheduleId: id,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminScheduleController');
+
+    try {
+      // Verify schedule exists
+      const schedule = await this.service.findById(id);
+      if (!schedule) {
+        throw new NotFoundException('Schedule not found');
+      }
+
+      const [data, totalItems] = await Promise.all([
+        this.contentService.findByScheduleId(id, query),
+        this.contentService.getTotalByScheduleId(id)
+      ]);
+
+      const totalPages = Math.ceil(totalItems / (query.limit || 50));
+
+      logger.info('Schedule content retrieved', {
+        scheduleId: id,
+        count: data.length,
+        totalItems
+      }, 'AdminScheduleController');
+
+      return {
+        data,
+        pagination: {
+          limit: query.limit || 50,
+          offset: query.offset || 0,
+          hasMore: data.length === (query.limit || 50),
+          totalItems,
+          totalPages
+        },
+        sort: query.sortBy ? {
+          field: query.sortBy,
+          order: query.sortOrder || 'desc'
+        } : undefined
+      };
+    } catch (error) {
+      logger.error('Failed to fetch schedule content', {
+        scheduleId: id,
+        error: error.message
+      }, 'AdminScheduleController');
+      throw error;
+    }
+  }
+
+  /**
+   * Gets notifications sent by a specific schedule
+   * @param id - Schedule ID
+   * @param query - Query parameters for pagination and sorting
+   * @returns Promise<AdminListResponse<Notification>> - Paginated notifications list
+   */
+  @Get(':id/notifications')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getScheduleNotifications(
+    @Param('id') id: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<Notification>> {
+    logger.info('Admin fetching schedule notifications', {
+      scheduleId: id,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminScheduleController');
+
+    try {
+      // Verify schedule exists
+      const schedule = await this.service.findById(id);
+      if (!schedule) {
+        throw new NotFoundException('Schedule not found');
+      }
+
+      const [data, totalItems] = await Promise.all([
+        this.notificationsService.findByScheduleId(id, query),
+        this.notificationsService.getTotalByScheduleId(id)
+      ]);
+
+      const totalPages = Math.ceil(totalItems / (query.limit || 50));
+
+      logger.info('Schedule notifications retrieved', {
+        scheduleId: id,
+        count: data.length,
+        totalItems
+      }, 'AdminScheduleController');
+
+      return {
+        data,
+        pagination: {
+          limit: query.limit || 50,
+          offset: query.offset || 0,
+          hasMore: data.length === (query.limit || 50),
+          totalItems,
+          totalPages
+        },
+        sort: query.sortBy ? {
+          field: query.sortBy,
+          order: query.sortOrder || 'desc'
+        } : undefined
+      };
+    } catch (error) {
+      logger.error('Failed to fetch schedule notifications', {
+        scheduleId: id,
+        error: error.message
+      }, 'AdminScheduleController');
+      throw error;
+    }
+  }
+
+  /**
+   * Gets summary statistics for a schedule
+   * @param id - Schedule ID
+   * @returns Promise<{executions: object, content: object, notifications: object}> - Summary stats
+   */
+  @Get(':id/summary')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getScheduleSummary(@Param('id') id: string) {
+    logger.info('Admin fetching schedule summary', { scheduleId: id }, 'AdminScheduleController');
+
+    try {
+      // Verify schedule exists
+      const schedule = await this.service.findById(id);
+      if (!schedule) {
+        throw new NotFoundException('Schedule not found');
+      }
+
+      const [executionStats, contentCount, notificationsCount, latestExecution] = await Promise.all([
+        this.scheduleExecutionService.getExecutionStats(id),
+        this.contentService.getTotalByScheduleId(id),
+        this.notificationsService.getTotalByScheduleId(id),
+        this.scheduleExecutionService.findLatestByScheduleId(id)
+      ]);
+
+      const summary = {
+        schedule: {
+          id: schedule._id,
+          eventName: schedule.event_name,
+          enabled: schedule.enabled,
+          timezoneAware: schedule.timezone_aware,
+          lastExecution: latestExecution?.executedAt || null
+        },
+        executions: {
+          total: executionStats.total,
+          successful: executionStats.successful,
+          failed: executionStats.failed,
+          successRate: executionStats.successRate
+        },
+        content: {
+          total: contentCount
+        },
+        notifications: {
+          total: notificationsCount
+        }
+      };
+
+      logger.info('Schedule summary retrieved', {
+        scheduleId: id,
+        summary
+      }, 'AdminScheduleController');
+
+      return summary;
+    } catch (error) {
+      logger.error('Failed to fetch schedule summary', {
         scheduleId: id,
         error: error.message
       }, 'AdminScheduleController');

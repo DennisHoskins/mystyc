@@ -23,7 +23,7 @@ export class ContentService {
         { "Awakening":            "Let the gentle breeze stir your hidden dreams." },
         { "Golden Ray":           "Bathe in warmth as opportunities unfold." },
         { "Morning Aura":         "Your spirit glows with untapped potential." },
-        { "Celestial Greeting":   "Stars salute your journey at dawn’s edge." },
+        { "Celestial Greeting":   "Stars salute your journey at dawn's edge." },
       ],
     },
     {
@@ -35,9 +35,9 @@ export class ContentService {
       data: [
         { "Star Song":            "Hear constellations hum the melody of your soul." },
         { "Ethereal Echo":        "Cosmic winds carry truths beyond mortal sight." },
-        { "Galactic Veil":        "Lift illusions to reveal the universe’s design." },
+        { "Galactic Veil":        "Lift illusions to reveal the universe's design." },
         { "Starlight Touch":      "A fleeting spark guides your inner compass." },
-        { "Orbital Dance":        "Move in sync with the heavens’ silent rhythm." },
+        { "Orbital Dance":        "Move in sync with the heavens' silent rhythm." },
         { "Moonlit Assurance":    "In silver glow, find comfort and clarity." },
       ],
     },
@@ -48,12 +48,12 @@ export class ContentService {
       linkUrl: "https://mystyc.app",
       linkText: "Unveil Your Destiny",
       data: [
-        { "Echo of Ages":         "Ancestors’ voices guide you through time." },
+        { "Echo of Ages":         "Ancestors' voices guide you through time." },
         { "Rune Pulse":           "Sacred symbols awaken dormant knowledge." },
         { "Timeless Path":        "Walk the road that transcends all eras." },
         { "Hidden Glyph":         "Seek the mark that reveals your destiny." },
         { "Stone Chant":          "Feel the earth murmuring age-old mantras." },
-        { "Elder’s Gift":         "Receive the blessing passed down through generations." },
+        { "Elder's Gift":         "Receive the blessing passed down through generations." },
       ],
     },
   ];
@@ -62,13 +62,11 @@ export class ContentService {
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
   ) {}
 
-  
-
   /**
    * Get or generate content for a specific date
    */
-  async getOrGenerateContent(date: string): Promise<ContentInterface> {
-    logger.info('Getting or generating content', { date }, 'ContentService');
+  async getOrGenerateContent(date: string, scheduleId?: string): Promise<ContentInterface> {
+    logger.info('Getting or generating content', { date, scheduleId }, 'ContentService');
 
     // Check if content exists
     const existing = await this.findByDate(date);
@@ -78,7 +76,7 @@ export class ContentService {
     }
 
     // Generate new content
-    return this.generateContent(date);
+    return this.generateContent(date, scheduleId);
   }
 
   /**
@@ -97,11 +95,53 @@ export class ContentService {
     return this.transformToInterface(content);
   }
 
+  async getTotalByScheduleId(scheduleId: string): Promise<number> {
+    return await this.contentModel.countDocuments({ scheduleId });
+  }
+
+  async findByScheduleId(scheduleId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding schedule content with query', {
+      scheduleId,
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'ContentService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { scheduleId } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const content = await this.contentModel
+      .aggregate(pipeline)
+      .exec();
+
+    logger.debug('Schedule content found', {
+      scheduleId,
+      count: content.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'ContentService');
+
+    return content.map(content => this.transformToContent(content));
+  }
+
   /**
    * Generate content for a specific date
    */
-  async generateContent(date: string): Promise<ContentInterface> {
-    logger.info('Generating new content', { date }, 'ContentService');
+  async generateContent(date: string, scheduleId?: string): Promise<ContentInterface> {
+    logger.info('Generating new content', { date, scheduleId }, 'ContentService');
 
     const startTime = Date.now();
 
@@ -117,6 +157,7 @@ export class ContentService {
 
       const contentData = {
         date,
+        scheduleId, // Store the scheduleId if provided
         ...template,
         data: dataItems,
         sources: ['static'],
@@ -130,6 +171,8 @@ export class ContentService {
 
       logger.info('Content generated successfully', { 
         date, 
+        scheduleId,
+        contentId: saved._id.toString(),
         duration: saved.generationDuration 
       }, 'ContentService');
 
@@ -137,12 +180,14 @@ export class ContentService {
     } catch (error) {
       logger.error('Content generation failed', {
         date,
+        scheduleId,
         error: error.message
       }, 'ContentService');
 
       // Save failed attempt
       const failedContent = new this.contentModel({
         date,
+        scheduleId, // Store scheduleId even for failed content
         title: 'Content Unavailable',
         message: 'We apologize, today\'s mystical insights are clouded. Please return tomorrow.',
         imageUrl: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229',
@@ -215,6 +260,7 @@ export class ContentService {
     return {
       _id: doc._id.toString(),
       date: doc.date,
+      scheduleId: doc.scheduleId, // Include scheduleId in interface
       title: doc.title,
       message: doc.message,
       data: doc.data,
@@ -233,16 +279,18 @@ export class ContentService {
 
   /**
    * Handles scheduled content generation events from Schedule Service
-   * @param payload - Event payload containing schedule context
+   * @param payload - Event payload containing schedule context and scheduleId
    */
   @OnEvent('content.generate.content')
   async handleScheduledContentGeneration(payload: any): Promise<void> {
     logger.info('Handling scheduled content generation', {
+      scheduleId: payload.scheduleId, // Extract scheduleId from payload
       taskId: payload.taskId,
       eventName: payload.eventName,
       timezone: payload.timezone || 'global',
       scheduledTime: payload.scheduledTime,
-      executedAt: payload.executedAt
+      executedAt: payload.executedAt,
+      executionId: payload.executionId
     }, 'ContentService');
 
     try {
@@ -252,31 +300,60 @@ export class ContentService {
         : new Date().toISOString().split('T')[0];                   // Use server date for global
 
       logger.debug('Generating content for scheduled event', {
+        scheduleId: payload.scheduleId,
         targetDate,
         timezone: payload.timezone || 'global'
       }, 'ContentService');
 
-      // Generate content for the target date
-      const content = await this.getOrGenerateContent(targetDate);
+      // Generate content for the target date with scheduleId
+      const content = await this.getOrGenerateContent(targetDate, payload.scheduleId);
 
       logger.info('Scheduled content generation completed', {
+        scheduleId: payload.scheduleId, // Log scheduleId for tracking
         taskId: payload.taskId,
         targetDate,
         contentId: content._id,
         status: content.status,
-        timezone: payload.timezone || 'global'
+        timezone: payload.timezone || 'global',
+        executionId: payload.executionId
       }, 'ContentService');
 
     } catch (error) {
       logger.error('Scheduled content generation failed', {
+        scheduleId: payload.scheduleId, // Log scheduleId even for failures
         taskId: payload.taskId,
         timezone: payload.timezone || 'global',
         error: error.message,
-        scheduledTime: payload.scheduledTime
+        scheduledTime: payload.scheduledTime,
+        executionId: payload.executionId
       }, 'ContentService');
 
       // Don't throw - we don't want to crash the scheduler
       // The content service will handle failed generation internally
     }
+  }  
+
+  /**
+   * Transform aggregation result to interface (for pipeline queries)
+   */
+  private transformToContent(doc: any): ContentInterface {
+    return {
+      _id: doc._id.toString(),
+      date: doc.date,
+      scheduleId: doc.scheduleId,
+      title: doc.title,
+      message: doc.message,
+      data: doc.data,
+      imageUrl: doc.imageUrl,
+      linkUrl: doc.linkUrl,
+      linkText: doc.linkText,
+      sources: doc.sources,
+      status: doc.status,
+      error: doc.error,
+      generatedAt: doc.generatedAt,
+      generationDuration: doc.generationDuration,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    };
   }  
 }

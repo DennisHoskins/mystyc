@@ -5,10 +5,11 @@ import { Cron } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 
 import { Schedule, ScheduleDocument } from './schemas/schedule.schema';
 import { Schedule as ScheduleInterface } from '@/common/interfaces/schedule.interface';
+import { ScheduleExecutionService } from './schedule-execution.service';
 import { DevicesService } from '@/devices/devices.service';
 import { timezone } from '@/common/util/timezone';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
@@ -22,16 +23,11 @@ export class ScheduleService {
     @InjectModel(Schedule.name) private scheduleModel: Model<ScheduleDocument>,
     private readonly devicesService: DevicesService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly scheduleExecutionService: ScheduleExecutionService,
   ) {}
 
   // CRUD methods
 
-  /**
-   * Creates a new schedule
-   * @param createScheduleDto - Schedule creation data
-   * @returns Promise<ScheduleInterface> - Created schedule
-   * @throws ConflictException when schedule creation fails
-   */
   async create(createScheduleDto: CreateScheduleDto): Promise<ScheduleInterface> {
     logger.info('Creating new schedule', {
       eventName: createScheduleDto.event_name,
@@ -68,12 +64,6 @@ export class ScheduleService {
     }
   }
 
-  /**
-   * Updates an existing schedule
-   * @param id - Schedule ID
-   * @param updateScheduleDto - Schedule update data
-   * @returns Promise<ScheduleInterface | null> - Updated schedule or null if not found
-   */
   async update(id: string, updateScheduleDto: UpdateScheduleDto): Promise<ScheduleInterface | null> {
     logger.info('Updating schedule', {
       scheduleId: id,
@@ -115,11 +105,6 @@ export class ScheduleService {
     }
   }
 
-  /**
-   * Deletes a schedule
-   * @param id - Schedule ID
-   * @returns Promise<boolean> - True if deleted, false if not found
-   */
   async delete(id: string): Promise<boolean> {
     logger.info('Deleting schedule', { scheduleId: id }, 'ScheduleService');
 
@@ -149,9 +134,6 @@ export class ScheduleService {
 
   // Cron Jobs
 
-  /**
-   * Refreshes timezone cache daily at 2am
-   */
   @Cron('0 2 * * *')
   async refreshTimezoneCache() {
     logger.info('Refreshing timezone cache', {}, 'ScheduleService');
@@ -171,9 +153,6 @@ export class ScheduleService {
     }
   }
 
-  /**
-   * Main scheduler - runs every 30 minutes to check for scheduled tasks
-   */
   @Cron('*/30 * * * *')
   async checkScheduledTasks() {
     logger.info('Checking scheduled tasks', {}, 'ScheduleService');
@@ -203,10 +182,10 @@ export class ScheduleService {
 
   // Core Scheduling Logic
 
-  /**
-   * Processes a single scheduled task
-   */
   private async processScheduledTask(task: ScheduleInterface, serverTime: Date): Promise<void> {
+    const executionStartTime = Date.now();
+    let executionLog: any = null;
+
     try {
       if (task.timezone_aware) {
         // Check cached timezones against current server time
@@ -220,38 +199,68 @@ export class ScheduleService {
         }, 'ScheduleService');
 
         for (const timezoneData of matchingTimezones) {
-          await this.emitScheduledEvent(task, timezoneData.timezone, timezoneData);
+          // Create execution log for this timezone
+          executionLog = await this.scheduleExecutionService.create({
+            scheduleId: task._id,
+            eventName: task.event_name,
+            scheduledTime: task.time,
+            timezone: timezoneData.timezone,
+            localTime: this.getLocalTime(serverTime, timezoneData.offsetHours)
+          });
+
+          await this.emitScheduledEvent(task, timezoneData.timezone, timezoneData, executionLog._id);
+          
+          // Update execution as completed
+          const duration = Date.now() - executionStartTime;
+          await this.scheduleExecutionService.updateStatus(executionLog._id, 'completed', undefined, duration);
         }
       } else {
-        // Run once globally
+        // Create execution log for global schedule
+        executionLog = await this.scheduleExecutionService.create({
+          scheduleId: task._id,
+          eventName: task.event_name,
+          scheduledTime: task.time
+        });
+
         logger.debug('Processing global task', {
           taskId: task._id,
           eventName: task.event_name,
-          targetTime: task.time
+          targetTime: task.time,
+          executionId: executionLog._id
         }, 'ScheduleService');
 
-        await this.emitScheduledEvent(task);
+        await this.emitScheduledEvent(task, undefined, undefined, executionLog._id);
+        
+        // Update execution as completed
+        const duration = Date.now() - executionStartTime;
+        await this.scheduleExecutionService.updateStatus(executionLog._id, 'completed', undefined, duration);
       }
       
       await this.logScheduleSuccess(task._id, task.event_name);
     } catch (error) {
+      // Update execution log as failed if we created one
+      if (executionLog) {
+        const duration = Date.now() - executionStartTime;
+        await this.scheduleExecutionService.updateStatus(executionLog._id, 'failed', error.message, duration);
+      }
+      
       await this.logScheduleFailure(task._id, task.event_name, error);
     }
   }
 
-  /**
-   * Emits the scheduled event with appropriate payload
-   */
   private async emitScheduledEvent(
     task: ScheduleInterface, 
     timezone?: string,
-    timezoneData?: {timezone: string, offsetHours: number}
+    timezoneData?: {timezone: string, offsetHours: number},
+    executionId?: string
   ): Promise<void> {
     const payload: any = {
+      scheduleId: task._id,
       taskId: task._id,
       eventName: task.event_name,
       scheduledTime: task.time,
-      executedAt: new Date().toISOString()
+      executedAt: new Date().toISOString(),
+      executionId
     };
 
     if (timezone && timezoneData) {
@@ -261,16 +270,15 @@ export class ScheduleService {
 
     logger.info('Emitting scheduled event', {
       eventName: task.event_name,
+      scheduleId: task._id,
       timezone: timezone || 'global',
+      executionId,
       payload
     }, 'ScheduleService');
 
     this.eventEmitter.emit(task.event_name, payload);
   }
 
-  /**
-   * Find timezones where it's currently the target time
-   */
   private getMatchingTimezones(
     targetTime: {hour: number, minute: number}, 
     serverTime: Date
@@ -282,9 +290,6 @@ export class ScheduleService {
     });
   }
 
-  /**
-   * Convert server UTC time to local timezone time
-   */
   private getLocalTime(serverTime: Date, offsetHours: number): Date {
     const localTime = new Date(serverTime);
     localTime.setHours(localTime.getHours() + offsetHours);
@@ -293,9 +298,6 @@ export class ScheduleService {
 
   // Database Operations
 
-  /**
-   * Get all enabled scheduled tasks
-   */
   private async getScheduledTasks(): Promise<ScheduleInterface[]> {
     const tasks = await this.scheduleModel
       .find({ enabled: true })
@@ -305,9 +307,6 @@ export class ScheduleService {
     return tasks.map(task => this.transformToInterface(task));
   }
 
-  /**
-   * Find schedule by ID (admin)
-   */
   async findById(id: string): Promise<ScheduleInterface | null> {
     logger.debug('Finding schedule by ID', { id }, 'ScheduleService');
 
@@ -320,16 +319,10 @@ export class ScheduleService {
     }
   }
 
-  /**
-   * Get total count (admin)
-   */
   async getTotal(): Promise<number> {
     return await this.scheduleModel.countDocuments();
   }
 
-  /**
-   * Find all schedules with pagination (admin)
-   */
   async findAll(query: BaseAdminQueryDto): Promise<ScheduleInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'time.hour', sortOrder = 'asc' } = query;
 
@@ -353,9 +346,6 @@ export class ScheduleService {
 
   // Logging and Error Handling
 
-  /**
-   * Log successful schedule execution
-   */
   private async logScheduleSuccess(taskId: string, eventName: string): Promise<void> {
     logger.info('Schedule executed successfully', {
       taskId,
@@ -364,9 +354,6 @@ export class ScheduleService {
     }, 'ScheduleService');
   }
 
-  /**
-   * Log failed schedule execution
-   */
   private async logScheduleFailure(taskId: string, eventName: string, error: Error): Promise<void> {
     logger.error('Schedule execution failed', {
       taskId,
@@ -378,9 +365,6 @@ export class ScheduleService {
 
   // Utility Methods
 
-  /**
-   * Transform document to interface
-   */
   private transformToInterface(doc: ScheduleDocument): ScheduleInterface {
     return {
       _id: doc._id.toString(),

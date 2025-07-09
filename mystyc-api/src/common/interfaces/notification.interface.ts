@@ -6,13 +6,14 @@ export interface Notification {
   fcmToken?: string;
   title: string;
   body: string;
-  type: 'test' | 'admin' | 'broadcast';
+  type: 'test' | 'admin' | 'broadcast' | 'schedule';
   source: 'api';
   status: 'pending' | 'sent' | 'failed';
   messageId?: string;
   error?: string;
   sentBy: string;
   sentAt?: Date;
+  scheduleId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

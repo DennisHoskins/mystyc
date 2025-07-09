@@ -26,6 +26,7 @@ export default function UsersDashboard({
     return null;
   }
 
+
   const duration = formatDateRangeForComponent(stats.query?.startDate, stats.query?.endDate);
 
   // Transform profile completion data for pie chart
