@@ -9,6 +9,7 @@ import { AdminDevicesStatsService } from '@/admin/services/admin-devices-stats.s
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from '@/admin/services/admin-notifications-stats.service';
 import { AdminContentStatsService } from '@/admin/services/admin-content-stats.service';
+import { AdminScheduleStatsService } from '@/admin/services/admin-schedule-stats.service';
 import { AdminStatsQueryDto } from '@/admin/dto/stats/admin-stats-query.dto'; 
 import { AdminStatsResponse } from '@/common/interfaces/admin/adminStats.interface';
 
@@ -20,6 +21,7 @@ export class AdminStatsController {
     private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
     private readonly adminContentStatsService: AdminContentStatsService,
+    private readonly adminScheduleStatsService: AdminScheduleStatsService,
   ) {}
 
   @Get()
@@ -60,6 +62,12 @@ export class AdminStatsController {
       this.adminContentStatsService.getTimelineStats(query.content),
     ]);
 
+    const [scheduleSummary, performance, failures] = await Promise.all([
+      this.adminScheduleStatsService.getSummaryStats(query.schedule),
+      this.adminScheduleStatsService.getPerformanceStats(query.schedule),
+      this.adminScheduleStatsService.getFailureStats(query.schedule),
+    ]);
+
     return {
       users: {
         registrations,
@@ -83,6 +91,11 @@ export class AdminStatsController {
         type: notificationType,
         engagement,
         pattern: notificaitionPattern
+      },
+      schedule: {
+        summary: scheduleSummary,
+        performance,
+        failures
       },
       content: {
         summary: contentSummary,

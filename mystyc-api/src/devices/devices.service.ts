@@ -196,6 +196,31 @@ export class DevicesService {
     return devices.map(device => this.transformToDevice(device));
   }  
 
+  async findByTimezoneWithFcmToken(timezone: string): Promise<DeviceInterface[]> {
+    logger.debug('Finding devices by timezone with FCM tokens', { timezone }, 'DeviceService');
+
+    const pipeline: any[] = [
+      {
+        $match: {
+          timezone: timezone,
+          fcmToken: { $exists: true, $nin: [null, ''] }
+        }
+      },
+      { $sort: { updatedAt: -1 } },
+      {
+        $group: {
+          _id: '$deviceId',
+          doc: { $first: '$$ROOT' }
+        }
+      },
+      { $replaceRoot: { newRoot: '$doc' } },
+      { $limit: 5000 }
+    ];
+
+    const devices = await this.deviceModel.aggregate(pipeline).exec();
+    return devices.map(device => this.transformToDevice(device));
+  }
+
   /**
    * Get unique firebaseUids that have used a specific device
    * @param deviceId - Device identifier

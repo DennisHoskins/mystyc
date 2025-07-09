@@ -3,6 +3,7 @@ import { DeviceStats } from './adminDeviceStats.interface'
 import { AuthEventStats } from './adminAuthEventStats.interface'
 import { NotificationStats } from './adminNotificationStats.interface'
 import { ContentStats } from './adminContentStats.interface'
+import { ScheduleStats } from './adminScheduleStats.interface'
 
 export interface AdminStatsResponse {
   users : UserStats,
@@ -10,4 +11,5 @@ export interface AdminStatsResponse {
   authEvents : AuthEventStats,
   notifications : NotificationStats,
   content : ContentStats,
+  schedule : ScheduleStats,
 }

@@ -1,34 +1,60 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Cron } from '@nestjs/schedule';
+import * as admin from 'firebase-admin';
 
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
+import { ContentService } from '@/content/content.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
 import { Device } from '@/common/interfaces/device.interface';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
-import * as admin from 'firebase-admin';
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
     private readonly deviceService: DevicesService,
-    private readonly userProfileService: UserProfilesService
+    private readonly userProfileService: UserProfilesService,
+    private readonly contentService: ContentService
   ) {}
 
-  @Cron('30 21 * * *', {
-    timeZone: 'America/Edmonton'
-  }) 
-  async sendDailyNotifications() {
-    logger.info('Starting daily notification broadcast at 9 AM Alberta time', {}, 'NotificationsService');
-    
+  // Notification schedule methods
+
+  /**
+   * Handles scheduled notification sending events from Schedule Service
+   * @param payload - Event payload containing schedule context
+   */
+  @OnEvent('notifications.send.notification')
+  async handleScheduledNotifications(payload: any): Promise<void> {
+    logger.info('Handling scheduled notifications', {
+      taskId: payload.taskId,
+      eventName: payload.eventName,
+      timezone: payload.timezone || 'global',
+      scheduledTime: payload.scheduledTime,
+      executedAt: payload.executedAt
+    }, 'NotificationsService');
+
     try {
+      // Get today's content for notification
+      const content = await this.contentService.getTodaysContent();
+      
+      // Prepare notification content
+      const title = content.title || 'Daily Mystyc Update';
+      const body = this.truncateMessage(content.message, 100) || 'Your daily mystical insights are ready!';
+
+      logger.debug('Prepared notification content', {
+        title,
+        bodyLength: body.length,
+        contentDate: content.date,
+        contentStatus: content.status
+      }, 'NotificationsService');
+
       const results = {
         success: true,
         sent: 0,
@@ -36,26 +62,88 @@ export class NotificationsService {
         details: []
       };
 
-      // Send to all devices in the system
-      await this.sendBroadcast(
-        'Daily Update', 
-        'Good morning! Here\'s your daily update from Mystyc.', 
-        results, 
-        'system'
-      );
+      if (payload.timezone) {
+        // Send to devices in specific timezone
+        await this.sendToTimezone(payload.timezone, title, body, results);
+      } else {
+        // Send broadcast to all devices
+        await this.sendBroadcast(title, body, results, 'system');
+      }
 
-      logger.info('Daily notification broadcast completed', {
+      logger.info('Scheduled notifications completed', {
+        taskId: payload.taskId,
+        timezone: payload.timezone || 'global',
         sent: results.sent,
         failed: results.failed,
-        totalDevices: results.sent + results.failed
+        totalAttempts: results.sent + results.failed
       }, 'NotificationsService');
 
     } catch (error) {
-      logger.error('Daily notification broadcast failed', {
-        error: error.message
+      logger.error('Scheduled notifications failed', {
+        taskId: payload.taskId,
+        timezone: payload.timezone || 'global',
+        error: error.message,
+        scheduledTime: payload.scheduledTime
       }, 'NotificationsService');
+
+      // Don't throw - we don't want to crash the scheduler
     }
   }
+
+  /**
+   * Sends notifications to devices in a specific timezone
+   * @param timezone - Target timezone (e.g., 'America/Edmonton')
+   * @param title - Notification title
+   * @param body - Notification body
+   * @param results - Results tracking object
+   */
+  private async sendToTimezone(
+    timezone: string, 
+    title: string, 
+    body: string, 
+    results: any
+  ): Promise<void> {
+    logger.info('Sending notifications to timezone', { timezone }, 'NotificationsService');
+
+    try {
+      // Get all devices with pagination (adjust limit as needed)
+      const timezoneDevices = await this.deviceService.findByTimezoneWithFcmToken(timezone);
+
+      logger.info('Found target devices for timezone', {
+        timezone,
+        timezoneDevices: timezoneDevices.length
+      }, 'NotificationsService');
+
+      if (timezoneDevices.length === 0) {
+        logger.warn('No devices found for timezone', { timezone }, 'NotificationsService');
+        return;
+      }
+
+      // Send notifications to filtered devices
+      for (const device of timezoneDevices) {
+        await this.sendToSingleDevice(device, title, body, 'broadcast', 'system', results);
+      }
+
+    } catch (error) {
+      logger.error('Failed to send notifications to timezone', {
+        timezone,
+        error: error.message
+      }, 'NotificationsService');
+      throw error;
+    }
+  }
+
+  /**
+   * Truncates message to specified length with ellipsis
+   * @param message - Original message
+   * @param maxLength - Maximum length
+   * @returns Truncated message
+   */
+  private truncateMessage(message: string, maxLength: number): string {
+    if (!message) return '';
+    if (message.length <= maxLength) return message;
+    return message.substring(0, maxLength - 3) + '...';
+  }  
 
   // GET Methods (Read Operations)
 

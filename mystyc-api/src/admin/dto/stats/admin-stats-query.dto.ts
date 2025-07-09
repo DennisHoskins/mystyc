@@ -4,6 +4,7 @@ import { AdminDeviceStatsQueryDto } from "./admin-device-stats-query.dto";
 import { AuthEventStatsQueryDto } from "./admin-auth-event-stats-query.dto";
 import { NotificationStatsQueryDto } from "./admin-notification-stats-query.dto";
 import { ContentStatsQueryDto } from "./admin-content-stats-query.dto";
+import { ScheduleStatsQueryDto } from "./admin-schedule-stats-query.dto";
 
 export class AdminStatsQueryDto {
   @IsOptional()
@@ -12,4 +13,5 @@ export class AdminStatsQueryDto {
   authEvent?: AuthEventStatsQueryDto
   notification?: NotificationStatsQueryDto
   content?: ContentStatsQueryDto
+  schedule?: ScheduleStatsQueryDto
 }

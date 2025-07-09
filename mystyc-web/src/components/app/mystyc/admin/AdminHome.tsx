@@ -61,6 +61,12 @@ export default function AdminHome() {
         endDate: endDateStr,
         maxRecords: 50000
       },
+      schedules: {
+        period: 'daily' as const,
+        limit: 10000,
+        startDate: startDateStr,
+        endDate: endDateStr
+      },
       content: {
         period: 'daily' as const,
         limit: 10000,

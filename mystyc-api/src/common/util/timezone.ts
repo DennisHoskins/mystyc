@@ -73,3 +73,6 @@ class Timezone {
     return (localTime - utcTime) / (1000 * 60 * 60);
   }
 }
+
+// Export singleton instance
+export const timezone = new Timezone();

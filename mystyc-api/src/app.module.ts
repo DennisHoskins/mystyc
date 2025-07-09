@@ -9,10 +9,11 @@ import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { FirebaseModule } from '@/auth/firebase.module';
 import { UsersModule } from '@/users/users.module';
 import { DevicesModule } from '@/devices/devices.module';
+import { ScheduleModule as AppScheduleModule } from '@/schedule/schedule.module';
 import { AuthEventsModule } from '@/auth-events/auth-events.module';
-import { AdminModule } from '@/admin/admin.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ContentModule } from '@/content/content.module';
+import { AdminModule } from '@/admin/admin.module';
 
 import { AppController } from '@/app.controller';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
@@ -41,6 +42,7 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
     FirebaseModule,
     UsersModule,
     DevicesModule,
+    AppScheduleModule,  // <-- Add this line
     AuthEventsModule,
     AdminModule,
     NotificationsModule,

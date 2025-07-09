@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { OnEvent } from '@nestjs/event-emitter';
 
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
@@ -60,6 +61,8 @@ export class ContentService {
   constructor(
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
   ) {}
+
+  
 
   /**
    * Get or generate content for a specific date
@@ -227,4 +230,53 @@ export class ContentService {
       updatedAt: doc.updatedAt,
     };
   }
+
+  /**
+   * Handles scheduled content generation events from Schedule Service
+   * @param payload - Event payload containing schedule context
+   */
+  @OnEvent('content.generate.content')
+  async handleScheduledContentGeneration(payload: any): Promise<void> {
+    logger.info('Handling scheduled content generation', {
+      taskId: payload.taskId,
+      eventName: payload.eventName,
+      timezone: payload.timezone || 'global',
+      scheduledTime: payload.scheduledTime,
+      executedAt: payload.executedAt
+    }, 'ContentService');
+
+    try {
+      // Determine the date for content generation
+      const targetDate = payload.timezone 
+        ? new Date(payload.localTime).toISOString().split('T')[0]  // Use local date for timezone-aware
+        : new Date().toISOString().split('T')[0];                   // Use server date for global
+
+      logger.debug('Generating content for scheduled event', {
+        targetDate,
+        timezone: payload.timezone || 'global'
+      }, 'ContentService');
+
+      // Generate content for the target date
+      const content = await this.getOrGenerateContent(targetDate);
+
+      logger.info('Scheduled content generation completed', {
+        taskId: payload.taskId,
+        targetDate,
+        contentId: content._id,
+        status: content.status,
+        timezone: payload.timezone || 'global'
+      }, 'ContentService');
+
+    } catch (error) {
+      logger.error('Scheduled content generation failed', {
+        taskId: payload.taskId,
+        timezone: payload.timezone || 'global',
+        error: error.message,
+        scheduledTime: payload.scheduledTime
+      }, 'ContentService');
+
+      // Don't throw - we don't want to crash the scheduler
+      // The content service will handle failed generation internally
+    }
+  }  
 }

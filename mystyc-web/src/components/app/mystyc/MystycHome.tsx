@@ -14,11 +14,10 @@ export default function Mystyc() {
   }
 
   return (
-    
-    <Section className='flex flex-1 h-full items-center'>
-      <Card>
+    <div className="flex flex-1 items-center justify-center mx-4">
+      <div className="w-full max-w-md text-center mx-4 px-6 border rounded-md p-6 shadow-sm bg-white">
         {user.isOnboard ? <Dashboard /> : <Welcome />}
-      </Card>
-    </Section>
+      </div>
+    </div>
   );
 }
