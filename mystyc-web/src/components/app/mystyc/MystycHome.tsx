@@ -2,8 +2,6 @@
 
 import { useUser } from '@/components/layout/context/AppContext';
 
-import Section from '@/components/ui/Section';
-import Card from '@/components/ui/Card';
 import Dashboard from '@/components/app/mystyc/dashboard/Dashboard';
 import Welcome from '@/components/app/mystyc/welcome/Welcome';
 

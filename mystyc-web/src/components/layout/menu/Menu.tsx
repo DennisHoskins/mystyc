@@ -1,56 +1,60 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect } from 'react';
 
-import { Menu as MenuIcon, X } from 'lucide-react';
-import styles from './Menu.module.css';
+import MystycMenu from '@/components/app/mystyc/MystycMenu';
 
-export default function Menu({ children, isFullWidth = false } : { children: React.ReactNode, isFullWidth?: boolean }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+interface MenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const toggleMenu = () => setIsOpen(open => !open);
-
+export default function Menu({ isOpen, onClose }: MenuProps) {
+  // Close menu on escape key
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        isOpen &&
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
       }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
-return (
+  // Don't return null - render for animations
+
+  return (
     <>
-      <div ref={containerRef} className="relative">
-        <button
-          onClick={toggleMenu}
-          aria-label={isOpen ? 'Close menu' : 'Open menu'}
-          className={styles.button}
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
-        </button>
+      {/* Mobile: Backdrop */}
+      <div 
+        className={`md:hidden fixed inset-0 bg-black z-[60] transition-opacity duration-300 ease-in-out ${
+          isOpen ? 'opacity-25 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+      />
+      
+      {/* Mobile: Slide-in menu */}
+      <div className={`md:hidden fixed top-16 right-0 bottom-0 w-[80%] bg-white z-[60] shadow-lg transform transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : 'translate-x-[110%]'
+      }`}>
+        <div className="flex flex-col h-full p-4">
+          <MystycMenu />
+        </div>
       </div>
-      {createPortal(
-         <div className={`absolute inset-x-0 flex justify-end  ${isFullWidth ? 'w-full' : 'max-w-content'} mx-auto z-100`}>
-          <div
-            className={`${styles.menu} ${isOpen ? styles.open : styles.closed}`}
-          >
-          <div
-              className="flex flex-col h-full p-4 bg-white"
-            >
-              {children}
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
     </>
   );
 }

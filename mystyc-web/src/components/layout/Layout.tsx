@@ -1,20 +1,20 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
-
 import { useUser } from '@/components/layout/context/AppContext';
 import { TransitionProvider } from '@/components/layout/context/TransitionContext';
+
 import AppTransition from '@/components/layout/transition/AppTransition';
 import WebsiteHeader from '@/components/app/website/WebsiteHeader';
 import AppHeader from '@/components/app/mystyc/MystycHeader';
-
 import ScrollWrapper from '@/components/layout/scroll/ScrollWrapper';
 import PageTransition from '@/components/layout/transition/PageTransition';
 import Header from '@/components/layout/Header';
+import Menu from '@/components/layout/menu/Menu';
 import Main from '@/components/layout/Main';
 import Footer from '@/components/layout/Footer';
 import WebsiteFooter from '@/components/app/website/WebsiteFooter';
@@ -34,6 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isGlobalError = useAppStore((state) => state.isGlobalError);
   const setOnline = useAppStore((state) => state.setOnline);  
   const isOnline = useAppStore((state) => state.isOnline);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   logger.log("");
   logger.log("mystyc: v2025-07-04:12:00");
@@ -60,6 +61,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
   }, [setOnline]);  
 
+  // Close menu when pathname changes
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   const FooterContent = isWebsite ? WebsiteFooter : AppFooter;
 
   const isAdminPath = pathname.startsWith('/admin');  
@@ -85,9 +91,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Header isFullWidth={isAdmin == true}>
             {isWebsite
               ? <WebsiteHeader />
-              : <AppHeader />
+              : <AppHeader menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
             }            
           </Header>
+
+          {!isWebsite && (
+            <Menu 
+              isOpen={menuOpen} 
+              onClose={() => setMenuOpen(false)}
+            />
+          )}
 
           <div className="flex flex-1 w-full h-fit">
             <ScrollWrapper>

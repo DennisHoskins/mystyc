@@ -51,10 +51,10 @@ export default function ScheduleDashboard({
   ];
 
   // Transform schedule types for additional chart
-  const typeData = [
-    { name: 'Timezone Aware', value: data.summary.timezoneAwareSchedules, color: '#3b82f6' },
-    { name: 'Global', value: data.summary.globalSchedules, color: '#8b5cf6' }
-  ];
+  // const typeData = [
+  //   { name: 'Timezone Aware', value: data.summary.timezoneAwareSchedules, color: '#3b82f6' },
+  //   { name: 'Global', value: data.summary.globalSchedules, color: '#8b5cf6' }
+  // ];
 
   const chartComponents = {
     stats: (

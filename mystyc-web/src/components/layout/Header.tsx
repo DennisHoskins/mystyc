@@ -3,7 +3,12 @@
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import AppLogo from '@/components/ui/AppLogo';
 
-export default function Header({ children, isFullWidth = false } : { children: React.ReactNode, isFullWidth?: boolean }) {
+interface HeaderProps {
+  children: React.ReactNode;
+  isFullWidth?: boolean;
+}
+
+export default function Header({ children, isFullWidth = false }: HeaderProps) {
   const router = useTransitionRouter();
 
   return (

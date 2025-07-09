@@ -28,7 +28,7 @@ export default function AdminDashboardItemLayout({
 
       <hr />
       
-      <div className="space-y-6 p-4 mt-2">
+      <div className="space-y-6 pt-4 mt-2 flex flex-1">
         {children}
       </div>
     </Card>

@@ -11,8 +11,8 @@ interface AvatarProps {
 
 const sizeMap = {
   small: { avatar: 6, icon: 3, padding: 'p-1.5' },
-  medium: { avatar: 12, icon: 4, padding: 'p-2' },
-  large: { avatar: 16, icon: 6, padding: 'p-2.5' }
+  medium: { avatar: 8, icon: 3, padding: 'p-2' },
+  large: { avatar: 12, icon: 4, padding: 'p-2.5' }
 };
 
 export default function Avatar({ icon, size = 'medium', className }: AvatarProps) {

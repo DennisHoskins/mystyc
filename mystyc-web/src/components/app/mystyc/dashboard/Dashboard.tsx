@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useUser, useBusy } from '@/components/layout/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 
-import Section from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
 

@@ -142,7 +142,7 @@ export default function AdminHome() {
             <Heading level={2}>Admin</Heading>
           </div>
           <hr />
-            <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
         </Card>
         <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
           <SessionsDashboard data={data?.sessions} />

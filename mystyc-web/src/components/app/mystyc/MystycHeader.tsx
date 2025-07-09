@@ -1,27 +1,29 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import MenuButton from '@/components/layout/menu/MenuButton';
+import MystycMenu from '@/components/app/mystyc/MystycMenu';
 
-import { useUser } from '@/components/layout/context/AppContext';  
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+interface MystycHeaderProps {
+  menuOpen: boolean;
+  setMenuOpen: (open: boolean) => void;
+}
 
-import MenuComponent from '@/components/layout/menu/Menu';
-import Button from '@/components/ui/Button';
-import MystycMenu from './MystycMenu';
-
-export default function AppHeader() {
-  const pathname = usePathname();
-  const user = useUser();
-  const router = useTransitionRouter();
-
-  const isAdminPath = pathname.startsWith('/admin');  
-  const isAdmin = user && user.isAdmin && isAdminPath;
-
+export default function AppHeader({ menuOpen, setMenuOpen }: MystycHeaderProps) {
   return (
-    <div className="flex space-x-4 ml-auto">
-      <MenuComponent  isFullWidth={isAdmin == true}>
-        <MystycMenu />
-      </MenuComponent>
+    <div className="flex space-x-4 ml-auto relative">
+      <MenuButton 
+        isOpen={menuOpen}
+        onToggle={() => setMenuOpen(!menuOpen)}
+      />
+      
+      {/* Desktop: Floating popup */}
+      <div className={`hidden md:block absolute top-10 right-0 z-[100] w-64 bg-white border border-gray-200 rounded-md shadow-lg transition-opacity duration-200 ease-in-out ${
+        menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+      }`}>
+        <div className="p-4">
+          <MystycMenu />
+        </div>
+      </div>
     </div>        
   );
 }

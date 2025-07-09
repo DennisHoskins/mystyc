@@ -10,6 +10,7 @@ import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarCha
 type ChartType = 'stats' | 'visitors' | 'pages' | 'types' | 'browsers' | 'hourly' | 'dayofweek' | 'usertype' | 'platform' | 'browserversions';
 
 interface TrafficDashboardProps {
+  className?: string | null;
   data?: TrafficStats | null;
   charts?: ChartType[];
   height?: number | string;
@@ -18,6 +19,7 @@ interface TrafficDashboardProps {
 }
 
 export default function TrafficDashboard({ 
+  className,
   data, 
   charts = ['stats', 'visitors', 'pages', 'types', 'browsers', 'hourly', 'dayofweek', 'usertype'],
   height = '100%',
@@ -214,7 +216,7 @@ export default function TrafficDashboard({
   };
 
   return (
-    <div className="@container w-full flex-1 flex flex-col">
+    <div className={`@container w-full flex-1 flex flex-col ${className}`}>
       <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
         {charts.map((chartType) => (
           <div key={chartType} className='flex h-full'>

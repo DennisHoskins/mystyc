@@ -4,6 +4,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        'base': '15px',
+      },
       maxWidth: {
         'content': '80rem'
       }
