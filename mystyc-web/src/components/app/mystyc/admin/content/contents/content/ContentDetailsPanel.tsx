@@ -27,7 +27,7 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
 
   return (
     <div className='min-h-10'>
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <AdminDetailGroup>
           <AdminDetailField
             label="Status"
@@ -37,8 +37,6 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
               </span>
             }
           />
-        </AdminDetailGroup>
-        <AdminDetailGroup>
           <AdminDetailField
             label="Generated At"
             value={content.generatedAt ? formatTimestampForComponent(new Date(content.generatedAt).getTime()) : '-'}
@@ -49,19 +47,15 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
             label="Generation Time"
             value={formatDuration(content.generationDuration)}
           />
-        </AdminDetailGroup>
-      </div>
-      
-      {content.sources && content.sources.length > 0 && (
-        <div className="mt-6">
-          <AdminDetailGroup>
+          {content.sources && content.sources.length > 0 && (
             <AdminDetailField
               label="Sources"
               value={content.sources.join(', ')}
             />
-          </AdminDetailGroup>
-        </div>
-      )}
+          )}
+        </AdminDetailGroup>
+      </div>
+      
     </div>
   );
 }

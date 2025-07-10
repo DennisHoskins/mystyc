@@ -10,8 +10,8 @@ import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
-import NotificationDetailsPanel from './content/NotificationDetailsPanel';
-import NotificationMessagePanel from './content/NotificationMessagePanel';
+import NotificationDetailsPanel from './NotificationDetailsPanel';
+import NotificationMessagePanel from './NotificationMessagePanel';
 import UserInfoPanel from '@/components/app/mystyc/admin/content/users/user/UserInfoPanel';
 import DeviceInfoPanel from '@/components/app/mystyc/admin/content/devices/device/DeviceInfoPanel';
 
@@ -31,7 +31,7 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       const data = await apiClientAdmin.getNotification(notificationId);
       setNotification(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'NotificationPage');
       if (!wasSessionError) {
         logger.error('Failed to load notification:', err);
         setError('Failed to load notification. Please try again.');

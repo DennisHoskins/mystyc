@@ -8,7 +8,7 @@ export async function POST(
   const { scheduleExecutionId } = await params;  
   return handleAdmin(
     request, 
-    { endpoint: 'schedules-executions/{scheduleExecutionId}' },
+    { endpoint: 'schedule-executions/{scheduleExecutionId}' },
     { scheduleExecutionId }
   );
 }

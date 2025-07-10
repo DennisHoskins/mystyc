@@ -11,10 +11,10 @@ import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import ScheduleIcon from '@/components/app/mystyc/admin/ui/icons/ScheduleIcon';
-//import SchedulesTable from './SchedulesTable';
+import SchedulesExecutionsTable from './SchedulesExecutionsTable';
 import SchedulesExecutionsDashboard from './SchedulesExecutionsDashboard';
 
-export default function SchedulesPage() {
+export default function SchedulesExecutionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [schedulesExecutions, setSchedulesExecutions] = useState<ScheduleExecution[]>([]);
@@ -29,6 +29,7 @@ export default function SchedulesPage() {
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
+    { label: 'Schedules', href: '/admin/schedules' },
     { label: 'Schedules Executions' },
   ];
 
@@ -55,7 +56,7 @@ export default function SchedulesPage() {
       const stats = await apiClientAdmin.getScheduleExecutionStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SchedulesPage');
+      const wasSessionError = await handleSessionError(err, 'SchedulesExecutionsPage');
       if (!wasSessionError) {
         logger.error('Failed to load schedule:', err);
         setError('Failed to load schedule. Please try again.');
@@ -70,14 +71,12 @@ export default function SchedulesPage() {
     loadSchedulesExecutions(0);
   }, [loadSchedulesExecutions]);
 
-  console.log(stats, loading, currentPage, totalPages, totalItems, schedulesExecutions, hasMore);
-
   return (
    <AdminListLayout
       error={error}
       onRetry={() => loadSchedulesExecutions(currentPage)}
       breadcrumbs={breadcrumbs}
-      icon={ScheduleIcon}
+      icon={<ScheduleIcon variant='schedule-execution' />}
       description="Manage schedule entries: view, edit, and monitor schedule status, and performance metrics"
        sideContent={
          <SchedulesExecutionsDashboard
@@ -86,29 +85,33 @@ export default function SchedulesPage() {
          />
        }
       itemContent={[
-        <div key='info' className='space-y-4'>
-          <SchedulesExecutionsDashboard
-            key={'performance'}
-            stats={stats} 
-            charts={['performance']}
-          />
-          <SchedulesExecutionsDashboard
-            key={'recent'}
-            stats={stats} 
-            charts={['recent']}
-          />
-        </div>,
+        <SchedulesExecutionsDashboard
+          key={'performance'}
+          stats={stats} 
+          charts={['performance']}
+        />,
+        <SchedulesExecutionsDashboard
+          key={'recent'}
+          stats={stats} 
+          charts={['recent']}
+        />,
         <SchedulesExecutionsDashboard
           key={'events'}
           stats={stats} 
           charts={['events']}
         />,
-        <SchedulesExecutionsDashboard
-          key={'status'}
-          stats={stats} 
-          charts={['today']}
-        />,
       ]}
+       tableContent={
+         <SchedulesExecutionsTable 
+           data={schedulesExecutions}
+           loading={loading}
+           currentPage={currentPage}
+           totalPages={totalPages}
+           hasMore={hasMore}
+           onPageChange={loadSchedulesExecutions}
+           onRefresh={() => loadSchedulesExecutions(currentPage)}
+         />
+       }
     />   
   );
 }

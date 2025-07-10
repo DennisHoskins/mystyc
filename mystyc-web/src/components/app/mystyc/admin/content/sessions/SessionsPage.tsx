@@ -49,7 +49,7 @@ export default function SessionsPage() {
       const stats = await apiClientAdmin.getSessionStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'SessionsPage');
       if (!wasSessionError) {
         logger.error('Failed to load Sessions:', err);
         setError('Failed to load Sessions. Please try again.');

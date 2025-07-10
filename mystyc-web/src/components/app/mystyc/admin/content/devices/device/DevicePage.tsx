@@ -11,10 +11,10 @@ import { logger } from '@/util/logger';
 import Card from '@/components/ui/Card';
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import DeviceIcon from '@/components/app/mystyc/admin/ui/icons/DeviceIcon';
-import DeviceDetailsPanel from './content/DeviceDetailsPanel';
-import DeviceUsersPanel from './content/DeviceUsersPanel';
-import DeviceSessionPanel from './content/DeviceSessionPanel';
-import DeviceTabPanel from './content/DeviceTabPanel';
+import DeviceDetailsPanel from './DeviceDetailsPanel';
+import DeviceUsersPanel from './DeviceUsersPanel';
+import DeviceSessionPanel from './DeviceSessionPanel';
+import DeviceTabPanel from './DeviceTabPanel';
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -32,7 +32,7 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       const data = await apiClientAdmin.getDeviceSession(deviceId);
       setDeviceSession(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'DevicePage');
       if (!wasSessionError) {
         logger.error('Failed to load device:', err);
         setError('Failed to load device. Please try again.');

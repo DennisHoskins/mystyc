@@ -3,19 +3,19 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { AuthEvent } from '@/interfaces';
+import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AuthenticationsTable from '@/components/app/mystyc/admin/content/authentications/AuthenticationsTable';
-import AdminErrorPage from '../../../../ui/AdminError';
+import NotificationsTable from '@/components/app/mystyc/admin/content/notifications/NotificationsTable';
+import AdminErrorPage from '../../../ui/AdminError';
 
-interface DeviceAuthEventsTableProps {
+interface DeviceNotificationsTableProps {
   deviceId: string;
   isActive?: boolean;
 }
 
-export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceAuthEventsTableProps) {
-  const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
+export default function DeviceNotifications({ deviceId, isActive = false }: DeviceNotificationsTableProps) {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -24,26 +24,26 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
-  const loadDeviceAuthEvents = useCallback(async (page: number) => {
+  const loadDeviceNotifications = useCallback(async (page: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getDeviceAuthEvents(deviceId, {
+      const response = await apiClientAdmin.getDeviceNotifications(deviceId, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
         sortOrder: 'desc',
       });
 
-      setAuthEvents(response.data);
+      setNotifications(response.data);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);
     } catch (err) {
-      logger.error('Failed to load authEvents:', err);
-      setError('Failed to load authEvents. Please try again.');
+      logger.error('Failed to load notifications:', err);
+      setError('Failed to load notifications. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -52,14 +52,9 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
   // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
-      loadDeviceAuthEvents(0);
+      loadDeviceNotifications(0);
     }
-  }, [isActive, hasLoaded, loadDeviceAuthEvents]);
-
-  // Show loading state if tab is active but hasn't loaded yet
-  if (isActive && !hasLoaded && !loading) {
-    return null;
-  }
+  }, [isActive, hasLoaded, loadDeviceNotifications]);
 
   // Don't render anything if tab isn't active and hasn't loaded
   if (!isActive && !hasLoaded) {
@@ -69,22 +64,24 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
   if (error) {
     return (
       <AdminErrorPage
-        title='Unable to load device auth events'
+        title='Unable to load device notifications'
         error={error}
-        onRetry={() => loadDeviceAuthEvents(0)}
+        onRetry={() => loadDeviceNotifications(0)}
       />
     )
   }
 
   return (
-    <AuthenticationsTable
-      data={authEvents}
-      loading={loading}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
-      onPageChange={loadDeviceAuthEvents}
-      onRefresh={() => loadDeviceAuthEvents(currentPage)}
-    />
+    <div>
+      <NotificationsTable
+        data={notifications}
+        loading={loading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        hasMore={hasMore}
+        onPageChange={loadDeviceNotifications}
+        onRefresh={() => loadDeviceNotifications(currentPage)}
+      />
+    </div>
   );
 }

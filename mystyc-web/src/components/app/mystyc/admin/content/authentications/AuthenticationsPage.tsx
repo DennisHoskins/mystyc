@@ -53,7 +53,7 @@ export default function AuthenticationsPage() {
       const stats = await apiClientAdmin.getAuthenticationStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'AuthenticationsPage');
       if (!wasSessionError) {
         logger.error('Failed to load Auth Events:', err);
         setError('Failed to load Auth Events. Please try again.');

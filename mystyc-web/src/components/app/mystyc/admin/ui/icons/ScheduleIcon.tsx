@@ -1,9 +1,22 @@
 'use client';
 
-import { Clock } from 'lucide-react'
+import { Clock, AlarmClockCheck } from 'lucide-react'
 
-export default function ScheduleIcon({ size = 6 }: { size?: number }) {
+interface ScheduleIconProps {
+  size?: number;
+  variant?: 'schedule' | 'schedule-execution';
+}
+
+export default function ScheduleIcon({ size = 6, variant = 'schedule' }: ScheduleIconProps) {
   return (
-    <Clock className={`w-${size} h-${size} text-gray-500`} />
+    <>
+      {variant === 'schedule-execution' ? 
+        (
+          <AlarmClockCheck className={`w-${size} h-${size} text-gray-500`} />
+        ) : (
+          <Clock className={`w-${size} h-${size} text-gray-500`} />
+        ) 
+      }
+    </>
   );    
 }

@@ -53,7 +53,7 @@ export default function DevicesPage() {
       const stats = await apiClientAdmin.getDeviceStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'DevicesPage');
       if (!wasSessionError) {
         logger.error('Failed to load devices:', err);
         setError('Failed to load devices. Please try again.');

@@ -58,7 +58,7 @@ function LinkCell({ href, children }: LinkCellProps) {
 }
 
 interface AdminTableProps<T> {
-  icon?: IconComponent;
+  icon?: IconComponent | React.ReactNode;
   label?: string;
   data: T[];
   columns: Column<T>[];

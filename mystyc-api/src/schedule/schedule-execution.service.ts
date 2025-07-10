@@ -106,6 +106,47 @@ export class ScheduleExecutionService {
   }
 
   /**
+   * Get total count (admin)
+   */
+  async getTotal(): Promise<number> {
+    return await this.scheduleExecutionModel.countDocuments();
+  }
+
+  /**
+   * Find all executions with pagination (admin)
+   */
+  async findAll(query: BaseAdminQueryDto): Promise<ScheduleExecution[]> {
+    const { limit = 100, offset = 0, sortBy = 'executedAt', sortOrder = 'desc' } = query;
+
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const executions = await this.scheduleExecutionModel
+      .find()
+      .sort(sortObj)
+      .skip(offset)
+      .limit(limit)
+      .exec();
+
+    return executions.map(execution => this.transformToExecution(execution));
+  }
+
+  /**
+   * Find execution by ID (admin)
+   */
+  async findById(id: string): Promise<ScheduleExecution | null> {
+    logger.debug('Finding execution by ID', { id }, 'ScheduleExecutionService');
+
+    try {
+      const execution = await this.scheduleExecutionModel.findById(id).exec();
+      if (!execution) return null;
+      return this.transformToExecution(execution);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
    * Finds execution logs by schedule ID with pagination
    * @param scheduleId - Schedule ID to find executions for
    * @param query - Query parameters for pagination and sorting

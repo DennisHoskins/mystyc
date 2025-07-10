@@ -7,14 +7,14 @@ import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import NotificationsTable from '@/components/app/mystyc/admin/content/notifications/NotificationsTable';
-import AdminErrorPage from '../../../../ui/AdminError';
+import AdminErrorPage from '../../../ui/AdminError';
 
-interface DeviceNotificationsTableProps {
-  deviceId: string;
+interface UserNotificationsTableProps {
+  firebaseUid: string;
   isActive?: boolean;
 }
 
-export default function DeviceNotifications({ deviceId, isActive = false }: DeviceNotificationsTableProps) {
+export default function UserNotifications({ firebaseUid, isActive = false }: UserNotificationsTableProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,12 +24,12 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
-  const loadDeviceNotifications = useCallback(async (page: number) => {
+  const loadUserNotifications = useCallback(async (page: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getDeviceNotifications(deviceId, {
+      const response = await apiClientAdmin.getUserNotifications(firebaseUid, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -47,14 +47,14 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
     } finally {
       setLoading(false);
     }
-  }, [deviceId]);
+  }, [firebaseUid]);
 
   // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
-      loadDeviceNotifications(0);
+      loadUserNotifications(0);
     }
-  }, [isActive, hasLoaded, loadDeviceNotifications]);
+  }, [isActive, hasLoaded, loadUserNotifications]);
 
   // Don't render anything if tab isn't active and hasn't loaded
   if (!isActive && !hasLoaded) {
@@ -66,7 +66,7 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
       <AdminErrorPage
         title='Unable to load device notifications'
         error={error}
-        onRetry={() => loadDeviceNotifications(0)}
+        onRetry={() => loadUserNotifications(0)}
       />
     )
   }
@@ -74,13 +74,14 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
   return (
     <div>
       <NotificationsTable
+        hideUserColumn={true}
         data={notifications}
         loading={loading}
         currentPage={currentPage}
         totalPages={totalPages}
         hasMore={hasMore}
-        onPageChange={loadDeviceNotifications}
-        onRefresh={() => loadDeviceNotifications(currentPage)}
+        onPageChange={loadUserNotifications}
+        onRefresh={() => loadUserNotifications(currentPage)}
       />
     </div>
   );

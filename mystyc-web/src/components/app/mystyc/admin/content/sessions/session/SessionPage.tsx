@@ -10,8 +10,8 @@ import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import SessionIcon from '@/components/app/mystyc/admin/ui/icons/SessionIcon';
-import SessionDetailsPanel from './content/SessionDetailsPanel';
-import SessionTokensPanel from './content/SessionTokensPanel';
+import SessionDetailsPanel from './SessionDetailsPanel';
+import SessionTokensPanel from './SessionTokensPanel';
 import UserInfoPanel from '@/components/app/mystyc/admin/content/users/user/UserInfoPanel';
 import DeviceInfoPanel from '@/components/app/mystyc/admin/content/devices/device/DeviceInfoPanel';
 
@@ -32,7 +32,7 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       const data = await apiClientAdmin.getSession(sessionId);
       setSession(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'SessionPage');
       if (!wasSessionError) {
         logger.error('Failed to load session:', err);
         setError('Failed to load session. Please try again.');

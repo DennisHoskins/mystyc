@@ -9,7 +9,7 @@ import AdminDetailField from '@/components/app/mystyc/admin/ui/detail/AdminDetai
 export default function SessionDetailsPanel({ session }: { session: Session }) {
   return (
     <div className='min-h-10'>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <AdminDetailGroup>
           <AdminDetailField
             label="Created"

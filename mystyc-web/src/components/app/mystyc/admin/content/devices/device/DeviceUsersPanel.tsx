@@ -6,7 +6,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminErrorPage from '../../../../ui/AdminError';
+import AdminErrorPage from '../../../ui/AdminError';
 import UsersTable from '@/components/app/mystyc/admin/content/users/UsersTable';
 import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon'
 

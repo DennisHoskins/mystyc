@@ -11,10 +11,10 @@ import { logger } from '@/util/logger';
 import Card from '@/components/ui/Card';
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import UserIcon from '@/components/app/mystyc/admin/ui/icons//UserIcon';
-import UserDetailsPanel from './content/UserDetailsPanel';
-import UserProfilePanel from './content/UserProfilePanel';
-import UserDevicesPanel from './content/UserDevicesPanel';
-import UserTabPanel from './content/UserTabPanel';
+import UserDetailsPanel from './UserDetailsPanel';
+import UserProfilePanel from './UserProfilePanel';
+import UserDevicesPanel from './UserDevicesPanel';
+import UserTabPanel from './UserTabPanel';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const { handleSessionError } = useSessionErrorHandler();

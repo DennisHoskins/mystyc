@@ -14,7 +14,7 @@ import { IconComponent } from '@/components/ui/icons/Icon';
 interface AdminListLayoutProps {
   error?: string | null;
   onRetry: () => void;
-  icon: IconComponent
+  icon: IconComponent | React.ReactNode;
   breadcrumbs?: BreadcrumbItem[];
   title?: string;
   description?: string;

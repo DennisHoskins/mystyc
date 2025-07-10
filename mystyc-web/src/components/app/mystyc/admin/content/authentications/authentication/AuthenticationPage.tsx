@@ -10,8 +10,8 @@ import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import AuthenticationIcon from '@/components/app/mystyc/admin/ui/icons/AuthenticationIcon';
-import AuthenticationDetailsPanel from './content/AuthenticationDetailsPanel';
-import AuthenticationUserPanel from './content/AuthenticationUserPanel';
+import AuthenticationDetailsPanel from './AuthenticationDetailsPanel';
+import AuthenticationUserPanel from './AuthenticationUserPanel';
 import DeviceInfoPanel from '@/components/app/mystyc/admin/content/devices/device/DeviceInfoPanel';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
@@ -30,7 +30,7 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       const data = await apiClientAdmin.getAuthEvent(authId);
       setAuthentication(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'AuthenticationPage');
       if (!wasSessionError) {
         logger.error('Failed to load authentication:', err);
         setError('Failed to load authentication. Please try again.');

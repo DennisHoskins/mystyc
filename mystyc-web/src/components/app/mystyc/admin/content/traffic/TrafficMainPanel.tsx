@@ -5,7 +5,7 @@ import { TrafficStats } from '@/interfaces';
 import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
-import TrafficDashboard from '@/components/app/mystyc/admin/content/dashboard/TrafficDashboard';
+import TrafficDashboard from './TrafficDashboard';
 
 export default function TrafficMainPanel({ trafficStats }: { trafficStats: TrafficStats }) {
   return (

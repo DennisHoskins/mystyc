@@ -6,7 +6,7 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminErrorPage from '../../../../ui/AdminError';
+import AdminErrorPage from '../../../ui/AdminError';
 import DevicesTable from '@/components/app/mystyc/admin/content/devices/DevicesTable';
 import DeviceIcon from '@/components/app/mystyc/admin/ui/icons/DeviceIcon'
 

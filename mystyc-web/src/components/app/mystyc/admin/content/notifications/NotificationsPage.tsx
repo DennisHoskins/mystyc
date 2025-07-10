@@ -53,7 +53,7 @@ export default function NotificationsPage() {
       const stats = await apiClientAdmin.getNotificationStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
+      const wasSessionError = await handleSessionError(err, 'NotificationsPage');
       if (!wasSessionError) {
         logger.error('Failed to load Notifications:', err);
         setError('Failed to load Notifications. Please try again.');

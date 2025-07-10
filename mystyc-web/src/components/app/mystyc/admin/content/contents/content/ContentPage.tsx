@@ -10,10 +10,10 @@ import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/app/mystyc/admin/ui/icons/ContentIcon';
-import ContentDetailsPanel from './content/ContentDetailsPanel';
-import ContentPreviewPanel from './content/ContentPreviewPanel';
-import ContentSidebarPanel from './content/ContentSidebarPanel';
-import ContentDataPanel from './content/ContentDataPanel';
+import ContentDetailsPanel from './ContentDetailsPanel';
+import ContentPreviewPanel from './ContentPreviewPanel';
+import ContentSidebarPanel from './ContentSidebarPanel';
+import ContentDataPanel from './ContentDataPanel';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
   const { handleSessionError } = useSessionErrorHandler();

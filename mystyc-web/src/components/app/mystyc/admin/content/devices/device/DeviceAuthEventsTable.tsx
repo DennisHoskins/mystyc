@@ -6,15 +6,15 @@ import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import AdminErrorPage from '../../../../ui/AdminError';
 import AuthenticationsTable from '@/components/app/mystyc/admin/content/authentications/AuthenticationsTable';
+import AdminErrorPage from '../../../ui/AdminError';
 
-interface UserAuthEventsTableProps {
-  firebaseUid: string;
+interface DeviceAuthEventsTableProps {
+  deviceId: string;
   isActive?: boolean;
 }
 
-export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAuthEventsTableProps) {
+export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceAuthEventsTableProps) {
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,12 +24,12 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
-  const loadUserAuthEvents = useCallback(async (page: number) => {
+  const loadDeviceAuthEvents = useCallback(async (page: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getUserAuthEvents(firebaseUid, {
+      const response = await apiClientAdmin.getDeviceAuthEvents(deviceId, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -47,14 +47,14 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
     } finally {
       setLoading(false);
     }
-  }, [firebaseUid]);
+  }, [deviceId]);
 
   // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
-      loadUserAuthEvents(0);
+      loadDeviceAuthEvents(0);
     }
-  }, [isActive, hasLoaded, loadUserAuthEvents]);
+  }, [isActive, hasLoaded, loadDeviceAuthEvents]);
 
   // Show loading state if tab is active but hasn't loaded yet
   if (isActive && !hasLoaded && !loading) {
@@ -69,23 +69,22 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
   if (error) {
     return (
       <AdminErrorPage
-        title='Unable to load user auth events'
+        title='Unable to load device auth events'
         error={error}
-        onRetry={() => loadUserAuthEvents(0)}
+        onRetry={() => loadDeviceAuthEvents(0)}
       />
     )
   }
 
   return (
     <AuthenticationsTable
-      hideUserColumn={true}
       data={authEvents}
       loading={loading}
       currentPage={currentPage}
       totalPages={totalPages}
       hasMore={hasMore}
-      onPageChange={loadUserAuthEvents}
-      onRefresh={() => loadUserAuthEvents(currentPage)}
+      onPageChange={loadDeviceAuthEvents}
+      onRefresh={() => loadDeviceAuthEvents(currentPage)}
     />
   );
 }

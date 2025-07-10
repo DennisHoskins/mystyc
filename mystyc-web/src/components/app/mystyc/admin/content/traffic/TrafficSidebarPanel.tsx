@@ -2,7 +2,7 @@
 
 import { TrafficStats } from '@/interfaces';
 
-import TrafficDashboard from '../../dashboard/TrafficDashboard';
+import TrafficDashboard from './TrafficDashboard';
 
 export default function TrafficSidebarPanel({ trafficStats }: { trafficStats: TrafficStats }) {
 

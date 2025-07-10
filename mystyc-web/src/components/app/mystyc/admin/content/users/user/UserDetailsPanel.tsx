@@ -15,7 +15,7 @@ export default function UserDetailsPanel({ user }: { user: UserProfile }) {
 
   return (
     <div className='flex flex-col min-h-36'>
-      <div className='flex items-center mb-4'>
+      <div className='flex flex-col space-y-1 mb-4'>
         <Text variant="small" className="font-light text-gray-500 uppercase tracking-wide mr-2">
           Firebase Uid
         </Text>
@@ -24,7 +24,7 @@ export default function UserDetailsPanel({ user }: { user: UserProfile }) {
         </Text>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <AdminDetailGroup>
           <AdminDetailField
             label="Contact Information"

@@ -11,10 +11,10 @@ import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import TrafficIcon from '@/components/app/mystyc/admin/ui/icons/TrafficIcon';
-import TrafficDetailsPanel from './content/TrafficDetailsPanel';
-import TrafficAnalyticsPanel from './content/TrafficAnalyticsPanel';
-import TrafficSidebarPanel from './content/TrafficSidebarPanel';
-import TrafficMainPanel from './content/TrafficMainPanel';
+import TrafficDetailsPanel from './TrafficDetailsPanel';
+import TrafficAnalyticsPanel from './TrafficAnalyticsPanel';
+import TrafficSidebarPanel from './TrafficSidebarPanel';
+import TrafficMainPanel from './TrafficMainPanel';
 
 export default function TrafficPage() {
   const { handleSessionError } = useSessionErrorHandler();
