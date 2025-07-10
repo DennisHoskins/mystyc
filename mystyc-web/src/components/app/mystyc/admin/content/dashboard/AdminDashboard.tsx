@@ -140,11 +140,19 @@ console.log(stats);
               >
                 <div className='flex-1 space-y-4'>
                   <SchedulesExecutionsDashboard
-                    data={stats.data.schedule.executions} 
+                    stats={{
+                      data: stats.data.schedule.executions,
+                      query: stats.query,
+                      queryString: stats.queryString,
+                    }}
                     charts={['stats']}
                   />
                   <SchedulesExecutionsDashboard
-                    data={stats.data.schedule.executions} 
+                    stats={{
+                      data: stats.data.schedule.executions,
+                      query: stats.query,
+                      queryString: stats.queryString,
+                    }}
                     charts={['today']}
                   />
                 </div>

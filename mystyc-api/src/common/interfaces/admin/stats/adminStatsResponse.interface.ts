@@ -4,7 +4,7 @@ import { AuthEventStats } from './adminAuthEventStats.interface'
 import { NotificationStats } from './adminNotificationStats.interface'
 import { ContentStats } from './adminContentStats.interface'
 import { ScheduleStats } from './adminScheduleStats.interface'
-import { ScheduleStatsResponse } from './adminScheduleExecutionStats.interface'
+import { ScheduleExecutionStats } from './adminScheduleExecutionStats.interface'
 
 export interface AdminStatsResponse {
   users: UserStats,
@@ -13,6 +13,6 @@ export interface AdminStatsResponse {
   notifications: NotificationStats,
   content: ContentStats,
   schedule: ScheduleStats & {
-    executions: ScheduleStatsResponse;
+    executions: ScheduleExecutionStats;
   },
 }

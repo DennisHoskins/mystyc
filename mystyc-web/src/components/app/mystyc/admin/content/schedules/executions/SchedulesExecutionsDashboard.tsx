@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarFold } from 'lucide-react';
+import { CalendarClock } from 'lucide-react';
 
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { ScheduleExecutionStats } from '@/interfaces/admin/stats/adminScheduleExecutionStats.interface';
@@ -10,7 +10,7 @@ import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChart
 import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarChart';
 import SimpleLineChart from '@/components/app/mystyc/admin/ui/charts/SimpleLineChart';
 
-type ChartType = 'stats' | 'timeline' | 'breakdown' | 'recent' | 'performance' | 'today';
+type ChartType = 'stats' | 'events' | 'performance' | 'recent' | 'today';
 
 interface SchedulesExecutionsDashboardProps {
   stats?: StatsResponseWithQuery<ScheduleExecutionStats> | null;
@@ -20,25 +20,18 @@ interface SchedulesExecutionsDashboardProps {
 
 export default function SchedulesExecutionsDashboard({ 
   stats, 
-  charts = ['stats', 'timeline', 'breakdown', 'recent', 'performance', 'today'],
+  charts = ['stats', 'events', 'performance', 'recent', 'today'],
   height = 100
 }: SchedulesExecutionsDashboardProps) {
-  if (!stats) {
+  if (!stats || !stats.data || !stats.data.byEventType || !stats.data.systemOverview) {
     return null;
   }
 
-  // Transform execution timeline data for line chart
-  const timelineData = stats.data.recentExecutions.slice(-10).reverse().map((execution, index) => ({
-    date: new Date(execution.executedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    executions: execution.status === 'completed' ? 1 : 0,
-    index: index
-  }));
-
   // Transform event type breakdown for pie chart
-  const breakdownData = stats.data.byEventType.map(event => ({
+  const eventData = stats.data.byEventType.map(event => ({
     name: event.eventName.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || event.eventName,
     value: event.executions,
-    percentage: Math.round((event.executions / stats.data.overall.totalExecutions) * 100)
+    percentage: Math.round((event.executions / stats.data.systemOverview.totalExecutions) * 100)
   }));
 
   // Transform event type performance for bar chart
@@ -48,40 +41,79 @@ export default function SchedulesExecutionsDashboard({
     executions: event.executions
   }));
 
-  // Transform recent executions for simple visualization
-  const recentData = stats.data.recentExecutions.slice(0, 7).map((execution, index) => ({
-    event: execution.eventName.split('.').pop() || execution.eventName,
+  // Transform recent executions for timeline (last 10, reversed to show chronological order)
+  const recentData = stats.data.recentExecutions.slice(-10).reverse().map((execution, index) => ({
+    date: new Date(execution.executedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     success: execution.status === 'completed' ? 1 : 0,
-    index: index + 1
+    index: index
   }));
+
+  // Calculate "today" or last day data
+  const endDate = stats.query?.endDate ? new Date(stats.query.endDate) : new Date();
+  const today = new Date();
+  const isToday = endDate.toDateString() === today.toDateString();
+  
+  // Filter executions for the target date
+  const targetDayExecutions = stats.data.recentExecutions.filter(execution => {
+    const execDate = new Date(execution.executedAt);
+    return execDate.toDateString() === endDate.toDateString();
+  });
+  
+  const dayLabel = isToday ? "Today" : endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const dayCount = targetDayExecutions.length;
+  const daySuccessful = targetDayExecutions.filter(e => e.status === 'completed').length;
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats.data.overall.totalExecutions, label: 'Total Executions', color: 'text-blue-600' },
-          { value: `${stats.data.overall.successRate}%`, label: 'Success Rate', color: 'text-green-600' }
+          { value: stats.data.systemOverview.totalExecutions, label: 'Total Executions', color: 'text-blue-600' },
+          { value: `${stats.data.systemOverview.successRate}%`, label: 'Success Rate', color: 'text-green-600' }
         ]} 
       />
     ),
-    timeline: (
-      <SimpleLineChart 
-        title="Recent Execution Trend"
-        data={timelineData}
-        height={height}
-        dataKey="executions"
-        xAxisKey="date"
-        color="#3b82f6"
-        tooltipLabel="Successful Executions"
-        showXAxisTicks={false}
-        strokeWidth={2}
-        showDots={true}
-      />
+    today: (
+      <div className="@container flex-1 h-full grow flex flex-col">
+        <div className="inline-flex items-center w-full h-full p-4 rounded-lg bg-gray-50 justify-center md:justify-start">
+          <CalendarClock className="w-6 h-6 mr-4 text-gray-500" />
+          <div>
+            <div className="overflow-hidden font-medium text-sm">
+              <span className='@[200px]:hidden'>
+                {dayLabel}:
+              </span>
+              <span className='hidden @[200px]:inline'>
+                {dayLabel} Executions:
+              </span>
+            </div>
+            <div className="text-xs text-gray-600 leading-relaxed">
+              <span className='@[200px]:hidden'>
+                {dayCount} executed
+                {dayCount > 0 && (
+                  <span className={`ml-2 text-xs px-1 rounded ${daySuccessful === dayCount ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    {daySuccessful === dayCount ? 'all ✓' : `${daySuccessful}/${dayCount} ✓`}
+                  </span>
+                )}
+              </span>
+              <span className='hidden @[200px]:inline'>
+                {dayCount === 0 ? 'No executions' : `${dayCount} total`}
+                {dayCount > 0 && (
+                  <>
+                    <br />
+                    <span className={`text-xs px-1 rounded ${daySuccessful === dayCount ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {daySuccessful === dayCount ? 'All successful' : `${daySuccessful} successful, ${dayCount - daySuccessful} failed`}
+                    </span>
+                  </>
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     ),
-    breakdown: (
+    events: (
       <PieChartWithLegend 
-        title="Execution Distribution"
-        data={breakdownData}
+        title="Event Distribution"
+        data={eventData}
         height={height}
         showPercentage={true}
       />
@@ -99,33 +131,19 @@ export default function SchedulesExecutionsDashboard({
       />
     ),
     recent: (
-      <SimpleBarChart 
-        title="Recent Execution Status"
+      <SimpleLineChart 
+        title="Recent Execution Trend"
         data={recentData}
         height={height}
         dataKey="success"
-        xAxisKey="event"
-        color="#8b5cf6"
-        tooltipLabel="Status"
-        fontSize={10}
+        xAxisKey="date"
+        color="#3b82f6"
+        tooltipLabel="Successful Executions"
+        showXAxisTicks={false}
+        strokeWidth={2}
+        showDots={true}
       />
-    ),
-    today: (
-      <div className='flex-1 flex flex-col items-center justify-center rounded-md bg-gray-50 text-xs'>
-        <div className={`inline-flex items-center w-full p-4 rounded-lg bg-gray-50 justify-center md:justify-start `}>
-          <CalendarFold className="w-6 h-6 mr-4 text-gray-500" />
-          <div>
-            <span className='font-bold pb-1 inline-block'>
-              Today:
-            </span>
-            <br />
-            Executed: 2
-            <br />
-            Pending: 1
-          </div>
-        </div>
-      </div>
-    )      
+    )
   };
 
   return (
