@@ -223,7 +223,7 @@ export class AdminScheduleController extends AdminController<Schedule> {
     }
   }
 
-  // NEW: EXECUTION AND RELATED DATA ENDPOINTS
+  // EXECUTION AND RELATED DATA ENDPOINTS
 
   /**
    * Gets execution history for a specific schedule

@@ -12,7 +12,7 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import SessionsTable from './SessionsTable';
 import SessionIcon from '@/components/app/mystyc/admin/ui/icons/SessionIcon';
-import SessionsDashboard from '../dashboard/SessionsDashboard';
+import SessionsDashboard from './SessionsDashboard';
 
 export default function SessionsPage() {
   const { handleSessionError } = useSessionErrorHandler();

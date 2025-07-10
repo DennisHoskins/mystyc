@@ -13,8 +13,12 @@ import { NotificationDocument } from '@/notifications/schemas/notification.schem
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { 
   ScheduleExecutionStats,
-  ScheduleStatsResponse,
-  ScheduleHistoryStats
+  SchedulePerformanceStats,
+  ScheduleHistoryStats,
+  ScheduleSystemOverviewStats,
+  ScheduleEventTypeStats,
+  ScheduleRecentExecutionStats,
+  ScheduleExecutionSummaryStats
 } from '@/common/interfaces/admin/stats/adminScheduleExecutionStats.interface';
 import { logger } from '@/common/util/logger';
 
@@ -35,9 +39,9 @@ export class AdminScheduleExecutionStatsService {
    * Gets comprehensive execution statistics for a specific schedule
    * @param scheduleId - Schedule ID to analyze
    * @param query - Optional query parameters for date filtering
-   * @returns Promise<ScheduleExecutionStats> - Detailed execution performance data
+   * @returns Promise<SchedulePerformanceStats> - Detailed execution performance data
    */
-  async getScheduleStats(scheduleId: string, query?: AdminStatsQueryDto): Promise<ScheduleExecutionStats> {
+  async getScheduleStats(scheduleId: string, query?: AdminStatsQueryDto): Promise<SchedulePerformanceStats> {
     logger.info('Generating schedule execution stats', { scheduleId, query }, 'AdminScheduleExecutionStatsService');
 
     try {
@@ -62,14 +66,14 @@ export class AdminScheduleExecutionStatsService {
       // Calculate average duration
       const avgDuration = await this.getAverageExecutionDuration(scheduleId, dateFilter);
 
-      const result: ScheduleExecutionStats = {
+      const result: SchedulePerformanceStats = {
         scheduleId,
         eventName: schedule.event_name,
+        eventType: this.determineEventType(schedule.event_name),
         executions: executionStats,
         lastExecuted: latestExecution?.executedAt,
         averageDuration: avgDuration,
-        eventData,
-        eventType: this.determineEventType(schedule.event_name)
+        eventData
       };
 
       logger.info('Schedule execution stats generated', {
@@ -140,16 +144,16 @@ export class AdminScheduleExecutionStatsService {
   /**
    * Gets overall schedule system statistics
    * @param query - Optional query parameters for filtering
-   * @returns Promise<ScheduleStatsResponse> - System-wide schedule performance
+   * @returns Promise<ScheduleExecutionStats> - System-wide schedule performance
    */
-  async getOverallScheduleStats(query?: AdminStatsQueryDto): Promise<ScheduleStatsResponse> {
+  async getOverallScheduleStats(query?: AdminStatsQueryDto): Promise<ScheduleExecutionStats> {
     logger.info('Generating overall schedule stats', { query }, 'AdminScheduleExecutionStatsService');
 
     try {
       const dateFilter = this.buildDateFilter(query);
       
       // Overall system statistics
-      const overall = await this.getOverallStatistics(dateFilter);
+      const systemOverview = await this.getOverallStatistics(dateFilter);
       
       // Performance by event type
       const byEventType = await this.getEventTypeStatistics(dateFilter);
@@ -157,15 +161,15 @@ export class AdminScheduleExecutionStatsService {
       // Recent executions
       const recentExecutions = await this.getRecentExecutions(dateFilter);
 
-      const result: ScheduleStatsResponse = {
-        overall,
+      const result: ScheduleExecutionStats = {
+        systemOverview,
         byEventType,
         recentExecutions
       };
 
       logger.info('Overall schedule stats generated', {
-        totalExecutions: overall.totalExecutions,
-        successRate: overall.successRate
+        totalExecutions: systemOverview.totalExecutions,
+        successRate: systemOverview.successRate
       }, 'AdminScheduleExecutionStatsService');
 
       return result;
@@ -179,12 +183,7 @@ export class AdminScheduleExecutionStatsService {
 
   // Private helper methods
 
-  private async getExecutionStatistics(scheduleId: string, dateFilter: any): Promise<{
-    total: number;
-    successful: number;
-    failed: number;
-    successRate: number;
-  }> {
+  private async getExecutionStatistics(scheduleId: string, dateFilter: any): Promise<ScheduleExecutionSummaryStats> {
     const matchCondition: any = { scheduleId };
     if (dateFilter) {
       matchCondition.executedAt = dateFilter;
@@ -444,12 +443,7 @@ export class AdminScheduleExecutionStatsService {
     return { executionTrend, eventDeliveryTrend };
   }
 
-  private async getOverallStatistics(dateFilter: any): Promise<{
-    totalExecutions: number;
-    successRate: number;
-    contentGenerationRate: number;
-    notificationDeliveryRate: number;
-  }> {
+  private async getOverallStatistics(dateFilter: any): Promise<ScheduleSystemOverviewStats> {
     const matchCondition: any = {};
     if (dateFilter) {
       matchCondition.executedAt = dateFilter;
@@ -528,11 +522,7 @@ export class AdminScheduleExecutionStatsService {
     return result && result.total > 0 ? Math.round((result.sent / result.total) * 100) : 0;
   }
 
-  private async getEventTypeStatistics(dateFilter: any): Promise<Array<{
-    eventName: string;
-    executions: number;
-    successRate: number;
-  }>> {
+  private async getEventTypeStatistics(dateFilter: any): Promise<ScheduleEventTypeStats[]> {
     const matchCondition: any = {};
     if (dateFilter) {
       matchCondition.executedAt = dateFilter;
@@ -568,12 +558,7 @@ export class AdminScheduleExecutionStatsService {
     }));
   }
 
-  private async getRecentExecutions(dateFilter: any): Promise<Array<{
-    executedAt: Date;
-    eventName: string;
-    status: string;
-    timezone?: string;
-  }>> {
+  private async getRecentExecutions(dateFilter: any): Promise<ScheduleRecentExecutionStats[]> {
     const matchCondition: any = {};
     if (dateFilter) {
       matchCondition.executedAt = dateFilter;

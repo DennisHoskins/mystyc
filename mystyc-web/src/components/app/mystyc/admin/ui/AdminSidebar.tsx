@@ -20,7 +20,7 @@ export default function AdminSidebar({
     { icon: <LayoutDashboard />, label: 'Dashboard', href: '/admin' },
     { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
     { icon: <Globe />, label: 'Traffic', href: '/admin/traffic' },
-    { icon: <Clock />, label: 'Scheduler', href: '/admin/scheduler' },
+    { icon: <Clock />, label: 'Schedules', href: '/admin/schedules' },
     { icon: <Hash />, label: 'Content Generation', href: '/admin/content' },
     { icon: <Users />, label: 'Users', href: '/admin/users' },
     { icon: <MonitorSmartphone />, label: 'Devices', href: '/admin/devices' },

@@ -13,12 +13,14 @@ import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChart
 type ChartType = 'stats' | 'timeline' | 'performance' | 'coverage';
 
 interface ContentDashboardProps {
+  className?: string | null;
   stats?: StatsResponseWithQuery<ContentStats> | null;
   charts?: ChartType[];
   height?: number;
 }
 
 export default function ContentDashboard({ 
+  className,
   stats,
   charts = ['stats', 'timeline', 'performance', 'coverage'],
   height = 100
@@ -107,7 +109,7 @@ export default function ContentDashboard({
   };
 
   return (
-    <div className="@container grow flex flex-col">
+    <div className={`@container grow flex flex-col ${className}`}>
       <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
         {charts.map((chartType) => (
           <div key={chartType} className='flex h-full'>

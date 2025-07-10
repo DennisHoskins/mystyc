@@ -25,9 +25,9 @@ export default function AdminMenu() {
           <Globe className="inline-block mr-2 h-4 w-4" />
           Traffic
         </MenuItem>
-        <MenuItem onClick={() => router.push('/admin/scheduler')}>
+        <MenuItem onClick={() => router.push('/admin/schedules')}>
           <Clock className="inline-block mr-2 h-4 w-4" />
-          Scheduler
+          Schedules
         </MenuItem>
         <MenuItem onClick={() => router.push('/admin/content')}>
           <Hash className="inline-block mr-2 h-4 w-4" />

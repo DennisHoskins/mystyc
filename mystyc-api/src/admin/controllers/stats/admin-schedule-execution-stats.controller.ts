@@ -9,7 +9,7 @@ import { ScheduleService } from '@/schedule/schedule.service';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { 
   ScheduleExecutionStats,
-  ScheduleStatsResponse,
+  SchedulePerformanceStats,
   ScheduleHistoryStats
 } from '@/common/interfaces/admin/stats/adminScheduleExecutionStats.interface';
 import { logger } from '@/common/util/logger';
@@ -24,12 +24,12 @@ export class AdminScheduleExecutionStatsController {
   /**
    * Gets overall schedule execution statistics across all schedules
    * @param query - Query parameters for date filtering
-   * @returns Promise<ScheduleStatsResponse> - System-wide schedule performance data
+   * @returns Promise<ScheduleExecutionStats> - System-wide schedule performance data
    */
   @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getOverallStats(@Query() query: AdminStatsQueryDto): Promise<ScheduleStatsResponse> {
+  async getOverallStats(@Query() query: AdminStatsQueryDto): Promise<ScheduleExecutionStats> {
     logger.info('Admin fetching overall schedule execution stats', {
       query
     }, 'AdminScheduleExecutionStatsController');
@@ -38,8 +38,8 @@ export class AdminScheduleExecutionStatsController {
       const stats = await this.adminScheduleExecutionStatsService.getOverallScheduleStats(query);
 
       logger.info('Overall schedule execution stats retrieved', {
-        totalExecutions: stats.overall.totalExecutions,
-        successRate: stats.overall.successRate
+        totalExecutions: stats.systemOverview.totalExecutions,
+        successRate: stats.systemOverview.successRate
       }, 'AdminScheduleExecutionStatsController');
 
       return stats;
@@ -56,7 +56,7 @@ export class AdminScheduleExecutionStatsController {
    * Gets current execution statistics for a specific schedule
    * @param id - Schedule ID
    * @param query - Optional query parameters for date filtering
-   * @returns Promise<ScheduleExecutionStats> - Schedule-specific performance data
+   * @returns Promise<SchedulePerformanceStats> - Schedule-specific performance data
    */
   @Get('schedules/:id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
@@ -64,7 +64,7 @@ export class AdminScheduleExecutionStatsController {
   async getScheduleStats(
     @Param('id') id: string,
     @Query() query: AdminStatsQueryDto
-  ): Promise<ScheduleExecutionStats> {
+  ): Promise<SchedulePerformanceStats> {
     logger.info('Admin fetching schedule execution stats', {
       scheduleId: id,
       query
@@ -153,12 +153,12 @@ export class AdminScheduleExecutionStatsController {
   /**
    * Gets performance comparison between multiple schedules
    * @param query - Query parameters for filtering and comparison
-   * @returns Promise<Array<ScheduleExecutionStats>> - Comparative performance data
+   * @returns Promise<SchedulePerformanceStats[]> - Comparative performance data
    */
   @Get('compare')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async compareSchedules(@Query() query: AdminStatsQueryDto): Promise<Array<ScheduleExecutionStats>> {
+  async compareSchedules(@Query() query: AdminStatsQueryDto): Promise<SchedulePerformanceStats[]> {
     logger.info('Admin fetching schedule execution comparison', {
       query
     }, 'AdminScheduleExecutionStatsController');

@@ -8,7 +8,7 @@ export async function POST(
   const { scheduleId } = await params;  
   return handleAdmin(
     request, 
-    { endpoint: 'content/{scheduleId}' },
+    { endpoint: 'schedules/{scheduleId}' },
     { scheduleId }
   );
 }

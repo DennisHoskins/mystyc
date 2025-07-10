@@ -12,7 +12,7 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import NotificationsTable from './NotificationsTable';
 import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
-import NotificationsDashboard from '../dashboard/NotificationsDashboard';
+import NotificationsDashboard from './NotificationsDashboard';
 
 export default function NotificationsPage() {
   const { handleSessionError } = useSessionErrorHandler();

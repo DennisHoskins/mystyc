@@ -14,13 +14,15 @@ import SubscriberIcon from '@/components/app/mystyc/admin/ui/icons/SubscriberIco
 import AiIcon from '@/components/app/mystyc/admin/ui/icons/AiIcon'
 import TrafficIcon from '@/components/app/mystyc/admin/ui/icons/TrafficIcon'
 
-import TrafficDashboard from './TrafficDashboard';
-import UsersDashboard from './UsersDashboard';
-import DevicesDashboard from './DevicesDashboard';
-import ScheduleDashboard from './ScheduleDashboard';
-import ContentDashboard from './ContentDashboard';
-import AuthenticationDashboard from './AuthenticationDashboard';
-import NotificationsDashboard from './NotificationsDashboard';
+import TrafficDashboard from '../traffic/TrafficDashboard';
+import UsersDashboard from '../users/UsersDashboard';
+import DevicesDashboard from '../devices/DevicesDashboard';
+import SchedulesDashboard from '../schedules/SchedulesDashboard';
+import SchedulesExecutionsDashboard from '../schedules/executions/SchedulesExecutionsDashboard';
+import ContentDashboard from '../contents/ContentDashboard';
+import AuthenticationDashboard from '../authentications/AuthenticationDashboard';
+import NotificationsDashboard from '../notifications/NotificationsDashboard';
+import Link from '@/components/ui/Link';
 
 export default function AdminDashboard({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
@@ -36,8 +38,10 @@ console.log(stats);
         title="Website Traffic"
         link="/admin/traffic"
       >
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
-          
+        <Link 
+          href='/admin/traffic'
+          className="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4"
+        >
           <div className="col-span-1 sm:col-span-2 xl:col-span-3 h-full flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <div className='w-full sm:w-32 h-full flex'>
               <TrafficDashboard 
@@ -74,59 +78,108 @@ console.log(stats);
               height="100%"
             />
           </div>
-      </div>    
+        </Link>    
       </AdminDashboardItemLayout>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 xl:grid-cols-10 gap-4 my-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4 min-h-[15em]">
         <AdminDashboardItemLayout
-          className='col-span-1 md:col-span-2 xl:col-span-2 flex flex-col'
-          icon={<ScheduleIcon />}
-          title="Scheduler"
-          link="/admin/scheduler"
+          className='col-span-1 flex flex-col'
+          icon={<SubscriberIcon />}
+          title="Subscribers"
+          link="/admin/subscribers"
         >
-          <ScheduleDashboard
-            className="mb-2"
-            data={stats.data.schedule} 
-            charts={['health']}
-          />
-          <ScheduleDashboard 
-            data={stats.data.schedule} 
-            charts={['next']}
-          />
+          Subscribers
         </AdminDashboardItemLayout>
 
         <AdminDashboardItemLayout
-          className='col-span-1 md:col-span-3 xl:col-span-3 flex flex-col'
+          className='col-span-1 flex flex-col'
+          icon={<AiIcon />}
+          title="Open AI"
+          link="/admin/openai"
+        >
+          Open AI
+        </AdminDashboardItemLayout>
+      </div>
+
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+        <AdminDashboardItemLayout
+          className='col-span-1 flex flex-col'
+          icon={<ScheduleIcon />}
+          title="Schedules"
+          link="/admin/schedules"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className='flex-1 flex flex-col'>
+              <Link
+                className='flex-1 flex flex-col'
+                href='/admin/schedules'
+              >
+                <SchedulesDashboard
+                  className="mb-2"
+                  stats={{
+                    data: stats.data.schedule,
+                    query: stats.query,
+                    queryString: stats.queryString,
+                  }}
+                  charts={['health']}
+                />
+                <SchedulesDashboard 
+                  stats={{
+                    data: stats.data.schedule,
+                    query: stats.query,
+                    queryString: stats.queryString,
+                  }}
+                  charts={['today']}
+                />
+              </Link>
+            </div>
+              <Link
+                className='flex'
+                href='/admin/schedules/executions'
+              >
+                <div className='flex-1 space-y-4'>
+                  <SchedulesExecutionsDashboard
+                    data={stats.data.schedule.executions} 
+                    charts={['stats']}
+                  />
+                  <SchedulesExecutionsDashboard
+                    data={stats.data.schedule.executions} 
+                    charts={['today']}
+                  />
+                </div>
+              </Link>
+          </div>
+        </AdminDashboardItemLayout>
+
+        <AdminDashboardItemLayout
+          className='col-span-2'
           icon={<ContentIcon />}
           title="Content Generation"
           link="/admin/content"
         >
-          <ContentDashboard 
-            stats={{
-              data: stats.data.content,
-              query: stats.query,
-              queryString: stats.queryString,
-            }}
-            charts={['timeline']}
-          />
-        </AdminDashboardItemLayout>
-
-        <AdminDashboardItemLayout
-          className='col-span-1 md:col-span-3 xl:col-span-3 flex flex-col'
-          icon={<SubscriberIcon />}
-          title="Subscriptions"
-          link="/admin/subscriptions"
-        >
-          Subscriptions
-        </AdminDashboardItemLayout>
-
-        <AdminDashboardItemLayout
-          className='col-span-1 md:col-span-2 xl:col-span-2 flex flex-col'
-          icon={<AiIcon />}
-          title="Open AI"
-          link="/admin/content"
-        >
-          Tokens
+          <Link 
+            href='admin/content'
+            className='space-x-4 flex'
+          >
+            <ContentDashboard 
+              className='max-w-28'
+              stats={{
+                data: stats.data.content,
+                query: stats.query,
+                queryString: stats.queryString,
+              }}
+              charts={['stats']}
+            />
+            <ContentDashboard 
+              stats={{
+                data: stats.data.content,
+                query: stats.query,
+                queryString: stats.queryString,
+              }}
+              charts={['timeline']}
+            />
+          </Link>
         </AdminDashboardItemLayout>
       </div>
 
@@ -136,15 +189,20 @@ console.log(stats);
           title="Users"
           link="/admin/users"
         >
-          <UsersDashboard 
-            stats={{
-              data: stats.data.users,
-              query: stats.query,
-              queryString: stats.queryString,
-            }}
-            charts={['stats', 'registrations', 'activity']} 
-            height={100}
-          />
+          <Link
+            className='flex-1 flex flex-col'
+            href='/admin/users'
+          >
+            <UsersDashboard 
+              stats={{
+                data: stats.data.users,
+                query: stats.query,
+                queryString: stats.queryString,
+              }}
+              charts={['stats', 'registrations', 'activity']} 
+              height={100}
+            />
+          </Link>
         </AdminDashboardItemLayout>
 
         <AdminDashboardItemLayout
@@ -152,15 +210,20 @@ console.log(stats);
           title="Devices"
           link="/admin/devices"
         >
-          <DevicesDashboard 
-            stats={{
-              data: stats.data.devices,
-              query: stats.query,
-              queryString: stats.queryString,
-            }}
-            charts={['stats', 'browsers', 'activity'] }
-            height={100}
-          />
+          <Link
+            className='flex-1 flex flex-col'
+            href='/admin/devices'
+          >
+            <DevicesDashboard 
+              stats={{
+                data: stats.data.devices,
+                query: stats.query,
+                queryString: stats.queryString,
+              }}
+              charts={['stats', 'browsers', 'activity'] }
+              height={100}
+            />
+          </Link>
         </AdminDashboardItemLayout>
         
         <AdminDashboardItemLayout
@@ -168,15 +231,20 @@ console.log(stats);
           title="Notifications"
           link="/admin/notifications"
         >
-          <NotificationsDashboard 
-            stats={{
-              data: stats.data.notifications,
-              query: stats.query,
-              queryString: stats.queryString,
-            }}
-            charts={['stats', 'volume', 'platforms']}
-            height={100}
-          />
+          <Link
+            className='flex-1 flex flex-col'
+            href='/admin/notifications'
+          >
+            <NotificationsDashboard 
+              stats={{
+                data: stats.data.notifications,
+                query: stats.query,
+                queryString: stats.queryString,
+              }}
+              charts={['stats', 'volume', 'platforms']}
+              height={100}
+            />
+          </Link>
         </AdminDashboardItemLayout>
 
         <AdminDashboardItemLayout
@@ -184,15 +252,20 @@ console.log(stats);
           title="Authentication"
           link="/admin/authentication"
         >
-          <AuthenticationDashboard 
-            stats={{
-              data: stats.data.authEvents,
-              query: stats.query,
-              queryString: stats.queryString,
-            }}
-            charts={['stats', 'peak', 'duration']}
-            height={100}
-          />
+          <Link
+            className='flex-1 flex flex-col'
+            href='/admin/authentication'
+          >
+            <AuthenticationDashboard 
+              stats={{
+                data: stats.data.authEvents,
+                query: stats.query,
+                queryString: stats.queryString,
+              }}
+              charts={['stats', 'peak', 'duration']}
+              height={100}
+            />
+          </Link>
         </AdminDashboardItemLayout>
       </div>
     </>

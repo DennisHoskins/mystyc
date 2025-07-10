@@ -12,7 +12,7 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import AuthenticationsTable from './AuthenticationsTable';
 import AuthenticationIcon from '@/components/app/mystyc/admin/ui/icons/AuthenticationIcon';
-import AuthenticationDashboard from '../dashboard/AuthenticationDashboard';
+import AuthenticationDashboard from './AuthenticationDashboard';
 
 export default function AuthenticationsPage() {
   const { handleSessionError } = useSessionErrorHandler();

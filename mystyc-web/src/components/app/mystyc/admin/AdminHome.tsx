@@ -15,8 +15,7 @@ import Text from '@/components/ui/Text';
 import DashboardIcon from '@/components/app/mystyc/admin/ui/icons/DashboardIcon'
 import AdminDashboard from './content/dashboard/AdminDashboard';
 import AdminError from '@/components/app/mystyc/admin/ui/AdminError';
-import SessionsDashboard from './content/dashboard/SessionsDashboard';
-
+import SessionsDashboard from './content/sessions/SessionsDashboard';
 
 // Default query parameters for comprehensive dashboard view
 export function getDefaultDashboardStatsQuery() {

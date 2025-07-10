@@ -1,41 +1,42 @@
 'use client';
 
-import { Clock, Calendar } from 'lucide-react';
+import { Clock, CalendarClock } from 'lucide-react';
 
+import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { ScheduleStats } from '@/interfaces';
 
 import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChartWithLegend';
 import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarChart';
 
-type ChartType = 'stats' | 'events' | 'upcoming' | 'status' | 'health' | 'next';
+type ChartType = 'stats' | 'events' | 'upcoming' | 'status' | 'health' | 'today';
 
-interface ScheduleDashboardProps {
-  data?: ScheduleStats | null;
+interface SchedulesDashboardProps {
+  stats?: StatsResponseWithQuery<ScheduleStats> | null;
   charts?: ChartType[];
   height?: number;
   className?: string | null;
 }
 
-export default function ScheduleDashboard({ 
-  data, 
-  charts = ['stats', 'events', 'upcoming', 'health', 'status', 'next'], 
+export default function SchedulesDashboard({ 
+  stats, 
+  charts = ['stats', 'events', 'upcoming', 'health', 'status', 'today'], 
   height = 100,
   className
-}: ScheduleDashboardProps) {
-  if (!data) {
+}: SchedulesDashboardProps) {
+  if (!stats) {
     return null;
   }
 
   // Transform event name distribution for pie chart
-  const eventData = data.summary.schedulesByEventName.map(event => ({
+  const eventData = stats.data.summary.schedulesByEventName.map(event => ({
     name: event.eventName.replace(/\./g, ' ').replace(/^[a-z]/, (match) => match.toUpperCase()), // Format event names
     value: event.count,
-    percentage: Math.round((event.count / data.summary.totalSchedules) * 100)
+    percentage: Math.round((event.count / stats.data.summary.totalSchedules) * 100)
   }));
 
   // Transform upcoming executions for bar chart (next 5)
-  const upcomingData = data.performance.upcomingExecutions.slice(0, 5).map(execution => {
+  const upcomingData = stats.data.performance.upcomingExecutions.slice(0, 5).map(execution => {
     const now = new Date();
     const nextExecution = new Date(execution.nextExecution); // Convert to Date
     const diff = nextExecution.getTime() - now.getTime();
@@ -49,22 +50,16 @@ export default function ScheduleDashboard({
 
   // Transform schedule status for pie chart
   const statusData = [
-    { name: 'Enabled', value: data.summary.enabledSchedules, color: '#10b981' },
-    { name: 'Disabled', value: data.summary.disabledSchedules, color: '#ef4444' }
+    { name: 'Enabled', value: stats.data.summary.enabledSchedules, color: '#10b981' },
+    { name: 'Disabled', value: stats.data.summary.disabledSchedules, color: '#ef4444' }
   ];
-
-  // Transform schedule types for additional chart
-  // const typeData = [
-  //   { name: 'Timezone Aware', value: data.summary.timezoneAwareSchedules, color: '#3b82f6' },
-  //   { name: 'Global', value: data.summary.globalSchedules, color: '#8b5cf6' }
-  // ];
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: data.summary.totalSchedules, label: 'Total Schedules', color: 'text-blue-600' },
-          { value: data.summary.enabledSchedules, label: 'Active', color: 'text-green-600' }
+          { value: stats.data.summary.totalSchedules, label: 'Total Schedules', color: 'text-blue-600' },
+          { value: stats.data.summary.enabledSchedules, label: 'Active', color: 'text-green-600' }
         ]} 
       />
     ),
@@ -101,33 +96,33 @@ export default function ScheduleDashboard({
       <div className="@container grow flex flex-col">
         {/* Schedule Health Indicator */}
         <div className={`inline-flex items-center w-full p-4 rounded-lg justify-center md:justify-start ${
-          data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'
+          stats.data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'
         }`}>
           <Clock className={`w-6 h-6 mr-4 ${
-            data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'
+            stats.data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'
           }`} />
           <div>
             <div className={`overflow-hidden font-medium text-sm leading-relaxed ${
-              data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'
+              stats.data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'
             }`}>
               <span className='@[200px]:hidden'>
-                {data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
+                {stats.data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
               </span>
               <span className='hidden @[200px]:inline'>
-                {data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
+                {stats.data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
               </span>
             </div>
 
             <div className="text-xs text-gray-600 leading-relaxed">
               <span className='@[200px]:hidden'>
-                {data.summary.enabledSchedules > 0 
-                  ? `${data.summary.enabledSchedules} running`
+                {stats.data.summary.enabledSchedules > 0 
+                  ? `${stats.data.summary.enabledSchedules} running`
                   : 'All disabled'
                 }
               </span>
               <span className='hidden @[200px]:inline'>
-                {data.summary.enabledSchedules > 0 
-                  ? `${data.summary.enabledSchedules} schedules running`
+                {stats.data.summary.enabledSchedules > 0 
+                  ? `${stats.data.summary.enabledSchedules} schedules running`
                   : 'All schedules are disabled'
                 }
               </span>
@@ -136,11 +131,11 @@ export default function ScheduleDashboard({
         </div>
       </div>
     ),
-    next: (
-      <div className="@container grow flex flex-col">
+    today: (
+      <div className="@container flex-1 h-full grow flex flex-col">
         {/* Schedule Health Indicator */}
-        <div className={`inline-flex items-center w-full p-4 rounded-lg bg-gray-50 justify-center md:justify-start `}>
-          <Calendar className="w-6 h-6 mr-4 text-gray-500" />
+        <div className={`inline-flex items-center w-full h-full p-4 rounded-lg bg-gray-50 justify-center md:justify-start `}>
+          <CalendarClock className="w-6 h-6 mr-4 text-gray-500" />
           <div>
             <div className={`overflow-hidden font-medium text-sm `}>
               <span className='@[200px]:hidden'>
@@ -153,17 +148,17 @@ export default function ScheduleDashboard({
 
             <div className="text-xs text-gray-600 leading-relaxed">
               <span className='@[200px]:hidden'>
-                {data.performance.upcomingExecutions[0].scheduledTime}
+                {stats.data.performance.upcomingExecutions[0].scheduledTime}
                 <br />
-                {data.performance.upcomingExecutions[0].timezoneAware && (
+                {stats.data.performance.upcomingExecutions[0].timezoneAware && (
                   <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone</span>
                 )}
               </span>
               <span className='hidden @[200px]:inline'>
-                {data.performance.upcomingExecutions[0].eventName}
+                {stats.data.performance.upcomingExecutions[0].eventName}
                 <br />
-                {data.performance.upcomingExecutions[0].scheduledTime}
-                {data.performance.upcomingExecutions[0].timezoneAware && (
+                {stats.data.performance.upcomingExecutions[0].scheduledTime}
+                {stats.data.performance.upcomingExecutions[0].timezoneAware && (
                   <span className=" ml-2 text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone-aware</span>
                 )}
               </span>

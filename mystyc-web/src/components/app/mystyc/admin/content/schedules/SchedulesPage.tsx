@@ -1,23 +1,24 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { Content, ContentStats } from '@/interfaces';
+import { Schedule, ScheduleStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
-import ContentTable from './ContentTable';
-import ContentIcon from '@/components/app/mystyc/admin/ui/icons/ContentIcon';
-import ContentDashboard from './ContentDashboard';
+import ScheduleIcon from '@/components/app/mystyc/admin/ui/icons/ScheduleIcon';
+import SchedulesTable from './SchedulesTable';
+import SchedulesDashboard from './SchedulesDashboard';
 
-export default function ContentPage() {
+export default function SchedulesPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [content, setContent] = useState<Content[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<ContentStats> | null>(null);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [stats, setStats] = useState<StatsResponseWithQuery<ScheduleStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -28,37 +29,36 @@ export default function ContentPage() {
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
-    { label: 'Content' },
+    { label: 'Schedules' },
   ];
 
-  const loadContent = useCallback(async (page: number) => {
+  const loadSchedules = useCallback(async (page: number) => {
     try {
       setError(null);
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getContents({
+      const response = await apiClientAdmin.getSchedules({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
         sortOrder: 'desc',
       });
 
-      setContent(response.data);
+      setSchedules(response.data);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getContentStats(statsQuery);
+      const stats = await apiClientAdmin.getScheduleStats(statsQuery);
       setStats(stats);
-
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'ContentsPage');
+      const wasSessionError = await handleSessionError(err, 'SchedulesPage');
       if (!wasSessionError) {
-        logger.error('Failed to load content:', err);
-        setError('Failed to load content. Please try again.');
+        logger.error('Failed to load schedule:', err);
+        setError('Failed to load schedule. Please try again.');
       }
     } finally {
       setBusy(false);
@@ -67,49 +67,55 @@ export default function ContentPage() {
   }, [setBusy, handleSessionError]);
 
   useEffect(() => {
-    loadContent(0);
-  }, [loadContent]);
+    loadSchedules(0);
+  }, [loadSchedules]);
 
   return (
    <AdminListLayout
       error={error}
-      onRetry={() => loadContent(currentPage)}
+      onRetry={() => loadSchedules(currentPage)}
       breadcrumbs={breadcrumbs}
-      icon={ContentIcon}
-      description="Manage content entries: view, edit, and monitor generation status, sources, and performance metrics"
-      sideContent={
-        <ContentDashboard 
-          stats={stats} 
-          charts={['stats']}
-        />
-      }
+      icon={ScheduleIcon}
+      description="Manage schedule entries: view, edit, and monitor schedule status, and performance metrics"
+       sideContent={
+         <SchedulesDashboard 
+           stats={stats} 
+           charts={['stats']}
+         />
+       }
       itemContent={[
-        <ContentDashboard 
-          key={'timeline'}
+        <div className='space-y-4'>
+          <SchedulesDashboard 
+            key={'health'}
+            stats={stats} 
+            charts={['health']}
+          />
+          <SchedulesDashboard 
+            key={'next'}
+            stats={stats} 
+            charts={['today']}
+          />
+        </div>,
+        <SchedulesDashboard 
+          key={'events'}
           stats={stats} 
-          charts={['timeline']}
+          charts={['events']}
         />,
-        <ContentDashboard 
-          key={'performance'}
+        <SchedulesDashboard 
+          key={'status'}
           stats={stats} 
-          charts={['performance']}
+          charts={['status']}
         />,
-        <ContentDashboard 
-          key={'coverage'}
-          stats={stats} 
-          charts={['coverage']}
-        />
       ]}
       tableContent={
-        <ContentTable 
-          data={content}
+        <SchedulesTable 
+          data={schedules}
           loading={loading}
           currentPage={currentPage}
           totalPages={totalPages}
-          totalItems={totalItems}
           hasMore={hasMore}
-          onPageChange={loadContent}
-          onRefresh={() => loadContent(currentPage)}
+          onPageChange={loadSchedules}
+          onRefresh={() => loadSchedules(currentPage)}
         />
       }
     />   

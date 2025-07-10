@@ -11,7 +11,7 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import UsersTable from './UsersTable';
 import UsersIcon from '@/components/app/mystyc/admin/ui/icons/UsersIcon';
-import UsersDashboard from '../dashboard/UsersDashboard';
+import UsersDashboard from './UsersDashboard';
 
 export default function UsersPage() {
   const { handleSessionError } = useSessionErrorHandler();

@@ -1,12 +1,15 @@
-export interface ScheduleExecutionStats {
+export interface ScheduleExecutionSummaryStats {
+  total: number;
+  successful: number;
+  failed: number;
+  successRate: number;
+}
+
+export interface SchedulePerformanceStats {
   scheduleId: string;
   eventName: string;
-  executions: {
-    total: number;
-    successful: number;
-    failed: number;
-    successRate: number;
-  };
+  eventType: 'content' | 'notification';
+  executions: ScheduleExecutionSummaryStats;
   lastExecuted?: Date;
   averageDuration: number;
   eventData: {
@@ -15,27 +18,6 @@ export interface ScheduleExecutionStats {
     failed: number;
     successRate: number;
   };
-  eventType: 'content' | 'notification';
-}
-
-export interface ScheduleStatsResponse {
-  overall: {
-    totalExecutions: number;
-    successRate: number;
-    contentGenerationRate: number;
-    notificationDeliveryRate: number;
-  };
-  byEventType: Array<{
-    eventName: string;
-    executions: number;
-    successRate: number;
-  }>;
-  recentExecutions: Array<{
-    executedAt: Date;
-    eventName: string;
-    status: string;
-    timezone?: string;
-  }>;
 }
 
 export interface ScheduleHistoryStats {
@@ -49,11 +31,38 @@ export interface ScheduleHistoryStats {
   dailyPerformance: Array<{
     date: string;
     executionStatus: 'success' | 'failed' | 'not_run';
-    eventSuccessRate?: number; // Only if execution succeeded
-    totalEvents?: number; // Only if execution succeeded
+    eventSuccessRate?: number;
+    totalEvents?: number;
   }>;
   trends: {
     executionTrend: 'improving' | 'declining' | 'stable';
     eventDeliveryTrend: 'improving' | 'declining' | 'stable';
   };
+}
+
+export interface ScheduleSystemOverviewStats {
+  totalExecutions: number;
+  successRate: number;
+  contentGenerationRate: number;
+  notificationDeliveryRate: number;
+}
+
+export interface ScheduleEventTypeStats {
+  eventName: string;
+  executions: number;
+  successRate: number;
+}
+
+export interface ScheduleRecentExecutionStats {
+  executedAt: Date;
+  eventName: string;
+  status: string;
+  timezone?: string;
+}
+
+// Main combined stats interface following the established pattern
+export interface ScheduleExecutionStats {
+  systemOverview: ScheduleSystemOverviewStats;
+  byEventType: ScheduleEventTypeStats[];
+  recentExecutions: ScheduleRecentExecutionStats[];
 }

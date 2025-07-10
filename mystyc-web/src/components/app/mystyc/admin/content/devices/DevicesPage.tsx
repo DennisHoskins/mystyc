@@ -12,7 +12,7 @@ import { logger } from '@/util/logger';
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
 import DevicesTable from './DevicesTable';
 import DevicesIcon from '@/components/app/mystyc/admin/ui/icons/DevicesIcon';
-import DevicesDashboard from '../dashboard/DevicesDashboard';
+import DevicesDashboard from './DevicesDashboard';
 
 export default function DevicesPage() {
   const { handleSessionError } = useSessionErrorHandler();
