@@ -7,6 +7,7 @@ import {
   AdminAuthEventsController,
   AdminContentController,
   AdminScheduleController,
+  AdminScheduleExecutionController,
   AdminNotificationsController,
   AdminNotificationsSendController,
   AdminStatsController,
@@ -60,12 +61,13 @@ import { ScheduleExecutionSchema } from '@/schedule/schemas/schedule-execution.s
       { name: 'ScheduleExecution', schema: ScheduleExecutionSchema },
     ])
   ],
-  controllers: [
+controllers: [
     AdminUsersController,
     AdminDevicesController,
     AdminAuthEventsController,
     AdminContentController,
     AdminScheduleController,
+    AdminScheduleExecutionController,
     AdminNotificationsController,
     AdminNotificationsSendController,
     AdminStatsController,

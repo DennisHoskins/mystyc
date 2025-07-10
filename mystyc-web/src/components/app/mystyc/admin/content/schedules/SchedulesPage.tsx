@@ -23,7 +23,6 @@ export default function SchedulesPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -49,7 +48,6 @@ export default function SchedulesPage() {
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
-      setTotalItems(response.pagination.totalItems);
 
       const statsQuery = getDefaultDashboardStatsQuery();
       const stats = await apiClientAdmin.getScheduleStats(statsQuery);
@@ -84,7 +82,7 @@ export default function SchedulesPage() {
          />
        }
       itemContent={[
-        <div className='space-y-4'>
+        <div key='info' className='space-y-4'>
           <SchedulesDashboard 
             key={'health'}
             stats={stats} 

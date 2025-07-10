@@ -6,7 +6,7 @@ import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { ScheduleExecution, ScheduleExecutionStats } from '@/interfaces';
 import { useBusy } from '@/components/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { getDefaultDashboardStatsQuery } from '../../../AdminHome';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/app/mystyc/admin/ui/AdminListLayout';
@@ -86,22 +86,22 @@ export default function SchedulesPage() {
          />
        }
       itemContent={[
-        <div className='space-y-4'>
+        <div key='info' className='space-y-4'>
           <SchedulesExecutionsDashboard
             key={'performance'}
             stats={stats} 
             charts={['performance']}
           />
           <SchedulesExecutionsDashboard
-            key={'breakdown'}
+            key={'recent'}
             stats={stats} 
-            charts={['breakdown']}
+            charts={['recent']}
           />
         </div>,
         <SchedulesExecutionsDashboard
           key={'events'}
           stats={stats} 
-          charts={['timeline']}
+          charts={['events']}
         />,
         <SchedulesExecutionsDashboard
           key={'status'}

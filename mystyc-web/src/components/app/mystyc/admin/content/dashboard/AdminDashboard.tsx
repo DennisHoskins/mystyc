@@ -18,7 +18,7 @@ import TrafficDashboard from '../traffic/TrafficDashboard';
 import UsersDashboard from '../users/UsersDashboard';
 import DevicesDashboard from '../devices/DevicesDashboard';
 import SchedulesDashboard from '../schedules/SchedulesDashboard';
-import SchedulesExecutionsDashboard from '../schedules/executions/SchedulesExecutionsDashboard';
+import SchedulesExecutionsDashboard from '../schedule-executions/SchedulesExecutionsDashboard';
 import ContentDashboard from '../contents/ContentDashboard';
 import AuthenticationDashboard from '../authentications/AuthenticationDashboard';
 import NotificationsDashboard from '../notifications/NotificationsDashboard';
@@ -136,7 +136,7 @@ console.log(stats);
             </div>
               <Link
                 className='flex'
-                href='/admin/schedules/executions'
+                href='/admin/schedule-executions'
               >
                 <div className='flex-1 space-y-4'>
                   <SchedulesExecutionsDashboard

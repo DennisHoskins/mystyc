@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { handleAdmin } from '../../../adminHandler';
+import { handleAdmin } from '../../adminHandler';
 
 export async function POST(
   request: NextRequest,
@@ -8,7 +8,7 @@ export async function POST(
   const { scheduleExecutionId } = await params;  
   return handleAdmin(
     request, 
-    { endpoint: 'schedules/executions/{scheduleExecutionId}' },
+    { endpoint: 'schedules-executions/{scheduleExecutionId}' },
     { scheduleExecutionId }
   );
 }

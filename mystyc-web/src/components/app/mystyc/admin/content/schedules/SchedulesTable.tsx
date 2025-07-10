@@ -1,7 +1,6 @@
 'use client';
 
 import { Schedule } from '@/interfaces';
-import { formatDateForDisplay } from '@/util/dateTime';
 
 import AdminTable, { Column } from '@/components/app/mystyc/admin/ui/AdminTable';
 

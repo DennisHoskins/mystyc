@@ -5,6 +5,7 @@ export { AdminNotificationsController } from './admin-notifications.controller';
 export { AdminNotificationsSendController } from './admin-notifications-send.controller';
 export { AdminContentController } from './admin-content.controller';
 export { AdminScheduleController } from './admin-schedule.controller';
+export { AdminScheduleExecutionController } from './admin-schedule-execution.controller';
 export { AdminStatsController } from './stats/admin-stats.controller';
 export { AdminUsersStatsController } from './stats/admin-users-stats.controller';
 export { AdminDevicesStatsController } from './stats/admin-devices-stats.controller';

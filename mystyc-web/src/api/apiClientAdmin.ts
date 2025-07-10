@@ -235,7 +235,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     logger.log('getScheduleExecutionStats called', { query });
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/schedules/execution${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/schedules-executions${queryString}`);
       return {
         data: response,
         query,
@@ -411,7 +411,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     logger.log('getScheduleExecutions called', { query });
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedules/executions${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedule-executions${queryString}`);
     } catch (error) {
       logger.error('getScheduleExecutions failed:', error);
       throw error;
@@ -421,7 +421,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getScheduleExecution = async (scheduleExecutionId: string): Promise<ScheduleExecution> => {
     logger.log('getScheduleExecution called', { scheduleExecutionId });
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedules/executions/${scheduleExecutionId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedule-executions/${scheduleExecutionId}`);
     } catch (error) {
       logger.error('getScheduleExecution failed:', error);
       throw error;

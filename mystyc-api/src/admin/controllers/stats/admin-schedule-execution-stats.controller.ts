@@ -12,7 +12,7 @@ import {
 } from '@/common/interfaces/admin/stats/adminScheduleExecutionStats.interface';
 import { logger } from '@/common/util/logger';
 
-@Controller('admin/stats/schedules/executions')
+@Controller('admin/stats/schedule-executions')
 export class AdminScheduleExecutionStatsController {
   constructor(
     private readonly adminScheduleExecutionStatsService: AdminScheduleExecutionStatsService,
