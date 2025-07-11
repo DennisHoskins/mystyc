@@ -2,8 +2,8 @@
 
 import { useUser } from '@/components/ui/layout/context/AppContext';
 
-import Dashboard from '@/components/mystyc/dashboard/Dashboard';
-import Welcome from '@/components/mystyc/welcome/Welcome';
+import Dashboard from '@/components/mystyc/pages/dashboard/Dashboard';
+import Welcome from '@/components/mystyc/pages/welcome/Welcome';
 
 export default function Mystyc() {
   const user = useUser();

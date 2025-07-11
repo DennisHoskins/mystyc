@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import NotificationPage from '@/components/mystyc/admin/content/notifications/notification/NotificationPage';
+import NotificationPage from '@/components/mystyc/admin/pages/notifications/notification/NotificationPage';
 
 interface NotificationPageProps {
   params: Promise<{

@@ -140,10 +140,17 @@ export class ScheduleService {
     
     try {
       const uniqueTimezones = await this.devicesService.getUniqueTimezones();
+
+      logger.info("Got timezones from devices", { 
+        count: uniqueTimezones.length,
+        uniqueTimezones: uniqueTimezones 
+      }, "ScheduleService")
+
       this.cachedTimezones = await timezone.getTimezonesWithOffsets(uniqueTimezones);
       
       logger.info('Timezone cache refreshed', { 
-        count: this.cachedTimezones.length 
+        count: this.cachedTimezones.length,
+        cachedTimezones: this.cachedTimezones
       }, 'ScheduleService');
     } catch (error) {
       logger.error('Failed to refresh timezone cache', {
@@ -152,6 +159,34 @@ export class ScheduleService {
       // Keep using existing cache
     }
   }
+
+
+  async getTimezoneCache(): Promise<Array<{timezone: string, offsetHours: number}>>  {
+    logger.info('Getting timezone cache', {}, 'ScheduleService');
+    
+    try {
+      const uniqueTimezones = await this.devicesService.getUniqueTimezones();
+
+      logger.info("Got timezones from devices", { 
+        count: uniqueTimezones.length,
+        uniqueTimezones: uniqueTimezones 
+      }, "ScheduleService")
+      const cachedTimezones = await timezone.getTimezonesWithOffsets(uniqueTimezones);
+      
+      logger.info('Got timezone cache', { 
+        count: this.cachedTimezones.length,
+        cachedTimezones: this.cachedTimezones
+      }, 'ScheduleService');
+
+      return cachedTimezones;
+    } catch (error) {
+      logger.error('Failed to get timezone cache', {
+        error: error.message
+      }, 'ScheduleService');
+      // Keep using existing cache
+    }
+  }
+
 
   @Cron('*/30 * * * *')
   async checkScheduledTasks() {
@@ -189,9 +224,9 @@ export class ScheduleService {
     try {
       if (task.timezone_aware) {
         // Check cached timezones against current server time
-        const matchingTimezones = this.getMatchingTimezones(task.time, serverTime);
+        const matchingTimezones = await this.getMatchingTimezones(task.time, serverTime);
         
-        logger.debug('Processing timezone-aware task', {
+        logger.debug('[processScheduledTask] Processing timezone-aware task', {
           taskId: task._id,
           eventName: task.event_name,
           targetTime: task.time,
@@ -208,7 +243,11 @@ export class ScheduleService {
             localTime: this.getLocalTime(serverTime, timezoneData.offsetHours)
           });
 
-          await this.emitScheduledEvent(task, executionLog._id, timezoneData.timezone, timezoneData);
+          const executionId = executionLog._id;
+
+          logger.debug("[processScheduledTask] Emitting Event", { executionId }, 'ScheduleService')
+
+          await this.emitScheduledEvent(task, executionId, timezoneData.timezone, timezoneData);
           
           // Update execution as completed
           const duration = Date.now() - executionStartTime;
@@ -222,7 +261,7 @@ export class ScheduleService {
           scheduledTime: task.time
         });
 
-        logger.debug('Processing global task', {
+        logger.debug('[processScheduledTask] Processing global task', {
           taskId: task._id,
           eventName: task.event_name,
           targetTime: task.time,
@@ -278,12 +317,33 @@ export class ScheduleService {
     this.eventEmitter.emit(task.event_name, payload);
   }
 
-  private getMatchingTimezones(
+  private async getMatchingTimezones(
     targetTime: {hour: number, minute: number}, 
     serverTime: Date
-  ): Array<{timezone: string, offsetHours: number}> {
+  ): Promise<Array<{timezone: string, offsetHours: number}>> {
+
+    console.log("[getMatchingTimezones] refreshingCache");
+    const uniqueTimezones = await this.devicesService.getUniqueTimezones();
+
+    logger.info("[getMatchingTimezones] Got timezones from devices", { 
+      count: uniqueTimezones.length,
+      uniqueTimezones: uniqueTimezones 
+    }, "ScheduleService")
+
+    this.cachedTimezones = await timezone.getTimezonesWithOffsets(uniqueTimezones);
+    
+    logger.info('[getMatchingTimezones] Timezone cache refreshed', { 
+      count: this.cachedTimezones.length,
+      cachedTimezones: this.cachedTimezones
+    }, 'ScheduleService');
+    
+    console.log("[getMatchingTimezones] getting matching timezones", { timezones: this.cachedTimezones }, serverTime, targetTime);
+
     return this.cachedTimezones.filter(tzData => {
       const localTime = this.getLocalTime(serverTime, tzData.offsetHours);
+
+      console.log("[getMatchingTimezones] localTime:", tzData, localTime, localTime.getHours(), localTime.getMinutes());
+
       return localTime.getHours() === targetTime.hour && 
              localTime.getMinutes() === targetTime.minute;
     });

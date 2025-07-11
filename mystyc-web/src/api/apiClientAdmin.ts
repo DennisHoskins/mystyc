@@ -379,6 +379,15 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
+  getSchedulesTimezones = async (): Promise<Array<{timezone: string, offsetHours: number}>> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedules/timezones`);
+    } catch (error) {
+      logger.error('getSchedulesTimezones failed:', error);
+      throw error;
+    }
+  };
+
   getSchedule = async (scheduleId: string): Promise<Schedule> => {
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedules/${scheduleId}`);

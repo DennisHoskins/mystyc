@@ -412,13 +412,12 @@ export class ContentService {
   @OnEvent('content.generate.content')
   async handleScheduledContentGeneration(payload: any): Promise<void> {
     logger.info('Handling scheduled content generation', {
-      scheduleId: payload.scheduleId, // Extract scheduleId from payload
-      taskId: payload.taskId,
+      scheduleId: payload.scheduleId,
+      executionId: payload.executionId,
       eventName: payload.eventName,
       timezone: payload.timezone || 'global',
       scheduledTime: payload.scheduledTime,
       executedAt: payload.executedAt,
-      executionId: payload.executionId
     }, 'ContentService');
 
     try {
@@ -437,23 +436,22 @@ export class ContentService {
       const content = await this.getOrGenerateContent(targetDate, payload.scheduleId);
 
       logger.info('Scheduled content generation completed', {
-        scheduleId: payload.scheduleId, // Log scheduleId for tracking
-        taskId: payload.taskId,
+        scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
         targetDate,
         contentId: content._id,
         status: content.status,
         timezone: payload.timezone || 'global',
-        executionId: payload.executionId
       }, 'ContentService');
 
     } catch (error) {
       logger.error('Scheduled content generation failed', {
-        scheduleId: payload.scheduleId, // Log scheduleId even for failures
+        scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
         taskId: payload.taskId,
         timezone: payload.timezone || 'global',
         error: error.message,
         scheduledTime: payload.scheduledTime,
-        executionId: payload.executionId
       }, 'ContentService');
 
       // Don't throw - we don't want to crash the scheduler

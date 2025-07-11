@@ -79,7 +79,7 @@ export default function ScheduleExecutionsPanel({ scheduleId }: { scheduleId: st
         hasMore={hasMore}
         onPageChange={loadScheduleExecutions}
         onRefresh={() => loadScheduleExecutions(currentPage)}
-        emptyMessage="No Devices found."
+        emptyMessage="No Executions found."
       />
     </Card>      
   );

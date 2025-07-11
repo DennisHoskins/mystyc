@@ -13,8 +13,8 @@ import NotificationIcon from '@/components/mystyc/admin/ui/icons/NotificationIco
 import NotificationDetailsPanel from './NotificationDetailsPanel';
 import NotificationGenerationPanel from './NotificationGenerationPanel';
 import NotificationMessagePanel from './NotificationMessagePanel';
-import UserInfoPanel from '@/components/mystyc/admin/content/users/user/UserInfoPanel';
-import DeviceInfoPanel from '@/components/mystyc/admin/content/devices/device/DeviceInfoPanel';
+import UserInfoPanel from '@/components/mystyc/admin/pages/users/user/UserInfoPanel';
+import DeviceInfoPanel from '@/components/mystyc/admin/pages/devices/device/DeviceInfoPanel';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
   const { handleSessionError } = useSessionErrorHandler();

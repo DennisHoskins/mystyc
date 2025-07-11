@@ -12,7 +12,7 @@ import AdminItemLayout from '@/components/mystyc/admin/ui/AdminItemLayout';
 import AuthenticationIcon from '@/components/mystyc/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDetailsPanel from './AuthenticationDetailsPanel';
 import AuthenticationUserPanel from './AuthenticationUserPanel';
-import DeviceInfoPanel from '@/components/mystyc/admin/content/devices/device/DeviceInfoPanel';
+import DeviceInfoPanel from '@/components/mystyc/admin/pages/devices/device/DeviceInfoPanel';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
   const { handleSessionError } = useSessionErrorHandler();

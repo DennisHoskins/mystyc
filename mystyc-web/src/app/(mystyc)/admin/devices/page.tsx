@@ -1,6 +1,6 @@
 'use client';
 
-import DevicesPage from '@/components/mystyc/admin/content/devices/DevicesPage';
+import DevicesPage from '@/components/mystyc/admin/pages/devices/DevicesPage';
 
 export default function Page() {
   return <DevicesPage />

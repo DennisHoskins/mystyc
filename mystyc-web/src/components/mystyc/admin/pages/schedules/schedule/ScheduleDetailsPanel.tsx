@@ -23,7 +23,7 @@ export default function ScheduleDetailsPanel({ schedule }: { schedule: Schedule 
         <AdminDetailGroup>
           <AdminDetailField
             label="Execution Time"
-            value={schedule.time.hour + ":" + schedule.time.minute}
+            value={`${schedule.time.hour}:${String(schedule.time.minute).padStart(2, '0')}`}
           />
           <AdminDetailField
             label="Timezone Aware"

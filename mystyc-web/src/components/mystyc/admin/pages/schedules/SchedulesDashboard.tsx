@@ -45,8 +45,34 @@ export default function SchedulesDashboard({
     
     return {
       name: execution.eventName.split('.').pop() || execution.eventName,
-      hoursUntil: hoursUntil
+      hoursUntil
     };
+  });
+
+  // Helper to pick the actual next execution based on local time
+  const getNextExecutionEntry = () => {
+    const now = new Date();
+    const scheduledEntries = stats.data.performance.upcomingExecutions.map(e => {
+      const [hourStr, minuteStr] = e.scheduledTime.split(':');
+      const hour = parseInt(hourStr, 10);
+      const minute = parseInt(minuteStr, 10);
+      const sched = new Date(now);
+      sched.setHours(hour, minute, 0, 0);
+      if (sched <= now) {
+        sched.setDate(sched.getDate() + 1);
+      }
+      return { entry: e, date: sched };
+    });
+    scheduledEntries.sort((a, b) => a.date.getTime() - b.date.getTime());
+    return scheduledEntries[0];
+  };
+
+  const { entry: nextEntry, date: nextDate } = getNextExecutionEntry();
+  const utcTime = nextDate.toISOString().substring(11, 16) + ' UTC';
+  const localTime = nextDate.toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short'
   });
 
   // Transform schedule status for pie chart
@@ -92,7 +118,7 @@ export default function SchedulesDashboard({
         showPercentage={false}
         colors={['#10b981', '#ef4444']}
       />
-    ), 
+    ),
 
     health: (
       <StatusCard
@@ -119,19 +145,25 @@ export default function SchedulesDashboard({
         backgroundColor="bg-gray-50"
         shortText="Next:"
         longText="Next Execution:"
-        shortSubtext={stats.data.performance.upcomingExecutions[0].scheduledTime}
+        // show original schedule from DB and actual UTC
+        shortSubtext={`${nextEntry.scheduledTime} / ${utcTime}`}
         longSubtext={
           <>
-            {stats.data.performance.upcomingExecutions[0].eventName}
-            <br />
-            {stats.data.performance.upcomingExecutions[0].scheduledTime}
-            {stats.data.performance.upcomingExecutions[0].timezoneAware && (
-              <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone-aware</span>
+            <div>{`${nextEntry.scheduledTime} / ${utcTime}`}</div>
+            <div>{localTime}</div>
+            {nextEntry.timezoneAware && (
+              <div className="mt-2">
+                <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">
+                  timezone-aware
+                </span>
+              </div>
             )}
           </>
         }
-        badge={stats.data.performance.upcomingExecutions[0].timezoneAware && (
-          <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone</span>
+        badge={nextEntry.timezoneAware && (
+          <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">
+            timezone
+          </span>
         )}
       />
     )
@@ -141,11 +173,11 @@ export default function SchedulesDashboard({
     <div className={`@container grow flex flex-col ${className}`}>
       <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-2`}>
         {charts.map((chartType) => (
-            <div key={chartType} className='flex h-full'>
-          {chartComponents[chartType]}
+          <div key={chartType} className='flex h-full'>
+            {chartComponents[chartType]}
           </div>
         ))}
       </div>
     </div>
   );
-};
+}

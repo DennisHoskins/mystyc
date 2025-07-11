@@ -223,7 +223,58 @@ export class AdminScheduleController extends AdminController<Schedule> {
     }
   }
 
+  // REFRESH Operations
+
+  /**
+   * Refreshes schedule Timezone cache
+   */
+  @Post('/refresh')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async refresh(): Promise<{ success: boolean; message: string }> {
+    logger.info('Admin refreshing schedule timezone cache', { }, 'AdminScheduleController');
+
+    try {
+      await this.service.refreshTimezoneCache();
+
+      logger.info('Timezone cache updated successfully', {  }, 'AdminScheduleController');
+
+      return {
+        success: true,
+        message: 'Timezone cache updated successfully'
+      };
+    } catch (error) {
+      logger.error('Failed to update Timezone cache', {
+        error: error.message
+      }, 'AdminScheduleController');
+      throw error;
+    }
+  }
+
   // EXECUTION AND RELATED DATA ENDPOINTS
+
+  /**
+   * Gets cached Timzone/offsets from schedule
+   * @returns Promise<Array<{timezone: string, offsetHours: number}>> - Array of timezones and offsets
+   */
+  @Get('/timezones')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getCachedTimezones(): Promise<Array<{timezone: string, offsetHours: number}>> {
+    logger.info('Admin fetching schedule cached timezones', {}, 'AdminScheduleController');
+
+    try {
+      // get cached timezones
+      const timezones = this.service.getTimezoneCache();
+
+      return timezones;
+    } catch (error) {
+      logger.error('Failed to fetch schedule executions', {
+        error: error.message
+      }, 'AdminScheduleController');
+      throw error;
+    }
+  }
 
   /**
    * Gets execution history for a specific schedule

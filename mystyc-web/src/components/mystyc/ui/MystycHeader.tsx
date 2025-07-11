@@ -1,7 +1,7 @@
 'use client';
 
 import MenuButton from '@/components/ui/layout/menu/MenuButton';
-import MystycMenu from '@/components/mystyc/MystycMenu';
+import MystycMenu from '@/components/mystyc/ui/MystycMenu';
 
 interface MystycHeaderProps {
   menuOpen: boolean;

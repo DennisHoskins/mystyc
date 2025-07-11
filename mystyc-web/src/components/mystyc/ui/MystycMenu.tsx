@@ -36,7 +36,7 @@ export default function MystycMenu() {
           )}
         </div>
         <div className="flex flex-col">
-          <MenuItem className='mt-auto pb-0 items-end' onClick={() => router.push('/logout')}>
+          <MenuItem className='mt-auto pb-0 pt-4 md:pt-0 items-end' onClick={() => router.push('/logout')}>
             <LogOut className="inline-block mr-2 h-4 w-4" />
             Logout
           </MenuItem>

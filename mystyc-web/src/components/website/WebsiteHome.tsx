@@ -1,9 +1,9 @@
 'use client';
 
 import Section from "@/components/ui/Section";
-import Hero from "@/components/website/content/Hero";
-import Features from "@/components/website/content/Features";
-import WebsiteContent from "@/components/website/content/Content";
+import Hero from "@/components/website/pages/Hero";
+import Features from "@/components/website/pages/Features";
+import WebsiteContent from "@/components/website/pages/Content";
 
 export default function Home() {
   return (

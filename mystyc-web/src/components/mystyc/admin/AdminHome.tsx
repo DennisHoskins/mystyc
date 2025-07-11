@@ -13,9 +13,9 @@ import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import DashboardIcon from '@/components/mystyc/admin/ui/icons/DashboardIcon'
-import AdminDashboard from './content/dashboard/AdminDashboard';
 import AdminError from '@/components/mystyc/admin/ui/AdminError';
-import SessionsDashboard from './content/sessions/SessionsDashboard';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
+import SessionsDashboard from './pages/sessions/SessionsDashboard';
 
 // Default query parameters for comprehensive dashboard view
 export function getDefaultDashboardStatsQuery() {

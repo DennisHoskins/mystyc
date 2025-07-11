@@ -1,6 +1,6 @@
 'use client';
 
-import SessionsPage from '@/components/mystyc/admin/content/sessions/SessionsPage';
+import SessionsPage from '@/components/mystyc/admin/pages/sessions/SessionsPage';
 
 export default function Page() {
   return <SessionsPage />

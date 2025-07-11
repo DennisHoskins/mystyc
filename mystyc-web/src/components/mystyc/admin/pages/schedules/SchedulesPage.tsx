@@ -11,6 +11,7 @@ import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/mystyc/admin/ui/AdminListLayout';
 import ScheduleIcon from '@/components/mystyc/admin/ui/icons/ScheduleIcon';
+import SchedulesTimezonesTable from './SchedulesTimezonesTable';
 import SchedulesTable from './SchedulesTable';
 import SchedulesDashboard from './SchedulesDashboard';
 
@@ -105,8 +106,11 @@ export default function SchedulesPage() {
           charts={['status']}
         />,
       ]}
-      tableContent={
-        <SchedulesTable 
+      tableContent={[
+        <SchedulesTimezonesTable key='timezones' />,
+        <SchedulesTable
+          key='schedules'
+          label="Schedules"
           data={schedules}
           loading={loading}
           currentPage={currentPage}
@@ -115,7 +119,7 @@ export default function SchedulesPage() {
           onPageChange={loadSchedules}
           onRefresh={() => loadSchedules(currentPage)}
         />
-      }
+      ]}
     />   
   );
 }

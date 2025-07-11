@@ -14,5 +14,8 @@ COPY . .
 # Expose app port
 EXPOSE 3000
 
+# Allocate memory
+ENV NODE_OPTIONS="--max-old-space-size=3072"
+
 # Run the app
 CMD ["npm", "run", "start"]

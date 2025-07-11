@@ -3,19 +3,19 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Notification } from '@/interfaces';
+import { AuthEvent } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import NotificationsTable from '@/components/mystyc/admin/content/notifications/NotificationsTable';
+import AuthenticationsTable from '@/components/mystyc/admin/pages/authentications/AuthenticationsTable';
 import AdminErrorPage from '@/components/mystyc/admin/ui/AdminError';
 
-interface UserNotificationsTableProps {
-  firebaseUid: string;
+interface DeviceAuthEventsTableProps {
+  deviceId: string;
   isActive?: boolean;
 }
 
-export default function UserNotifications({ firebaseUid, isActive = false }: UserNotificationsTableProps) {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceAuthEventsTableProps) {
+  const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -24,37 +24,42 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
-  const loadUserNotifications = useCallback(async (page: number) => {
+  const loadDeviceAuthEvents = useCallback(async (page: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getUserNotifications(firebaseUid, {
+      const response = await apiClientAdmin.getDeviceAuthEvents(deviceId, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
         sortOrder: 'desc',
       });
 
-      setNotifications(response.data);
+      setAuthEvents(response.data);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);
     } catch (err) {
-      logger.error('Failed to load notifications:', err);
-      setError('Failed to load notifications. Please try again.');
+      logger.error('Failed to load authEvents:', err);
+      setError('Failed to load authEvents. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [firebaseUid]);
+  }, [deviceId]);
 
   // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
-      loadUserNotifications(0);
+      loadDeviceAuthEvents(0);
     }
-  }, [isActive, hasLoaded, loadUserNotifications]);
+  }, [isActive, hasLoaded, loadDeviceAuthEvents]);
+
+  // Show loading state if tab is active but hasn't loaded yet
+  if (isActive && !hasLoaded && !loading) {
+    return null;
+  }
 
   // Don't render anything if tab isn't active and hasn't loaded
   if (!isActive && !hasLoaded) {
@@ -64,25 +69,22 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
   if (error) {
     return (
       <AdminErrorPage
-        title='Unable to load device notifications'
+        title='Unable to load device auth events'
         error={error}
-        onRetry={() => loadUserNotifications(0)}
+        onRetry={() => loadDeviceAuthEvents(0)}
       />
     )
   }
 
   return (
-    <div>
-      <NotificationsTable
-        hideUserColumn={true}
-        data={notifications}
-        loading={loading}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        hasMore={hasMore}
-        onPageChange={loadUserNotifications}
-        onRefresh={() => loadUserNotifications(currentPage)}
-      />
-    </div>
+    <AuthenticationsTable
+      data={authEvents}
+      loading={loading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      hasMore={hasMore}
+      onPageChange={loadDeviceAuthEvents}
+      onRefresh={() => loadDeviceAuthEvents(currentPage)}
+    />
   );
 }

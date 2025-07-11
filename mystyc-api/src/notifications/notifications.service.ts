@@ -117,6 +117,12 @@ export class NotificationsService {
       const title = 'Daily Mystyc Update';
       const body = this.truncateMessage(content.message, 100) || 'Your daily mystical pdate is ready!';
 
+      console.log("");
+      console.log("");
+      console.log("===============================================================================");
+      console.log("");
+      console.log("");
+
       logger.debug('Prepared notification update content', {
         scheduleId: payload.scheduleId,
         executionId: payload.executionId,
@@ -125,6 +131,12 @@ export class NotificationsService {
         contentDate: content.date,
         contentStatus: content.status
       }, 'NotificationsService');
+
+      console.log("");
+      console.log("");
+      console.log("===============================================================================");
+      console.log("");
+      console.log("");
 
       const results = {
         success: true,
@@ -150,6 +162,12 @@ export class NotificationsService {
         failed: results.failed,
         totalAttempts: results.sent + results.failed,
       }, 'NotificationsService');
+
+      console.log("");
+      console.log("");
+      console.log("===============================================================================");
+      console.log("");
+      console.log("");
 
     } catch (error) {
       logger.error('Scheduled notificatio updates failed', {

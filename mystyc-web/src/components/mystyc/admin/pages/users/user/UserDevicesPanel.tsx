@@ -3,15 +3,15 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { UserProfile } from '@/interfaces';
+import { Device } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/mystyc/admin/ui/AdminError';
-import UsersTable from '@/components/mystyc/admin/content/users/UsersTable';
-import UsersIcon from '@/components/mystyc/admin/ui/icons/UsersIcon'
+import DevicesTable from '@/components/mystyc/admin/pages/devices/DevicesTable';
+import DeviceIcon from '@/components/mystyc/admin/ui/icons/DeviceIcon'
 
-export default function DeviceUsersPanel({ deviceId }: { deviceId: string}) {
-  const [users, setUsers] = useState<UserProfile[]>([]);
+export default function UserDevicesPanel({ firebaseUid }: { firebaseUid: string }) {
+  const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalItems, setTotalItems] = useState(0);
@@ -20,19 +20,19 @@ export default function DeviceUsersPanel({ deviceId }: { deviceId: string}) {
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
-  const loadDeviceUsers = useCallback(async (page: number) => {
+  const loadUserDevices = useCallback(async (page: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getDeviceUsers(deviceId, {
+      const response = await apiClientAdmin.getUserDevices(firebaseUid, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
         sortOrder: 'asc',
       });
 
-      setUsers(response.data);
+      setDevices(response.data);
       setTotalItems(response.pagination.totalItems);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
@@ -43,34 +43,34 @@ export default function DeviceUsersPanel({ deviceId }: { deviceId: string}) {
     } finally {
       setLoading(false);
     }
-  }, [deviceId]);
+  }, [firebaseUid]);
 
   useEffect(() => {
-    loadDeviceUsers(0);
-  }, [loadDeviceUsers]);
+    loadUserDevices(0);
+  }, [loadUserDevices]);
 
   if (error) {
     return (
       <AdminErrorPage
-        title='Unable to load device users'
+        title='Unable to load user devices'
         error={error}
-        onRetry={() => loadDeviceUsers(0)}
+        onRetry={() => loadUserDevices(0)}
       />
     )
   }
 
   return (
-      <UsersTable
-        icon={UsersIcon}
-        label={`Users`}
-        data={users}
+      <DevicesTable
+        icon={DeviceIcon}
+        label={`Devices`}
+        data={devices}
         loading={loading}
         currentPage={currentPage}
         totalPages={totalPages}
         totalItems={totalItems}
         hasMore={hasMore}
-        onPageChange={loadDeviceUsers}
-        onRefresh={() => loadDeviceUsers(currentPage)}
+        onPageChange={loadUserDevices}
+        onRefresh={() => loadUserDevices(currentPage)}
       />
   );
 }

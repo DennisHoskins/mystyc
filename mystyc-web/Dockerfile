@@ -17,6 +17,9 @@ COPY . .
 # Build service worker .env
 RUN npm run swEnvBuild
 
+# Allocate memory
+ENV NODE_OPTIONS="--max-old-space-size=3072"
+
 # Build the app
 RUN npm run build
 

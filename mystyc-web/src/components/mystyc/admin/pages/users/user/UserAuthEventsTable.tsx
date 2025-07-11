@@ -7,7 +7,7 @@ import { AuthEvent } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/mystyc/admin/ui/AdminError';
-import AuthenticationsTable from '@/components/mystyc/admin/content/authentications/AuthenticationsTable';
+import AuthenticationsTable from '@/components/mystyc/admin/pages/authentications/AuthenticationsTable';
 
 interface UserAuthEventsTableProps {
   firebaseUid: string;

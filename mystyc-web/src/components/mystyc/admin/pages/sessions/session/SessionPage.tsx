@@ -12,8 +12,8 @@ import AdminItemLayout from '@/components/mystyc/admin/ui/AdminItemLayout';
 import SessionIcon from '@/components/mystyc/admin/ui/icons/SessionIcon';
 import SessionDetailsPanel from './SessionDetailsPanel';
 import SessionTokensPanel from './SessionTokensPanel';
-import UserInfoPanel from '@/components/mystyc/admin/content/users/user/UserInfoPanel';
-import DeviceInfoPanel from '@/components/mystyc/admin/content/devices/device/DeviceInfoPanel';
+import UserInfoPanel from '@/components/mystyc/admin/pages/users/user/UserInfoPanel';
+import DeviceInfoPanel from '@/components/mystyc/admin/pages/devices/device/DeviceInfoPanel';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
   const { handleSessionError } = useSessionErrorHandler();

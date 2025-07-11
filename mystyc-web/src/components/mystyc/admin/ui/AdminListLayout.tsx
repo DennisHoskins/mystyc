@@ -19,8 +19,8 @@ interface AdminListLayoutProps {
   title?: string;
   description?: string;
   sideContent?: ReactNode;
-  itemContent?: ReactNode[],
-  tableContent?: ReactNode;
+  itemContent?: ReactNode[];
+  tableContent?: ReactNode | ReactNode[]; // ⚡️ Updated: allow array or single node
 }
 
 export default function AdminListLayout({ 
@@ -94,17 +94,23 @@ export default function AdminListLayout({
       {itemContent && (
         <div className='grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[12em]'>
           {itemContent.map((item, index) => (
-            <Card key={index}>
-              {item}
-            </Card>
+            <Card key={index}>{item}</Card>
           ))}
         </div>
       )}
 
       {tableContent && (
-        <Card className='mt-4'>
-          {tableContent}
-        </Card>
+        Array.isArray(tableContent) ? (
+          <>  
+            {tableContent.map((content, index) => (
+              <Card key={index} className='mt-4'>
+                {content}
+              </Card>
+            ))}
+          </>
+        ) : (
+          <Card className='mt-4'>{tableContent}</Card>
+        )
       )}
     </>
   );
