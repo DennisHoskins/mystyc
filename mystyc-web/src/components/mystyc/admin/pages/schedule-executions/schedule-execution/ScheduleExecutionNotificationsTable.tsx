@@ -12,7 +12,7 @@ import AdminTable, { Column } from '@/components/mystyc/admin/ui/AdminTable';
 import NotificationIcon from '@/components/mystyc/admin/ui/icons/NotificationIcon';
 
 export default function ScheduleExecutionsNotificationsTable({ executionId }: { executionId: string | null | undefined}) {
-  const [content, setNotifications] = useState<PaginatedResponse<Notification> | null>(null);
+  const [notifications, setNotifications] = useState<PaginatedResponse<Notification> | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
@@ -57,14 +57,15 @@ export default function ScheduleExecutionsNotificationsTable({ executionId }: { 
     loadScheduleExecutionNotifications(0);
   }, [executionId, loadScheduleExecutionNotifications]);
 
-  if (!content?.data) {
+  if (!notifications?.data) {
     return null;
   }
 
   const columns: Column<Notification>[] = [
-    { key: 'date', header: 'Date', link: (u) => `/admin/content/${u._id}`, render: (u) => formatDateForDisplay(u.sentAt) || '-' },
-    { key: 'title', header: 'Title', link: (u) => `/admin/content/${u._id}` },
-    { key: 'message', header: 'Message', link: (u) => `/admin/content/${u._id}` },
+    { key: 'sent', header: 'Sent', link: (u) => `/admin/notifications/${u._id}`, render: (u) => formatDateForDisplay(u.sentAt) + " UDT" || '-' },
+    { key: 'title', header: 'Title', link: (u) => `/admin/notifications/${u._id}` },
+    { key: 'device', header: 'Device', link: (u) => `/admin/devices/${u.deviceId}`, render: (u) => u.deviceName || "Unknown Device" },
+    { key: 'user', header: 'User', link: (u) => `/admin/users/${u.firebaseUid}`, render: (u) => u.firebaseUid || "Unknown User" },
   ];
 
   return (
@@ -72,7 +73,7 @@ export default function ScheduleExecutionsNotificationsTable({ executionId }: { 
       <AdminTable<Notification>
         icon={<NotificationIcon />}
         label={"Notifications"}
-        data={content.data}
+        data={notifications.data}
         columns={columns}
         loading={loading}
         currentPage={currentPage}

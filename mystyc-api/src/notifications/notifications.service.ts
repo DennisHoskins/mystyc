@@ -147,7 +147,7 @@ export class NotificationsService {
 
       if (payload.timezone) {
         // Send to devices in specific timezone
-        await this.sendToTimezone(payload.timezone, title, body, results, payload.scheduleId);
+        await this.sendToTimezone(payload.timezone, title, body, results, payload.scheduleId, payload.executionId);
       } else {
         // Send broadcast to all devices
         await this.sendBroadcast(title, body, results, 'system', payload.scheduleId);
@@ -494,19 +494,18 @@ export class NotificationsService {
   ) {
     const message: admin.messaging.Message = {
       token,
+      data: {
+        title,
+        body,
+        url,
+        icon: '/favicon/favicon.ico',
+        badge: '/favicon/favicon.ico',
+        messageId: Date.now().toString()
+      },
       webpush: {
         headers: {
           Urgency: 'high',
           TTL: '86400'
-        },
-        fcmOptions: {
-          link: url
-        },
-        notification: {
-          title,
-          body,
-          icon: '/favicon/favicon.ico',
-          badge: '/favicon/favicon.ico'
         }
       }
     };

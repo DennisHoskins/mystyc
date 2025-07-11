@@ -433,7 +433,7 @@ export class ContentService {
       }, 'ContentService');
 
       // Generate content for the target date with scheduleId
-      const content = await this.getOrGenerateContent(targetDate, payload.scheduleId);
+      const content = await this.getOrGenerateContent(targetDate, payload.scheduleId, payload.executionId);
 
       logger.info('Scheduled content generation completed', {
         scheduleId: payload.scheduleId,
