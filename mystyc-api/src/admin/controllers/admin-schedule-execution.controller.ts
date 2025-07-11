@@ -41,32 +41,32 @@ export class AdminScheduleExecutionController extends AdminController<ScheduleEx
     @Query() query: BaseAdminQueryDto
   ): Promise<AdminListResponse<Content>> {
     logger.info('Admin fetching schedule content', {
-      scheduleId: id,
+      executionId: id,
       limit: query.limit,
       offset: query.offset,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
-    }, 'AdminScheduleController');
+    }, 'AdminScheduleExecutionController');
 
     try {
       // Verify schedule exists
-      const schedule = await this.service.findById(id);
-      if (!schedule) {
-        throw new NotFoundException('Schedule not found');
+      const scheduleExecution = await this.service.findById(id);
+      if (!scheduleExecution) {
+        throw new NotFoundException('Schedule execution not found');
       }
 
       const [data, totalItems] = await Promise.all([
-        this.contentService.findByScheduleId(id, query),
-        this.contentService.getTotalByScheduleId(id)
+        this.contentService.findByExecutionId(id, query),
+        this.contentService.getTotalByExecutionId(id)
       ]);
 
       const totalPages = Math.ceil(totalItems / (query.limit || 50));
 
-      logger.info('Schedule content retrieved', {
-        scheduleId: id,
+      logger.info('Schedule execution content retrieved', {
+        executionId: id,
         count: data.length,
         totalItems
-      }, 'AdminScheduleController');
+      }, 'AdminScheduleExecutionController');
 
       return {
         data,
@@ -83,10 +83,10 @@ export class AdminScheduleExecutionController extends AdminController<ScheduleEx
         } : undefined
       };
     } catch (error) {
-      logger.error('Failed to fetch schedule content', {
-        scheduleId: id,
+      logger.error('Failed to fetch schedule execution content', {
+        executionId: id,
         error: error.message
-      }, 'AdminScheduleController');
+      }, 'AdminScheduleExecutionController');
       throw error;
     }
   }
@@ -100,37 +100,37 @@ export class AdminScheduleExecutionController extends AdminController<ScheduleEx
   @Get(':id/notifications')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getScheduleNotifications(
+  async getScheduleExecutionNotifications(
     @Param('id') id: string,
     @Query() query: BaseAdminQueryDto
   ): Promise<AdminListResponse<Notification>> {
     logger.info('Admin fetching schedule notifications', {
-      scheduleId: id,
+      executionId: id,
       limit: query.limit,
       offset: query.offset,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
-    }, 'AdminScheduleController');
+    }, 'AdminScheduleExecutionController');
 
     try {
-      // Verify schedule exists
-      const schedule = await this.service.findById(id);
-      if (!schedule) {
-        throw new NotFoundException('Schedule not found');
+      // Verify schedule execution exists
+      const scheduleExecution = await this.service.findById(id);
+      if (!scheduleExecution) {
+        throw new NotFoundException('Schedule execution not found');
       }
 
       const [data, totalItems] = await Promise.all([
-        this.notificationsService.findByScheduleId(id, query),
-        this.notificationsService.getTotalByScheduleId(id)
+        this.notificationsService.findByExecutionId(id, query),
+        this.notificationsService.getTotalByExecutionId(id)
       ]);
 
       const totalPages = Math.ceil(totalItems / (query.limit || 50));
 
-      logger.info('Schedule notifications retrieved', {
-        scheduleId: id,
+      logger.info('Schedule execution notifications retrieved', {
+        executionId: id,
         count: data.length,
         totalItems
-      }, 'AdminScheduleController');
+      }, 'AdminScheduleExecutionController');
 
       return {
         data,
@@ -148,9 +148,9 @@ export class AdminScheduleExecutionController extends AdminController<ScheduleEx
       };
     } catch (error) {
       logger.error('Failed to fetch schedule notifications', {
-        scheduleId: id,
+        executionId: id,
         error: error.message
-      }, 'AdminScheduleController');
+      }, 'AdminScheduleExecutionController');
       throw error;
     }
   }
