@@ -9,7 +9,7 @@ import {
  RegistrationStatsResponse,
  ProfileCompletionStats,
  UserActivityStats
-} from '@/common/interfaces/admin/stats/adminUserStats.interface';
+} from '@/common/interfaces/admin/stats/admin-user-stats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 

@@ -13,7 +13,7 @@ import {
   NotificationEngagementStats,
   NotificationPatternsStats,
   NotificationStats
-} from '@/common/interfaces/admin/stats/adminNotificationStats.interface';
+} from '@/common/interfaces/admin/stats/admin-notification-stats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 

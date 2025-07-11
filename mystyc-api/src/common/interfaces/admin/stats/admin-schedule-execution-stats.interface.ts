@@ -1,3 +1,4 @@
+// Individual component stats interfaces
 export interface ScheduleExecutionSummaryStats {
   total: number;
   successful: number;
@@ -5,7 +6,7 @@ export interface ScheduleExecutionSummaryStats {
   successRate: number;
 }
 
-export interface SchedulePerformanceStats {
+export interface ScheduleExecutionPerformanceStats {
   scheduleId: string;
   eventName: string;
   eventType: 'content' | 'notification';

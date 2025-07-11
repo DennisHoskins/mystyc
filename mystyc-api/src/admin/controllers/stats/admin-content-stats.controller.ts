@@ -13,7 +13,7 @@ import {
   ContentSourceStats,
   ContentGenerationStats,
   ContentTimelineStats
-} from '@/common/interfaces/admin/stats/adminContentStats.interface';
+} from '@/common/interfaces/admin/stats/admin-content-stats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 

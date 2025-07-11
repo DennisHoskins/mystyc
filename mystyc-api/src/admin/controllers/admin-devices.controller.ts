@@ -9,9 +9,9 @@ import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { Device } from '@/common/interfaces/device.interface';
-import { UserProfile } from '@/common/interfaces/userProfile.interface';
+import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { AdminController } from './admin.controller';
-import { AdminListResponse } from '@/common/interfaces/admin/adminListResponse.interface';
+import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 

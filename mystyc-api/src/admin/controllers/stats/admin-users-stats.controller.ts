@@ -6,13 +6,13 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { AdminUsersStatsService } from '@/admin/services/admin-users-stats.service';
-import { UserProfile } from '@/common/interfaces/userProfile.interface';
+import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { 
   RegistrationStatsResponse,
   ProfileCompletionStats,
   UserActivityStats,
   UserStats
-} from '@/common/interfaces/admin/stats/adminUserStats.interface';
+} from '@/common/interfaces/admin/stats/admin-user-stats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 

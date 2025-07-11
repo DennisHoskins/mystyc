@@ -13,7 +13,7 @@ import {
   DeviceActivityStats,
   DeviceUserAgentStats,
   DeviceStats
-} from '@/common/interfaces/admin/stats/adminDeviceStats.interface';
+} from '@/common/interfaces/admin/stats/admin-device-stats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 

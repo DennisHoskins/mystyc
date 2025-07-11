@@ -12,7 +12,7 @@ import { AdminContentStatsService } from '@/admin/services/admin-content-stats.s
 import { AdminScheduleStatsService } from '@/admin/services/admin-schedule-stats.service';
 import { AdminScheduleExecutionStatsService } from '@/admin/services/admin-schedule-execution-stats.service';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
-import { AdminStatsResponse } from '@/common/interfaces/admin/stats/adminStatsResponse.interface';
+import { AdminStatsResponse } from '@/common/interfaces/admin/stats/admin-stats-response.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/stats')

@@ -3,7 +3,7 @@
 import { CalendarClock } from 'lucide-react';
 
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { ScheduleExecutionStats } from '@/interfaces/admin/stats/adminScheduleExecutionStats.interface';
+import { ScheduleExecutionStats } from '../../../../../../../../mystyc-api/src/common/interfaces/admin/stats/admin-schedule-execution-stats.interface';
 
 import StatusCard from '@/components/app/mystyc/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';

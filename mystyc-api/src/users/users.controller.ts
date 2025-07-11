@@ -5,9 +5,9 @@ import { Public } from '@/common/decorators/public.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebaseUser.interface';
+import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';
-import { UserProfile } from '@/common/interfaces/userProfile.interface';
+import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';

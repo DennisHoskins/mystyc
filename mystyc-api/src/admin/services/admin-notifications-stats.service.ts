@@ -10,7 +10,7 @@ import {
   NotificationTypeStats,
   NotificationEngagementStats,
   NotificationPatternsStats
-} from '@/common/interfaces/admin/stats/adminNotificationStats.interface';
+} from '@/common/interfaces/admin/stats/admin-notification-stats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 

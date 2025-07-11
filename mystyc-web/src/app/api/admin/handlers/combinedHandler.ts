@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { sessionManager, InvalidSessionError } from '../../sessionManager';
 import { authTokenManager } from '../../authTokenManager';
 import { buildTrafficStats } from '../../services/trafficStats.service';
-import { AdminStatsResponseExtended } from '@/interfaces/admin/stats/adminStatsResponseWithSessions.interface';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats/admin-stats-response-extended.interface';
 import { logger } from '@/util/logger';
 
 export async function handleCombinedRoute(

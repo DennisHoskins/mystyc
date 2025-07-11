@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { firebaseAdmin } from './firebase-admin.provider';
 
 import { DecodedIdToken } from '@/common/interfaces/decodedToken.interface';
-import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
+import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { logger } from '@/common/util/logger';
 
 @Injectable()

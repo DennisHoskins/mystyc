@@ -8,13 +8,13 @@ import { UserProfilesService } from '@/users/user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { UserProfile } from '@/common/interfaces/userProfile.interface';
+import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { Device } from '@/common/interfaces/device.interface';
-import { AuthEvent } from '@/common/interfaces/authEvent.interface';
+import { AuthEvent } from '@/common/interfaces/auth-event.interface';
 import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/adminListResponse.interface';
+import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/users')

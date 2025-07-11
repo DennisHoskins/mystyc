@@ -10,9 +10,9 @@ export interface AdminListResponse<T> {
   pagination: {
     limit: number;
     offset: number;
-    hasMore: boolean;
     totalItems: number;
     totalPages: number;
+    hasMore?: boolean;
   };
   sort?: {
     field: string;

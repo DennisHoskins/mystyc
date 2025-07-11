@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
+import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UserRole } from '@/common/enums/roles.enum';
 import { Device } from '@/common/interfaces/device.interface';

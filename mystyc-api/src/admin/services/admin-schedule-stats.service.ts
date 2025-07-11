@@ -8,7 +8,7 @@ import {
   SchedulePerformanceStats,
   ScheduleFailureStats,
   ScheduleStats
-} from '@/common/interfaces/admin/stats/adminScheduleStats.interface';
+} from '@/common/interfaces/admin/stats/admin-schedule-stats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 

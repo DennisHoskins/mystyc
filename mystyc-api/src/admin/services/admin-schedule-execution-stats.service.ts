@@ -13,13 +13,13 @@ import { NotificationDocument } from '@/notifications/schemas/notification.schem
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { 
   ScheduleExecutionStats,
-  SchedulePerformanceStats,
+  ScheduleExecutionPerformanceStats,
   ScheduleHistoryStats,
   ScheduleSystemOverviewStats,
   ScheduleEventTypeStats,
   ScheduleRecentExecutionStats,
   ScheduleExecutionSummaryStats
-} from '@/common/interfaces/admin/stats/adminScheduleExecutionStats.interface';
+} from '@/common/interfaces/admin/stats/admin-schedule-execution-stats.interface';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -39,9 +39,9 @@ export class AdminScheduleExecutionStatsService {
    * Gets comprehensive execution statistics for a specific schedule
    * @param scheduleId - Schedule ID to analyze
    * @param query - Optional query parameters for date filtering
-   * @returns Promise<SchedulePerformanceStats> - Detailed execution performance data
+   * @returns Promise<ScheduleExecutionPerformanceStats> - Detailed execution performance data
    */
-  async getScheduleStats(scheduleId: string, query?: AdminStatsQueryDto): Promise<SchedulePerformanceStats> {
+  async getScheduleStats(scheduleId: string, query?: AdminStatsQueryDto): Promise<ScheduleExecutionPerformanceStats> {
     logger.info('Generating schedule execution stats', { scheduleId, query }, 'AdminScheduleExecutionStatsService');
 
     try {
@@ -66,7 +66,7 @@ export class AdminScheduleExecutionStatsService {
       // Calculate average duration
       const avgDuration = await this.getAverageExecutionDuration(scheduleId, dateFilter);
 
-      const result: SchedulePerformanceStats = {
+      const result: ScheduleExecutionPerformanceStats = {
         scheduleId,
         eventName: schedule.event_name,
         eventType: this.determineEventType(schedule.event_name),

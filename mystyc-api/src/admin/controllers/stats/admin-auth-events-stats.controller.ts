@@ -6,14 +6,14 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
-import { AuthEvent } from '@/common/interfaces/authEvent.interface';
+import { AuthEvent } from '@/common/interfaces/auth-event.interface';
 import { 
   AuthEventSummaryStats,
   AuthenticationPatternsStats,
   SessionDurationStats,
   GeographicDistributionStats,
   AuthEventStats
-} from '@/common/interfaces/admin/stats/adminAuthEventStats.interface';
+} from '@/common/interfaces/admin/stats/admin-auth-event-stats.interface';
 import { AdminController } from '../admin.controller';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 

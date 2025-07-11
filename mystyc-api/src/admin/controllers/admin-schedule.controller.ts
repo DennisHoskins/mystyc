@@ -9,14 +9,14 @@ import { ScheduleExecutionService } from '@/schedule/schedule-execution.service'
 import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { Schedule } from '@/common/interfaces/schedule.interface';
-import { ScheduleExecution } from '@/common/interfaces/scheduleExecution.interface';
+import { ScheduleExecution } from '@/common/interfaces/schedule-execution.interface';
 import { Content } from '@/common/interfaces/content.interface';
 import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
 import { CreateScheduleDto } from '@/schedule/dto/create-schedule.dto';
 import { UpdateScheduleDto } from '@/schedule/dto/update-schedule.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/adminListResponse.interface';
+import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/schedules')

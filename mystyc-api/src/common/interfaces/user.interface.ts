@@ -1,5 +1,5 @@
-import { FirebaseUser } from './firebaseUser.interface';
-import { UserProfile } from './userProfile.interface';
+import { FirebaseUser } from './firebase-user.interface';
+import { UserProfile } from './user-profile.interface';
 import { Device } from './device.interface';
 
 export interface User {

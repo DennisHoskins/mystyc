@@ -9,7 +9,7 @@ import { ScheduleService } from '@/schedule/schedule.service';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { 
   ScheduleExecutionStats,
-} from '@/common/interfaces/admin/stats/adminScheduleExecutionStats.interface';
+} from '@/common/interfaces/admin/stats/admin-schedule-execution-stats.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/stats/schedule-executions')

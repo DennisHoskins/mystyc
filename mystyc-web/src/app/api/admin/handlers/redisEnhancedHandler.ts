@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleAdmin } from './adminHandler';
 import { sessionManager } from '../../sessionManager';
-import { DeviceSession } from '@/interfaces/deviceSession.interface';
+import { DeviceSession } from '@/interfaces/device-session.interface';
 import { logger } from '@/util/logger';
 
 export async function handleRedisEnhancedRoute(

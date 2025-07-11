@@ -54,7 +54,7 @@ export default function ContentTable({
       hasMore={hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
-      emptyMessage="No Users found."
+      emptyMessage="No Content found."
     />
   );
 }

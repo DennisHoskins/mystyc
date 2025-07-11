@@ -10,7 +10,7 @@ import {
   FcmTokenStats,
   DeviceActivityStats,
   DeviceUserAgentStats
-} from '@/common/interfaces/admin/stats/adminDeviceStats.interface';
+} from '@/common/interfaces/admin/stats/admin-device-stats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 

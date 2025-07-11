@@ -5,7 +5,7 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
-import { FirebaseUser } from '@/common/interfaces/firebaseUser.interface';
+import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
 import { DevicesService } from '@/devices/devices.service';
 import { NotificationsService } from '@/notifications/notifications.service';

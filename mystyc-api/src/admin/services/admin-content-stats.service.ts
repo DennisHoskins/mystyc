@@ -8,7 +8,7 @@ import {
   ContentGenerationStats,
   ContentSourceStats,
   ContentTimelineStats
-} from '@/common/interfaces/admin/stats/adminContentStats.interface';
+} from '@/common/interfaces/admin/stats/admin-content-stats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { logger } from '@/common/util/logger';
 

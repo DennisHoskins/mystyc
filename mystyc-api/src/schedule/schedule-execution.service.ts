@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { ScheduleExecution as ScheduleExecutionSchema, ScheduleExecutionDocument } from './schemas/schedule-execution.schema';
-import { ScheduleExecution } from '@/common/interfaces/scheduleExecution.interface';
+import { ScheduleExecution } from '@/common/interfaces/schedule-execution.interface';
 import { CreateScheduleExecutionDto } from './dto/create-schedule-execution.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';

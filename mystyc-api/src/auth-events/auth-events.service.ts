@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { AuthEvent, AuthEventDocument } from './schemas/auth-event.schema';
-import { AuthEvent as AuthEventInterface } from '@/common/interfaces/authEvent.interface';
+import { AuthEvent as AuthEventInterface } from '@/common/interfaces/auth-event.interface';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
