@@ -23,7 +23,7 @@ export default function ContentDashboard({
   className,
   stats,
   charts = ['stats', 'timeline', 'performance', 'coverage'],
-  height = 100
+  height
 }: ContentDashboardProps) {
   if (!stats) {
     return null;

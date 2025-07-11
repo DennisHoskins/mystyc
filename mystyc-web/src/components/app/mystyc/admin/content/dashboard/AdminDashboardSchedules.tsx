@@ -21,7 +21,7 @@ export default function AdminDashboardSchedules({ stats } : { stats?: StatsRespo
       title="Schedules"
       link="/admin/schedules"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className='flex-1 flex flex-col'>
           <Link
             className='flex-1 flex flex-col'
@@ -47,10 +47,10 @@ export default function AdminDashboardSchedules({ stats } : { stats?: StatsRespo
           </Link>
         </div>
           <Link
-            className='flex'
+            className='flex flex-1'
             href='/admin/schedule-executions'
           >
-            <div className='flex-1 space-y-4'>
+            <div className='flex-1 flex flex-col space-y-4'>
               <SchedulesExecutionsDashboard
                 stats={{
                   data: stats.data.schedule.executions,

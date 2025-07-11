@@ -5,6 +5,7 @@ import { Clock, CalendarClock } from 'lucide-react';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { ScheduleStats } from '@/interfaces';
 
+import StatusCard from '@/components/app/mystyc/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChartWithLegend';
 import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarChart';
@@ -92,80 +93,47 @@ export default function SchedulesDashboard({
         colors={['#10b981', '#ef4444']}
       />
     ), 
-    health: (
-      <div className="@container grow flex flex-col">
-        {/* Schedule Health Indicator */}
-        <div className={`inline-flex items-center w-full p-4 rounded-lg justify-center md:justify-start ${
-          stats.data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'
-        }`}>
-          <Clock className={`w-6 h-6 mr-4 ${
-            stats.data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'
-          }`} />
-          <div>
-            <div className={`overflow-hidden font-medium text-sm leading-relaxed ${
-              stats.data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'
-            }`}>
-              <span className='@[200px]:hidden'>
-                {stats.data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
-              </span>
-              <span className='hidden @[200px]:inline'>
-                {stats.data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
-              </span>
-            </div>
 
-            <div className="text-xs text-gray-600 leading-relaxed">
-              <span className='@[200px]:hidden'>
-                {stats.data.summary.enabledSchedules > 0 
-                  ? `${stats.data.summary.enabledSchedules} running`
-                  : 'All disabled'
-                }
-              </span>
-              <span className='hidden @[200px]:inline'>
-                {stats.data.summary.enabledSchedules > 0 
-                  ? `${stats.data.summary.enabledSchedules} schedules running`
-                  : 'All schedules are disabled'
-                }
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+    health: (
+      <StatusCard
+        icon={Clock}
+        iconColor={stats.data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'}
+        backgroundColor={stats.data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'}
+        textColor={stats.data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'}
+        shortText={stats.data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
+        longText={stats.data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
+        shortSubtext={stats.data.summary.enabledSchedules > 0 
+          ? `${stats.data.summary.enabledSchedules} running`
+          : 'All disabled'
+        }
+        longSubtext={stats.data.summary.enabledSchedules > 0 
+          ? `${stats.data.summary.enabledSchedules} schedules running`
+          : 'All schedules are disabled'
+        }
+      />
     ),
     today: (
-      <div className="@container flex-1 h-full grow flex flex-col">
-        {/* Schedule Health Indicator */}
-        <div className={`inline-flex items-center w-full h-full p-4 rounded-lg bg-gray-50 justify-center md:justify-start `}>
-          <CalendarClock className="w-6 h-6 mr-4 text-gray-500" />
-          <div>
-            <div className={`overflow-hidden font-medium text-sm `}>
-              <span className='@[200px]:hidden'>
-                Next:
-              </span>
-              <span className='hidden @[200px]:inline'>
-                Next Execution:
-              </span>
-            </div>
-
-            <div className="text-xs text-gray-600 leading-relaxed">
-              <span className='@[200px]:hidden'>
-                {stats.data.performance.upcomingExecutions[0].scheduledTime}
-                <br />
-                {stats.data.performance.upcomingExecutions[0].timezoneAware && (
-                  <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone</span>
-                )}
-              </span>
-              <span className='hidden @[200px]:inline'>
-                {stats.data.performance.upcomingExecutions[0].eventName}
-                <br />
-                {stats.data.performance.upcomingExecutions[0].scheduledTime}
-                {stats.data.performance.upcomingExecutions[0].timezoneAware && (
-                  <span className=" ml-2 text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone-aware</span>
-                )}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatusCard
+        icon={CalendarClock}
+        iconColor="text-gray-500"
+        backgroundColor="bg-gray-50"
+        shortText="Next:"
+        longText="Next Execution:"
+        shortSubtext={stats.data.performance.upcomingExecutions[0].scheduledTime}
+        longSubtext={
+          <>
+            {stats.data.performance.upcomingExecutions[0].eventName}
+            <br />
+            {stats.data.performance.upcomingExecutions[0].scheduledTime}
+            {stats.data.performance.upcomingExecutions[0].timezoneAware && (
+              <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone-aware</span>
+            )}
+          </>
+        }
+        badge={stats.data.performance.upcomingExecutions[0].timezoneAware && (
+          <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">timezone</span>
+        )}
+      />
     )
   };
 

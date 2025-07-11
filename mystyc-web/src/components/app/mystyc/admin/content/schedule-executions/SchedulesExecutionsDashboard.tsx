@@ -5,6 +5,7 @@ import { CalendarClock } from 'lucide-react';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { ScheduleExecutionStats } from '@/interfaces/admin/stats/adminScheduleExecutionStats.interface';
 
+import StatusCard from '@/components/app/mystyc/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/app/mystyc/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/app/mystyc/admin/ui/charts/PieChartWithLegend';
 import SimpleBarChart from '@/components/app/mystyc/admin/ui/charts/SimpleBarChart';
@@ -73,42 +74,33 @@ export default function SchedulesExecutionsDashboard({
       />
     ),
     today: (
-      <div className="@container flex-1 h-full grow flex flex-col">
-        <div className="inline-flex items-center w-full h-full p-4 rounded-lg bg-gray-50 justify-center md:justify-start">
-          <CalendarClock className="w-6 h-6 mr-4 text-gray-500" />
-          <div>
-            <div className="overflow-hidden font-medium text-sm">
-              <span className='@[200px]:hidden'>
-                {dayLabel}:
-              </span>
-              <span className='hidden @[200px]:inline'>
-                {dayLabel} Executions:
-              </span>
-            </div>
-            <div className="text-xs text-gray-600 leading-relaxed">
-              <span className='@[200px]:hidden'>
-                {dayCount} executed
-                {dayCount > 0 && (
-                  <span className={`ml-2 text-xs px-1 rounded ${daySuccessful === dayCount ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                    {daySuccessful === dayCount ? 'all ✓' : `${daySuccessful}/${dayCount} ✓`}
-                  </span>
-                )}
-              </span>
-              <span className='hidden @[200px]:inline'>
-                {dayCount === 0 ? 'No executions' : `${dayCount} total`}
-                {dayCount > 0 && (
-                  <>
-                    <br />
-                    <span className={`text-xs px-1 rounded ${daySuccessful === dayCount ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                      {daySuccessful === dayCount ? 'All successful' : `${daySuccessful} successful, ${dayCount - daySuccessful} failed`}
-                    </span>
-                  </>
-                )}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatusCard
+        icon={CalendarClock}
+        iconColor="text-gray-500"
+        backgroundColor="bg-gray-50"
+        shortText={`${dayLabel}:`}
+        longText={`${dayLabel} Executions:`}
+        shortSubtext={`${dayCount} executed`}
+        longSubtext={dayCount === 0 ? 'No executions' : `${dayCount} total`}
+        badge={dayCount > 0 && (
+          <span className={`text-xs px-1 rounded ${
+            daySuccessful === dayCount 
+              ? 'bg-green-100 text-green-700' 
+              : 'bg-yellow-100 text-yellow-700'
+          }`}>
+            {/* Responsive text within the badge */}
+            <span className='@[200px]:hidden'>
+              {daySuccessful === dayCount ? 'all ✓' : `${daySuccessful}/${dayCount} ✓`}
+            </span>
+            <span className='hidden @[200px]:inline'>
+              {daySuccessful === dayCount 
+                ? 'All successful' 
+                : `${daySuccessful} successful, ${dayCount - daySuccessful} failed`
+              }
+            </span>
+          </span>
+        )}
+      />
     ),
     events: (
       <PieChartWithLegend 
