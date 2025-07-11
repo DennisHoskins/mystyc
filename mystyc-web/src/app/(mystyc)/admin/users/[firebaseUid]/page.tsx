@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import UserPage from '@/components/app/mystyc/admin/content/users/user/UserPage';
+import UserPage from '@/components/mystyc/admin/content/users/user/UserPage';
 
 interface UserPageProps {
   params: Promise<{

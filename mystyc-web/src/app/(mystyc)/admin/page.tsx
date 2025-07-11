@@ -1,8 +1,8 @@
 'use client';
 
-import { useUser } from '@/components/layout/context/AppContext';
+import { useUser } from '@/components/ui/layout/context/AppContext';
 
-import AdminHome from '@/components/app/mystyc/admin/AdminHome';
+import AdminHome from '@/components/mystyc/admin/AdminHome';
 
 export default function Page() {
   const user = useUser();

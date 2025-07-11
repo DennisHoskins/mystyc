@@ -1,6 +1,6 @@
 'use client';
 
-import UsersPage from '@/components/app/mystyc/admin/content/users/UsersPage';
+import UsersPage from '@/components/mystyc/admin/content/users/UsersPage';
 
 export default function Page() {
   return <UsersPage />

@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import DevicePage from '@/components/app/mystyc/admin/content/devices/device/DevicePage';
+import DevicePage from '@/components/mystyc/admin/content/devices/device/DevicePage';
 
 interface DevicePageProps {
   params: Promise<{

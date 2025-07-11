@@ -1,8 +1,8 @@
 'use client';
 
-import { useUser } from '@/components/layout/context/AppContext';
+import { useUser } from '@/components/ui/layout/context/AppContext';
 import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
-import MystycHome from '@/components/app/mystyc/MystycHome';
+import MystycHome from '@/components/mystyc/MystycHome';
 
 export default function Mystyc() {
   useFirebaseMessaging();

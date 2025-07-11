@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import SchedulePage from '@/components/app/mystyc/admin/content/schedules/schedule/SchedulePage';
+import SchedulePage from '@/components/mystyc/admin/content/schedules/schedule/SchedulePage';
 
 interface SchedulePageProps {
   params: Promise<{

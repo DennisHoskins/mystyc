@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useUser, useBusy } from '@/components/layout/context/AppContext';
+import { useUser, useBusy } from '@/components/ui/layout/context/AppContext';
 import Mystyc from './(mystyc)/mystyc';
-import WebsiteHome from "@/components/app/website/WebsiteHome";
+import WebsiteHome from "@/components/website/WebsiteHome";
 
 export default function Page() {
   const user = useUser();

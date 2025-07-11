@@ -1,4 +1,4 @@
-import LogoutForm from '@/components/app/auth/LogoutForm';
+import LogoutForm from '@/components/auth/LogoutForm';
 
 export default function LogoutPage() {
   return <LogoutForm />

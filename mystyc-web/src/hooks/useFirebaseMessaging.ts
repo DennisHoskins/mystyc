@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { Messaging, getMessaging, getToken, onMessage } from 'firebase/messaging';
 
-import { useUser, useInitialized, useSetUser } from '@/components/layout/context/AppContext';
+import { useUser, useInitialized, useSetUser } from '@/components/ui/layout/context/AppContext';
 import { apiClient } from '@/api/apiClient';
 import { logger } from '@/util/logger';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import ScheduleExecutionPage from '@/components/app/mystyc/admin/content/schedule-executions/schedule-execution/ScheduleExecutionPage';
+import ScheduleExecutionPage from '@/components/mystyc/admin/content/schedule-executions/schedule-execution/ScheduleExecutionPage';
 
 interface ScheduleExecutionPageProps {
   params: Promise<{

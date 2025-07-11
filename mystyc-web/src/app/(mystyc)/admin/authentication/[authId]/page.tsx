@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import AuthenticationPage from '@/components/app/mystyc/admin/content/authentications/authentication/AuthenticationPage';
+import AuthenticationPage from '@/components/mystyc/admin/content/authentications/authentication/AuthenticationPage';
 
 interface AuthenticationPageProps {
   params: Promise<{
