@@ -45,6 +45,9 @@ export class Notification {
   @Prop({ index: true })
   scheduleId?: string;
 
+  @Prop({ index: true })
+  executionId?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,6 +60,7 @@ export const NotificationSchema = SchemaFactory.createForClass(Notification);
 NotificationSchema.index({ firebaseUid: 1, createdAt: -1 });
 NotificationSchema.index({ deviceId: 1, createdAt: -1 });
 NotificationSchema.index({ scheduleId: 1, createdAt: -1 });
+NotificationSchema.index({ executionId: 1, createdAt: -1 });
 NotificationSchema.index({ sentBy: 1, createdAt: -1 });
 NotificationSchema.index({ status: 1, createdAt: -1 });
 NotificationSchema.index({ type: 1, source: 1, createdAt: -1 });

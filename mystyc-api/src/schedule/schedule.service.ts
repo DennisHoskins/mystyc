@@ -208,7 +208,7 @@ export class ScheduleService {
             localTime: this.getLocalTime(serverTime, timezoneData.offsetHours)
           });
 
-          await this.emitScheduledEvent(task, timezoneData.timezone, timezoneData, executionLog._id);
+          await this.emitScheduledEvent(task, executionLog._id, timezoneData.timezone, timezoneData);
           
           // Update execution as completed
           const duration = Date.now() - executionStartTime;
@@ -250,17 +250,16 @@ export class ScheduleService {
 
   private async emitScheduledEvent(
     task: ScheduleInterface, 
+    executionId?: string,
     timezone?: string,
     timezoneData?: {timezone: string, offsetHours: number},
-    executionId?: string
   ): Promise<void> {
     const payload: any = {
       scheduleId: task._id,
-      taskId: task._id,
+      executionId,
       eventName: task.event_name,
       scheduledTime: task.time,
       executedAt: new Date().toISOString(),
-      executionId
     };
 
     if (timezone && timezoneData) {
@@ -271,8 +270,8 @@ export class ScheduleService {
     logger.info('Emitting scheduled event', {
       eventName: task.event_name,
       scheduleId: task._id,
-      timezone: timezone || 'global',
       executionId,
+      timezone: timezone || 'global',
       payload
     }, 'ScheduleService');
 

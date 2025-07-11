@@ -35,6 +35,9 @@ export class Content {
   @Prop({ index: true })
   scheduleId?: string;
 
+  @Prop({ index: true })
+  executionId?: string;
+
   @Prop({ required: true })
   title: string;
 
@@ -80,6 +83,7 @@ ContentSchema.index({ type: 1, date: -1 });
 ContentSchema.index({ type: 1, status: 1 });
 ContentSchema.index({ date: -1 });
 ContentSchema.index({ scheduleId: -1 });
+ContentSchema.index({ executionId: -1 });
 ContentSchema.index({ status: 1, date: -1 });
 ContentSchema.index({ generatedAt: -1 });
 ContentSchema.index({ sources: 1 });

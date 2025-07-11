@@ -7,7 +7,9 @@ export interface Content {
   _id?: string;
   date: string; // Format: "2025-07-07"
 
+  // Audit trail
   scheduleId?: string;
+  executionId?: string;
   
   // Core content
   title: string;

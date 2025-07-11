@@ -65,8 +65,8 @@ export class ContentService {
   /**
    * Get or generate content for a specific date
    */
-  async getOrGenerateContent(date: string, scheduleId?: string): Promise<ContentInterface> {
-    logger.info('Getting or generating content', { date, scheduleId }, 'ContentService');
+  async getOrGenerateContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
+    logger.info('Getting or generating content', { date, scheduleId, executionId }, 'ContentService');
 
     // Check if content exists
     const existing = await this.findByDate(date);
@@ -76,7 +76,7 @@ export class ContentService {
     }
 
     // Generate new content
-    return this.generateContent(date, scheduleId);
+    return this.generateContent(date, scheduleId, executionId);
   }
 
   /**
@@ -137,10 +137,52 @@ export class ContentService {
     return content.map(content => this.transformToContent(content));
   }
 
+  async getTotalByExecutionId(executionId: string): Promise<number> {
+    return await this.contentModel.countDocuments({ executionId });
+  }
+
+  async findByExecutionId(executionId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding schedule content with query', {
+      executionId,
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'ContentService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { executionId } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const content = await this.contentModel
+      .aggregate(pipeline)
+      .exec();
+
+    logger.debug('Schedule content found', {
+      executionId,
+      count: content.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'ContentService');
+
+    return content.map(content => this.transformToContent(content));
+  }
+
   /**
    * Generate content for a specific date
    */
-  async generateContent(date: string, scheduleId?: string): Promise<ContentInterface> {
+  async generateContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
     logger.info('Generating new content', { date, scheduleId }, 'ContentService');
 
     const startTime = Date.now();
@@ -158,6 +200,7 @@ export class ContentService {
       const contentData = {
         date,
         scheduleId,
+        executionId,
         ...template,
         data: dataItems,
         sources: ['static'],
@@ -172,6 +215,7 @@ export class ContentService {
       logger.info('Content generated successfully', { 
         date, 
         scheduleId,
+        executionId,
         contentId: saved._id.toString(),
         duration: saved.generationDuration 
       }, 'ContentService');
@@ -181,13 +225,15 @@ export class ContentService {
       logger.error('Content generation failed', {
         date,
         scheduleId,
+        executionId,
         error: error.message
       }, 'ContentService');
 
       // Save failed attempt
       const failedContent = new this.contentModel({
         date,
-        scheduleId, // Store scheduleId even for failed content
+        scheduleId,
+        executionId,
         title: 'Content Unavailable',
         message: 'We apologize, today\'s mystical insights are clouded. Please return tomorrow.',
         imageUrl: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229',
@@ -207,8 +253,8 @@ export class ContentService {
   /**
    * Generate content update for a specific date
    */
-  async generateUpdate(date: string, scheduleId?: string): Promise<ContentInterface> {
-    logger.info('Generating new content update', { date, scheduleId }, 'ContentService');
+  async generateUpdate(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
+    logger.info('Generating new content update', { date, scheduleId, executionId }, 'ContentService');
 
     const startTime = Date.now();
 
@@ -225,6 +271,7 @@ export class ContentService {
       const contentData = {
         date,
         scheduleId,
+        executionId,
         ...template,
         data: dataItems,
         sources: ['static'],
@@ -241,6 +288,7 @@ export class ContentService {
       logger.info('Content update generated successfully', { 
         date, 
         scheduleId,
+        executionId,
         contentId: saved._id.toString(),
         duration: saved.generationDuration 
       }, 'ContentService');
@@ -250,13 +298,15 @@ export class ContentService {
       logger.error('Content update generation failed', {
         date,
         scheduleId,
+        executionId,
         error: error.message
       }, 'ContentService');
 
       // Save failed attempt
       const failedContent = new this.contentModel({
         date,
-        scheduleId, // Store scheduleId even for failed content
+        scheduleId,
+        executionId,
         title: 'Content Unavailable',
         message: 'We apologize, today\'s mystical updates are clouded. Please return tomorrow.',
         imageUrl: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229',
@@ -338,6 +388,7 @@ export class ContentService {
       _id: doc._id.toString(),
       date: doc.date,
       scheduleId: doc.scheduleId,
+      executionId: doc.executionId,
       title: doc.title,
       message: doc.message,
       data: doc.data,

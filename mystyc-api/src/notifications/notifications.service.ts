@@ -28,18 +28,17 @@ export class NotificationsService {
 
   /**
    * Handles scheduled notification sending events from Schedule Service
-   * @param payload - Event payload containing schedule context and scheduleId
+   * @param payload - Event payload containing schedule context, scheduleId and executionId
    */
   @OnEvent('notifications.send.notification')
   async handleScheduledNotifications(payload: any): Promise<void> {
     logger.info('Handling scheduled notifications', {
       scheduleId: payload.scheduleId,
-      taskId: payload.taskId,
+      executionId: payload.executionId,
       eventName: payload.eventName,
       timezone: payload.timezone || 'global',
       scheduledTime: payload.scheduledTime,
       executedAt: payload.executedAt,
-      executionId: payload.executionId
     }, 'NotificationsService');
 
     try {
@@ -52,6 +51,7 @@ export class NotificationsService {
 
       logger.debug('Prepared notification content', {
         scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
         title,
         bodyLength: body.length,
         contentDate: content.date,
@@ -67,30 +67,28 @@ export class NotificationsService {
 
       if (payload.timezone) {
         // Send to devices in specific timezone
-        await this.sendToTimezone(payload.timezone, title, body, results, payload.scheduleId);
+        await this.sendToTimezone(payload.timezone, title, body, results, payload.scheduleId, payload.executionId);
       } else {
         // Send broadcast to all devices
-        await this.sendBroadcast(title, body, results, 'system', payload.scheduleId);
+        await this.sendBroadcast(title, body, results, 'system', payload.scheduleId, payload.executionId);
       }
 
       logger.info('Scheduled notifications completed', {
         scheduleId: payload.scheduleId,
-        taskId: payload.taskId,
+        executionId: payload.executionId,
         timezone: payload.timezone || 'global',
         sent: results.sent,
         failed: results.failed,
         totalAttempts: results.sent + results.failed,
-        executionId: payload.executionId
       }, 'NotificationsService');
 
     } catch (error) {
       logger.error('Scheduled notifications failed', {
         scheduleId: payload.scheduleId,
-        taskId: payload.taskId,
+        executionId: payload.executionId,
         timezone: payload.timezone || 'global',
         error: error.message,
         scheduledTime: payload.scheduledTime,
-        executionId: payload.executionId
       }, 'NotificationsService');
 
       // Don't throw - we don't want to crash the scheduler
@@ -104,12 +102,11 @@ export class NotificationsService {
   async handleScheduledUpdate(payload: any): Promise<void> {
     logger.info('Handling scheduled notification updates', {
       scheduleId: payload.scheduleId,
-      taskId: payload.taskId,
+      executionId: payload.executionId,
       eventName: payload.eventName,
       timezone: payload.timezone || 'global',
       scheduledTime: payload.scheduledTime,
       executedAt: payload.executedAt,
-      executionId: payload.executionId
     }, 'NotificationsService');
 
     try {
@@ -122,6 +119,7 @@ export class NotificationsService {
 
       logger.debug('Prepared notification update content', {
         scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
         title,
         bodyLength: body.length,
         contentDate: content.date,
@@ -145,22 +143,22 @@ export class NotificationsService {
 
       logger.info('Scheduled notification updates completed', {
         scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
         taskId: payload.taskId,
         timezone: payload.timezone || 'global',
         sent: results.sent,
         failed: results.failed,
         totalAttempts: results.sent + results.failed,
-        executionId: payload.executionId
       }, 'NotificationsService');
 
     } catch (error) {
       logger.error('Scheduled notificatio updates failed', {
         scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
         taskId: payload.taskId,
         timezone: payload.timezone || 'global',
         error: error.message,
         scheduledTime: payload.scheduledTime,
-        executionId: payload.executionId
       }, 'NotificationsService');
 
       // Don't throw - we don't want to crash the scheduler
@@ -180,11 +178,13 @@ export class NotificationsService {
     title: string, 
     body: string, 
     results: any,
-    scheduleId?: string
+    scheduleId?: string,
+    executionId?: string
   ): Promise<void> {
     logger.info('Sending notifications to timezone', { 
       timezone, 
-      scheduleId 
+      scheduleId,
+      executionId
     }, 'NotificationsService');
 
     try {
@@ -194,23 +194,25 @@ export class NotificationsService {
       logger.info('Found target devices for timezone', {
         timezone,
         scheduleId,
+        executionId,
         timezoneDevices: timezoneDevices.length
       }, 'NotificationsService');
 
       if (timezoneDevices.length === 0) {
-        logger.warn('No devices found for timezone', { timezone, scheduleId }, 'NotificationsService');
+        logger.warn('No devices found for timezone', { timezone, scheduleId, executionId }, 'NotificationsService');
         return;
       }
 
       // Send notifications to filtered devices
       for (const device of timezoneDevices) {
-        await this.sendToSingleDevice(device, title, body, 'schedule', 'system', results, scheduleId);
+        await this.sendToSingleDevice(device, title, body, 'schedule', 'system', results, scheduleId, executionId);
       }
 
     } catch (error) {
       logger.error('Failed to send notifications to timezone', {
         timezone,
         scheduleId,
+        executionId,
         error: error.message
       }, 'NotificationsService');
       throw error;
@@ -421,6 +423,48 @@ export class NotificationsService {
     return notifications.map(notification => this.transformToNotification(notification));
   }
 
+  async getTotalByExecutionId(executionId: string): Promise<number> {
+    return await this.notificationModel.countDocuments({ executionId });
+  }
+
+  async findByExecutionId(executionId: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding schedule execution notifications with query', {
+      executionId,
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'NotificationsService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { executionId } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const notifications = await this.notificationModel
+      .aggregate(pipeline)
+      .exec();
+
+    logger.debug('Schedule execution notifications found', {
+      executionId,
+      count: notifications.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'NotificationsService');
+
+    return notifications.map(notification => this.transformToNotification(notification));
+  }
+
   // POST/PUT/PATCH Methods (Write Operations)
 
   async sendNotification(
@@ -471,7 +515,8 @@ export class NotificationsService {
     sentBy: string,
     deviceId?: string,
     deviceName?: string,
-    scheduleId?: string
+    scheduleId?: string,
+    executionId?: string
   ): Promise<{ messageId: string; notificationId: string }> {
     // Create notification record for tracking
     const notification = await this.createNotificationRecord({
@@ -483,7 +528,8 @@ export class NotificationsService {
       body,
       type,
       sentBy,
-      scheduleId // Pass scheduleId to record creation
+      scheduleId,
+      executionId
     });
 
     try {
@@ -573,7 +619,8 @@ export class NotificationsService {
     type: 'test' | 'admin' | 'broadcast' | 'schedule',
     sentBy: string,
     results: any,
-    scheduleId?: string
+    scheduleId?: string,
+    executionId?: string
   ): Promise<void> {
     // Create notification record for tracking
     const notification = await this.createNotificationRecord({
@@ -585,7 +632,8 @@ export class NotificationsService {
       body,
       type,
       sentBy,
-      scheduleId // Include scheduleId in notification record
+      scheduleId,
+      executionId
     });
 
     try {
@@ -602,7 +650,9 @@ export class NotificationsService {
         status: 'sent',
         messageId,
         notificationId: notification._id.toString(),
-        scheduleId
+        scheduleId,
+        executionId
+
       });
     } catch (error) {
       // Update notification as failed
@@ -616,7 +666,8 @@ export class NotificationsService {
         status: 'failed',
         error: error.message,
         notificationId: notification._id.toString(),
-        scheduleId
+        scheduleId,
+        executionId
       });
     }
   }
@@ -628,7 +679,8 @@ export class NotificationsService {
     results: any, 
     type: 'test' | 'admin' | 'broadcast' | 'schedule',
     sentBy: string,
-    scheduleId?: string
+    scheduleId?: string,
+    executionId?: string
   ): Promise<void> {
     const device = await this.deviceService.findByDeviceId(deviceId);
 
@@ -640,7 +692,7 @@ export class NotificationsService {
       throw new BadRequestException('Device does not have FCM token - notifications not enabled');
     }
 
-    await this.sendToSingleDevice(device, title, body, type, sentBy, results, scheduleId);
+    await this.sendToSingleDevice(device, title, body, type, sentBy, results, scheduleId, executionId);
   }
 
   private async sendToUserDevices(
@@ -650,7 +702,8 @@ export class NotificationsService {
     results: any, 
     type: 'test' | 'admin' | 'broadcast' | 'schedule',
     sentBy: string,
-    scheduleId?: string
+    scheduleId?: string,
+    executionId?: string
   ): Promise<void> {
     // Verify user exists
     const user = await this.userProfileService.findByFirebaseUid(firebaseUid);
@@ -672,7 +725,7 @@ export class NotificationsService {
     }
 
     for (const device of notifiableDevices) {
-      await this.sendToSingleDevice(device, title, body, type, sentBy, results, scheduleId);
+      await this.sendToSingleDevice(device, title, body, type, sentBy, results, scheduleId, executionId);
     }
   }
 
@@ -689,7 +742,8 @@ export class NotificationsService {
     body: string, 
     results: any, 
     sentBy: string,
-    scheduleId?: string
+    scheduleId?: string,
+    executionId?: string
   ): Promise<void> {
     // Get all devices with new query format
     const allDevices = await this.deviceService.findAll({ limit: 10000 });
@@ -706,11 +760,12 @@ export class NotificationsService {
     logger.info('Starting broadcast notification', {
       totalDevices: allDevices.length,
       notifiableDevices: notifiableDevices.length,
-      scheduleId
+      scheduleId,
+      executionId
     }, 'NotificationsService');
 
     for (const device of notifiableDevices) {
-      await this.sendToSingleDevice(device, title, body, 'broadcast', sentBy, results, scheduleId);
+      await this.sendToSingleDevice(device, title, body, 'broadcast', sentBy, results, scheduleId, executionId);
     }
   }
 
@@ -730,7 +785,8 @@ export class NotificationsService {
     body: string;
     type: 'test' | 'admin' | 'broadcast' | 'schedule';
     sentBy: string;
-    scheduleId?: string; // Add scheduleId parameter
+    scheduleId?: string;
+    executionId?: string;
   }): Promise<NotificationDocument> {
     const notification = new this.notificationModel({
       ...data,
@@ -778,7 +834,8 @@ export class NotificationsService {
       error: doc.error,
       sentBy: doc.sentBy,
       sentAt: doc.sentAt,
-      scheduleId: doc.scheduleId, // Include scheduleId in interface
+      scheduleId: doc.scheduleId,
+      executionId: doc.executionId,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };
