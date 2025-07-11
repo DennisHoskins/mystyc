@@ -1,5 +1,7 @@
 'use client';
 
+import { Clock, AlarmClockCheck } from 'lucide-react';
+
 import { Notification } from '@/interfaces';
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -33,6 +35,8 @@ export default function NotificationsTable({
     { key: 'deviceName', header: 'Device', link: (e) => `/admin/devices/${e.deviceId}`, render: (e) => e.deviceName || 'Unknown' },
     { key: 'message', header: 'Message', render: (e) => e.title || 'Unknown' },
     { key: 'sentAt', header: 'Sent', align: 'right', link: (e) => `/admin/notifications/${e._id}`, render: (e) => formatDateForDisplay(e.sentAt) || '-' },
+    { key: 'schedule', header: 'Schedule', link: (u) => `/admin/schedule/${u.scheduleId}`, align: 'center', icon: (u) => u.scheduleId ? Clock : null},
+    { key: 'execution', header: 'Execution', link: (u) => `/admin/schedule-execution/${u.executionId}`, align: 'center', icon: (u) => u.executionId ? AlarmClockCheck : null },
   ];
 
   const userColumn: Column<Notification> = {

@@ -13,7 +13,7 @@ import {
   generateDeviceId 
 } from './keyManager';
 import { IdTokens } from './authTokenManager';
-import { extractDeviceFingerprint } from './auth/deviceManager';
+import { extractDeviceFingerprint } from './services/deviceManager';
 
 import { Session } from '@/interfaces/session.interface';
 import { logger } from '@/util/logger';

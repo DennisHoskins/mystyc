@@ -23,7 +23,6 @@ export default function SchedulesExecutionsPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
@@ -50,7 +49,6 @@ export default function SchedulesExecutionsPage() {
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
-      setTotalItems(response.pagination.totalItems);
 
       const statsQuery = getDefaultDashboardStatsQuery();
       const stats = await apiClientAdmin.getScheduleExecutionStats(statsQuery);

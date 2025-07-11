@@ -11,6 +11,7 @@ import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/app/mystyc/admin/ui/icons/ContentIcon';
 import ContentDetailsPanel from './ContentDetailsPanel';
+import ContentGenerationPanel from './ContentGenerationPanel';
 import ContentPreviewPanel from './ContentPreviewPanel';
 import ContentSidebarPanel from './ContentSidebarPanel';
 import ContentDataPanel from './ContentDataPanel';
@@ -76,7 +77,10 @@ export default function ContentPage({ contentId }: { contentId: string }) {
       icon={<ContentIcon size={6}/>}
       title={content.title}
       headerContent={<ContentDetailsPanel content={content} />}
-      sectionsContent={[<ContentPreviewPanel key='preview' content={content} />]}
+      sectionsContent={[
+        <ContentGenerationPanel key='generation' content={content} />,
+        <ContentPreviewPanel key='preview' content={content} />
+      ]}
       sidebarContent={<ContentSidebarPanel content={content} />}
       mainContent={<ContentDataPanel content={content} />}
     />

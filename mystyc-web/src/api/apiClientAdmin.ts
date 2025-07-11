@@ -153,7 +153,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getDashboard = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<AdminStatsResponseExtended>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats${queryString}`);
       return {
         data: response,
         query,
@@ -168,7 +168,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getSessionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SessionStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/sessions${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/sessions${queryString}`);
       return {
         data: response,
         query,
@@ -183,7 +183,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getTrafficStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<TrafficStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/traffic${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/traffic${queryString}`);
       return {
         data: response,
         query,
@@ -198,7 +198,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getContentStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ContentStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/content${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/content${queryString}`);
       return {
         data: response,
         query,
@@ -213,7 +213,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getScheduleStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ScheduleStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/schedules${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/schedules${queryString}`);
       return {
         data: response,
         query,
@@ -228,7 +228,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getScheduleExecutionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ScheduleExecutionStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/schedule-executions${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/schedule-executions${queryString}`);
       return {
         data: response,
         query,
@@ -243,7 +243,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getUserStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<UserStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/users${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/users${queryString}`);
       return {
         data: response,
         query,
@@ -258,7 +258,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getDeviceStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<DeviceStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/devices${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/devices${queryString}`);
       return {
         data: response,
         query,
@@ -273,7 +273,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getAuthenticationStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<AuthEventStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/auth-events${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/auth-events${queryString}`);
       return {
         data: response,
         query,
@@ -288,7 +288,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getNotificationStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<NotificationStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/stats/notifications${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/notifications${queryString}`);
       return {
         data: response,
         query,
@@ -307,7 +307,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getSessions = async (query?: AdminQuery): Promise<PaginatedResponse<Session>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions${queryString}`);
     } catch (error) {
       logger.error('getSessions failed:', error);
       throw error;
@@ -316,7 +316,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getSession = async (sessionId: string): Promise<Session> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions/${sessionId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/${sessionId}`);
     } catch (error) {
       logger.error('getSession failed:', error);
       throw error;
@@ -326,7 +326,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getSessionsDevices = async (query?: AdminQuery): Promise<PaginatedResponse<SessionDevice>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions/devices${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devices${queryString}`);
     } catch (error) {
       logger.error('getSessionsDevices failed:', error);
       throw error;
@@ -335,7 +335,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getSessionDevice = async (deviceId: string): Promise<Session> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/sessions/devces/${deviceId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devces/${deviceId}`);
     } catch (error) {
       logger.error('getSession failed:', error);
       throw error;
@@ -349,7 +349,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/content${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content${queryString}`);
     } catch (error) {
       logger.error('getContents failed:', error);
       throw error;
@@ -358,7 +358,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getContent = async (firebaseUid: string): Promise<Content> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/content/${firebaseUid}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content/${firebaseUid}`);
     } catch (error) {
       logger.error('getContent failed:', error);
       throw error;
@@ -372,7 +372,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getSchedules = async (query?: AdminQuery): Promise<PaginatedResponse<Schedule>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedules${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedules${queryString}`);
     } catch (error) {
       logger.error('getSchedules failed:', error);
       throw error;
@@ -381,7 +381,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getSchedule = async (scheduleId: string): Promise<Schedule> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedules/${scheduleId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedules/${scheduleId}`);
     } catch (error) {
       logger.error('getSchedule failed:', error);
       throw error;
@@ -391,7 +391,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getScheduleScheduleExecutions = async (scheduleId: string, query?: AdminQuery): Promise<PaginatedResponse<ScheduleExecution>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedules/${scheduleId}/executions${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedules/${scheduleId}/executions${queryString}`);
     } catch (error) {
       logger.error('getScheduleScheduleExecutions failed:', error);
       throw error;
@@ -401,7 +401,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getScheduleExecutions = async (query?: AdminQuery): Promise<PaginatedResponse<ScheduleExecution>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedule-executions${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions${queryString}`);
     } catch (error) {
       logger.error('getScheduleExecutions failed:', error);
       throw error;
@@ -410,9 +410,29 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getScheduleExecution = async (scheduleExecutionId: string): Promise<ScheduleExecution> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/schedule-executions/${scheduleExecutionId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions/${scheduleExecutionId}`);
     } catch (error) {
       logger.error('getScheduleExecution failed:', error);
+      throw error;
+    }
+  };
+
+  getScheduleExecutionContent = async (scheduleExecutionId: string, query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions/${scheduleExecutionId}/content${queryString}`);
+    } catch (error) {
+      logger.error('getScheduleExecutionContent failed:', error);
+      throw error;
+    }
+  };
+
+  getScheduleExecutionNotifications = async (scheduleExecutionId: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions/${scheduleExecutionId}/notifications${queryString}`);
+    } catch (error) {
+      logger.error('getScheduleExecutionNotifications failed:', error);
       throw error;
     }
   };
@@ -426,7 +446,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     notifications: { total: number };
   }> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/summary`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/summary`);
     } catch (error) {
       logger.error('getUserSummary failed:', error);
       throw error;
@@ -436,7 +456,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users${queryString}`);
     } catch (error) {
       logger.error('getUsers failed:', error);
       throw error;
@@ -445,7 +465,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getUser = async (firebaseUid: string): Promise<UserProfile> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}`);
     } catch (error) {
       logger.error('getUser failed:', error);
       throw error;
@@ -455,7 +475,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getUserDevices = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Device>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/devices${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/devices${queryString}`);
     } catch (error) {
       logger.error('getUserDevices failed:', error);
       throw error;
@@ -465,7 +485,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getUserAuthEvents = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/auth-events${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/auth-events${queryString}`);
     } catch (error) {
       logger.error('getUserAuthEvents failed:', error);
       throw error;
@@ -475,7 +495,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getUserNotifications = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/users/${firebaseUid}/notifications${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/notifications${queryString}`);
     } catch (error) {
       logger.error('getUserNotifications failed:', error);
       throw error;
@@ -491,7 +511,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     notifications: { total: number };
   }> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/summary`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/summary`);
     } catch (error) {
       logger.error('getDeviceSummary failed:', error);
       throw error;
@@ -501,7 +521,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getDevices = async (query?: AdminQuery): Promise<PaginatedResponse<Device>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices${queryString}`);
     } catch (error) {
       logger.error('getDevices failed:', error);
       throw error;
@@ -510,7 +530,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getDeviceSession = async (deviceId: string): Promise<DeviceSession> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/session`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/session`);
     } catch (error) {
       logger.error('getDeviceSession failed:', error);
       throw error;
@@ -519,7 +539,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getDevice = async (deviceId: string): Promise<Device> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}`);
     } catch (error) {
       logger.error('getDevice failed:', error);
       throw error;
@@ -529,7 +549,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getDeviceUsers = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/users${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/users${queryString}`);
     } catch (error) {
       logger.error('getDeviceUsers failed:', error);
       throw error;
@@ -539,7 +559,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getDeviceAuthEvents = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/auth-events${queryString}`
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/auth-events${queryString}`
       );
     } catch (error) {
       logger.error('getDeviceAuthEvents failed:', error);
@@ -550,7 +570,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getDeviceNotifications = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/devices/${deviceId}/notifications${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/notifications${queryString}`);
     } catch (error) {
       logger.error('getUserNotifications failed:', error);
       throw error;
@@ -564,7 +584,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getAuthEvents = async (query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/auth-events${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events${queryString}`);
     } catch (error) {
       logger.error('getAuthEvents failed:', error);
       throw error;
@@ -573,7 +593,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getAuthEvent = async (eventId: string): Promise<AuthEvent> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/auth-events/${eventId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events/${eventId}`);
     } catch (error) {
       logger.error('getAuthEvent failed:', error);
       throw error;
@@ -586,7 +606,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
   getNotifications = async (query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
     try {
       const queryString = this.buildQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/notifications${queryString}`);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications${queryString}`);
       return response;
     } catch (error) {
       logger.error('getNotifications failed:', error);
@@ -596,7 +616,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getNotification = async (notificationId: string): Promise<Notification> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/notifications/${notificationId}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/${notificationId}`);
     } catch (error) {
       logger.error('getNotification failed:', error);
       throw error;
@@ -609,7 +629,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     notification:string
   ): Promise<any> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/mystyc/admin/notifications/send/${deviceId}`, {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/send/${deviceId}`, {
         method: 'POST',
         body: JSON.stringify({
           title,

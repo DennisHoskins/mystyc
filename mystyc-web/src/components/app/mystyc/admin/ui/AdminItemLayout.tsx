@@ -80,7 +80,7 @@ export default function AdminDetailLayout({
 
           <hr />
 
-          <div className="space-y-1 mt-4">
+          <div className="mt-4">
             {headerContent}
           </div>
         </Card>

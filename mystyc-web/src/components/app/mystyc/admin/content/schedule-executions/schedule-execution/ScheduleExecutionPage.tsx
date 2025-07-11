@@ -10,6 +10,9 @@ import { logger } from '@/util/logger';
 
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/app/mystyc/admin/ui/icons/ScheduleIcon';
+import ScheduleExecutionDetailsPanel from './ScheduleExecutionDetailsPanel';
+import ScheduleExecutionContentTable from './ScheduleExecutionContentTable';
+import ScheduleExecutionNotificationsTable from './ScheduleExecutionNotificationsTable';
 
 export default function ScheduleExecutionPage({ executionId }: { executionId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -62,18 +65,25 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
         onRetry={loadScheduleExecution}
         breadcrumbs={breadcrumbs}
         icon={<ScheduleIcon size={6} variant='schedule-execution'/>}
-        title={'Unkown Schedule'}
+        title={'Unkown Schedule Execution'}
       />
     );
   }
 
-  return (
+  const executionType = execution.eventName.split(".")[0];
+  const mainContent = 
+    executionType == 'content' ? <ScheduleExecutionContentTable executionId={execution._id} /> :
+    executionType == 'notifications' ? <ScheduleExecutionNotificationsTable executionId={execution._id} /> : null;
+
+    return (
     <AdminItemLayout
       error={error}
       onRetry={loadScheduleExecution}
       breadcrumbs={breadcrumbs}
       icon={<ScheduleIcon size={6} variant='schedule-execution' />}
       title={execution.eventName || `Unknown Schedule Execution`}
+      headerContent={<ScheduleExecutionDetailsPanel execution={execution} />}
+      mainContent={mainContent}
     />
   );
 }

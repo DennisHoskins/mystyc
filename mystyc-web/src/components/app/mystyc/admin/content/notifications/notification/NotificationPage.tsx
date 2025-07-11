@@ -11,6 +11,7 @@ import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/app/mystyc/admin/ui/AdminItemLayout';
 import NotificationIcon from '@/components/app/mystyc/admin/ui/icons/NotificationIcon';
 import NotificationDetailsPanel from './NotificationDetailsPanel';
+import NotificationGenerationPanel from './NotificationGenerationPanel';
 import NotificationMessagePanel from './NotificationMessagePanel';
 import UserInfoPanel from '@/components/app/mystyc/admin/content/users/user/UserInfoPanel';
 import DeviceInfoPanel from '@/components/app/mystyc/admin/content/devices/device/DeviceInfoPanel';
@@ -79,6 +80,7 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       title={notification ? `${notification.sentBy}: ${notification.type}` : 'Unknown Notification'}
       headerContent={<NotificationDetailsPanel notification={notification} />}
       sectionsContent={[
+        <NotificationGenerationPanel key='generation' notification={notification} />,
         <UserInfoPanel key='user' firebaseUid={notification.firebaseUid} />,
         (notification.deviceId && <DeviceInfoPanel key='device' deviceId={notification.deviceId} />)
       ]}

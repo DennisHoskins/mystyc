@@ -44,7 +44,7 @@ export default function ScheduleExecutionsPanel({ scheduleId }: { scheduleId: st
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [scheduleId]);
 
   useEffect(() => {
     if (!scheduleId) {

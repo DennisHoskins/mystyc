@@ -14,7 +14,6 @@ interface ScheduleExecutionsTableProps {
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
-  hideUserColumn?: boolean;
 }
 
 export default function ScheduleExecutionsTable({
@@ -26,7 +25,6 @@ export default function ScheduleExecutionsTable({
   hasMore,
   onPageChange,
   onRefresh,
-  hideUserColumn = false
 }: ScheduleExecutionsTableProps) {
   const columns: Column<ScheduleExecution>[] = [
     { key: 'event', header: 'Event', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => e.eventName || 'Unknown' },

@@ -25,6 +25,7 @@ export interface Column<T> {
   header: string;
   width?: string;
   align?: 'left' | 'center' | 'right';
+  icon?: (item: T) => IconComponent | null;
   render?: (item: T) => React.ReactNode;
   link?: (item: T) => string;  
 }
@@ -96,6 +97,8 @@ export default function AdminTable<T>({
   const getCellValue = (item: T, column: Column<T>): React.ReactNode => {
     const content = column.render ? 
       column.render(item) : 
+      column.icon ?
+      renderIcon(item, column) :
       getDisplayValue(item, column);
 
     // If column has a link function, wrap content in LinkCell
@@ -105,6 +108,22 @@ export default function AdminTable<T>({
     }
 
     return content;
+  };
+
+  const renderIcon = (item: T, column: Column<T>): React.ReactNode | null => {
+    if (!column.icon) {
+      return null;
+    }
+    const IconComponent = column.icon(item);
+    if (!IconComponent) {
+      return null;
+    }
+
+    return (
+      <span className='w-full flex justify-center'>
+        {React.createElement(IconComponent, { size: 18 })}
+      </span>
+    );
   };
 
   const getDisplayValue = (item: T, column: Column<T>): string => {
@@ -141,7 +160,7 @@ export default function AdminTable<T>({
             {totalItems && <Badge total={totalItems} />}
           </div>
         )}        
-        <Text className='mt-4'>{emptyMessage}</Text>
+        <Text className='mt-4 pt-4 border-t border-gray-100'>{emptyMessage}</Text>
         {(onRefresh || onPageChange) && (
           <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
             <div>

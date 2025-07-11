@@ -19,7 +19,7 @@ export default function AdminDetailField({ label, value, href, text }: AdminDeta
       </Text>
 
       {href ? (
-        <Link href={href} className='block truncate'>{value || ''}</Link>
+        <Link href={href} className='block font-bold truncate'>{value || ''}</Link>
       ) : (
         <div className='truncate'>{value || ''}</div>
       )}
