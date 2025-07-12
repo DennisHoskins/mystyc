@@ -3,10 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
+import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
 import { OpenAIService } from '@/openai/openai.service';
+import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class WebsiteContentService {
   constructor(
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
     private readonly openAIService: OpenAIService,
+    private readonly scheduleExecutionService: ScheduleExecutionService
   ) {}
 
   /**
@@ -31,6 +33,8 @@ export class WebsiteContentService {
       executedAt: payload.executedAt,
     }, 'WebsiteContentService');
 
+    const startTime = Date.now();
+
     try {
       // Determine the date for content generation
       const targetDate = payload.timezone 
@@ -42,6 +46,7 @@ export class WebsiteContentService {
         targetDate,
         timezone: payload.timezone || 'global'
       }, 'WebsiteContentService');
+
 
       // Generate website content for the target date with scheduleId
       const content = await this.getOrGenerateWebsiteContent(targetDate, payload.scheduleId, payload.executionId);
@@ -55,6 +60,9 @@ export class WebsiteContentService {
         timezone: payload.timezone || 'global',
       }, 'WebsiteContentService');
 
+      // tell schedule execution it succeeded
+      const duration = Date.now() - startTime;
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);
     } catch (error) {
       logger.error('Scheduled website content generation failed', {
         scheduleId: payload.scheduleId,
@@ -65,8 +73,10 @@ export class WebsiteContentService {
         scheduledTime: payload.scheduledTime,
       }, 'WebsiteContentService');
 
+      // tell schedule execution it failed
+      const duration = Date.now() - startTime;
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);      
       // Don't throw - we don't want to crash the scheduler
-      // The content service will handle failed generation internally
     }
   }  
 

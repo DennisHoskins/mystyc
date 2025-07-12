@@ -221,7 +221,7 @@ export class ScheduleService {
         await this.processScheduledTask(task, serverTime);
       }
       
-      logger.info('Scheduled tasks processing completed', {
+      logger.info('Scheduled tasks processing completed, tasks will update success/failure logs', {
         tasksProcessed: tasks.length
       }, 'ScheduleService');
     } catch (error) {
@@ -264,10 +264,6 @@ export class ScheduleService {
           logger.debug("[processScheduledTask] Emitting Event", { executionId }, 'ScheduleService')
 
           await this.emitScheduledEvent(task, executionId, timezoneData.timezone, timezoneData);
-          
-          // Update execution as completed
-          const duration = Date.now() - executionStartTime;
-          await this.scheduleExecutionService.updateStatus(executionLog._id, 'completed', undefined, duration);
         }
       } else {
         // Create execution log for global schedule
@@ -285,13 +281,7 @@ export class ScheduleService {
         }, 'ScheduleService');
 
         await this.emitScheduledEvent(task, undefined, undefined, executionLog._id);
-        
-        // Update execution as completed
-        const duration = Date.now() - executionStartTime;
-        await this.scheduleExecutionService.updateStatus(executionLog._id, 'completed', undefined, duration);
       }
-      
-      await this.logScheduleSuccess(task._id, task.event_name);
     } catch (error) {
       // Update execution log as failed if we created one
       if (executionLog) {

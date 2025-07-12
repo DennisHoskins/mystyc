@@ -71,16 +71,23 @@ export default function SchedulesDashboard({
   };
 
   const { entry: nextEntry, date: nextDate } = getNextExecutionEntry();
-    let utcTime: string | null = null;
-    let localTime: string | null = null;
-    if (nextDate) {
-      utcTime = nextDate.toISOString().substring(11, 16) + ' UTC';
-      localTime = nextDate.toLocaleTimeString(undefined, {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZoneName: 'short'
-      });
-    }
+  let utcTime: string | null = null;
+  let localTime: string | null = null;
+  let timeUntil: string | null = null;
+  if (nextDate) {
+    utcTime = nextDate.toISOString().substring(11, 16) + ' UTC';
+    localTime = nextDate.toLocaleTimeString(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    // Calculate hours and minutes until next execution (in local timezone)
+    const now = new Date();
+    const totalMinutes = Math.round((nextDate.getTime() - now.getTime()) / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    timeUntil = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+  }
+
   // Transform schedule status for pie chart
   const statusData = [
     { name: 'Enabled', value: stats.data.summary.enabledSchedules, color: '#10b981' },
@@ -149,13 +156,12 @@ export default function SchedulesDashboard({
         icon={CalendarClock}
         iconColor="text-gray-500"
         backgroundColor="bg-gray-50"
-        shortText="Next:"
+        shortText='Next:'
+        shortSubtext={`@${nextEntry.scheduledTime}`}
         longText="Next Execution:"
-        shortSubtext={`${nextEntry.scheduledTime} / ${utcTime}`}
         longSubtext={
           <>
-            <div>{`${nextEntry.scheduledTime} / ${utcTime}`}</div>
-            <div>{localTime}</div>
+            <div className='text-lg mb-1'>{`@${nextEntry.scheduledTime}`}</div>
             {nextEntry.timezoneAware && (
               <div className="mt-2">
                 <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">

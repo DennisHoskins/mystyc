@@ -7,6 +7,7 @@ interface StatusCardProps {
   backgroundColor?: string;
   textColor?: string;
   shortText: string;
+  shortMessage?: string;
   longText: string;
   shortSubtext: string;
   longSubtext: React.ReactNode;
@@ -19,8 +20,9 @@ export default function StatusCard({
   backgroundColor = 'bg-gray-50',
   textColor = 'text-gray-700',
   shortText,
-  longText,
+  shortMessage,
   shortSubtext,
+  longText,
   longSubtext,
   badge
 }: StatusCardProps) {
@@ -31,10 +33,15 @@ export default function StatusCard({
         {/* Stacked layout for very small containers (< 140px) */}
         <div className="@[140px]:hidden flex flex-col items-center justify-center text-center w-full">
           <Icon className={`w-6 h-6 mb-2 ${iconColor}`} />
-          <div>
+          <div className='flex flex-col'>
             <div className={`overflow-hidden font-medium text-sm leading-relaxed ${textColor}`}>
               {shortText}
             </div>
+            {shortMessage && (
+              <div className={`overflow-hidden font-medium text-sm leading-relaxed ${textColor}`}>
+                {shortMessage}
+              </div>
+            )}
             <div className="text-xs text-gray-600 leading-relaxed">
               {shortSubtext}
               {badge && <div className="mt-1">{badge}</div>}
@@ -58,6 +65,11 @@ export default function StatusCard({
             </div>
 
             <div className="text-xs text-gray-600 leading-relaxed">
+              {shortMessage && (
+                <div className={`@[200px]:hidden overflow-hidden font-medium text-sm leading-relaxed ${textColor}`}>
+                  {shortMessage}
+                </div>
+              )}
               {/* Short subtext for medium containers */}
               <span className='@[200px]:hidden'>
                 {shortSubtext}

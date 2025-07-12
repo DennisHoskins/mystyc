@@ -8,6 +8,7 @@ import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationContentService } from '@/content/notification-content.service';
+import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
 import { Device } from '@/common/interfaces/device.interface';
@@ -20,7 +21,8 @@ export class NotificationsService {
     @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
     private readonly deviceService: DevicesService,
     private readonly userProfileService: UserProfilesService,
-    private readonly notificationContentService: NotificationContentService
+    private readonly notificationContentService: NotificationContentService,
+    private readonly scheduleExecutionService: ScheduleExecutionService
   ) {}
 
   // Notification schedule methods
@@ -40,6 +42,8 @@ export class NotificationsService {
       executedAt: payload.executedAt,
     }, 'NotificationsService');
 
+    const startTime = Date.now();
+
     try {
       const results = {
         success: true,
@@ -47,6 +51,7 @@ export class NotificationsService {
         failed: 0,
         details: []
       };
+
 
       // Generate content once
       const { title, body, fullContent } = await this.notificationContentService.getNotificationData(payload.scheduleId, payload.executionId);
@@ -87,6 +92,9 @@ export class NotificationsService {
         totalAttempts: results.sent + results.failed,
       }, 'NotificationsService');
 
+      // tell schedule execution it succeeded
+      const duration = Date.now() - startTime; 
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);        
     } catch (error) {
       logger.error('Scheduled notifications failed', {
         scheduleId: payload.scheduleId,
@@ -95,6 +103,10 @@ export class NotificationsService {
         error: error.message,
         scheduledTime: payload.scheduledTime,
       }, 'NotificationsService');
+
+      // tell schedule execution it failed
+      const duration = Date.now() - startTime;
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
 
       // Don't throw - we don't want to crash the scheduler
     }
@@ -114,6 +126,8 @@ export class NotificationsService {
       scheduledTime: payload.scheduledTime,
       executedAt: payload.executedAt,
     }, 'NotificationsService');
+
+    const startTime = Date.now();
 
     try {
       const results = {
@@ -162,6 +176,9 @@ export class NotificationsService {
         totalAttempts: results.sent + results.failed,
       }, 'NotificationsService');
 
+      // tell schedule execution it succeeded
+      const duration = Date.now() - startTime; 
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);        
     } catch (error) {
       logger.error('Scheduled notification updates failed', {
         scheduleId: payload.scheduleId,
@@ -170,6 +187,10 @@ export class NotificationsService {
         error: error.message,
         scheduledTime: payload.scheduledTime,
       }, 'NotificationsService');
+
+      // tell schedule execution it failed
+      const duration = Date.now() - startTime;
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
 
       // Don't throw - we don't want to crash the scheduler
     }
