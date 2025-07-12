@@ -39,9 +39,11 @@ export class Content {
   @Prop({ index: true })
   executionId?: string;
 
-  // Notification content links
   @Prop({ index: true })
   notificationId?: string;
+
+  @Prop({ index: true }) 
+  openAIRequestId?: string;  
 
   // User content links (future)
   @Prop({ index: true })
@@ -99,3 +101,4 @@ ContentSchema.index({ status: 1, date: -1 });
 ContentSchema.index({ generatedAt: -1 });
 ContentSchema.index({ sources: 1 });
 ContentSchema.index({ viewCount: -1 });
+ContentSchema.index({ openAIRequestId: 1 });

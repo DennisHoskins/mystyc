@@ -51,6 +51,9 @@ export class Notification {
   @Prop({ index: true })
   contentId?: string;
 
+  @Prop({ index: true })
+  openAIRequestId?: string;  
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,3 +76,4 @@ NotificationSchema.index({ type: 1, source: 1, createdAt: -1 });
 NotificationSchema.index({ createdAt: -1 }); // All notifications by time (most important for admin stats)
 NotificationSchema.index({ type: 1, status: 1, createdAt: -1 }); // Combined type + status analysis
 NotificationSchema.index({ status: 1, sentAt: 1, createdAt: 1 }); // Delivery time calculation
+NotificationSchema.index({ openAIRequestId: 1 });

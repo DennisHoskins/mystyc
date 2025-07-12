@@ -7,15 +7,18 @@ export interface Content {
   _id?: string;
   date: string; // Format: "2025-07-07"
 
-  // Website content audit trail
+  // Schedule audit trail
   scheduleId?: string;
   executionId?: string;
   
-  // Notification content links
+  // Notification link
   notificationId?: string;
   
-  // User content links
+  // User link
   firebaseUid?: string;
+
+  // OpenAI link
+  openAIRequestId?: string;  
   
   // Core content
   title: string;

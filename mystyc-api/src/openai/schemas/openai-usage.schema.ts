@@ -30,6 +30,9 @@ export class OpenAIUsage {
   @Prop({ required: true, index: true })
   timestamp: Date;
 
+  lastSyncedAt: Date;
+  syncStatus: 'success' | 'failed';
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,3 +46,4 @@ OpenAIUsageSchema.index({ date: -1 }); // Daily usage lookup
 OpenAIUsageSchema.index({ timestamp: -1 }); // Recent usage
 OpenAIUsageSchema.index({ requestType: 1, date: -1 }); // Usage by type
 OpenAIUsageSchema.index({ cost: -1 }); // Most expensive requests
+OpenAIUsageSchema.index({ lastSyncedAt: -1 }); // Last cache refresh
