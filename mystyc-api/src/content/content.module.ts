@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { ContentController } from './content.controller';
 import { ContentService } from './content.service';
+import { WebsiteContentService } from './website-content.service';
+import { NotificationContentService } from './notification-content.service';
 import { Content, ContentSchema } from './schemas/content.schema';
 
 @Module({
@@ -14,7 +16,15 @@ import { Content, ContentSchema } from './schemas/content.schema';
   controllers: [
     ContentController,
   ],
-  providers: [ContentService],
-  exports: [ContentService],
+  providers: [
+    ContentService,
+    WebsiteContentService,
+    NotificationContentService
+  ],
+  exports: [
+    ContentService,
+    WebsiteContentService,
+    NotificationContentService
+  ],
 })
 export class ContentModule {}

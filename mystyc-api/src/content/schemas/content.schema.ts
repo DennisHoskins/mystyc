@@ -2,9 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export enum ContentType {
-  CONTENT = 'content',
-  NOTIFICATION_MESSAGE = 'notification_message',
+  WEBSITE = 'website_content',
   BLOG_POST = 'blog_post',
+  NOTIFICATION_CONTENT = 'notification_content',
   USER_CONTENT = 'user_content',
   PLUS_CONTENT = 'plus_content',
 }
@@ -24,12 +24,12 @@ export class Content {
   @Prop({ 
     type: String, 
     enum: ContentType, 
-    default: ContentType.CONTENT,
+    default: ContentType.WEBSITE,
     index: true 
   })
   type: ContentType;
 
-  @Prop({ required: true, unique: true, index: true })
+  @Prop({ required: true, index: true })
   date: string; // Format: "2025-07-07"
 
   @Prop({ index: true })

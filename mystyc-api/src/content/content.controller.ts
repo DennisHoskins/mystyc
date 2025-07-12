@@ -2,13 +2,13 @@ import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
 import { Public } from '@/common/decorators/public.decorator';
-import { ContentService } from './content.service';
+import { WebsiteContentService } from './website-content.service';
 import { Content } from '@/common/interfaces/content.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('content')
 export class ContentController {
-  constructor(private readonly contentService: ContentService) {}
+  constructor(private readonly websiteContentService: WebsiteContentService) {}
 
   /**
    * Get today's content
@@ -17,19 +17,19 @@ export class ContentController {
   @Public()
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   async getTodaysContent(): Promise<Content> {
-    logger.info('Fetching today\'s content', {}, 'ContentController');
+    logger.info('Fetching today\'s website content', {}, 'ContentController');
 
     try {
-      const content = await this.contentService.getTodaysContent();
+      const content = await this.websiteContentService.getTodaysWebsiteContent();
       
-      logger.info('Today\'s content retrieved', {
+      logger.info('Today\'s website content retrieved', {
         date: content.date,
         status: content.status
       }, 'ContentController');
 
       return content;
     } catch (error) {
-      logger.error('Failed to get today\'s content', {
+      logger.error('Failed to get today\'s website content', {
         error: error.message
       }, 'ContentController');
       throw error;
@@ -43,7 +43,7 @@ export class ContentController {
   @Public()
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   async getContentByDate(@Param('date') date: string): Promise<Content> {
-    logger.info('Fetching content by date', { date }, 'ContentController');
+    logger.info('Fetching website content by date', { date }, 'ContentController');
 
     // Validate date format
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -51,16 +51,16 @@ export class ContentController {
     }
 
     try {
-      const content = await this.contentService.getOrGenerateContent(date);
+      const content = await this.websiteContentService.getOrGenerateWebsiteContent(date);
       
-      logger.info('Content retrieved', {
+      logger.info('Website content retrieved', {
         date: content.date,
         status: content.status
       }, 'ContentController');
 
       return content;
     } catch (error) {
-      logger.error('Failed to get content', {
+      logger.error('Failed to get website content', {
         date,
         error: error.message
       }, 'ContentController');

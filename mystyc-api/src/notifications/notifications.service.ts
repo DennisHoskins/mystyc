@@ -7,7 +7,7 @@ import * as admin from 'firebase-admin';
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
-import { ContentService } from '@/content/content.service';
+import { NotificationContentService } from '@/content/notification-content.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
 import { Device } from '@/common/interfaces/device.interface';
@@ -21,7 +21,7 @@ export class NotificationsService {
     @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
     private readonly deviceService: DevicesService,
     private readonly userProfileService: UserProfilesService,
-    private readonly contentService: ContentService
+    private readonly notificationContentService: NotificationContentService
   ) {}
 
   // Notification schedule methods
@@ -42,8 +42,8 @@ export class NotificationsService {
     }, 'NotificationsService');
 
     try {
-      // Get today's content for notification
-      const content = await this.contentService.getTodaysContent();
+      // Get today's website content for notification
+      const content = await this.notificationContentService.getTodaysNotificationContent();
       
       // Prepare notification content
       const title = content.title || 'Daily Mystyc Insights';
@@ -94,6 +94,7 @@ export class NotificationsService {
       // Don't throw - we don't want to crash the scheduler
     }
   }
+
   /**
    * Handles scheduled notification update sending events from Schedule Service
    * @param payload - Event payload containing schedule context and scheduleId
@@ -110,18 +111,12 @@ export class NotificationsService {
     }, 'NotificationsService');
 
     try {
-      // Get today's content for notification
-      const content = await this.contentService.getTodaysUpdate();
+      // Get today's website content for notification update
+      const content = await this.notificationContentService.getTodaysNotificationContent();
       
       // Prepare notification content
       const title = 'Daily Mystyc Update';
-      const body = this.truncateMessage(content.message, 100) || 'Your daily mystical pdate is ready!';
-
-      console.log("");
-      console.log("");
-      console.log("===============================================================================");
-      console.log("");
-      console.log("");
+      const body = this.truncateMessage(content.message, 100) || 'Your daily mystical update is ready!';
 
       logger.debug('Prepared notification update content', {
         scheduleId: payload.scheduleId,
@@ -131,12 +126,6 @@ export class NotificationsService {
         contentDate: content.date,
         contentStatus: content.status
       }, 'NotificationsService');
-
-      console.log("");
-      console.log("");
-      console.log("===============================================================================");
-      console.log("");
-      console.log("");
 
       const results = {
         success: true,
@@ -163,14 +152,8 @@ export class NotificationsService {
         totalAttempts: results.sent + results.failed,
       }, 'NotificationsService');
 
-      console.log("");
-      console.log("");
-      console.log("===============================================================================");
-      console.log("");
-      console.log("");
-
     } catch (error) {
-      logger.error('Scheduled notificatio updates failed', {
+      logger.error('Scheduled notification updates failed', {
         scheduleId: payload.scheduleId,
         executionId: payload.executionId,
         taskId: payload.taskId,
@@ -248,7 +231,6 @@ export class NotificationsService {
     if (message.length <= maxLength) return message;
     return message.substring(0, maxLength - 3) + '...';
   }  
-
   // GET Methods (Read Operations)
 
   async findById(notificationId: string): Promise<NotificationInterface | null> {
