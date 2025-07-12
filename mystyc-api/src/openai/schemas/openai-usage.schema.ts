@@ -30,7 +30,10 @@ export class OpenAIUsage {
   @Prop({ required: true, index: true })
   timestamp: Date;
 
+   @Prop({ index: true })
   lastSyncedAt: Date;
+
+  @Prop({ enum: ['success', 'failed'] })
   syncStatus: 'success' | 'failed';
 
   createdAt: Date;

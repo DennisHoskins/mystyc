@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import OpenAI from 'openai';
 
 import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
+import { OpenAIRequest, OpenAIRequestDocument } from './schemas/openai-request.schema';
+import { OpenAIContextDto } from './dto/openai-context.dto';
 import { logger } from '@/common/util/logger';
 
 // Configuration constants
@@ -19,6 +21,7 @@ export class OpenAIService {
 
   constructor(
     @InjectModel(OpenAIUsage.name) private usageModel: Model<OpenAIUsageDocument>,
+    @InjectModel(OpenAIRequest.name) private requestModel: Model<OpenAIRequestDocument>,
   ) {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -45,21 +48,27 @@ export class OpenAIService {
   }
 
   /**
-   * Generates mystical website content using OpenAI with retry logic
+   * Generates mystical website content using OpenAI with retry logic and request tracking
    * @param date - Date for content (YYYY-MM-DD format)
-   * @returns Promise with content, success status, cost, tokens, and retry count
+   * @param context - Optional OpenAI context for linking (for backward compatibility)
+   * @returns Promise with content, success status, cost, tokens, and openAIRequestId
    */
-  async generateWebsiteContent(date: string): Promise<{
+  async generateWebsiteContent(
+    date: string, 
+    context?: OpenAIContextDto
+  ): Promise<{
     title: string;
     message: string;
     success: boolean;
+    openAIRequestId?: string;
     cost?: number;
     tokensUsed?: { input: number; output: number };
     retryCount?: number;
   }> {
     logger.info('Generating website content with retry protection', { 
       date, 
-      maxRetries: MAX_RETRIES 
+      maxRetries: MAX_RETRIES,
+      hasContext: !!context
     }, 'OpenAIService');
 
     const prompt = this.getPrompt(date);
@@ -68,7 +77,7 @@ export class OpenAIService {
     
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       try {
-        const result = await this.doGenerateWebsiteContent(date, prompt, attempt);
+        const result = await this.doGenerateWebsiteContent(date, prompt, attempt, context);
         
         if (result.success) {
           if (attempt > 0) {
@@ -128,23 +137,31 @@ export class OpenAIService {
   }
 
   /**
-   * Internal method that performs single OpenAI request
+   * Internal method that performs single OpenAI request with request tracking
    * @param date - Date for content (YYYY-MM-DD format)
+   * @param prompt - The prompt to send to OpenAI
    * @param retryCount - Current retry attempt number
+   * @param context - Optional context for request linking
    * @returns Promise with content and metadata
    */
-  private async doGenerateWebsiteContent(date: string, prompt: string, retryCount = 0): Promise<{
+  private async doGenerateWebsiteContent(
+    date: string, 
+    prompt: string, 
+    retryCount = 0,
+    context?: OpenAIContextDto
+  ): Promise<{
     title: string;
     message: string;
     success: boolean;
+    openAIRequestId?: string;
     cost?: number;
     tokensUsed?: { input: number; output: number };
   }> {
-    logger.info('Executing OpenAI request', { date, prompt, retryCount }, 'OpenAIService');
+    logger.info('Executing OpenAI request', { date, prompt, retryCount, hasContext: !!context }, 'OpenAIService');
 
     try {
       // Check budget before making request
-      const canAfford = await this.checkBudget();
+      const canAfford = await this.checkBudgetWithBuffer();
       if (!canAfford) {
         logger.warn('Monthly budget exceeded, cannot generate content', { date }, 'OpenAIService');
         return {
@@ -186,14 +203,34 @@ export class OpenAIService {
       const usage = completion.usage;
       const cost = this.calculateCost(usage.prompt_tokens, usage.completion_tokens);
       
+      // Create OpenAI request record if context provided
+      let openAIRequestId: string | undefined;
+      if (context) {
+        const requestRecord = await this.saveRequestRecord({
+          prompt: prompt.substring(0, 500), // Store first 500 chars
+          inputTokens: usage.prompt_tokens,
+          outputTokens: usage.completion_tokens,
+          cost,
+          requestType: context.requestType,
+          linkedEntityId: context.linkedEntityId,
+          model: 'gpt-4o-mini',
+          retryCount
+        });
+        openAIRequestId = requestRecord._id.toString();
+      }
+
+      // Update local usage tracking
+      await this.updateLocalUsage(cost, usage.prompt_tokens + usage.completion_tokens);
+
+      // Keep legacy usage tracking for now (can be removed later)
       await this.trackUsage({
         date,
         model: 'gpt-4o-mini',
         inputTokens: usage.prompt_tokens,
         outputTokens: usage.completion_tokens,
         cost,
-        requestType: 'website_content',
-        prompt: prompt.substring(0, 500), // Store first 500 chars for debugging
+        requestType: context?.requestType || 'website_content',
+        prompt: prompt.substring(0, 500),
         response: response.substring(0, 500),
         retryCount
       });
@@ -204,13 +241,15 @@ export class OpenAIService {
         cost,
         inputTokens: usage.prompt_tokens,
         outputTokens: usage.completion_tokens,
-        retryCount
+        retryCount,
+        openAIRequestId
       }, 'OpenAIService');
 
       return {
         title: parsedContent.title || 'Mystical Insights Await',
         message: parsedContent.message || 'The universe whispers secrets to those who listen.',
         success: true,
+        openAIRequestId,
         cost,
         tokensUsed: {
           input: usage.prompt_tokens,
@@ -226,9 +265,104 @@ export class OpenAIService {
         error: error.message
       }, 'OpenAIService');
 
+      // Save failed request record if context provided
+      if (context) {
+        try {
+          await this.saveRequestRecord({
+            prompt: prompt.substring(0, 500),
+            inputTokens: 0,
+            outputTokens: 0,
+            cost: 0,
+            requestType: context.requestType,
+            linkedEntityId: context.linkedEntityId,
+            model: 'gpt-4o-mini',
+            retryCount,
+            error: error.message
+          });
+        } catch (saveError) {
+          logger.error('Failed to save failed request record', {
+            error: saveError.message
+          }, 'OpenAIService');
+        }
+      }
+
       // Re-throw to let retry logic handle it
       throw error;
     }
+  }
+
+  /**
+   * Saves OpenAI request record for audit trail and cost tracking
+   * @param data - Request data to save
+   * @returns Promise<OpenAIRequestDocument> - Saved request record
+   */
+  private async saveRequestRecord(data: {
+    prompt: string;
+    inputTokens: number;
+    outputTokens: number;
+    cost: number;
+    requestType: string;
+    linkedEntityId: string;
+    model: string;
+    retryCount: number;
+    error?: string;
+  }): Promise<OpenAIRequestDocument> {
+    try {
+      const request = new this.requestModel(data);
+      return await request.save();
+    } catch (error) {
+      logger.error('Failed to save OpenAI request record', {
+        error: error.message,
+        data: { ...data, prompt: data.prompt.substring(0, 100) } // Truncate prompt in logs
+      }, 'OpenAIService');
+      throw error;
+    }
+  }
+
+  /**
+   * Updates local usage tracking for budget management
+   * @param cost - Cost of the request
+   * @param totalTokens - Total tokens used
+   */
+  private async updateLocalUsage(cost: number, totalTokens: number): Promise<void> {
+    // For now, this can be a simple implementation
+    // Later this could update a monthly aggregation table
+    logger.debug('Updating local usage tracking', { cost, totalTokens }, 'OpenAIService');
+    // Implementation can be added when we implement the sync functionality
+  }
+
+  /**
+   * Checks if we're within monthly budget with safety buffer
+   */
+  private async checkBudgetWithBuffer(): Promise<boolean> {
+    const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
+    
+    const monthlySpend = await this.usageModel.aggregate([
+      {
+        $match: {
+          date: { $regex: `^${currentMonth}` }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalCost: { $sum: '$cost' }
+        }
+      }
+    ]);
+
+    const currentSpend = monthlySpend[0]?.totalCost || 0;
+    const remainingBudget = MONTHLY_BUDGET - currentSpend;
+
+    logger.debug('Budget check with buffer', {
+      currentMonth,
+      currentSpend,
+      monthlyBudget: MONTHLY_BUDGET,
+      remainingBudget,
+      estimatedRequestCost: ESTIMATED_REQUEST_COST
+    }, 'OpenAIService');
+
+    return remainingBudget >= ESTIMATED_REQUEST_COST;
   }
 
   /**
@@ -258,37 +392,10 @@ export class OpenAIService {
   }
 
   /**
-   * Checks if we're within monthly budget
+   * Checks if we're within monthly budget (legacy method)
    */
   private async checkBudget(): Promise<boolean> {
-    const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
-    
-    const monthlySpend = await this.usageModel.aggregate([
-      {
-        $match: {
-          date: { $regex: `^${currentMonth}` }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalCost: { $sum: '$cost' }
-        }
-      }
-    ]);
-
-    const currentSpend = monthlySpend[0]?.totalCost || 0;
-    const remainingBudget = MONTHLY_BUDGET - currentSpend;
-
-    logger.debug('Budget check', {
-      currentMonth,
-      currentSpend,
-      monthlyBudget: MONTHLY_BUDGET,
-      remainingBudget,
-      estimatedRequestCost: ESTIMATED_REQUEST_COST
-    }, 'OpenAIService');
-
-    return remainingBudget >= ESTIMATED_REQUEST_COST;
+    return this.checkBudgetWithBuffer();
   }
 
   /**
@@ -352,7 +459,7 @@ export class OpenAIService {
   }
 
   /**
-   * Tracks API usage in database
+   * Tracks API usage in database (legacy method - kept for backward compatibility)
    */
   private async trackUsage(data: {
     date: string;
@@ -378,5 +485,28 @@ export class OpenAIService {
       }, 'OpenAIService');
       // Don't throw - we don't want to fail content generation because of tracking issues
     }
+  }
+
+  // Admin interface methods (for admin controllers)
+  async findById(id: string): Promise<any> {
+    return await this.requestModel.findById(id).exec();
+  }
+
+  async getTotal(): Promise<number> {
+    return await this.requestModel.countDocuments();
+  }
+
+  async findAll(query: any): Promise<any[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    return await this.requestModel
+      .find()
+      .sort(sortObj)
+      .skip(offset)
+      .limit(limit)
+      .exec();
   }
 }
