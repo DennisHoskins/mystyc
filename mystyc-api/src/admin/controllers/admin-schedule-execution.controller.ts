@@ -27,6 +27,21 @@ export class AdminScheduleExecutionController extends AdminController<ScheduleEx
     super();
   }
 
+  @Get(':executionId/summary')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getScheduleExecutionSummary(@Param('executionId') executionId: string) {
+    const [contentsCount, notificationsCount] = await Promise.all([
+      this.contentService.getTotalByExecutionId(executionId),
+      this.notificationsService.getTotalByExecutionId(executionId)
+    ]);
+
+    return {
+      contents: { total: contentsCount },
+      notifications: { total: notificationsCount },
+    };
+  }
+
   /**
    * Gets content created by a specific schedule
    * @param id - Schedule ID
@@ -36,7 +51,7 @@ export class AdminScheduleExecutionController extends AdminController<ScheduleEx
   @Get(':id/content')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getScheduleContent(
+  async getScheduleExecutionContent(
     @Param('id') id: string,
     @Query() query: BaseAdminQueryDto
   ): Promise<AdminListResponse<Content>> {

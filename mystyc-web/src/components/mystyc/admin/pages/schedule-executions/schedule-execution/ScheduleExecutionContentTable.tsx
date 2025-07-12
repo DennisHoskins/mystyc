@@ -9,15 +9,15 @@ import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
 import AdminTable, { Column } from '@/components/mystyc/admin/ui/AdminTable';
-import ContentIcon from '@/components/mystyc/admin/ui/icons/ContentIcon';
 
-export default function ScheduleExecutionsContentTable({ executionId }: { executionId: string | null | undefined}) {
+export default function ScheduleExecutionsContentTable({ executionId, isActive }: { executionId: string | null | undefined, isActive?: boolean }) {
   const [content, setContent] = useState<PaginatedResponse<Content> | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
   const loadScheduleExecutionContent = useCallback(async (page: number) => {
@@ -42,6 +42,7 @@ export default function ScheduleExecutionsContentTable({ executionId }: { execut
       setCurrentPage(page);
       setTotalItems(response.pagination.totalItems);
       setTotalPages(response.pagination.totalPages);
+      setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load schedule execution content:', err);
     } finally {
@@ -54,8 +55,10 @@ export default function ScheduleExecutionsContentTable({ executionId }: { execut
       return;
     }
 
-    loadScheduleExecutionContent(0);
-  }, [executionId, loadScheduleExecutionContent]);
+    if (isActive && !hasLoaded) {
+      loadScheduleExecutionContent(0);
+    }
+  }, [executionId, loadScheduleExecutionContent, isActive, hasLoaded]);
 
   if (!content?.data) {
     return null;
@@ -70,8 +73,6 @@ export default function ScheduleExecutionsContentTable({ executionId }: { execut
   return (
     <Card className='h-[56rem]'>
       <AdminTable<Content>
-        icon={<ContentIcon />}
-        label={"Content"}
         data={content.data}
         columns={columns}
         loading={loading}

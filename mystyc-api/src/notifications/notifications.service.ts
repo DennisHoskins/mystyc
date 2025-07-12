@@ -11,7 +11,6 @@ import { NotificationContentService } from '@/content/notification-content.servi
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
 import { Device } from '@/common/interfaces/device.interface';
-import { SendNotificationDto } from './dto/send-notification.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -28,7 +27,7 @@ export class NotificationsService {
 
   /**
    * Handles scheduled notification sending events from Schedule Service
-   * NEW PATTERN: Creates notification records first, then generates content for each
+   * Generates content once, then sends to timezone
    */
   @OnEvent('notifications.send.notification')
   async handleScheduledNotifications(payload: any): Promise<void> {
@@ -49,12 +48,34 @@ export class NotificationsService {
         details: []
       };
 
+      // Generate content once
+      const { title, body, fullContent } = await this.notificationContentService.getNotificationData(payload.scheduleId, payload.executionId);
+      const url = 'https://mystyc.app';
+
       if (payload.timezone) {
         // Send to devices in specific timezone
-        await this.sendScheduleNotificationsToTimezone(payload.timezone, payload.scheduleId, payload.executionId, results);
+        await this.sendScheduleNotificationsToTimezone(
+          title, 
+          body, 
+          url, 
+          payload.timezone, 
+          payload.scheduleId, 
+          payload.executionId, 
+          fullContent._id,
+          results
+        );
       } else {
         // Send broadcast to all devices
-        await this.sendScheduleNotificationsBroadcast(payload.scheduleId, payload.executionId, results, 'system');
+        await this.sendScheduleNotificationsBroadcast(
+          title,
+          body,
+          url,
+          payload.scheduleId, 
+          payload.executionId, 
+          fullContent._id,
+          results, 
+          'system'
+        );
       }
 
       logger.info('Scheduled notifications completed', {
@@ -81,6 +102,7 @@ export class NotificationsService {
 
   /**
    * Handles scheduled notification update sending events from Schedule Service
+   * Generates updated content once, then sends to timezone
    */
   @OnEvent('notifications.send.update')
   async handleScheduledUpdates(payload: any): Promise<void> {
@@ -101,12 +123,34 @@ export class NotificationsService {
         details: []
       };
 
+      // Generate updated content once
+      const { title, body, fullContent } = await this.notificationContentService.getNotificationData(payload.scheduleId, payload.executionId);
+      const url = 'https://mystyc.app';
+
       if (payload.timezone) {
         // Send to devices in specific timezone
-        await this.sendScheduleNotificationsToTimezone(payload.timezone, payload.scheduleId, payload.executionId, results);
+        await this.sendScheduleNotificationsToTimezone(
+          title, 
+          body, 
+          url, 
+          payload.timezone, 
+          payload.scheduleId, 
+          payload.executionId, 
+          fullContent._id,
+          results
+        );
       } else {
         // Send broadcast to all devices
-        await this.sendScheduleNotificationsBroadcast(payload.scheduleId, payload.executionId, results, 'system');
+        await this.sendScheduleNotificationsBroadcast(
+          title,
+          body,
+          url,
+          payload.scheduleId, 
+          payload.executionId, 
+          fullContent._id,
+          results, 
+          'system'
+        );
       }
 
       logger.info('Scheduled notification updates completed', {
@@ -133,18 +177,23 @@ export class NotificationsService {
 
   /**
    * Sends notifications to devices in a specific timezone
-   * NEW PATTERN: No longer gets content upfront, generates per notification
+   * Accepts content as parameters, no content generation
    */
   private async sendScheduleNotificationsToTimezone(
+    title: string,
+    body: string,
+    url: string,
     timezone: string, 
     scheduleId?: string,
     executionId?: string,
+    contentId?: string,
     results?: any,
   ): Promise<void> {
     logger.info('Sending notifications to timezone', { 
       timezone, 
       scheduleId,
-      executionId
+      executionId,
+      contentId
     }, 'NotificationsService');
 
     try {
@@ -155,6 +204,7 @@ export class NotificationsService {
         timezone,
         scheduleId,
         executionId,
+        contentId,
         timezoneDevices: timezoneDevices.length
       }, 'NotificationsService');
 
@@ -165,13 +215,17 @@ export class NotificationsService {
 
       // Send notifications to filtered devices
       for (const device of timezoneDevices) {
-        await this.sendScheduleNotificationToSingleDevice(
-          device, 
-          'schedule', 
-          'system', 
-          results, 
-          scheduleId, 
+        await this.sendToDevice(
+          device,
+          title,
+          body,
+          url,
+          'schedule',
+          'system',
+          scheduleId,
           executionId,
+          contentId,
+          results
         );
       }
 
@@ -180,6 +234,7 @@ export class NotificationsService {
         timezone,
         scheduleId,
         executionId,
+        contentId,
         error: error.message
       }, 'NotificationsService');
       throw error;
@@ -188,14 +243,17 @@ export class NotificationsService {
 
   /**
    * Sends notification to all devices in the system with FCM tokens
-   * NEW PATTERN: No longer gets content upfront, generates per notification
+   * Accepts content as parameters, no content generation
    */
   private async sendScheduleNotificationsBroadcast(
+    title: string,
+    body: string,
+    url: string,
     scheduleId?: string,
     executionId?: string,
+    contentId?: string,
     results?: any, 
-    sentBy?: string,
-    titleOverride?: string
+    sentBy?: string
   ): Promise<void> {
     // Get all devices with new query format
     const allDevices = await this.deviceService.findAll({ limit: 10000 });
@@ -213,110 +271,23 @@ export class NotificationsService {
       totalDevices: allDevices.length,
       notifiableDevices: notifiableDevices.length,
       scheduleId,
-      executionId
+      executionId,
+      contentId
     }, 'NotificationsService');
 
     for (const device of notifiableDevices) {
-      await this.sendScheduleNotificationToSingleDevice(
-        device, 
-        'broadcast', 
-        sentBy || 'system', 
-        results, 
-        scheduleId, 
-        executionId,
-      );
-    }
-  }
-
-  /**
-   * Sends notification to a single device with result tracking
-   * NEW PATTERN: Creates notification record first, then generates content, then sends
-   */
-  private async sendScheduleNotificationToSingleDevice(
-    device: Device,
-    type: 'test' | 'admin' | 'broadcast' | 'schedule',
-    sentBy: string,
-    results?: any,
-    scheduleId?: string,
-    executionId?: string,
-  ): Promise<void> {
-    
-    // STEP 1: Create notification record first (to get notification._id)
-    const notification = await this.createNotificationRecord({
-      firebaseUid: device.firebaseUid,
-      deviceId: device.deviceId,
-      deviceName: device.deviceName,
-      fcmToken: device.fcmToken,
-      title: 'Daily Mystyc Insights', // Temporary title
-      body: 'Your daily mystical insights are ready!', // Temporary body
-      type,
-      sentBy,
-      scheduleId,
-      executionId
-    });
-
-    const notificationId = notification._id.toString();
-
-    try {
-      // STEP 2: Generate content for this specific notification
-      const { title, body } = await this.notificationContentService.getNotificationData(notificationId);
-
-      // STEP 3: Update notification with actual content
-      await this.notificationModel.findByIdAndUpdate(notificationId, {
+      await this.sendToDevice(
+        device,
         title,
         body,
-        updatedAt: new Date()
-      });
-
-      // STEP 4: Send the notification
-      const messageId = await this.sendNotification(device.deviceId, device.fcmToken, title, body);
-      
-      // STEP 5: Update notification as sent
-      await this.updateNotificationStatus(notificationId, 'sent', messageId);
-      
-      if (results) {
-        results.sent += 1;
-        results.details.push({
-          deviceId: device.deviceId,
-          firebaseUid: device.firebaseUid,
-          fcmToken: device.fcmToken.substring(0, 20) + '...',
-          status: 'sent',
-          messageId,
-          notificationId,
-          scheduleId,
-          executionId
-        });
-      }
-
-      logger.debug('Notification sent successfully', {
-        notificationId,
-        deviceId: device.deviceId,
-        title: title.substring(0, 50) + '...'
-      }, 'NotificationsService');
-
-    } catch (error) {
-      // Update notification as failed
-      await this.updateNotificationStatus(notificationId, 'failed', undefined, error.message);
-      
-      if (results) {
-        results.failed += 1;
-        results.details.push({
-          deviceId: device.deviceId,
-          firebaseUid: device.firebaseUid,
-          fcmToken: device.fcmToken.substring(0, 20) + '...',
-          status: 'failed',
-          error: error.message,
-          notificationId,
-          scheduleId,
-          executionId
-        });
-      }
-
-      logger.error('Notification failed', {
-        notificationId,
-        deviceId: device.deviceId,
-        error: error.message
-      }, 'NotificationsService');
+        url,
+        'broadcast',
+        sentBy || 'system',
+        scheduleId,
+        executionId,
+        contentId,
+        results
+      );
     }
   }
 
@@ -348,17 +319,25 @@ export class NotificationsService {
     }
 
     for (const device of notifiableDevices) {
-      await this.sendToDevice(device, title, body, type, sentBy, results);
+      await this.sendToDevice(device, title, body, 'https://mystyc.app', type, sentBy, undefined, undefined, results);
     }
   }
 
+  /**
+   * Sends notification to a single device
+   * Consolidated method that accepts content as parameters
+   */
   async sendToDevice(
-    device: Device, 
-    title: string, 
-    body: string, 
+    device: Device,
+    title: string,
+    body: string,
+    url: string,
     type: 'test' | 'admin' | 'broadcast' | 'schedule',
     sentBy: string,
-    results: any, 
+    scheduleId?: string,
+    executionId?: string,
+    contentId?: string,
+    results?: any,
   ): Promise<void> {
     if (!device.fcmToken) {
       throw new BadRequestException('Device does not have FCM token - notifications not enabled');
@@ -373,12 +352,15 @@ export class NotificationsService {
       body: body,
       type,
       sentBy,
+      scheduleId,
+      executionId,
+      contentId
     });
 
     const notificationId = notification._id.toString();
 
     try {
-      const messageId = await this.sendNotification(device.deviceId, device.fcmToken, title, body);
+      const messageId = await this.sendNotification(device.deviceId, device.fcmToken, title, body, url);
       
       await this.updateNotificationStatus(notificationId, 'sent', messageId);
       
@@ -391,6 +373,9 @@ export class NotificationsService {
           status: 'sent',
           messageId,
           notificationId,
+          scheduleId,
+          executionId,
+          contentId
         });
       }
 
@@ -413,6 +398,9 @@ export class NotificationsService {
           status: 'failed',
           error: error.message,
           notificationId,
+          scheduleId,
+          executionId,
+          contentId
         });
       }
 
@@ -701,7 +689,7 @@ export class NotificationsService {
 
   /**
    * Creates a notification record in database for tracking
-   * UPDATED: Now returns the saved document so we can get the _id
+   * Returns the saved document so we can get the _id
    */
   private async createNotificationRecord(data: {
     firebaseUid: string;
@@ -714,6 +702,7 @@ export class NotificationsService {
     sentBy: string;
     scheduleId?: string;
     executionId?: string;
+    contentId?: string;
   }): Promise<NotificationDocument> {
     const notification = new this.notificationModel({
       ...data,
@@ -771,12 +760,9 @@ export class NotificationsService {
       sentAt: doc.sentAt,
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
+      contentId: doc.contentId,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };
   }
-
-  // ... (implement remaining methods that were in the original file)
-  // Note: This is a partial implementation focusing on the key changes
-  // You would need to include all the other methods from the original file
 }

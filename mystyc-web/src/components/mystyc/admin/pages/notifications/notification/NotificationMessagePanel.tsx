@@ -21,10 +21,13 @@ export default function NotificationMessagePanel({ notification }: { notificatio
 
       <div className="pt-4">
         <AdminDetailGroup>
-          <AdminDetailField
-            label="Message Id"
-            value={notification.messageId}
-          />
+          {notification.contentId &&
+            <AdminDetailField
+              label="Content Id"
+              value={notification.contentId}
+              href={`/admin/content/${notification.contentId}`}
+            />
+          }
           <AdminDetailField
             label="Title"
             value={notification.title}

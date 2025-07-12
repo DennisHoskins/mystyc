@@ -38,15 +38,17 @@ export class NotificationContentService {
   /**
    * Generates notification content for a specific notification
    * This is the main entry point - each notification gets its own content
-   * @param notificationId - The notification ID that needs content
+   * @param scheduleId - The schedule ID that needs content
+   * @param executionId - The schedule execution ID that needs content
    * @param date - Date for the content (defaults to today)
    * @returns Promise<ContentInterface> - Generated content linked to the notification
    */
-  async generateNotificationContent(notificationId: string, date?: string): Promise<ContentInterface> {
+  async generateNotificationContent(scheduleId: string, executionId: string, date?: string): Promise<ContentInterface> {
     const targetDate = date || new Date().toISOString().split('T')[0];
     
     logger.info('Generating notification content for notification', { 
-      notificationId, 
+      scheduleId, 
+      executionId, 
       date: targetDate 
     }, 'NotificationContentService');
 
@@ -65,7 +67,8 @@ export class NotificationContentService {
       const contentData = {
         type: 'notification_content',
         date: targetDate,
-        notificationId, // LINK TO NOTIFICATION
+        scheduleId, 
+        executionId, 
         ...template,
         data: dataItems,
         sources: ['notification_templates'],
@@ -78,7 +81,8 @@ export class NotificationContentService {
       const saved = await content.save();
 
       logger.info('Notification content generated successfully', { 
-        notificationId,
+        scheduleId, 
+        executionId, 
         contentId: saved._id.toString(),
         date: targetDate,
         duration: saved.generationDuration 
@@ -87,7 +91,8 @@ export class NotificationContentService {
       return this.transformToNotificationContent(saved);
     } catch (error) {
       logger.error('Notification content generation failed', {
-        notificationId,
+        scheduleId, 
+        executionId, 
         date: targetDate,
         error: error.message
       }, 'NotificationContentService');
@@ -96,10 +101,10 @@ export class NotificationContentService {
       const failedContent = new this.contentModel({
         type: 'notification_content',
         date: targetDate,
-        notificationId,
+        scheduleId, 
+        executionId, 
         title: 'Mystyc Notification',
         message: 'Your daily mystical insights await.',
-        imageUrl: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229',
         data: [],
         sources: ['notification_templates'],
         status: 'failed',
@@ -227,12 +232,12 @@ export class NotificationContentService {
    * @param date - Optional date for content (defaults to today)
    * @returns Promise<{title: string; body: string; fullContent: ContentInterface}> - Optimized notification data
    */
-  async getNotificationData(notificationId: string, date?: string): Promise<{ 
+  async getNotificationData(scheduleId: string, executionId: string, date?: string): Promise<{ 
     title: string; 
     body: string; 
     fullContent: ContentInterface 
   }> {
-    const content = await this.generateNotificationContent(notificationId, date);
+    const content = await this.generateNotificationContent(scheduleId, executionId, date);
 
     // Optimize for mobile push notifications
     const title = this.truncateForNotification(content.title, 40);

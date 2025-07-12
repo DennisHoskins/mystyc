@@ -53,8 +53,8 @@ export class Content {
   @Prop({ required: true })
   message: string;
 
-  @Prop({ required: true })
-  imageUrl: string;
+  @Prop()
+  imageUrl?: string;
 
   @Prop()
   linkUrl?: string;

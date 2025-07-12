@@ -20,7 +20,7 @@ export interface Content {
   // Core content
   title: string;
   message: string;
-  imageUrl: string;
+  imageUrl?: string;
   linkUrl?: string;
   linkText?: string;
 

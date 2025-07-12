@@ -42,9 +42,9 @@ export class CreateContentDto {
   @SanitizeText('message', { maxLength: 1000 })
   message: string;
 
+  @IsOptional()
   @IsUrl({}, { message: 'Image URL must be a valid URL' })
-  @IsNotEmpty()
-  imageUrl: string;
+  imageUrl?: string;
 
   @IsOptional()
   @IsUrl({}, { message: 'Link URL must be a valid URL' })

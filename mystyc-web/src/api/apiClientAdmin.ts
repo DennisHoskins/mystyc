@@ -407,6 +407,18 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
+  getScheduleExecutionsSummary = async (executionId: string): Promise<{
+    contents: { total: number };
+    notifications: { total: number };
+  }> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions/${executionId}/summary`);
+    } catch (error) {
+      logger.error('getScheduleExecutionsSummary failed:', error);
+      throw error;
+    }
+  };
+
   getScheduleExecutions = async (query?: AdminQuery): Promise<PaginatedResponse<ScheduleExecution>> => {
     try {
       const queryString = this.buildQueryString(query);

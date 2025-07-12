@@ -9,15 +9,15 @@ import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
 import AdminTable, { Column } from '@/components/mystyc/admin/ui/AdminTable';
-import NotificationIcon from '@/components/mystyc/admin/ui/icons/NotificationIcon';
 
-export default function ScheduleExecutionsNotificationsTable({ executionId }: { executionId: string | null | undefined}) {
+export default function ScheduleExecutionsNotificationsTable({ executionId, isActive }: { executionId: string | null | undefined, isActive?: boolean }) {
   const [notifications, setNotifications] = useState<PaginatedResponse<Notification> | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
   const loadScheduleExecutionNotifications = useCallback(async (page: number) => {
@@ -42,6 +42,7 @@ export default function ScheduleExecutionsNotificationsTable({ executionId }: { 
       setCurrentPage(page);
       setTotalItems(response.pagination.totalItems);
       setTotalPages(response.pagination.totalPages);
+      setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load schedule execution notifications:', err);
     } finally {
@@ -54,8 +55,10 @@ export default function ScheduleExecutionsNotificationsTable({ executionId }: { 
       return;
     }
 
-    loadScheduleExecutionNotifications(0);
-  }, [executionId, loadScheduleExecutionNotifications]);
+    if (isActive && !hasLoaded) {
+      loadScheduleExecutionNotifications(0);
+    }
+  }, [executionId, loadScheduleExecutionNotifications, isActive, hasLoaded]);
 
   if (!notifications?.data) {
     return null;
@@ -71,8 +74,6 @@ export default function ScheduleExecutionsNotificationsTable({ executionId }: { 
   return (
     <Card className='h-[56rem]'>
       <AdminTable<Notification>
-        icon={<NotificationIcon />}
-        label={"Notifications"}
         data={notifications.data}
         columns={columns}
         loading={loading}

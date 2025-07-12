@@ -62,8 +62,10 @@ export class AdminNotificationsSendController {
         device, 
         sendNotificationDto.title, 
         sendNotificationDto.body, 
+        "https://mystyc.app",
         'admin',
         user.email,
+        null, null, null,
         results,
       );
 

@@ -253,7 +253,6 @@ export class ContentService {
 
   /**
    * Transform aggregation result to interface (for pipeline queries)
-   * UPDATED: Now includes notification and user fields
    */
   transformToContent(doc: any): ContentInterface {
     return {
@@ -265,7 +264,7 @@ export class ContentService {
       executionId: doc.executionId,
 
       // Notification content links
-      notificationId: doc.notificationId, // NEW
+      notificationId: doc.notificationId,
 
       // User content links (future)
       firebaseUid: doc.firebaseUid,

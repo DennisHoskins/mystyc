@@ -67,7 +67,6 @@ export class AdminDevicesController extends AdminController<Device> {
       notifications: { total: notificationsCount },
     };
   }
-  
 
   /**
    * Finds all users for a specific device with pagination (admin use)

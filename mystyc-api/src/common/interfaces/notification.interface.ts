@@ -15,6 +15,7 @@ export interface Notification {
   sentAt?: Date;
   scheduleId?: string;
   executionId?: string;
+  contentId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
