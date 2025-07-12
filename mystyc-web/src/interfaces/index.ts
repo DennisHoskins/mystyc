@@ -16,6 +16,7 @@ export * from './notification.interface';
 export * from './content.interface';
 export * from './schedule.interface';
 export * from './schedule-execution.interface';
+export * from './openai-request.interface';
 
 export * from './admin/admin-list-response.interface';
 export * from './admin/stats/admin-stats-query.interface';
@@ -29,4 +30,5 @@ export * from './admin/stats/admin-schedule-stats.interface';
 export * from './admin/stats/admin-schedule-execution-stats.interface';
 export * from './admin/stats/admin-session-stats.interface';
 export * from './admin/stats/admin-traffic-stats.interface';
+export * from './admin/stats/admin-openai-request-stats.interface';
 

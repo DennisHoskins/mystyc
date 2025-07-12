@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, Hash, Clock, Globe, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
+import { LayoutDashboard, Hash, Clock, Globe, Sparkle, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
 import Sidebar from '@/components/ui/layout/sidebar/Sidebar';
 import SidebarItem from '@/components/ui/layout/sidebar/SidebarItem';
@@ -20,6 +20,7 @@ export default function AdminSidebar({
     { icon: <LayoutDashboard />, label: 'Dashboard', href: '/admin' },
     { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
     { icon: <Globe />, label: 'Traffic', href: '/admin/traffic' },
+    { icon: <Sparkle />, label: 'OpenAI', href: '/admin/openai' },
     { icon: <Clock />, label: 'Schedules', href: '/admin/schedules' },
     { icon: <Hash />, label: 'Content Generation', href: '/admin/content' },
     { icon: <Users />, label: 'Users', href: '/admin/users' },

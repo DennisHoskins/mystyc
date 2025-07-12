@@ -8,6 +8,7 @@ import { AdminUsersStatsService } from '@/admin/services/admin-users-stats.servi
 import { AdminDevicesStatsService } from '@/admin/services/admin-devices-stats.service';
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from '@/admin/services/admin-notifications-stats.service';
+import { AdminOpenAIStatsService } from '@/admin/services/admin-openai-stats.service';
 import { AdminContentStatsService } from '@/admin/services/admin-content-stats.service';
 import { AdminScheduleStatsService } from '@/admin/services/admin-schedule-stats.service';
 import { AdminScheduleExecutionStatsService } from '@/admin/services/admin-schedule-execution-stats.service';
@@ -22,6 +23,7 @@ export class AdminStatsController {
     private readonly adminDevicesStatsService: AdminDevicesStatsService,
     private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
+    private readonly adminOpenAIStatsService: AdminOpenAIStatsService,
     private readonly adminContentStatsService: AdminContentStatsService,
     private readonly adminScheduleStatsService: AdminScheduleStatsService,
     private readonly adminScheduleExecutionStatsService: AdminScheduleExecutionStatsService,
@@ -70,12 +72,15 @@ export class AdminStatsController {
       this.adminContentStatsService.getTimelineStats(query),
     ]);
 
-    // Original schedule stats + NEW execution stats
     const [scheduleSummary, performance, failures, executions] = await Promise.all([
       this.adminScheduleStatsService.getSummaryStats(query),
       this.adminScheduleStatsService.getPerformanceStats(query),
       this.adminScheduleStatsService.getFailureStats(query),
       this.adminScheduleExecutionStatsService.getOverallScheduleStats(query),
+    ]);
+
+    const [openaiSummary] = await Promise.all([
+      this.adminOpenAIStatsService.getSummaryStats(query),
     ]);
 
     return {
@@ -113,6 +118,9 @@ export class AdminStatsController {
         sources,
         generation,
         timeline
+      },
+      openai: {
+        summary: openaiSummary
       }
     };
   }

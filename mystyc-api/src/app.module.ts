@@ -12,6 +12,7 @@ import { DevicesModule } from '@/devices/devices.module';
 import { ScheduleModule as AppScheduleModule } from '@/schedule/schedule.module';
 import { AuthEventsModule } from '@/auth-events/auth-events.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
+import { OpenAIModule } from '@/openai/openai.module';
 import { ContentModule } from '@/content/content.module';
 import { AdminModule } from '@/admin/admin.module';
 
@@ -47,6 +48,7 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
     AdminModule,
     NotificationsModule,
     ContentModule,
+    OpenAIModule,
   ],
   controllers: [AppController],
   providers: [

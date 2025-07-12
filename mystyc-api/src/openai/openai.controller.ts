@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
@@ -34,42 +33,6 @@ export class OpenAIController {
       return usage;
     } catch (error) {
       logger.error('Failed to get OpenAI usage', {
-        error: error.message
-      }, 'OpenAIController');
-      throw error;
-    }
-  }
-
-  /**
-   * Test OpenAI content generation (Admin only)
-   * Useful for testing the integration
-   */
-  @Post('test-generate')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Throttle({ default: { limit: 5, ttl: 60000 } }) // Limited to prevent accidental budget drain
-  async testGenerate(@Body() body: { date: string }) {
-    logger.info('Admin testing OpenAI content generation', {
-      date: body.date
-    }, 'OpenAIController');
-    
-    try {
-      const result = await this.openAIService.generateWebsiteContent(body.date);
-      
-      logger.info('OpenAI test generation completed', {
-        date: body.date,
-        success: result.success,
-        cost: result.cost,
-        tokensUsed: result.tokensUsed
-      }, 'OpenAIController');
-      
-      return {
-        ...result,
-        message: 'Test generation completed'
-      };
-    } catch (error) {
-      logger.error('OpenAI test generation failed', {
-        date: body.date,
         error: error.message
       }, 'OpenAIController');
       throw error;

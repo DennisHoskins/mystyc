@@ -3,6 +3,7 @@ export { AdminDevicesController } from './admin-devices.controller';
 export { AdminAuthEventsController } from './admin-auth-events.controller';
 export { AdminNotificationsController } from './admin-notifications.controller';
 export { AdminNotificationsSendController } from './admin-notifications-send.controller';
+export { AdminOpenAIController } from './admin-openai.controller';
 export { AdminContentController } from './admin-content.controller';
 export { AdminScheduleController } from './admin-schedule.controller';
 export { AdminScheduleExecutionController } from './admin-schedule-execution.controller';

@@ -8,6 +8,8 @@ import {
   Notification, 
   Content, 
   Schedule, 
+  ScheduleExecution,
+  OpenAIRequest, 
   AdminQuery, 
   AdminStatsQuery, 
   AdminStatsResponseExtended, 
@@ -20,7 +22,7 @@ import {
   ContentStats,
   ScheduleStats,
   ScheduleExecutionStats,
-  ScheduleExecution,
+  OpenAIRequestStats,
 } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
@@ -195,6 +197,21 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
+  getOpenAIRequestStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<OpenAIRequestStats>> => {
+    try {
+      const queryString = this.buildStatsQueryString(query);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/openai${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
+    } catch (error) {
+      logger.error('getOpenAIRequestStats failed:', error);
+      throw error;
+    }
+  };
+
   getContentStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ContentStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
@@ -361,6 +378,29 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content/${firebaseUid}`);
     } catch (error) {
       logger.error('getContent failed:', error);
+      throw error;
+    }
+  };
+
+  //
+  //  OpenAI Management
+  //
+
+  getOpenAIRequests = async (query?: AdminQuery): Promise<PaginatedResponse<OpenAIRequest>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai${queryString}`);
+    } catch (error) {
+      logger.error('getOpenAIRequests failed:', error);
+      throw error;
+    }
+  };
+
+  getOpenAIRequest = async (requestId: string): Promise<OpenAIRequest> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai/${requestId}`);
+    } catch (error) {
+      logger.error('getOpenAIRequest failed:', error);
       throw error;
     }
   };

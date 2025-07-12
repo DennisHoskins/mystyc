@@ -1,6 +1,6 @@
 'use client'
 
-import { LayoutDashboard, Clock, Hash, Globe, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
+import { LayoutDashboard, Clock, Hash, Globe, Sparkle, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
@@ -24,6 +24,10 @@ export default function AdminMenu() {
         <MenuItem onClick={() => router.push('/admin/traffic')}>
           <Globe className="inline-block mr-2 h-4 w-4" />
           Traffic
+        </MenuItem>
+        <MenuItem onClick={() => router.push('/admin/openai')}>
+          <Sparkle className="inline-block mr-2 h-4 w-4" />
+          OpenAI
         </MenuItem>
         <MenuItem onClick={() => router.push('/admin/schedules')}>
           <Clock className="inline-block mr-2 h-4 w-4" />
