@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OnEvent } from '@nestjs/event-emitter';
+
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { ConflictException } from '@nestjs/common';
@@ -150,7 +152,7 @@ export class ScheduleService {
 
   // Cron Jobs
 
-  @Cron('0 15 3 * * *')
+  @OnEvent('update.schedule.timezones')
   async refreshTimezoneCache() {
     logger.info('Refreshing timezone cache', {}, 'ScheduleService');
     
