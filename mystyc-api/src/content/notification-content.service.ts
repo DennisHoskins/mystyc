@@ -8,6 +8,13 @@ import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
 import { logger } from '@/common/util/logger';
 
+export class NotificationContentTimeoutError extends Error {
+  constructor(timeoutMs: number) {
+    super(`Notification content generation timed out after ${timeoutMs}ms`);
+    this.name = 'NotificationContentTimeoutError';
+  }
+}
+
 @Injectable()
 export class NotificationContentService {
   private readonly notificationContentTemplates = [
@@ -69,7 +76,7 @@ export class NotificationContentService {
   private createTimeoutPromise(timeoutMs: number): Promise<never> {
     return new Promise((_, reject) => {
       setTimeout(() => {
-        reject(new Error(`Notification content generation timed out after ${timeoutMs}ms`));
+        reject(new NotificationContentTimeoutError(timeoutMs));
       }, timeoutMs);
     });
   }

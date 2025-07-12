@@ -7,7 +7,7 @@ import * as admin from 'firebase-admin';
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
-import { NotificationContentService } from '@/content/notification-content.service';
+import { NotificationContentService, NotificationContentTimeoutError } from '@/content/notification-content.service';
 import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
@@ -96,18 +96,33 @@ export class NotificationsService {
       const duration = Date.now() - startTime; 
       await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);        
     } catch (error) {
-      logger.error('Scheduled notifications failed', {
-        scheduleId: payload.scheduleId,
-        executionId: payload.executionId,
-        timezone: payload.timezone || 'global',
-        error: error.message,
-        scheduledTime: payload.scheduledTime,
-      }, 'NotificationsService');
-
-      // tell schedule execution it failed
       const duration = Date.now() - startTime;
-      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
+      
+      // Check if this is a timeout error from content generation
+      if (error instanceof NotificationContentTimeoutError || error.name === 'NotificationContentTimeoutError') {
+        logger.warn('Scheduled notifications timed out during content generation', {
+          scheduleId: payload.scheduleId,
+          executionId: payload.executionId,
+          timezone: payload.timezone || 'global',
+          error: error.message,
+          duration,
+          scheduledTime: payload.scheduledTime,
+        }, 'NotificationsService');
 
+        await this.scheduleExecutionService.updateStatus(payload.executionId, 'timeout', error.message, duration);
+      } else {
+        logger.error('Scheduled notifications failed', {
+          scheduleId: payload.scheduleId,
+          executionId: payload.executionId,
+          timezone: payload.timezone || 'global',
+          error: error.message,
+          duration,
+          scheduledTime: payload.scheduledTime,
+        }, 'NotificationsService');
+
+        await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
+      }
+      
       // Don't throw - we don't want to crash the scheduler
     }
   }
@@ -179,21 +194,36 @@ export class NotificationsService {
       // tell schedule execution it succeeded
       const duration = Date.now() - startTime; 
       await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);        
-    } catch (error) {
-      logger.error('Scheduled notification updates failed', {
+} catch (error) {
+  const duration = Date.now() - startTime;
+  
+    // Check if this is a timeout error from content generation
+    if (error instanceof NotificationContentTimeoutError || error.name === 'NotificationContentTimeoutError') {
+      logger.warn('Scheduled notifications timed out during content generation', {
         scheduleId: payload.scheduleId,
         executionId: payload.executionId,
         timezone: payload.timezone || 'global',
         error: error.message,
+        duration,
         scheduledTime: payload.scheduledTime,
       }, 'NotificationsService');
 
-      // tell schedule execution it failed
-      const duration = Date.now() - startTime;
-      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'timeout', error.message, duration);
+    } else {
+      logger.error('Scheduled notifications failed', {
+        scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
+        timezone: payload.timezone || 'global',
+        error: error.message,
+        duration,
+        scheduledTime: payload.scheduledTime,
+      }, 'NotificationsService');
 
-      // Don't throw - we don't want to crash the scheduler
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
     }
+    
+    // Don't throw - we don't want to crash the scheduler
+  }
   }
 
   /**

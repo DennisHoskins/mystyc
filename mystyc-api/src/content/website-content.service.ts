@@ -10,6 +10,13 @@ import { OpenAIService } from '@/openai/openai.service';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
+class ContentGenerationTimeoutError extends Error {
+  constructor(timeoutMs: number) {
+    super(`Content generation timed out after ${timeoutMs}ms`);
+    this.name = 'ContentGenerationTimeoutError';
+  }
+}
+
 @Injectable()
 export class WebsiteContentService {
   constructor(
@@ -17,7 +24,7 @@ export class WebsiteContentService {
     private readonly openAIService: OpenAIService,
     private readonly scheduleExecutionService: ScheduleExecutionService
   ) {}
-
+ 
   /**
    * Handles scheduled website content generation events from Schedule Service
    * @param payload - Event payload containing schedule context and scheduleId
@@ -38,15 +45,14 @@ export class WebsiteContentService {
     try {
       // Determine the date for content generation
       const targetDate = payload.timezone 
-        ? new Date(payload.localTime).toISOString().split('T')[0]  // Use local date for timezone-aware
-        : new Date().toISOString().split('T')[0];                   // Use server date for global
+        ? new Date(payload.localTime).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0];
 
       logger.debug('Getting or generating website content for scheduled event for targetDate', {
         scheduleId: payload.scheduleId,
         targetDate,
         timezone: payload.timezone || 'global'
       }, 'WebsiteContentService');
-
 
       // Generate website content for the target date with scheduleId
       const content = await this.getOrGenerateWebsiteContent(targetDate, payload.scheduleId, payload.executionId);
@@ -60,25 +66,42 @@ export class WebsiteContentService {
         timezone: payload.timezone || 'global',
       }, 'WebsiteContentService');
 
-      // tell schedule execution it succeeded
+      // Tell schedule execution it succeeded
       const duration = Date.now() - startTime;
       await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);
     } catch (error) {
-      logger.error('Scheduled website content generation failed', {
-        scheduleId: payload.scheduleId,
-        executionId: payload.executionId,
-        taskId: payload.taskId,
-        timezone: payload.timezone || 'global',
-        error: error.message,
-        scheduledTime: payload.scheduledTime,
-      }, 'WebsiteContentService');
-
-      // tell schedule execution it failed
       const duration = Date.now() - startTime;
-      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);      
+      
+      // Check if this is a timeout error
+      if (error instanceof ContentGenerationTimeoutError || error.name === 'ContentGenerationTimeoutError') {
+        logger.warn('Scheduled website content generation timed out', {
+          scheduleId: payload.scheduleId,
+          executionId: payload.executionId,
+          timezone: payload.timezone || 'global',
+          error: error.message,
+          duration,
+          scheduledTime: payload.scheduledTime,
+        }, 'WebsiteContentService');
+
+        // Mark as timeout specifically
+        await this.scheduleExecutionService.updateStatus(payload.executionId, 'timeout', error.message, duration);
+      } else {
+        logger.error('Scheduled website content generation failed', {
+          scheduleId: payload.scheduleId,
+          executionId: payload.executionId,
+          timezone: payload.timezone || 'global',
+          error: error.message,
+          duration,
+          scheduledTime: payload.scheduledTime,
+        }, 'WebsiteContentService');
+
+        // Mark as general failure
+        await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
+      }
+      
       // Don't throw - we don't want to crash the scheduler
     }
-  }  
+  }
 
   /**
    * Get or generate website content for a specific date
@@ -147,7 +170,7 @@ export class WebsiteContentService {
   private createTimeoutPromise(timeoutMs: number): Promise<never> {
     return new Promise((_, reject) => {
       setTimeout(() => {
-        reject(new Error(`Content generation timed out after ${timeoutMs}ms`));
+        reject(new ContentGenerationTimeoutError(timeoutMs));
       }, timeoutMs);
     });
   }

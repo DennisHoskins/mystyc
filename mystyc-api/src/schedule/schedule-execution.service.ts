@@ -65,7 +65,7 @@ export class ScheduleExecutionService {
    */
   async updateStatus(
     executionId: string, 
-    status: 'completed' | 'failed', 
+    status: 'completed' | 'failed' | 'timeout', 
     error?: string,
     duration?: number
   ): Promise<void> {
