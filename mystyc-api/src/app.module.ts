@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 
 import { FirebaseModule } from '@/auth/firebase.module';
@@ -42,7 +42,7 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
     FirebaseModule,
     UsersModule,
     DevicesModule,
-    AppScheduleModule,  // <-- Add this line
+    AppScheduleModule,
     AuthEventsModule,
     AdminModule,
     NotificationsModule,

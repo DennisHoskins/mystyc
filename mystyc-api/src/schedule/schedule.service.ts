@@ -202,7 +202,7 @@ export class ScheduleService {
     }
   }
 
-  @Cron('*/15 * * * *')
+  @Cron('*/5 * * * *')
   async checkScheduledTasks() {
     logger.info('Checking scheduled tasks', {}, 'ScheduleService');
     

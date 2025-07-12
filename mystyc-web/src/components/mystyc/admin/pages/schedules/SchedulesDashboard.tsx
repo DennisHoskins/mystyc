@@ -63,18 +63,24 @@ export default function SchedulesDashboard({
       }
       return { entry: e, date: sched };
     });
+    if (!scheduledEntries.length) {
+      return {entry: null,  date: null};
+    }
     scheduledEntries.sort((a, b) => a.date.getTime() - b.date.getTime());
     return scheduledEntries[0];
   };
 
   const { entry: nextEntry, date: nextDate } = getNextExecutionEntry();
-  const utcTime = nextDate.toISOString().substring(11, 16) + ' UTC';
-  const localTime = nextDate.toLocaleTimeString(undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZoneName: 'short'
-  });
-
+    let utcTime: string | null = null;
+    let localTime: string | null = null;
+    if (nextDate) {
+      utcTime = nextDate.toISOString().substring(11, 16) + ' UTC';
+      localTime = nextDate.toLocaleTimeString(undefined, {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      });
+    }
   // Transform schedule status for pie chart
   const statusData = [
     { name: 'Enabled', value: stats.data.summary.enabledSchedules, color: '#10b981' },
@@ -138,14 +144,13 @@ export default function SchedulesDashboard({
         }
       />
     ),
-    today: (
+    today: nextEntry && nextDate ? (
       <StatusCard
         icon={CalendarClock}
         iconColor="text-gray-500"
         backgroundColor="bg-gray-50"
         shortText="Next:"
         longText="Next Execution:"
-        // show original schedule from DB and actual UTC
         shortSubtext={`${nextEntry.scheduledTime} / ${utcTime}`}
         longSubtext={
           <>
@@ -166,6 +171,10 @@ export default function SchedulesDashboard({
           </span>
         )}
       />
+    ) : (
+      <div className="flex items-center justify-center w-full h-full text-gray-500 bg-gray-100">
+        <p className='p-4 text-sm'>No upcoming schedules</p>
+      </div>
     )
   };
 

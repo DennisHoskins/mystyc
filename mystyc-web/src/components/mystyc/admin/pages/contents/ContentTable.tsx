@@ -1,6 +1,6 @@
 'use client';
 
-import { AlarmClockCheck, Bell, User } from 'lucide-react';
+import { AlarmClockCheck, Bell, Globe, User } from 'lucide-react';
 
 import { Content } from '@/interfaces';
 import { formatDateForDisplay } from '@/util/dateTime';
@@ -34,8 +34,21 @@ export default function ContentTable({
   onRefresh
 }: ContentTableProps) {
   const columns: Column<Content>[] = [
-    { key: 'date', header: 'Created', link: (u) => `/admin/content/${u._id}`, render: (u) => formatDateForDisplay(u.date) || '-' },
-    { key: 'title', header: 'Title', link: (u) => `/admin/content/${u._id}` },
+    { key: 'date', header: 'Created', link: (u) => `/admin/content/${u._id}`, 
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">{formatDateForDisplay(u.date)}</span>
+          : formatDateForDisplay(u.date)},
+    { key: 'status', header: 'Status', link: (u) => `/admin/content/${u._id}`, 
+      render: (u) =>
+        u.error
+          ? <span className="text-red-500">{u.status}</span>
+          : u.status},
+    { key: 'title', header: 'Title', link: (u) => `/admin/content/${u._id}`, 
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">{formatDateForDisplay(u.title)}</span>
+          : formatDateForDisplay(u.title)},
     { 
       key: 'source', 
       header: 'Source', 
@@ -49,7 +62,7 @@ export default function ContentTable({
         u.executionId ? AlarmClockCheck :
         u.notificationId ? Bell :
         u.firebaseUid ? User :
-        null
+        Globe
     },
   ];
 

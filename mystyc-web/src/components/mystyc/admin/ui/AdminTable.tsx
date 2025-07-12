@@ -119,8 +119,10 @@ export default function AdminTable<T>({
       return null;
     }
 
+    const href = column.link && column.link(item);
+
     return (
-      <span className='w-full flex justify-center'>
+      <span className={`w-full flex justify-center ${href ? "" : "text-gray-300"}`}>
         {React.createElement(IconComponent, { size: 18 })}
       </span>
     );
