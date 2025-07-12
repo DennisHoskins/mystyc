@@ -13,5 +13,6 @@ export { AdminDevicesStatsController } from './stats/admin-devices-stats.control
 export { AdminAuthEventsStatsController } from './stats/admin-auth-events-stats.controller';
 export { AdminNotificationsStatsController } from './stats/admin-notifications-stats.controller';
 export { AdminContentStatsController } from './stats/admin-content-stats.controller';
+export { AdminOpenAIStatsController } from './stats/admin-openai-stats.controller';
 export { AdminScheduleStatsController } from './stats/admin-schedule-stats.controller';
 export { AdminScheduleExecutionStatsController } from './stats/admin-schedule-execution-stats.controller';

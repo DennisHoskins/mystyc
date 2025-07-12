@@ -19,6 +19,7 @@ import {
   AdminScheduleStatsController,
   AdminScheduleExecutionStatsController,
   AdminContentStatsController,
+  AdminOpenAIStatsController,
 } from './controllers';
 import { UsersModule } from '@/users/users.module';
 import { DevicesModule } from '@/devices/devices.module';
@@ -32,6 +33,7 @@ import { AdminDevicesStatsService } from './services/admin-devices-stats.service
 import { AdminAuthEventsStatsService } from './services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from './services/admin-notifications-stats.service';
 import { AdminContentStatsService } from './services/admin-content-stats.service';
+import { AdminOpenAIStatsService } from './services/admin-openai-stats.service';
 import { AdminScheduleStatsService } from './services/admin-schedule-stats.service';
 import { AdminScheduleExecutionStatsService } from './services/admin-schedule-execution-stats.service';
 import { FirebaseModule } from '@/auth/firebase.module';
@@ -84,12 +86,14 @@ controllers: [
     AdminScheduleStatsController,
     AdminScheduleExecutionStatsController,
     AdminContentStatsController,
+    AdminOpenAIStatsController,
   ],
   providers: [
     AdminUsersStatsService,
     AdminDevicesStatsService,
     AdminAuthEventsStatsService,
     AdminNotificationsStatsService,
+    AdminOpenAIStatsService,
     AdminContentStatsService,
     AdminScheduleStatsService,
     AdminScheduleExecutionStatsService,
