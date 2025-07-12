@@ -102,7 +102,7 @@ export class WebsiteContentService {
       logger.debug('Website content not found', { date }, 'WebsiteContentService');
       return null;
     }
-
+    
     logger.debug('Found website content for date, returning', { date }, 'WebsiteContentService');
     return this.transformToWebsiteContent(content);
   }
