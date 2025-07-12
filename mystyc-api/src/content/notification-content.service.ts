@@ -36,17 +36,6 @@ export class NotificationContentService {
   ) {}
 
   /**
-   * Creates a timeout promise that rejects after specified milliseconds
-   */
-  private createTimeoutPromise(timeoutMs: number): Promise<never> {
-    return new Promise((_, reject) => {
-      setTimeout(() => {
-        reject(new Error(`Notification content generation timed out after ${timeoutMs}ms`));
-      }, timeoutMs);
-    });
-  }
-
-  /**
    * Generates notification content for a specific notification with timeout protection
    */
   async generateNotificationContent(scheduleId: string, executionId: string, date?: string): Promise<ContentInterface> {
@@ -72,6 +61,17 @@ export class NotificationContentService {
       // Re-throw to let existing error handling in event handler catch it
       throw error;
     }
+  }
+
+  /**
+   * Creates a timeout promise that rejects after specified milliseconds
+   */
+  private createTimeoutPromise(timeoutMs: number): Promise<never> {
+    return new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Notification content generation timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    });
   }
 
   /**

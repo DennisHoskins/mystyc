@@ -11,7 +11,7 @@ export interface ScheduleExecution {
   executedAt: Date;
   timezone?: string;
   localTime?: Date;
-  status: 'running' | 'completed' | 'failed';
+  status: 'running' | 'completed' | 'failed' | 'timeout';
   error?: string;
   duration?: number;
   createdAt?: Date;

@@ -32,8 +32,8 @@ export class ScheduleExecution {
   @Prop()
   localTime?: Date;
 
-  @Prop({ required: true, enum: ['running', 'completed', 'failed'], default: 'running', index: true })
-  status: 'running' | 'completed' | 'failed';
+  @Prop({ required: true, enum: ['running', 'completed', 'failed', 'timeout'], default: 'running', index: true })
+  status: 'running' | 'completed' | 'failed' | 'timeout';
 
   @Prop()
   error?: string;
