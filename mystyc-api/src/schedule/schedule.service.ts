@@ -152,7 +152,7 @@ export class ScheduleService {
 
   // Cron Jobs
 
-  @OnEvent('update.schedule.timezones')
+  @OnEvent('schedule.update.timezones')
   async refreshTimezoneCache() {
     logger.info('Refreshing timezone cache', {}, 'ScheduleService');
     

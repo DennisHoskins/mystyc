@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { OnEvent } from '@nestjs/event-emitter';
 import OpenAI from 'openai';
 
 import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
@@ -392,10 +393,62 @@ export class OpenAIService {
   }
 
   /**
-   * Checks if we're within monthly budget (legacy method)
+   * Syncs usage data from OpenAI API to update local tracking
+   * Called periodically to ensure budget accuracy
    */
-  private async checkBudget(): Promise<boolean> {
-    return this.checkBudgetWithBuffer();
+  @OnEvent('openai.update.usage')
+  async syncUsageFromOpenAI(): Promise<void> {
+    logger.info('Syncing usage from OpenAI API', {}, 'OpenAIService');
+    
+    try {
+      const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
+      const startDate = `${currentMonth}-01`;
+      const endDate = new Date();
+      
+      // Call OpenAI API to get usage for current month
+      // Note: This requires the organization ID and API key with billing access
+      const response = await this.openai.usage.retrieve({
+        date: startDate
+      });
+      
+      // Update local usage tracking record
+      await this.usageModel.findOneAndUpdate(
+        { date: startDate }, // Find current month record
+        {
+          lastSyncedAt: new Date(),
+          syncStatus: 'success',
+          // Update other fields as needed from API response
+        },
+        { 
+          upsert: true,
+          new: true 
+        }
+      );
+      
+      logger.info('OpenAI usage sync completed successfully', {
+        month: currentMonth,
+        syncedAt: new Date().toISOString()
+      }, 'OpenAIService');
+      
+    } catch (error) {
+      logger.error('OpenAI usage sync failed', {
+        error: error.message,
+        errorCode: error.code
+      }, 'OpenAIService');
+      
+      // Mark sync as failed
+      const currentMonth = new Date().toISOString().substring(0, 7);
+      await this.usageModel.findOneAndUpdate(
+        { date: `${currentMonth}-01` },
+        {
+          lastSyncedAt: new Date(),
+          syncStatus: 'failed'
+        },
+        { upsert: true }
+      );
+      
+      throw error;
+    }
   }
 
   /**

@@ -184,30 +184,45 @@ export class WebsiteContentService {
     const startTime = Date.now();
 
     try {
-      // Try to generate content with OpenAI
-      const aiResult = await this.openAIService.generateWebsiteContent(date);
+      // Create content record first to get ID
+      const content = new this.contentModel({
+        type: 'website_content',
+        date,
+        scheduleId,
+        executionId,
+        title: 'Generating...', // Temporary
+        message: 'Generating...', // Temporary
+        data: [],
+        sources: [],
+        status: 'pending',
+        generatedAt: new Date(),
+        generationDuration: 0
+      });
+      const savedContent = await content.save();
+
+      // Now call OpenAI with content ID
+      const aiResult = await this.openAIService.generateWebsiteContent(date, {
+        requestType: 'website_content',
+        linkedEntityId: savedContent._id.toString()
+      });
 
       if (aiResult.success) {
-        // OpenAI generation successful
-        const contentData = {
-          type: 'website_content',
-          date,
-          scheduleId,
-          executionId,
+        // Update content with actual data and OpenAI request ID
+        await this.contentModel.findByIdAndUpdate(savedContent._id, {
           title: aiResult.title,
           message: aiResult.message,
+          openAIRequestId: aiResult.openAIRequestId,
           imageUrl: this.getDefaultImageUrl(date),
           linkUrl: 'https://mystyc.app',
           linkText: 'Explore Your Mystical Journey',
           data: this.formatContentData(aiResult.title, aiResult.message),
           sources: ['openai'],
-          status: 'generated' as const,
-          generatedAt: new Date(),
+          status: 'generated',
           generationDuration: Date.now() - startTime
-        };
+        });
 
-        const content = new this.contentModel(contentData);
-        const saved = await content.save();
+        const finalContent = await this.contentModel.findById(savedContent._id);
+        const saved = finalContent;
 
         logger.info('Website content generated successfully with OpenAI', { 
           date, 
