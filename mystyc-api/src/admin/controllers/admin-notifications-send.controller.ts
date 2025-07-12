@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Param, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, UseGuards, Param, Body, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
@@ -52,14 +52,19 @@ export class AdminNotificationsSendController {
       details: []
     };
 
+    const device = await this.deviceService.findByDeviceId(deviceId);
+    if (!device) {
+      throw new NotFoundException('Device not found');
+    }
+
     try {
       await this.notificationsService.sendToDevice(
-        deviceId, 
+        device, 
         sendNotificationDto.title, 
         sendNotificationDto.body, 
-        results,
         'admin',
-        user.email
+        user.email,
+        results,
       );
 
       logger.info('Notification sent to Device successfully', {

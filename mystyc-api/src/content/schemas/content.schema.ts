@@ -32,11 +32,20 @@ export class Content {
   @Prop({ required: true, index: true })
   date: string; // Format: "2025-07-07"
 
+  // Website content links
   @Prop({ index: true })
   scheduleId?: string;
 
   @Prop({ index: true })
   executionId?: string;
+
+  // Notification content links
+  @Prop({ index: true })
+  notificationId?: string;
+
+  // User content links (future)
+  @Prop({ index: true })
+  firebaseUid?: string;
 
   @Prop({ required: true })
   title: string;
@@ -84,6 +93,8 @@ ContentSchema.index({ type: 1, status: 1 });
 ContentSchema.index({ date: -1 });
 ContentSchema.index({ scheduleId: -1 });
 ContentSchema.index({ executionId: -1 });
+ContentSchema.index({ notificationId: -1 }); // NEW: Index for notification content
+ContentSchema.index({ firebaseUid: -1 }); // NEW: Index for user content
 ContentSchema.index({ status: 1, date: -1 });
 ContentSchema.index({ generatedAt: -1 });
 ContentSchema.index({ sources: 1 });

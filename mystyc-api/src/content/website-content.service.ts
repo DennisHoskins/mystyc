@@ -12,11 +12,11 @@ import { logger } from '@/common/util/logger';
 export class WebsiteContentService {
   private readonly websiteContentTemplates = [
     {
-      title: "Embrace the Mystic Dawn",
-      message: "Today's energy brings new beginnings. Trust your intuition as the universe aligns in your favor.",
+      title: "Website Content 1",
+      message: "Website Message 1",
       imageUrl: "https://images.unsplash.com/photo-1516912481808-3406841bd33c",
       linkUrl: "https://mystyc.app",
-      linkText: "Explore Your Path",
+      linkText: "Website Link 1",
       data: [
         { "Dawn's Whisper":       "The first light invites your heart to awaken." },
         { "Soul Horizon":         "Beyond the sky lies a path only you can see." },
@@ -27,11 +27,11 @@ export class WebsiteContentService {
       ],
     },
     {
-      title: "Celestial Harmony Awaits",
-      message: "The stars whisper secrets of transformation. Open your heart to unexpected possibilities.",
+      title: "Website Content 2",
+      message: "Website Message 2",
       imageUrl: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
       linkUrl: "https://mystyc.app",
-      linkText: "Discover More",
+      linkText: "Website Link 2",
       data: [
         { "Star Song":            "Hear constellations hum the melody of your soul." },
         { "Ethereal Echo":        "Cosmic winds carry truths beyond mortal sight." },
@@ -42,11 +42,11 @@ export class WebsiteContentService {
       ],
     },
     {
-      title: "Ancient Wisdom Calls",
-      message: "Listen to the echoes of the past. Today holds the key to unlocking your inner power.",
+      title: "Website Content 3",
+      message: "Website Message 3",
       imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
       linkUrl: "https://mystyc.app",
-      linkText: "Unveil Your Destiny",
+      linkText: "Website Link 3",
       data: [
         { "Echo of Ages":         "Ancestors' voices guide you through time." },
         { "Rune Pulse":           "Sacred symbols awaken dormant knowledge." },
@@ -255,7 +255,7 @@ export class WebsiteContentService {
       });      
 
       const contentData = {
-        type: 'website',
+        type: 'website_content',
         date,
         scheduleId,
         executionId,
@@ -320,12 +320,26 @@ export class WebsiteContentService {
   /**
    * Transform document to interface
    */
+/**
+   * Transform document to interface
+   * UPDATED: Now includes notification and user fields
+   */
   private transformToWebsiteContent(doc: ContentDocument): ContentInterface {
     return {
       _id: doc._id.toString(),
       date: doc.date,
+      
+      // Website content links
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
+      
+      // Notification content links
+      notificationId: doc.notificationId,
+      
+      // User content links
+      firebaseUid: doc.firebaseUid,
+      
+      // Core content
       title: doc.title,
       message: doc.message,
       data: doc.data,

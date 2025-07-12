@@ -30,8 +30,8 @@ export default function ScheduleExecutionsTable({
     { key: 'event', header: 'Event', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => e.eventName || 'Unknown' },
     { key: 'scheduledTime', header: 'Scheduled', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => e.scheduledTime.hour + ":" + e.scheduledTime.minute },
     { key: 'serverTime', header: 'Server Time', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => formatDateForDisplay(e.executedAt) },
-    { key: 'timeZone', header: 'Timezone', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => e.timezone || "-" },
     { key: 'localTime', header: 'Local Time', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => e.localTime ? formatDateForDisplay(e.localTime) : "-" },
+    { key: 'timeZone', header: 'Timezone', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => e.timezone || "-" },
   ];
 
   return (

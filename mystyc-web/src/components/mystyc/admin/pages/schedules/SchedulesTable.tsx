@@ -27,9 +27,8 @@ export default function SchedulesTable({
 }: SchedulesTableProps) {
   const columns: Column<Schedule>[] = [
     { key: 'event', header: 'Event', link: (s) => `/admin/schedules/${s._id}`, render: (s) => s.event_name || 'Unknown' },
-    { key: 'id', header: 'Event', link: (s) => `/admin/schedules/${s._id}`, render: (s) => s._id },
-    { key: 'enabled', header: 'Enabled', align: 'right', link: (s) => `/admin/schedules/${s._id}`, render: (s) => s.enabled ? "Yes" : "No" },
-    { key: 'timezone', header: 'Timezone', align: 'right', link: (s) => `/admin/schedules/${s._id}`, render: (s) => s.timezone_aware ? "Yes" : "No" },
+    { key: 'enabled', header: 'Enabled', align: 'center', link: (s) => `/admin/schedules/${s._id}`, render: (s) => s.enabled ? "Yes" : "No" },
+    { key: 'timezone', header: 'Local?', align: 'center', link: (s) => `/admin/schedules/${s._id}`, render: (s) => s.timezone_aware ? "Yes" : "No" },
     { key: 'time', header: 'Time', align: 'right', link: (s) => `/admin/schedules/${s._id}`, render: (s) => `${s.time.hour}:${String(s.time.minute).padStart(2, '0')}` },
   ];
 

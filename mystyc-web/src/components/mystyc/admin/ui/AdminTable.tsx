@@ -27,7 +27,7 @@ export interface Column<T> {
   align?: 'left' | 'center' | 'right';
   icon?: (item: T) => IconComponent | null;
   render?: (item: T) => React.ReactNode;
-  link?: (item: T) => string;  
+  link?: (item: T) => string | null;  
 }
 
 interface LinkCellProps {

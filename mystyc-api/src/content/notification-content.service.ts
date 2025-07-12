@@ -1,7 +1,8 @@
+// mystyc-api/src/content/notification-content.service.ts
+
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { OnEvent } from '@nestjs/event-emitter';
 
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
@@ -11,39 +12,21 @@ import { logger } from '@/common/util/logger';
 export class NotificationContentService {
   private readonly notificationContentTemplates = [
     {
-      title: "Mystic Dawn Awaits",
-      message: "New cosmic energies align. Trust your intuition today.",
-      imageUrl: "https://images.unsplash.com/photo-1516912481808-3406841bd33c",
+      title: "Notification 1 Title",
+      message: "This is the Notification 1 Message",
       linkUrl: "https://mystyc.app",
-      linkText: "Open Mystyc",
+      linkText: "Notification 1 Link",
       data: [
-        { "Morning Energy": "Dawn brings fresh spiritual insights" },
-        { "Intuitive Guidance": "Listen to your inner voice today" },
-        { "Cosmic Alignment": "The universe supports your journey" }
+        { "NotificationData": "This is some data 1" },
       ],
     },
     {
-      title: "Stars Whisper Secrets",
-      message: "Celestial forces bring transformation. Stay open to change.",
-      imageUrl: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
+      title: "Notification 2 Title",
+      message: "This is the Notification 2 Message",
       linkUrl: "https://mystyc.app",
-      linkText: "Discover More",
+      linkText: "Notification 2 Link",
       data: [
-        { "Stellar Message": "Stars guide your path forward" },
-        { "Transformation Time": "Embrace positive changes ahead" },
-        { "Cosmic Wisdom": "Universal truth reveals itself" }
-      ],
-    },
-    {
-      title: "Ancient Wisdom Calls",
-      message: "Timeless knowledge awakens. Your inner power grows stronger.",
-      imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-      linkUrl: "https://mystyc.app",
-      linkText: "Explore Wisdom",
-      data: [
-        { "Sacred Knowledge": "Ancient truths illuminate your way" },
-        { "Inner Strength": "Your spiritual power awakens" },
-        { "Mystical Insight": "Hidden wisdom becomes clear" }
+        { "NotificationData": "This is some data 2" },
       ],
     },
   ];
@@ -53,52 +36,25 @@ export class NotificationContentService {
   ) {}
 
   /**
-   * Get or generate notification content for a specific date
+   * Generates notification content for a specific notification
+   * This is the main entry point - each notification gets its own content
+   * @param notificationId - The notification ID that needs content
+   * @param date - Date for the content (defaults to today)
+   * @returns Promise<ContentInterface> - Generated content linked to the notification
    */
-  async getOrGenerateNotificationContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
-    logger.info('Getting or generating notification content', { date, scheduleId, executionId }, 'NotificationContentService');
-
-    // Check if notification content exists for this date
-    const existing = await this.findNotificationContentByDate(date);
-    if (existing) {
-      logger.info('Notification content found in database', { date }, 'NotificationContentService');
-      return existing;
-    }
-
-    // Generate new notification content
-    return this.generateNotificationContent(date, scheduleId, executionId);
-  }
-
-  /**
-   * Find notification content by date
-   */
-  async findNotificationContentByDate(date: string): Promise<ContentInterface | null> {
-    logger.debug('Finding notification content by date', { date }, 'NotificationContentService');
-
-    const content = await this.contentModel.findOne({ 
-      date, 
-      type: 'notification_content' 
-    }).exec();
-
-    if (!content) {
-      logger.debug('Notification content not found', { date }, 'NotificationContentService');
-      return null;
-    }
-
-    return this.transformToNotificationContent(content);
-  }
-
-  /**
-   * Generate notification content for a specific date
-   */
-  async generateNotificationContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
-    logger.info('Generating new notification content', { date, scheduleId, executionId }, 'NotificationContentService');
+  async generateNotificationContent(notificationId: string, date?: string): Promise<ContentInterface> {
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    
+    logger.info('Generating notification content for notification', { 
+      notificationId, 
+      date: targetDate 
+    }, 'NotificationContentService');
 
     const startTime = Date.now();
 
     try {
-      // Use date as seed for consistent content
-      const dateHash = date.split('-').reduce((acc, part) => acc + parseInt(part), 0);
+      // Use date as seed for consistent content selection
+      const dateHash = targetDate.split('-').reduce((acc, part) => acc + parseInt(part), 0);
       const template = this.notificationContentTemplates[dateHash % this.notificationContentTemplates.length];
 
       const dataItems = template.data.map(obj => {
@@ -108,9 +64,8 @@ export class NotificationContentService {
 
       const contentData = {
         type: 'notification_content',
-        date,
-        scheduleId,
-        executionId,
+        date: targetDate,
+        notificationId, // LINK TO NOTIFICATION
         ...template,
         data: dataItems,
         sources: ['notification_templates'],
@@ -123,28 +78,25 @@ export class NotificationContentService {
       const saved = await content.save();
 
       logger.info('Notification content generated successfully', { 
-        date, 
-        scheduleId,
-        executionId,
+        notificationId,
         contentId: saved._id.toString(),
+        date: targetDate,
         duration: saved.generationDuration 
       }, 'NotificationContentService');
 
       return this.transformToNotificationContent(saved);
     } catch (error) {
       logger.error('Notification content generation failed', {
-        date,
-        scheduleId,
-        executionId,
+        notificationId,
+        date: targetDate,
         error: error.message
       }, 'NotificationContentService');
 
       // Save failed attempt
       const failedContent = new this.contentModel({
         type: 'notification_content',
-        date,
-        scheduleId,
-        executionId,
+        date: targetDate,
+        notificationId,
         title: 'Mystyc Notification',
         message: 'Your daily mystical insights await.',
         imageUrl: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229',
@@ -162,20 +114,125 @@ export class NotificationContentService {
   }
 
   /**
-   * Get today's notification content (convenience method)
+   * Finds notification content by notification ID
+   * @param notificationId - Notification ID to find content for
+   * @returns Promise<ContentInterface | null> - Content if found, null otherwise
    */
-  async getTodaysNotificationContent(): Promise<ContentInterface> {
-    const today = new Date().toISOString().split('T')[0];
-    return this.getOrGenerateNotificationContent(today);
+  async findByNotificationId(notificationId: string): Promise<ContentInterface | null> {
+    logger.debug('Finding notification content by notification ID', { notificationId }, 'NotificationContentService');
+
+    const content = await this.contentModel.findOne({ 
+      notificationId,
+      type: 'notification_content' 
+    }).exec();
+
+    if (!content) {
+      logger.debug('Notification content not found', { notificationId }, 'NotificationContentService');
+      return null;
+    }
+
+    return this.transformToNotificationContent(content);
   }
 
   /**
-   * Get notification content optimized for push notifications
-   * Returns shorter title and message suitable for mobile notifications
+   * Legacy method - kept for backward compatibility
+   * @deprecated Use generateNotificationContent() instead
    */
-  async getNotificationData(date?: string): Promise<{ title: string; body: string; fullContent: ContentInterface }> {
-    const targetDate = date || new Date().toISOString().split('T')[0];
-    const content = await this.getOrGenerateNotificationContent(targetDate);
+  async getTodaysNotificationContent(): Promise<ContentInterface> {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // For legacy calls without notification ID, we'll generate content without linking
+    logger.warn('Using deprecated getTodaysNotificationContent - should use generateNotificationContent with notificationId', {
+      date: today
+    }, 'NotificationContentService');
+
+    return this.generateUnlinkedContent(today);
+  }
+
+  /**
+   * Legacy method - kept for backward compatibility  
+   * @deprecated Use generateNotificationContent() instead
+   */
+  async getOrGenerateNotificationContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
+    logger.warn('Using deprecated getOrGenerateNotificationContent - should use generateNotificationContent with notificationId', {
+      date, scheduleId, executionId
+    }, 'NotificationContentService');
+
+    return this.generateUnlinkedContent(date);
+  }
+
+  /**
+   * Generates content without notification linking (for legacy compatibility)
+   * @param date - Date for content generation
+   * @returns Promise<ContentInterface> - Generated content
+   */
+  private async generateUnlinkedContent(date: string): Promise<ContentInterface> {
+    const startTime = Date.now();
+
+    try {
+      // Check if unlinked content already exists for this date
+      const existing = await this.contentModel.findOne({ 
+        date, 
+        type: 'notification_content',
+        notificationId: { $exists: false }
+      }).exec();
+
+      if (existing) {
+        return this.transformToNotificationContent(existing);
+      }
+
+      // Generate new unlinked content
+      const dateHash = date.split('-').reduce((acc, part) => acc + parseInt(part), 0);
+      const template = this.notificationContentTemplates[dateHash % this.notificationContentTemplates.length];
+
+      const dataItems = template.data.map(obj => {
+        const key = Object.keys(obj)[0];
+        return { key, value: obj[key] };
+      });      
+
+      const contentData = {
+        type: 'notification_content',
+        date,
+        // NO notificationId for legacy content
+        ...template,
+        data: dataItems,
+        sources: ['notification_templates'],
+        status: 'generated' as const,
+        generatedAt: new Date(),
+        generationDuration: Date.now() - startTime
+      };
+
+      const content = new this.contentModel(contentData);
+      const saved = await content.save();
+
+      logger.info('Legacy notification content generated', { 
+        contentId: saved._id.toString(),
+        date,
+        duration: saved.generationDuration 
+      }, 'NotificationContentService');
+
+      return this.transformToNotificationContent(saved);
+    } catch (error) {
+      logger.error('Legacy notification content generation failed', {
+        date,
+        error: error.message
+      }, 'NotificationContentService');
+      throw error;
+    }
+  }
+
+  /**
+   * Gets notification data optimized for push notifications
+   * @param notificationId - Notification ID that needs content
+   * @param date - Optional date for content (defaults to today)
+   * @returns Promise<{title: string; body: string; fullContent: ContentInterface}> - Optimized notification data
+   */
+  async getNotificationData(notificationId: string, date?: string): Promise<{ 
+    title: string; 
+    body: string; 
+    fullContent: ContentInterface 
+  }> {
+    const content = await this.generateNotificationContent(notificationId, date);
 
     // Optimize for mobile push notifications
     const title = this.truncateForNotification(content.title, 40);
@@ -214,6 +271,7 @@ export class NotificationContentService {
       date: doc.date,
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
+      notificationId: doc.notificationId,
       title: doc.title,
       message: doc.message,
       data: doc.data,

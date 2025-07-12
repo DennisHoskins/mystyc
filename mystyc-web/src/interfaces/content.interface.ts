@@ -7,9 +7,15 @@ export interface Content {
   _id?: string;
   date: string; // Format: "2025-07-07"
 
-  // Audit trail
+  // Website content audit trail
   scheduleId?: string;
   executionId?: string;
+  
+  // Notification content links
+  notificationId?: string;
+  
+  // User content links
+  firebaseUid?: string;
   
   // Core content
   title: string;
