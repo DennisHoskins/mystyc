@@ -65,7 +65,8 @@ Format as JSON:
         messages: [{ role: 'user', content: prompt }],
         max_tokens: this.MAX_TOKENS_PER_REQUEST,
         temperature: 0.8,
-      });
+        response_format: { type: "json_object" }
+      });      
 
       const response = completion.choices[0]?.message?.content;
       if (!response) {
