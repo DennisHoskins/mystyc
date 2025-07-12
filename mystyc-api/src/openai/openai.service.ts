@@ -6,25 +6,48 @@ import OpenAI from 'openai';
 import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
 import { logger } from '@/common/util/logger';
 
+// Configuration constants
+const MAX_RETRIES = 2; // Maximum number of retry attempts
+const REQUEST_TIMEOUT_MS = 30000; // 30 seconds timeout
+const MONTHLY_BUDGET = 20.00; // $20/month budget
+const MAX_TOKENS_PER_REQUEST = 500; // ~$0.15 max per request
+const ESTIMATED_REQUEST_COST = 0.20; // Buffer for budget checking
+
 @Injectable()
 export class OpenAIService {
   private openai: OpenAI;
-  private readonly MONTHLY_BUDGET = 20.00; // $20/month - easy to change
-  private readonly MAX_TOKENS_PER_REQUEST = 500; // ~$0.15 max per request
-  private readonly ESTIMATED_REQUEST_COST = 0.20; // Buffer for budget checking
 
   constructor(
     @InjectModel(OpenAIUsage.name) private usageModel: Model<OpenAIUsageDocument>,
   ) {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
+      timeout: REQUEST_TIMEOUT_MS,
     });
   }
 
   /**
-   * Generates mystical website content using OpenAI
+   * Returns a prompt to generates mystical website content using OpenAI
    * @param date - Date for content (YYYY-MM-DD format)
-   * @returns Promise<{title: string, message: string, success: boolean}>
+   * @returns Prompt string
+   */
+  getPrompt(date: string): string {
+      return `
+        Generate mystical daily content for ${date}. Include:
+        1. A mystical title (max 50 characters)
+        2. A mystical message (max 200 characters)
+
+        Format as JSON:
+        {
+          "title": "your title here",
+          "message": "your message here"
+        }`;
+  }
+
+  /**
+   * Generates mystical website content using OpenAI with retry logic
+   * @param date - Date for content (YYYY-MM-DD format)
+   * @returns Promise with content, success status, cost, tokens, and retry count
    */
   async generateWebsiteContent(date: string): Promise<{
     title: string;
@@ -32,8 +55,92 @@ export class OpenAIService {
     success: boolean;
     cost?: number;
     tokensUsed?: { input: number; output: number };
+    retryCount?: number;
   }> {
-    logger.info('Generating website content with OpenAI', { date }, 'OpenAIService');
+    logger.info('Generating website content with retry protection', { 
+      date, 
+      maxRetries: MAX_RETRIES 
+    }, 'OpenAIService');
+
+    const prompt = this.getPrompt(date);
+
+    let lastError: any;
+    
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const result = await this.doGenerateWebsiteContent(date, prompt, attempt);
+        
+        if (result.success) {
+          if (attempt > 0) {
+            logger.info('OpenAI request succeeded after retries', {
+              date,
+              attempt,
+              totalAttempts: attempt + 1
+            }, 'OpenAIService');
+          }
+          return { ...result, retryCount: attempt };
+        }
+        
+        // If not successful but no exception, don't retry
+        return { ...result, retryCount: attempt };
+        
+      } catch (error) {
+        lastError = error;
+        
+        if (attempt < MAX_RETRIES && this.isRetryableError(error)) {
+          const delay = Math.min(1000 * Math.pow(2, attempt), 10000); // Exponential backoff, max 10s
+          
+          logger.warn('OpenAI request failed, retrying...', {
+            date,
+            attempt: attempt + 1,
+            totalAttempts: MAX_RETRIES + 1,
+            error: error.message,
+            retryDelay: delay
+          }, 'OpenAIService');
+          
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } else {
+          logger.error('OpenAI request failed after all retries', {
+            date,
+            totalAttempts: attempt + 1,
+            maxRetries: MAX_RETRIES,
+            error: error.message,
+            isRetryableError: this.isRetryableError(error)
+          }, 'OpenAIService');
+          
+          return {
+            title: '',
+            message: '',
+            success: false,
+            retryCount: attempt
+          };
+        }
+      }
+    }
+    
+    // Should never reach here, but just in case
+    return {
+      title: '',
+      message: '',
+      success: false,
+      retryCount: MAX_RETRIES
+    };
+  }
+
+  /**
+   * Internal method that performs single OpenAI request
+   * @param date - Date for content (YYYY-MM-DD format)
+   * @param retryCount - Current retry attempt number
+   * @returns Promise with content and metadata
+   */
+  private async doGenerateWebsiteContent(date: string, prompt: string, retryCount = 0): Promise<{
+    title: string;
+    message: string;
+    success: boolean;
+    cost?: number;
+    tokensUsed?: { input: number; output: number };
+  }> {
+    logger.info('Executing OpenAI request', { date, prompt, retryCount }, 'OpenAIService');
 
     try {
       // Check budget before making request
@@ -47,23 +154,10 @@ export class OpenAIService {
         };
       }
 
-      // Simple prompt for V1 - just get the plumbing working
-      
-      const prompt = `
-Generate mystical daily content for ${date}. Include:
-1. A mystical title (max 50 characters)
-2. A mystical message (max 200 characters)
-
-Format as JSON:
-{
-  "title": "your title here",
-  "message": "your message here"
-}`;
-
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: this.MAX_TOKENS_PER_REQUEST,
+        max_tokens: MAX_TOKENS_PER_REQUEST,
         temperature: 0.8,
         response_format: { type: "json_object" }
       });      
@@ -80,8 +174,10 @@ Format as JSON:
       } catch (parseError) {
         logger.error('Failed to parse OpenAI response as JSON', {
           date,
+          prompt,
           response: response.substring(0, 200),
-          error: parseError.message
+          error: parseError.message,
+          retryCount
         }, 'OpenAIService');
         throw new Error('Invalid JSON response from OpenAI');
       }
@@ -98,14 +194,17 @@ Format as JSON:
         cost,
         requestType: 'website_content',
         prompt: prompt.substring(0, 500), // Store first 500 chars for debugging
-        response: response.substring(0, 500)
+        response: response.substring(0, 500),
+        retryCount
       });
 
       logger.info('Website content generated successfully', {
         date,
+        prompt,
         cost,
         inputTokens: usage.prompt_tokens,
-        outputTokens: usage.completion_tokens
+        outputTokens: usage.completion_tokens,
+        retryCount
       }, 'OpenAIService');
 
       return {
@@ -122,15 +221,40 @@ Format as JSON:
     } catch (error) {
       logger.error('OpenAI content generation failed', {
         date,
+        prompt,
+        retryCount,
         error: error.message
       }, 'OpenAIService');
 
-      return {
-        title: '',
-        message: '',
-        success: false
-      };
+      // Re-throw to let retry logic handle it
+      throw error;
     }
+  }
+
+  /**
+   * Determines if an OpenAI error is retryable
+   * @param error - The error object to classify
+   * @returns boolean - True if error should be retried
+   */
+  private isRetryableError(error: any): boolean {
+    // Network errors, timeouts, rate limits are retryable
+    if (error.code === 'ECONNRESET' || 
+        error.code === 'ENOTFOUND' || 
+        error.code === 'ETIMEDOUT') {
+      return true;
+    }
+    
+    // OpenAI specific retryable errors
+    if (error.status === 429 || // Rate limit
+        error.status === 500 || // Internal server error
+        error.status === 502 || // Bad gateway
+        error.status === 503 || // Service unavailable  
+        error.status === 504) { // Gateway timeout
+      return true;
+    }
+    
+    // 400, 401, 403 are not retryable (bad request, auth issues)
+    return false;
   }
 
   /**
@@ -154,17 +278,17 @@ Format as JSON:
     ]);
 
     const currentSpend = monthlySpend[0]?.totalCost || 0;
-    const remainingBudget = this.MONTHLY_BUDGET - currentSpend;
+    const remainingBudget = MONTHLY_BUDGET - currentSpend;
 
     logger.debug('Budget check', {
       currentMonth,
       currentSpend,
-      monthlyBudget: this.MONTHLY_BUDGET,
+      monthlyBudget: MONTHLY_BUDGET,
       remainingBudget,
-      estimatedRequestCost: this.ESTIMATED_REQUEST_COST
+      estimatedRequestCost: ESTIMATED_REQUEST_COST
     }, 'OpenAIService');
 
-    return remainingBudget >= this.ESTIMATED_REQUEST_COST;
+    return remainingBudget >= ESTIMATED_REQUEST_COST;
   }
 
   /**
@@ -204,8 +328,8 @@ Format as JSON:
       totalOutputTokens: 0
     };
 
-    const remainingBudget = this.MONTHLY_BUDGET - result.totalCost;
-    const budgetUsedPercent = (result.totalCost / this.MONTHLY_BUDGET) * 100;
+    const remainingBudget = MONTHLY_BUDGET - result.totalCost;
+    const budgetUsedPercent = (result.totalCost / MONTHLY_BUDGET) * 100;
 
     return {
       month: currentMonth,
@@ -239,6 +363,7 @@ Format as JSON:
     requestType: string;
     prompt: string;
     response: string;
+    retryCount?: number;
   }): Promise<void> {
     try {
       const usage = new this.usageModel({

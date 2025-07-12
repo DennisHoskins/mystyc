@@ -118,9 +118,44 @@ export class WebsiteContentService {
   }
 
   /**
-   * Generate website content for a specific date using OpenAI
+   * Creates a timeout promise that rejects after specified milliseconds
+   */
+  private createTimeoutPromise(timeoutMs: number): Promise<never> {
+    return new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Content generation timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    });
+  }
+
+  /**
+   * Generate website content for a specific date using OpenAI with timeout protection
    */
   async generateWebsiteContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
+    logger.info('Generating website content with timeout protection', { date, scheduleId, executionId }, 'WebsiteContentService');
+
+    try {
+      return await Promise.race([
+        this.doGenerateWebsiteContent(date, scheduleId, executionId),
+        this.createTimeoutPromise(60000) // 60 second timeout
+      ]);
+    } catch (error) {
+      logger.error('Website content generation failed or timed out', {
+        date,
+        scheduleId, 
+        executionId,
+        error: error.message
+      }, 'WebsiteContentService');
+      
+      // Re-throw to let existing error handling in event handler catch it
+      throw error;
+    }
+  }  
+
+  /**
+   * Generate website content for a specific date using OpenAI
+   */
+  private async doGenerateWebsiteContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
     logger.info('Generating new website content with OpenAI', { date, scheduleId, executionId }, 'WebsiteContentService');
 
     const startTime = Date.now();

@@ -36,6 +36,45 @@ export class NotificationContentService {
   ) {}
 
   /**
+   * Creates a timeout promise that rejects after specified milliseconds
+   */
+  private createTimeoutPromise(timeoutMs: number): Promise<never> {
+    return new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Notification content generation timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    });
+  }
+
+  /**
+   * Generates notification content for a specific notification with timeout protection
+   */
+  async generateNotificationContent(scheduleId: string, executionId: string, date?: string): Promise<ContentInterface> {
+    logger.info('Generating notification content with timeout protection', { 
+      scheduleId, 
+      executionId, 
+      date 
+    }, 'NotificationContentService');
+
+    try {
+      return await Promise.race([
+        this.doGenerateNotificationContent(scheduleId, executionId, date),
+        this.createTimeoutPromise(30000) // 30 second timeout (shorter than website content)
+      ]);
+    } catch (error) {
+      logger.error('Notification content generation failed or timed out', {
+        scheduleId,
+        executionId,
+        date,
+        error: error.message
+      }, 'NotificationContentService');
+      
+      // Re-throw to let existing error handling in event handler catch it
+      throw error;
+    }
+  }
+
+  /**
    * Generates notification content for a specific notification
    * This is the main entry point - each notification gets its own content
    * @param scheduleId - The schedule ID that needs content
@@ -43,7 +82,7 @@ export class NotificationContentService {
    * @param date - Date for the content (defaults to today)
    * @returns Promise<ContentInterface> - Generated content linked to the notification
    */
-  async generateNotificationContent(scheduleId: string, executionId: string, date?: string): Promise<ContentInterface> {
+  private async doGenerateNotificationContent(scheduleId: string, executionId: string, date?: string): Promise<ContentInterface> {
     const targetDate = date || new Date().toISOString().split('T')[0];
     
     logger.info('Generating notification content for notification', { 
