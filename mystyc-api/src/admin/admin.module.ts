@@ -21,13 +21,8 @@ import {
   AdminContentStatsController,
   AdminOpenAIStatsController,
 } from './controllers';
-import { UsersModule } from '@/users/users.module';
-import { DevicesModule } from '@/devices/devices.module';
-import { AuthEventsModule } from '@/auth-events/auth-events.module';
-import { NotificationsModule } from '@/notifications/notifications.module';
-import { ContentModule } from '@/content/content.module';
-import { ScheduleModule } from '@/schedule/schedule.module';
-import { OpenAIModule } from '@/openai/openai.module';
+
+import { AppServicesModule } from '../app-services.module';
 import { AdminUsersStatsService } from './services/admin-users-stats.service';
 import { AdminDevicesStatsService } from './services/admin-devices-stats.service';
 import { AdminAuthEventsStatsService } from './services/admin-auth-events-stats.service';
@@ -36,7 +31,6 @@ import { AdminContentStatsService } from './services/admin-content-stats.service
 import { AdminOpenAIStatsService } from './services/admin-openai-stats.service';
 import { AdminScheduleStatsService } from './services/admin-schedule-stats.service';
 import { AdminScheduleExecutionStatsService } from './services/admin-schedule-execution-stats.service';
-import { FirebaseModule } from '@/auth/firebase.module';
 
 import { UserProfileSchema } from '@/users/schemas/userProfile.schema';
 import { DeviceSchema } from '@/devices/schemas/device.schema';
@@ -49,14 +43,7 @@ import { ScheduleExecutionSchema } from '@/schedule/schemas/schedule-execution.s
 
 @Module({
   imports: [
-    UsersModule, 
-    DevicesModule, 
-    AuthEventsModule, 
-    NotificationsModule, 
-    OpenAIModule, 
-    ContentModule, 
-    ScheduleModule, 
-    FirebaseModule,
+    AppServicesModule,
     MongooseModule.forFeature([
       { name: 'UserProfile', schema: UserProfileSchema },
       { name: 'Device', schema: DeviceSchema },
