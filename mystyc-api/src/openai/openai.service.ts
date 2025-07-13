@@ -361,6 +361,83 @@ export class OpenAIService {
     );
   }
 
+  /**
+   * Get actual OpenAI account balance/credits
+   */
+  // async getAccountBalance(): Promise<{
+  //   totalGranted: number;
+  //   totalUsed: number;
+  //   totalAvailable: number;
+  //   effectiveAt: Date;
+  // }> {
+  //   logger.info('Fetching OpenAI account balance', {}, 'OpenAIService');
+    
+  //   try {
+  //     const headers: Record<string, string> = {
+  //       Authorization: `Bearer ${process.env.OPENAI_ADMIN_KEY}`
+  //     };
+  //     if (process.env.OPENAI_ORG_ID) {
+  //       headers['OpenAI-Organization'] = process.env.OPENAI_ORG_ID;
+  //     }
+
+  //     const res = await fetch('https://api.openai.com/v1/organization/billing/credit_grants', {
+  //       headers
+  //     });
+
+  //     if (!res.ok) {
+  //       throw new Error(`OpenAI billing API failed: ${res.status} ${res.statusText}`);
+  //     }
+
+  //     const billingData: {
+  //       object: string;
+  //       data: Array<{
+  //         object: string;
+  //         id: string;
+  //         grant_amount: number;
+  //         used_amount: number;
+  //         effective_at: number;
+  //         expires_at: number | null;
+  //       }>;
+  //     } = await res.json();
+
+  //     // Sum up all active credit grants
+  //     const now = Math.floor(Date.now() / 1000);
+  //     let totalGranted = 0;
+  //     let totalUsed = 0;
+  //     let latestEffectiveAt = 0;
+
+  //     for (const grant of billingData.data) {
+  //       // Only include non-expired grants
+  //       if (!grant.expires_at || grant.expires_at > now) {
+  //         totalGranted += grant.grant_amount;
+  //         totalUsed += grant.used_amount;
+  //         latestEffectiveAt = Math.max(latestEffectiveAt, grant.effective_at);
+  //       }
+  //     }
+
+  //     const totalAvailable = totalGranted - totalUsed;
+
+  //     logger.info('OpenAI account balance retrieved', {
+  //       totalGranted,
+  //       totalUsed,
+  //       totalAvailable
+  //     }, 'OpenAIService');
+
+  //     return {
+  //       totalGranted,
+  //       totalUsed,
+  //       totalAvailable,
+  //       effectiveAt: new Date(latestEffectiveAt * 1000)
+  //     };
+
+  //   } catch (error) {
+  //     logger.error('Failed to fetch OpenAI account balance', {
+  //       error: error.message
+  //     }, 'OpenAIService');
+  //     throw error;
+  //   }
+  // }  
+
   async findById(id: string): Promise<any> {
     return this.requestModel.findById(id).exec();
   }

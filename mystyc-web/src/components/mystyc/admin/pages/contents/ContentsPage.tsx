@@ -8,6 +8,7 @@ import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
+import Button from '@/components/ui/Button';
 import AdminListLayout from '@/components/mystyc/admin/ui/AdminListLayout';
 import ContentTable from './ContentTable';
 import ContentIcon from '@/components/mystyc/admin/ui/icons/ContentIcon';
@@ -70,12 +71,37 @@ export default function ContentPage() {
     loadContent(0);
   }, [loadContent]);
 
+  const createContent = async () => {
+    try {
+      setBusy(true);
+      setLoading(true);
+
+      const newContent = apiClientAdmin.createContent("This is my prompt");
+      console.log(newContent);
+
+    } catch (err) {
+      const wasSessionError = await handleSessionError(err, 'ContentsPage');
+      if (!wasSessionError) {
+        logger.error('Failed to create content:', err);
+        setError('Failed to create content. Please try again.');
+      }
+    } finally {
+      setBusy(false);
+      setLoading(false);
+    }
+  }
+
   return (
    <AdminListLayout
       error={error}
       onRetry={() => loadContent(currentPage)}
       breadcrumbs={breadcrumbs}
       icon={ContentIcon}
+      button={
+        <Button onClick={createContent}>
+          Create Content
+        </Button>
+      }
       description="Manage content entries: view, edit, and monitor generation status, sources, and performance metrics"
       sideContent={
         <ContentDashboard 

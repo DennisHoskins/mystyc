@@ -16,6 +16,7 @@ interface AdminListLayoutProps {
   onRetry: () => void;
   icon: IconComponent | React.ReactNode;
   breadcrumbs?: BreadcrumbItem[];
+  button?: ReactNode | null,
   title?: string;
   description?: string;
   sideContent?: ReactNode;
@@ -28,6 +29,7 @@ export default function AdminListLayout({
   onRetry,
   breadcrumbs, 
   icon, 
+  button, 
   title, 
   description, 
   sideContent, 
@@ -77,6 +79,9 @@ export default function AdminListLayout({
             ) : (
               <Heading level={2}>{title}</Heading>
             )}
+            <div className='flex-1 flex justify-end'>
+              {button}
+            </div>
           </div>
 
           <hr />

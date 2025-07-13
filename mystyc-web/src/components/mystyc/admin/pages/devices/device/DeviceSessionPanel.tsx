@@ -47,16 +47,16 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession: D
       <div className='flex flex-col'>
         <div className="flex items-center space-x-2">
           <Avatar size={'small'} icon={SessionIcon} />
-            <Heading level={5} className='flex-1'>Session</Heading>
+          <Heading level={5} className='flex-1'>Session</Heading>
 
-            <Button
-              onClick={sendNotification}
-              className='flex justify-center items-center'
-              disabled={deviceSession.device.fcmToken == null}
-            >
-              <NotificationIcon size={4} className='text-white'/>
-              <span className='hidden xl:block ml-2'>Send Notification</span>
-            </Button>
+          <Button
+            onClick={sendNotification}
+            className='flex justify-center items-center'
+            disabled={deviceSession.device.fcmToken == null}
+          >
+            <NotificationIcon size={4} className='text-white'/>
+            <span className='hidden xl:block ml-2'>Send Notification</span>
+          </Button>
         </div>
 
         <div className="pt-4">
@@ -91,6 +91,20 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession: D
   
   return (
     <div className='flex flex-col'>
+      <div className="flex items-center space-x-2">
+        <Avatar size={'small'} icon={SessionIcon} />
+        <Heading level={5} className='flex-1'>Session</Heading>
+
+        <Button
+          onClick={sendNotification}
+          className='flex justify-center items-center'
+          disabled={deviceSession.device.fcmToken == null}
+        >
+          <NotificationIcon size={4} className='text-white'/>
+          <span className='hidden xl:block ml-2'>Send Notification</span>
+        </Button>
+      </div>
+
       <div className="pt-4">
         <AdminDetailGroup>
           <AdminDetailField

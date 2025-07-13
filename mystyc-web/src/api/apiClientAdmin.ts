@@ -382,6 +382,20 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     }
   };
 
+  createContent = async (prompt: string): Promise<Content> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content`, {
+        method: 'POST',
+        body: JSON.stringify({
+          prompt
+        }),
+      });
+    } catch (error) {
+      logger.error('createContent failed:', error);
+      throw error;
+    }
+  };
+
   //
   //  OpenAI Management
   //
