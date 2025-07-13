@@ -12,12 +12,14 @@ import MessageIcon from '@/components/mystyc/admin/ui/icons/MessageIcon';
 export default function NotificationMessagePanel({ notification }: { notification: Notification }) {
   return (
     <div className='flex flex-col'>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={MessageIcon} />
         <div>
           <Heading level={5}>Message</Heading>
         </div>
       </div>
+
+      <hr />
 
       <div className="pt-4">
         <AdminDetailGroup>

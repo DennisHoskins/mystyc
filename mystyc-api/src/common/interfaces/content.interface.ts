@@ -15,7 +15,7 @@ export interface Content {
   notificationId?: string;
   
   // User link
-  firebaseUid?: string;
+  userId?: string;
 
   // OpenAI link
   openAIRequestId?: string;  
@@ -33,7 +33,7 @@ export interface Content {
   
   // Metadata
   sources: string[];
-  status: 'generated' | 'failed' | 'fallback';
+  status: 'pending' | 'generated' | 'failed' | 'fallback';
   error?: string;
   generatedAt: Date;
   generationDuration: number;

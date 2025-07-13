@@ -71,22 +71,6 @@ export default function SchedulesDashboard({
   };
 
   const { entry: nextEntry, date: nextDate } = getNextExecutionEntry();
-  let utcTime: string | null = null;
-  let localTime: string | null = null;
-  let timeUntil: string | null = null;
-  if (nextDate) {
-    utcTime = nextDate.toISOString().substring(11, 16) + ' UTC';
-    localTime = nextDate.toLocaleTimeString(undefined, {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    // Calculate hours and minutes until next execution (in local timezone)
-    const now = new Date();
-    const totalMinutes = Math.round((nextDate.getTime() - now.getTime()) / (1000 * 60));
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    timeUntil = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-  }
 
   // Transform schedule status for pie chart
   const statusData = [

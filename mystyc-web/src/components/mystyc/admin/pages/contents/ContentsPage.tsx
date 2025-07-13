@@ -76,7 +76,7 @@ export default function ContentPage() {
       setBusy(true);
       setLoading(true);
 
-      const newContent = apiClientAdmin.createContent("This is my prompt");
+      const newContent = await apiClientAdmin.createContent("This is my prompt");
       console.log(newContent);
 
     } catch (err) {

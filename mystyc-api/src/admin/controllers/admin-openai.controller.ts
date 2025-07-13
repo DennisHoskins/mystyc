@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 
-import { OpenAIService } from '@/openai/openai.service';
+import { OpenAICoreService } from '@/openai/openai-core.service';
 import { OpenAIRequest } from '@/common/interfaces/openai-request.interface';
 import { AdminController } from './admin.controller';
 
@@ -8,7 +8,7 @@ import { AdminController } from './admin.controller';
 export class AdminOpenAIController extends AdminController<OpenAIRequest> {
   protected serviceName = 'OpenAI';
   
-  constructor(protected service: OpenAIService) {
+  constructor(protected service: OpenAICoreService) {
     super();
   }
 }

@@ -18,9 +18,11 @@ export async function handleAdmin(
   routeParams?: Record<string, string>,
   requestBody?: any
 ): Promise<NextResponse> {
-  const { endpoint, method = 'GET', requiresNestCall = true, params } = options;
+  // Destructure overrideMethod instead of defaulting to GET
+  const { endpoint, method: overrideMethod, requiresNestCall = true, params } = options;
 
-  const allParams = { ...routeParams, ...params };  
+  // Build the final endpoint with routeParams + params
+  const allParams = { ...routeParams, ...params };
   let finalEndpoint = endpoint;
   if (allParams) {
     Object.entries(allParams).forEach(([key, value]) => {
@@ -30,30 +32,37 @@ export async function handleAdmin(
 
   try {
     logger.log('');
-    logger.log(`[admin/${finalEndpoint}] ${method} request started`);
+    logger.log(`[admin/${finalEndpoint}] request started`);
 
+    // Parse incoming payload (either passed in or from request.json())
     const incoming = requestBody !== undefined
       ? requestBody
       : await request.json();
 
+    // strip out your internal fields
     const { deviceInfo, ...forwardBody } = incoming;
 
-    // Get current session with error handling
+    // Compute the actual HTTP verb:
+    //    • use overrideMethod if provided
+    //    • else POST if there’s any forwardBody
+    //    • else GET
+    const effectiveMethod = overrideMethod
+      ?? (Object.keys(forwardBody).length ? 'POST' : 'GET');
+
+    // Session validation (unchanged)
     const headersList = await headers();
     const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
     if (!session) {
       logger.error(`[admin/${finalEndpoint}] No session found`);
       throw new InvalidSessionError(`[admin/${finalEndpoint}] No session found`);
     }
-
     if (!session.isAdmin) {
       logger.warn(`[admin/${finalEndpoint}] Non-admin user attempted access:`, session.email);
       throw new InvalidSessionError(`[admin/${finalEndpoint}] No session found`);
     }
-
     logger.log(`[admin/${finalEndpoint}] Admin access granted to:`, session.email);
 
-    // Handle sessions finalEndpoint (no Nest call needed)
+    // “Redis only” shortcut (unchanged)
     if (!requiresNestCall) {
       const searchParams = request.nextUrl.searchParams;
       const limit = parseInt(searchParams.get('limit') || '20');
@@ -64,30 +73,35 @@ export async function handleAdmin(
       return NextResponse.json(data);
     }
 
-    // Handle endpoints that need Nest API calls
+console.log()
+console.log()
+console.log(effectiveMethod)
+console.log()
+console.log()
+console.log()
+
+    // Forward to Nest with the computed verb
     const searchParams = request.nextUrl.searchParams;
     const queryString = searchParams.toString();
-    
     logger.log(`[admin/${finalEndpoint}] Query params:`, queryString);
 
     const nestResponse = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${finalEndpoint}${queryString ? `?${queryString}` : ''}`,
       {
-        method,
+        method: effectiveMethod,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': authTokenManager.createAuthHeader(session.authToken),
         },
-          ...(method !== 'GET' && forwardBody && {
-          body: JSON.stringify(forwardBody)
-        })
+        ...(effectiveMethod !== 'GET' && {
+          body: JSON.stringify(forwardBody),
+        }),
       }
     );
 
     if (!nestResponse.ok) {
-      const error = await nestResponse.text();
-      logger.error(`[admin/${finalEndpoint}] Nest request failed:`, error);
-      
+      const errorText = await nestResponse.text();
+      logger.error(`[admin/${finalEndpoint}] Nest request failed:`, errorText);
       return NextResponse.json(
         { message: `Failed to fetch ${finalEndpoint}` },
         { status: nestResponse.status }
@@ -96,7 +110,6 @@ export async function handleAdmin(
 
     const data = await nestResponse.json();
     logger.log(`[admin/${finalEndpoint}] Data fetched successfully, count:`, data.data?.length || 0);
-    
     return NextResponse.json(data);
 
   } catch (error) {

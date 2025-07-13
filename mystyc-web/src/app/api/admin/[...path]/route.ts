@@ -4,6 +4,7 @@ import { logger } from '@/util/logger';
 
 // Routes that only read from Redis cache
 const REDIS_ONLY_ROUTES = new Set([
+  'device-sessions/[deviceId]',
   'sessions',
   'sessions/devices',
   'stats/sessions', 
@@ -82,5 +83,27 @@ export async function POST(
 
   // Default: forward to Nest API
   const { endpoint, routeParams } = mapToNestEndpoint(route, path);
-  return handleAdmin(request, { endpoint }, routeParams);
+  const payload = await request.json();
+
+  // Extract the client-sent “method” field
+  const {
+    method: explicitMethod,
+    ...forwardPayload
+  } = payload;
+
+  // Compute a TS-safe verb (fallback to GET if none provided)
+  const effectiveMethod =
+    (explicitMethod?.toUpperCase() as 'GET' | 'POST' | 'PUT' | 'DELETE')
+    || 'GET';
+
+  // Forward both the body and the verb into handleAdmin
+  return handleAdmin(
+    request,
+    {
+      endpoint,
+      method: effectiveMethod,
+    },
+    routeParams,
+    forwardPayload
+  );
 }

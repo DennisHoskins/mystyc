@@ -13,12 +13,14 @@ import TokensIcon from '@/components/mystyc/admin/ui/icons/TokensIcon';
 export default function DeviceTokensPanel({ session, device }: { session: Session, device?: Device | null }) {
   return (
     <div className='flex flex-col'>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={TokensIcon} />
         <div>
           <Heading level={5}>Tokens</Heading>
         </div>
       </div>
+
+      <hr />
 
       <div className="pt-4">
         <AdminDetailGrid>

@@ -264,8 +264,11 @@ export class ContentService {
       // Notification content links
       notificationId: doc.notificationId,
 
-      // User content links (future)
-      firebaseUid: doc.firebaseUid,
+      // User content link
+      userId: doc.userId,
+
+      // OpenAI links
+      openAIRequestId: doc.openAIRequestId,
 
       // Core content
       title: doc.title,

@@ -3,12 +3,16 @@ import { Throttle } from '@nestjs/throttler';
 
 import { Public } from '@/common/decorators/public.decorator';
 import { WebsiteContentService } from './website-content.service';
+import { UserContentService } from './user-content.service';
 import { Content } from '@/common/interfaces/content.interface';
 import { logger } from '@/common/util/logger';
 
-@Controller('content')
-export class ContentController {
-  constructor(private readonly websiteContentService: WebsiteContentService) {}
+@Controller('website-content')
+export class WebsiteContentController {
+  constructor(
+    private readonly websiteContentService: WebsiteContentService,
+    private readonly userContentService: UserContentService,
+  ) {}
 
   /**
    * Get today's content

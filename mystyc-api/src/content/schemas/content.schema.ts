@@ -45,9 +45,9 @@ export class Content {
   @Prop({ index: true }) 
   openAIRequestId?: string;  
 
-  // User content links (future)
+  // User content links
   @Prop({ index: true })
-  firebaseUid?: string;
+  userId?: string;
 
   @Prop({ required: true })
   title: string;
@@ -70,8 +70,8 @@ export class Content {
   @Prop({ type: [String], default: [] })
   sources: string[]; // ["static", "horoscope-api", "openai"]
 
-  @Prop({ required: true, enum: ['generated', 'failed', 'fallback'], default: 'generated' })
-  status: 'generated' | 'failed' | 'fallback';
+  @Prop({ required: true, enum: ['pending', 'generated', 'failed', 'fallback'], default: 'generated' })
+  status: 'pending' | 'generated' | 'failed' | 'fallback';
 
   @Prop()
   error?: string;

@@ -1,9 +1,9 @@
 import { Controller, UseGuards, Post, Patch, Get, Body, Req, Headers, UnauthorizedException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
+
 import { Public } from '@/common/decorators/public.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';

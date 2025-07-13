@@ -37,8 +37,8 @@ export default function ContentTable({
     { key: 'date', header: 'Created', link: (u) => `/admin/content/${u._id}`, 
       render: (u) =>
           u.error
-          ? <span className="text-red-500">{formatDateForDisplay(u.date)}</span>
-          : formatDateForDisplay(u.date)},
+          ? <span className="text-red-500">{formatDateForDisplay(u.generatedAt)}</span>
+          : formatDateForDisplay(u.generatedAt)},
     { key: 'status', header: 'Status', link: (u) => `/admin/content/${u._id}`, 
       render: (u) =>
         u.error
@@ -47,21 +47,21 @@ export default function ContentTable({
     { key: 'title', header: 'Title', link: (u) => `/admin/content/${u._id}`, 
       render: (u) =>
           u.error
-          ? <span className="text-red-500">{formatDateForDisplay(u.title)}</span>
-          : formatDateForDisplay(u.title)},
+          ? <span className="text-red-500">{u.title}</span>
+          : u.title},
     { 
       key: 'source', 
       header: 'Source', 
+      align: 'center', 
       link: (u) => 
         u.executionId ? `/admin/schedule-execution/${u.executionId}` :
         u.notificationId ? `/admin/notifications/${u.notificationId}` :
-        u.firebaseUid ? `/admin/users/${u.firebaseUid}` :
+        u.userId ? `/admin/users/${u.userId}` :
         null,
-      align: 'center', 
       icon: (u) => 
         u.executionId ? AlarmClockCheck :
         u.notificationId ? Bell :
-        u.firebaseUid ? User :
+        u.userId ? User :
         Globe
     },
   ];

@@ -4,7 +4,7 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
-import { OpenAIService } from '@/openai/openai.service';
+import { OpenAICoreService } from '@/openai/openai-core.service';
 import { AdminOpenAIStatsService } from '@/admin/services/admin-openai-stats.service';
 import { OpenAIRequest } from '@/common/interfaces/openai-request.interface';
 import { 
@@ -19,7 +19,7 @@ export class AdminOpenAIStatsController extends AdminController<OpenAIRequest> {
   protected serviceName = 'OpenAI';
 
   constructor(
-    protected service: OpenAIService,
+    protected service: OpenAICoreService,
     private readonly adminOpenAIStatsService: AdminOpenAIStatsService,
   ) {
     super();

@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { OpenAIService } from './openai.service';
+import { OpenAICoreService } from './openai-core.service';
+import { OpenAIWebsiteService } from './openai-website.service';
+import { OpenAIUserService } from './openai-user.service';
 import { OpenAIRequest, OpenAIRequestSchema } from './schemas/openai-request.schema';
 import { OpenAIUsage, OpenAIUsageSchema } from './schemas/openai-usage.schema';
 
@@ -12,7 +14,15 @@ import { OpenAIUsage, OpenAIUsageSchema } from './schemas/openai-usage.schema';
       { name: OpenAIUsage.name, schema: OpenAIUsageSchema },
     ]),
   ],
-  providers: [OpenAIService],
-  exports: [OpenAIService],
+  providers: [
+    OpenAICoreService, 
+    OpenAIWebsiteService, 
+    OpenAIUserService
+  ],
+  exports: [
+    OpenAICoreService, 
+    OpenAIWebsiteService, 
+    OpenAIUserService
+  ],
 })
 export class OpenAIModule {}

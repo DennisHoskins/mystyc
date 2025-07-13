@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OpenAIRequestDocument } from '@/openai/schemas/openai-request.schema';
-import { OpenAIService } from '@/openai/openai.service';
+import { OpenAICoreService } from '@/openai/openai-core.service';
 import { 
   OpenAIRequestSummaryStats
 } from '@/common/interfaces/admin/stats/admin-openai-request-stats.interface';
@@ -13,7 +13,7 @@ import { logger } from '@/common/util/logger';
 export class AdminOpenAIStatsService {
   constructor(
     @InjectModel('OpenAIRequest') private contentModel: Model<OpenAIRequestDocument>,
-    private readonly openAIService: OpenAIService,
+    private readonly openAIService: OpenAICoreService,
   ) {}
 
   async getSummaryStats(query?: AdminStatsQueryDto): Promise<OpenAIRequestSummaryStats> {

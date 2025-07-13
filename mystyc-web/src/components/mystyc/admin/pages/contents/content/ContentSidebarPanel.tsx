@@ -4,19 +4,21 @@ import { Content } from '@/interfaces';
 
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
+import ContentIcon from '@/components/mystyc/admin/ui/icons/ContentIcon';
 import AdminDetailGroup from '@/components/mystyc/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/mystyc/admin/ui/detail/AdminDetailField';
-import ContentIcon from '@/components/mystyc/admin/ui/icons/ContentIcon';
 
 export default function ContentSidebarPanel({ content }: { content: Content }) {
   return (
     <div className='flex flex-col'>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={ContentIcon} />
         <div>
           <Heading level={5}>Content Details</Heading>
         </div>
       </div>
+
+      <hr/>
 
       <div className="pt-4 space-y-6">
         <AdminDetailGroup>

@@ -15,14 +15,12 @@ interface OpenAIDashboardProps {
   className?: string | null;
   stats?: StatsResponseWithQuery<OpenAIRequestStats> | null;
   charts?: ChartType[];
-  height?: number;
 }
 
 export default function OpenAIDashboard({ 
   className,
   stats,
   charts = ['stats', 'requests', 'performance', 'cost'],
-  height
 }: OpenAIDashboardProps) {
   if (!stats) {
     return null;

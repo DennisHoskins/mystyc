@@ -8,6 +8,8 @@ import { UserRole } from '@/common/enums/roles.enum';
 import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
 import { ContentService } from '@/content/content.service';
+import { WebsiteContentService } from '@/content/website-content.service';
+import { UserContentService } from '@/content/user-content.service';
 import { Content } from '@/common/interfaces/content.interface';
 import { AdminController } from './admin.controller';
 import { CreateContentDto } from '@/content/dto/create-content.dto';
@@ -17,7 +19,11 @@ import { logger } from '@/common/util/logger';
 export class AdminContentController extends AdminController<Content> {
   protected serviceName = 'Content';
   
-  constructor(protected service: ContentService) {
+  constructor(
+    protected service: ContentService,
+    private readonly websiteContentService: WebsiteContentService,
+    private readonly userContentService: UserContentService,
+  ) {
     super();
   }
 
@@ -33,12 +39,7 @@ export class AdminContentController extends AdminController<Content> {
   async createContent(
     @Body() createContentDto: CreateContentDto,
     @FirebaseUserDecorator() user: FirebaseUser
-  ) {
-
-    console.log('🟢 POST generate route HIT!'); // Add this first line
-    console.log('Body:', createContentDto); // Check if body is parsed
-    console.log('User:', user); // Check if user is available    
-
+  ): Promise<Content> {
     const prompt = createContentDto.prompt || "This is my default prompt";
 
     logger.info('Admin create Content', {
@@ -46,18 +47,9 @@ export class AdminContentController extends AdminController<Content> {
       prompt: 'prompt: ' + prompt,
     }, 'AdminContentController');
 
-    return null;
+    const today = new Date().toISOString().split('T')[0];
+    const result = await this.userContentService.generateUserContent(today, user.uid);
 
+    return result;
   }
-
-  // @Get(':id')
-  // @UseGuards(FirebaseAuthGuard, RolesGuard)
-  // @Roles(UserRole.ADMIN)
-  // async findById(@Param('id') id: string): Promise<Content> {
-  //   // Prevent 'create' from being treated as an ID
-  //   if (id === 'create') {
-  //     throw new NotFoundException('Invalid content ID');
-  //   }
-  //   return super.findById(id);
-  // }  
 }

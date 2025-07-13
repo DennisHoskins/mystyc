@@ -17,12 +17,14 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
 
   return (
     <div className='flex flex-col'>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={UserProfileIcon} />
         <div>
           <Heading level={5}>Profile</Heading>
         </div>
       </div>
+
+      <hr/ >
 
       <div className='pt-4'>
         <AdminDetailGroup>

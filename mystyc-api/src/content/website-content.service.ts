@@ -6,7 +6,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
-import { OpenAIService } from '@/openai/openai.service';
+import { OpenAIWebsiteService } from '@/openai/openai-website.service';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -21,7 +21,7 @@ class ContentGenerationTimeoutError extends Error {
 export class WebsiteContentService {
   constructor(
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
-    private readonly openAIService: OpenAIService,
+    private readonly openAIService: OpenAIWebsiteService,
     private readonly scheduleExecutionService: ScheduleExecutionService
   ) {}
  
@@ -363,7 +363,7 @@ export class WebsiteContentService {
     return this.getOrGenerateWebsiteContent(today);
   }
 
-  // Admin methods for pagination/stats (unchanged from original)
+  // Admin methods for pagination/stats
   async getTotalByScheduleId(scheduleId: string): Promise<number> {
     return await this.contentModel.countDocuments({ scheduleId });
   }
@@ -440,9 +440,9 @@ export class WebsiteContentService {
       
       // Notification content links
       notificationId: doc.notificationId,
-      
-      // User content links
-      firebaseUid: doc.firebaseUid,
+
+      // AI request link
+      openAIRequestId: doc.openAIRequestId,
       
       // Core content
       title: doc.title,

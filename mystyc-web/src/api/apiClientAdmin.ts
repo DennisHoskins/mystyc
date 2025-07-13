@@ -51,12 +51,13 @@ export interface StatsResponseWithQuery<T> {
 }
 
 class AdminApiClient {
-private async fetchWithAuth(url: string, options: RequestInit = {}) {
+  private async fetchWithAuth(url: string, method?: "GET" | "POST", options: RequestInit = {}) {
     try {
       // Build the body with deviceInfo and any existing body data
       const bodyData = options.body ? JSON.parse(options.body as string) : {};
       const requestBody = {
         ...bodyData,
+        method: method,
         deviceInfo: getDeviceInfo(),
         clientTimestamp: new Date().toISOString()
       };
@@ -384,10 +385,12 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   createContent = async (prompt: string): Promise<Content> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content`, {
-        method: 'POST',
-        body: JSON.stringify({
-          prompt
+      return await this.fetchWithAuth(
+        `${API_BASE_URL}/admin/content`, 
+        "POST",
+        {body: JSON.stringify({
+          prompt,
+          clientTimestamp: new Date().toISOString()
         }),
       });
     } catch (error) {
@@ -605,7 +608,7 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
 
   getDeviceSession = async (deviceId: string): Promise<DeviceSession> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/session`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/device-sessions/${deviceId}`);
     } catch (error) {
       logger.error('getDeviceSession failed:', error);
       throw error;
@@ -704,9 +707,10 @@ private async fetchWithAuth(url: string, options: RequestInit = {}) {
     notification:string
   ): Promise<any> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications/send/${deviceId}`, {
-        method: 'POST',
-        body: JSON.stringify({
+      return await this.fetchWithAuth(
+        `${API_BASE_URL}/admin/notifications/send/${deviceId}`, 
+        "POST",
+        {body: JSON.stringify({
           title,
           notification
         }),
