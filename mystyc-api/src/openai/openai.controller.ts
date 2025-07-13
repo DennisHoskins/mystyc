@@ -21,13 +21,13 @@ export class OpenAIController {
     logger.info('Admin checking OpenAI usage', {}, 'OpenAIController');
     
     try {
-      const usage = await this.openAIService.getMonthlyUsage();
+      const usage = await this.openAIService.getUsageStats();
       
       logger.info('OpenAI usage retrieved', {
         month: usage.month,
-        totalCost: usage.totalCost,
-        remainingBudget: usage.remainingBudget,
-        budgetUsedPercent: usage.budgetUsedPercent
+        totalCost: usage.tokenBudget,
+        remainingBudget: usage.tokenBudget - usage.tokensUsed,
+        budgetUsedPercent: usage.tokenUsagePercent
       }, 'OpenAIController');
       
       return usage;

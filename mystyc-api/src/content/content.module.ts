@@ -12,12 +12,14 @@ import { NotificationContentService } from './notification-content.service';
 import { OpenAIService } from '@/openai/openai.service';
 
 import { Content, ContentSchema } from './schemas/content.schema';
+import { OpenAIRequest, OpenAIRequestSchema } from '@/openai/schemas/openai-request.schema';
 import { OpenAIUsage, OpenAIUsageSchema } from '@/openai/schemas/openai-usage.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Content.name, schema: ContentSchema },
+      { name: OpenAIRequest.name, schema: OpenAIRequestSchema },
       { name: OpenAIUsage.name, schema: OpenAIUsageSchema }
     ]),
     FirebaseModule,
