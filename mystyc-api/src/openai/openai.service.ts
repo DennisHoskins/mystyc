@@ -25,15 +25,6 @@ export class OpenAIService {
     @InjectModel(OpenAIUsage.name) private usageModel: Model<OpenAIUsageDocument>,
     @InjectModel(OpenAIRequest.name) private requestModel: Model<OpenAIRequestDocument>,
   ) {
-
- console.log('');
- console.log('');
- console.log('');
- console.log('OpenAIService instance created');
- console.log('');
- console.log('');
- console.log('');
- 
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
       timeout: REQUEST_TIMEOUT_MS,

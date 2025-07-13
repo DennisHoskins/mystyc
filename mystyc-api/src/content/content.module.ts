@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FirebaseModule } from '@/auth/firebase.module';
 import { UsersModule } from '@/users/users.module';
 import { ScheduleModule } from '@/schedule/schedule.module';
+import { OpenAIModule } from '@/openai/openai.module';
 import { ContentController } from './content.controller';
 import { OpenAIController } from '@/openai/openai.controller';
 import { ContentService } from './content.service';
@@ -24,7 +25,8 @@ import { OpenAIUsage, OpenAIUsageSchema } from '@/openai/schemas/openai-usage.sc
     ]),
     FirebaseModule,
     UsersModule,
-    ScheduleModule
+    ScheduleModule,
+    OpenAIModule,
   ],
   controllers: [
     ContentController,
@@ -34,13 +36,11 @@ import { OpenAIUsage, OpenAIUsageSchema } from '@/openai/schemas/openai-usage.sc
     ContentService,
     WebsiteContentService,
     NotificationContentService,
-    OpenAIService,
   ],
   exports: [
     ContentService,
     WebsiteContentService,
     NotificationContentService,
-    OpenAIService,
   ],
 })
 export class ContentModule {}

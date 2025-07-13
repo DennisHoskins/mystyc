@@ -6,14 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 
-import { FirebaseModule } from '@/auth/firebase.module';
-import { UsersModule } from '@/users/users.module';
-import { DevicesModule } from '@/devices/devices.module';
-import { ScheduleModule as AppScheduleModule } from '@/schedule/schedule.module';
-import { AuthEventsModule } from '@/auth-events/auth-events.module';
-import { NotificationsModule } from '@/notifications/notifications.module';
-import { OpenAIModule } from '@/openai/openai.module';
-import { ContentModule } from '@/content/content.module';
+import { AppServicesModule } from '@/app-services.module';
 import { AdminModule } from '@/admin/admin.module';
 
 import { AppController } from '@/app.controller';
@@ -40,15 +33,8 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
         limit: 100,
       }
     ]),
-    FirebaseModule,
-    UsersModule,
-    DevicesModule,
-    AppScheduleModule,
-    AuthEventsModule,
+    AppServicesModule,
     AdminModule,
-    NotificationsModule,
-    ContentModule,
-    OpenAIModule,
   ],
   controllers: [AppController],
   providers: [
