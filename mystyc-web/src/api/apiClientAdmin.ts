@@ -10,6 +10,7 @@ import {
   Schedule, 
   ScheduleExecution,
   OpenAIRequest, 
+  OpenAIUsage, 
   AdminQuery, 
   AdminStatsQuery, 
   AdminStatsResponseExtended, 
@@ -422,6 +423,15 @@ class AdminApiClient {
     }
   };
 
+  getOpenAIUsage = async (): Promise<OpenAIUsage> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai/usage`);
+    } catch (error) {
+      logger.error('getOpenAIUsage failed:', error);
+      throw error;
+    }
+  };
+
   //
   //  Schedule Management
   //
@@ -520,6 +530,7 @@ class AdminApiClient {
   //
 
   getUserSummary = async (firebaseUid: string): Promise<{
+    content: { total: number };
     authEvents: { total: number };
     notifications: { total: number };
   }> => {
@@ -556,6 +567,16 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/devices${queryString}`);
     } catch (error) {
       logger.error('getUserDevices failed:', error);
+      throw error;
+    }
+  };
+
+  getUserContent = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/content${queryString}`);
+    } catch (error) {
+      logger.error('getUserContent failed:', error);
       throw error;
     }
   };

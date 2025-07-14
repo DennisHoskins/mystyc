@@ -1,7 +1,7 @@
 'use client';
 
 import { Content } from '@/interfaces';
-import { formatTimestampForComponent } from '@/util/dateTime';
+import { formatDateForDisplay, formatTimestampForComponent } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/mystyc/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/mystyc/admin/ui/detail/AdminDetailField';
@@ -54,8 +54,45 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
             />
           )}
         </AdminDetailGroup>
+
+        <AdminDetailGroup>
+          <AdminDetailField
+            label="Date"
+            value={content.date}
+          />
+          <AdminDetailField
+            label="Title"
+            value={content.title}
+          />
+          {content.sources && content.sources.length > 0 && (
+            <AdminDetailField
+              label="Message"
+              value={content.message.substring(0, 25) + "..."}
+            />
+          )}
+        </AdminDetailGroup>
+
+        {content.linkUrl && (
+          <AdminDetailGroup>
+            <AdminDetailField
+              label="Link URL"
+              value={content.linkUrl}
+              href={content.linkUrl}
+            />
+            <AdminDetailField
+              label="Link Text"
+              value={content.linkText || 'Not set'}
+            />
+            {content.imageUrl && (
+              <AdminDetailField
+                label="Image URL"
+                value={content.imageUrl.substring(0, 50) + '...'}
+                href={content.imageUrl}
+              />
+            )}
+          </AdminDetailGroup>
+        )}
       </div>
-      
     </div>
   );
 }

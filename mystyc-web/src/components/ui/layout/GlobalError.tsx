@@ -1,5 +1,6 @@
 'use client';
 
+import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
@@ -10,7 +11,7 @@ export default function Error() {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <Card className="flex flex-1 items-center justify-center">
       <div className="w-full max-w-md  text-center">
         <div className="text-6xl mb-6">💥</div>
         
@@ -28,6 +29,6 @@ export default function Error() {
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

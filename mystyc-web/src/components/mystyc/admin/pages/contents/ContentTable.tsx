@@ -19,6 +19,7 @@ interface ContentTableProps {
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
+  hideSourceCoulumn?: boolean;
 }
 
 export default function ContentTable({
@@ -31,9 +32,10 @@ export default function ContentTable({
   totalItems,
   hasMore,
   onPageChange,
-  onRefresh
+  onRefresh,
+  hideSourceCoulumn = false
 }: ContentTableProps) {
-  const columns: Column<Content>[] = [
+  const baseColumns: Column<Content>[] = [
     { key: 'date', header: 'Created', link: (u) => `/admin/content/${u._id}`, 
       render: (u) =>
           u.error
@@ -49,22 +51,31 @@ export default function ContentTable({
           u.error
           ? <span className="text-red-500">{u.title}</span>
           : u.title},
-    { 
-      key: 'source', 
-      header: 'Source', 
-      align: 'center', 
-      link: (u) => 
-        u.executionId ? `/admin/schedule-execution/${u.executionId}` :
-        u.notificationId ? `/admin/notifications/${u.notificationId}` :
-        u.userId ? `/admin/users/${u.userId}` :
-        null,
-      icon: (u) => 
-        u.executionId ? AlarmClockCheck :
-        u.notificationId ? Bell :
-        u.userId ? User :
-        Globe
-    },
   ];
+
+  const sourceColumn: Column<Content> = {
+    key: 'source', 
+    header: 'Source', 
+    align: 'center', 
+    link: (u) => 
+      u.executionId ? `/admin/schedule-execution/${u.executionId}` :
+      u.notificationId ? `/admin/notifications/${u.notificationId}` :
+      u.userId ? `/admin/users/${u.userId}` :
+      null,
+    icon: (u) => 
+      u.executionId ? AlarmClockCheck :
+      u.notificationId ? Bell :
+      u.userId ? User :
+      Globe
+  };
+
+  const columns = hideSourceCoulumn 
+    ? baseColumns 
+    : [
+        baseColumns[0],
+        ...baseColumns.slice(1),
+        sourceColumn,
+      ];
 
   return (
     <AdminTable<Content>

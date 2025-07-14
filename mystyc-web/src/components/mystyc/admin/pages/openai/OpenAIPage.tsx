@@ -12,6 +12,7 @@ import AdminListLayout from '@/components/mystyc/admin/ui/AdminListLayout';
 import OpenAIRequestsTable from './OpenAIRequestsTable';
 import OpenAIIcon from '@/components/mystyc/admin/ui/icons/OpenAIIcon';
 import OpenAIDashboard from './OpenAIDashboard';
+import OpenAIUsagePanel from './OpenAIUsagePanel';
 
 export default function OpenAIPage() {
   const { handleSessionError } = useSessionErrorHandler();
@@ -82,6 +83,7 @@ export default function OpenAIPage() {
            charts={['stats']}
          />
        }
+       itemContent={[<OpenAIUsagePanel />]}
        tableContent={
         <OpenAIRequestsTable
           data={openAiRequests}

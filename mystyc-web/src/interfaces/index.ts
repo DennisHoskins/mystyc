@@ -17,6 +17,7 @@ export * from './content.interface';
 export * from './schedule.interface';
 export * from './schedule-execution.interface';
 export * from './openai-request.interface';
+export * from './openai-usage.interface';
 
 export * from './admin/admin-list-response.interface';
 export * from './admin/stats/admin-stats-query.interface';

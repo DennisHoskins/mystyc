@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { OpenAIContextDto } from './dto/openai-context.dto';
 import { OpenAIUsageDocument, OpenAIUsage } from './schemas/openai-usage.schema';
 import { OpenAIRequestDocument, OpenAIRequest } from './schemas/openai-request.schema';
 import { logger } from '@/common/util/logger';
@@ -15,7 +14,7 @@ export class OpenAICoreService implements OnModuleInit {
 
   protected MAX_RETRIES = 2; // Maximum number of retry attempts
   protected REQUEST_TIMEOUT_MS = 30000; // 30 seconds timeout
-  protected MONTHLY_BUDGET = 20.00; // $20/month budget
+  protected MONTHLY_BUDGET = 20.00; // $/month budget
   protected TOKEN_BUDGET = Math.floor(this.MONTHLY_BUDGET * 50000);
   protected MAX_TOKENS_PER_REQUEST = 500; // ~$0.15 max per request
   protected ESTIMATED_REQUEST_COST = 0.20; // Buffer for budget checking
@@ -168,6 +167,7 @@ export class OpenAICoreService implements OnModuleInit {
    */
   async getUsageStats(): Promise<{
     month: string;
+    lastSyncedAt: Date;
     tokensUsed: number;
     tokenBudget: number;
     tokenUsagePercent: number;
@@ -177,12 +177,14 @@ export class OpenAICoreService implements OnModuleInit {
   }> {
     const currentMonth = new Date().toISOString().substring(0, 7);
     const usage = await this.usageModel.findOne({ month: currentMonth }).exec();
+    const lastSyncedAt = usage.lastSyncedAt;
     const tokensUsed = usage?.tokensUsed || 0;
     const costUsed = usage?.costUsed || 0;
     const tokenBudget = usage?.tokenBudget || this.TOKEN_BUDGET;
     const costBudget = usage?.costBudget || this.MONTHLY_BUDGET;
     return {
       month: currentMonth,
+      lastSyncedAt,
       tokensUsed,
       tokenBudget,
       tokenUsagePercent: Math.min(100, (tokensUsed / tokenBudget) * 100),
@@ -206,83 +208,6 @@ export class OpenAICoreService implements OnModuleInit {
       { upsert: true },
     );
   }
-
-  /**
-   * Get actual OpenAI account balance/credits
-   */
-  // async getAccountBalance(): Promise<{
-  //   totalGranted: number;
-  //   totalUsed: number;
-  //   totalAvailable: number;
-  //   effectiveAt: Date;
-  // }> {
-  //   logger.info('Fetching OpenAI account balance', {}, 'OpenAIService');
-    
-  //   try {
-  //     const headers: Record<string, string> = {
-  //       Authorization: `Bearer ${process.env.OPENAI_ADMIN_KEY}`
-  //     };
-  //     if (process.env.OPENAI_ORG_ID) {
-  //       headers['OpenAI-Organization'] = process.env.OPENAI_ORG_ID;
-  //     }
-
-  //     const res = await fetch('https://api.openai.com/v1/organization/billing/credit_grants', {
-  //       headers
-  //     });
-
-  //     if (!res.ok) {
-  //       throw new Error(`OpenAI billing API failed: ${res.status} ${res.statusText}`);
-  //     }
-
-  //     const billingData: {
-  //       object: string;
-  //       data: Array<{
-  //         object: string;
-  //         id: string;
-  //         grant_amount: number;
-  //         used_amount: number;
-  //         effective_at: number;
-  //         expires_at: number | null;
-  //       }>;
-  //     } = await res.json();
-
-  //     // Sum up all active credit grants
-  //     const now = Math.floor(Date.now() / 1000);
-  //     let totalGranted = 0;
-  //     let totalUsed = 0;
-  //     let latestEffectiveAt = 0;
-
-  //     for (const grant of billingData.data) {
-  //       // Only include non-expired grants
-  //       if (!grant.expires_at || grant.expires_at > now) {
-  //         totalGranted += grant.grant_amount;
-  //         totalUsed += grant.used_amount;
-  //         latestEffectiveAt = Math.max(latestEffectiveAt, grant.effective_at);
-  //       }
-  //     }
-
-  //     const totalAvailable = totalGranted - totalUsed;
-
-  //     logger.info('OpenAI account balance retrieved', {
-  //       totalGranted,
-  //       totalUsed,
-  //       totalAvailable
-  //     }, 'OpenAIService');
-
-  //     return {
-  //       totalGranted,
-  //       totalUsed,
-  //       totalAvailable,
-  //       effectiveAt: new Date(latestEffectiveAt * 1000)
-  //     };
-
-  //   } catch (error) {
-  //     logger.error('Failed to fetch OpenAI account balance', {
-  //       error: error.message
-  //     }, 'OpenAIService');
-  //     throw error;
-  //   }
-  // }  
 
   async findById(id: string): Promise<any> {
     return this.requestModel.findById(id).exec();

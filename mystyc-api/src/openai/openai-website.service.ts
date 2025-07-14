@@ -16,6 +16,8 @@ export class OpenAIWebsiteService extends OpenAICoreService {
     super(usageModel, requestModel);
   }
 
+  async onModuleInit(): Promise<void> {}
+
   getPrompt(date: string): string {
     return `
       Generate mystical daily content for ${date}. Include:

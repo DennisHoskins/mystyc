@@ -7,7 +7,6 @@ import { Content as ContentInterface } from '@/common/interfaces/content.interfa
 import { OpenAIUserService } from '@/openai/openai-user.service';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
-import { OpenAIRequest } from '@/openai/schemas/openai-request.schema';
 
 class ContentGenerationTimeoutError extends Error {
   constructor(timeoutMs: number) {

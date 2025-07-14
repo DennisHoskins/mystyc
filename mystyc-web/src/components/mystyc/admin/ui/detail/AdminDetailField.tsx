@@ -13,7 +13,7 @@ interface AdminDetailFieldProps {
 
 export default function AdminDetailField({ label, value, href, text }: AdminDetailFieldProps) {
   return (
-    <div>
+    <div className='mb-4'>
       <Text variant="small" className="font-light text-gray-500 uppercase tracking-wide">
         {label}
       </Text>

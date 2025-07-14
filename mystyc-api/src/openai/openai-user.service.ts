@@ -16,6 +16,8 @@ export class OpenAIUserService extends OpenAICoreService {
     super(usageModel, requestModel);
   }
 
+  async onModuleInit(): Promise<void> {}
+
   getPromptForUser(userId: string, date: string): string {
     return `Generate personalized mystical content for user ${userId} on ${date}…`;
   }

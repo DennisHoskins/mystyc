@@ -8,8 +8,10 @@ import { UserProfilesService } from '@/users/user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { NotificationsService } from '@/notifications/notifications.service';
+import { ContentService } from '@/content/content.service';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { Device } from '@/common/interfaces/device.interface';
+import { Content } from '@/common/interfaces/content.interface';
 import { AuthEvent } from '@/common/interfaces/auth-event.interface';
 import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
@@ -24,6 +26,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   constructor(
     protected service: UserProfilesService,
     private readonly deviceService: DevicesService,
+    private readonly contentService: ContentService,
     private readonly authEventsService: AuthEventsService,
     private readonly notificationsService: NotificationsService,
   ) {
@@ -76,12 +79,14 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getUserSummary(@Param('firebaseUid') firebaseUid: string) {
-    const [authEventsCount, notificationsCount] = await Promise.all([
+    const [contentCount, authEventsCount, notificationsCount] = await Promise.all([
+      this.contentService.getTotalByFirebaseUid(firebaseUid),
       this.authEventsService.getTotalByFirebaseUid(firebaseUid),
       this.notificationsService.getTotalByFirebaseUid(firebaseUid)
     ]);
 
     return {
+      content: { total: contentCount },
       authEvents: { total: authEventsCount },
       notifications: { total: notificationsCount },
     };
@@ -116,6 +121,56 @@ export class AdminUsersController extends AdminController<UserProfile> {
     const totalPages = Math.ceil(totalItems / (query.limit || 100));
     
     logger.info('User devices retrieved', { 
+      firebaseUid, 
+      count: data.length,
+      totalItems
+    }, 'AdminUserController');
+    
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+      sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
+  }
+
+  /**
+   * Finds all content for a specific user (admin use)
+   * @param firebaseUid - Firebase user unique identifier
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<Content>> - Paginated list of user's content
+   */
+  @Get(':firebaseUid/content')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUserContent(
+    @Param('firebaseUid') firebaseUid: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<Content>> {
+    logger.info('Admin fetching user content', { 
+      firebaseUid,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminUserController');
+    
+    const [data, totalItems] = await Promise.all([
+      this.contentService.findByFirebaseUid(firebaseUid, query),
+      this.contentService.getTotalByFirebaseUid(firebaseUid)
+    ]);
+    
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info('User content retrieved', { 
       firebaseUid, 
       count: data.length,
       totalItems

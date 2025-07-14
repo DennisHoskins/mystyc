@@ -7,16 +7,18 @@ import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
+import UserContentTable from './UserContentTable';
 import UserAuthEventsTable from './UserAuthEventsTable';
 import UserNotificationsTable from './UserNotificationsTable';
 
 interface UserSummary {
+  content: { total: number };
   authEvents: { total: number };
   notifications: { total: number };
 }
 
 export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | null }) {
-  const [activeTab, setActiveTab] = useState('auth-events');
+  const [activeTab, setActiveTab] = useState('content');
   const [summary, setSummary] = useState<UserSummary | null>(null);
 
   // Load summary data (all counts)
@@ -41,6 +43,17 @@ export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | nu
     if (!firebaseUid) return [];
 
     return [
+      {
+        id: 'content',
+        label: 'Content',
+        count: summary?.content.total,
+        content: (
+          <UserContentTable
+            firebaseUid={firebaseUid}
+            isActive={activeTab === 'content'}
+          />
+        )
+      },
       {
         id: 'auth-events',
         label: 'Auth Events',
@@ -71,10 +84,10 @@ export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | nu
   }
 
   return (
-    <Card className='h-[56rem]'>
+    <Card className='min-h-52'>
       <TabPanel 
         tabs={tabs} 
-        defaultActiveTab="auth-events"
+        defaultActiveTab="content"
         height="900px"
         onTabChange={setActiveTab}
       />

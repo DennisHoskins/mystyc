@@ -97,7 +97,7 @@ export default function AdminListLayout({
       </div>
 
       {itemContent && (
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[12em]'>
+        <div className={`grid grid-cols-1 md:grid-cols-${itemContent.length} gap-4`}>
           {itemContent.map((item, index) => (
             <Card key={index}>{item}</Card>
           ))}
