@@ -1,9 +1,9 @@
 'use client';
 
-import { Hash } from 'lucide-react'
+import { Sparkle } from 'lucide-react'
 
 export default function DashboardIcon({ size = 6 }: { size?: number }) {
   return (
-    <Hash className={`w-${size} h-${size} text-gray-500`} />
+    <Sparkle className={`w-${size} h-${size} text-gray-500`} />
   );    
 }

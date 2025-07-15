@@ -36,7 +36,7 @@ import { AdminOpenAIStatsService } from './services/admin-openai-stats.service';
 import { AdminSchedulesStatsService } from './services/admin-schedules-stats.service';
 import { AdminScheduleExecutionsStatsService } from './services/admin-schedule-executions-stats.service';
 
-import { UserProfileSchema } from '@/users/schemas/userProfile.schema';
+import { UserProfileSchema } from '@/users/schemas/user-profile.schema';
 import { DeviceSchema } from '@/devices/schemas/device.schema';
 import { AuthEventSchema } from '@/auth-events/schemas/auth-event.schema';
 import { NotificationSchema } from '@/notifications/schemas/notification.schema';
@@ -53,7 +53,7 @@ import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.
       { name: 'Device', schema: DeviceSchema },
       { name: 'AuthEvent', schema: AuthEventSchema },
       { name: 'Notification', schema: NotificationSchema },
-      { name: 'OpenAIUsageSchema', schema: OpenAIUsageSchema },
+      { name: 'OpenAIUsage', schema: OpenAIUsageSchema },
       { name: 'Content', schema: ContentSchema },
       { name: 'Schedule', schema: ScheduleSchema },
       { name: 'ScheduleExecution', schema: ScheduleExecutionSchema },

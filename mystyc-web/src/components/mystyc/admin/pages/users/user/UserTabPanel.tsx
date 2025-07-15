@@ -8,7 +8,6 @@ import { logger } from '@/util/logger';
 import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import UserContentTable from './UserContentTable';
-import UserOpenAIRequestsTable from './UserOpenAIRequestsTable';
 import UserAuthEventsTable from './UserAuthEventsTable';
 import UserNotificationsTable from './UserNotificationsTable';
 
@@ -53,17 +52,6 @@ export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | nu
           <UserContentTable
             firebaseUid={firebaseUid}
             isActive={activeTab === 'content'}
-          />
-        )
-      },
-      {
-        id: 'requests',
-        label: 'OpenAI Requests',
-        count: summary?.requests.total,
-        content: (
-          <UserOpenAIRequestsTable
-            firebaseUid={firebaseUid}
-            isActive={activeTab === 'requests'}
           />
         )
       },

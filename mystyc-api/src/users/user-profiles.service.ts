@@ -2,7 +2,7 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { UserProfileDocument } from './schemas/userProfile.schema';
+import { UserProfileDocument } from './schemas/user-profile.schema';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { UserRole } from '@/common/enums/roles.enum';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';

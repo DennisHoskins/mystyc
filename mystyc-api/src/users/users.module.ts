@@ -9,7 +9,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
 import { UserRolesService } from './user-roles.service';
-import { UserProfileSchema } from './schemas/userProfile.schema';
+import { UserProfileSchema } from './schemas/user-profile.schema';
 
 @Module({
   imports: [

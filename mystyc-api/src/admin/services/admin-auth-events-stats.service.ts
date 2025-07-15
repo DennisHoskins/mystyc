@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
-import { UserProfileDocument } from '@/users/schemas/userProfile.schema';
+import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
 import { 
   AuthEventSummaryStats,
   AuthenticationPatternsStats,

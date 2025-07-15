@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { Content, ContentStats } from '@/interfaces';
+import { ContentStats } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -26,7 +26,7 @@ export default function ContentPage() {
     { label: 'Content' },
   ];
 
-  const loadContent = useCallback(async (page: number) => {
+  const loadContentStats = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
@@ -49,8 +49,8 @@ export default function ContentPage() {
   }, [setBusy, handleSessionError]);
 
   useEffect(() => {
-    loadContent(0);
-  }, [loadContent]);
+    loadContentStats();
+  }, [loadContentStats]);
 
   const createContent = async () => {
     try {

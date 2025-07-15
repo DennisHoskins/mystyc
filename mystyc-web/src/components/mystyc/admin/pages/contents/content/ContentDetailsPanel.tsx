@@ -1,7 +1,7 @@
 'use client';
 
 import { Content } from '@/interfaces';
-import { formatDateForDisplay, formatTimestampForComponent } from '@/util/dateTime';
+import { formatTimestampForComponent } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/mystyc/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/mystyc/admin/ui/detail/AdminDetailField';

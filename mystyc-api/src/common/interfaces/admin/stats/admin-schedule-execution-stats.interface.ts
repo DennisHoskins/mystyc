@@ -61,7 +61,6 @@ export interface ScheduleRecentExecutionStats {
   timezone?: string;
 }
 
-// Main combined stats interface following the established pattern
 export interface ScheduleExecutionStats {
   systemOverview: ScheduleSystemOverviewStats;
   byEventType: ScheduleEventTypeStats[];

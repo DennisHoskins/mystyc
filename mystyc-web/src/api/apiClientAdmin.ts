@@ -9,7 +9,6 @@ import {
   Content, 
   Schedule, 
   ScheduleExecution,
-  OpenAIRequest, 
   OpenAIUsage, 
   AdminQuery, 
   AdminStatsQuery, 
@@ -448,25 +447,6 @@ class AdminApiClient {
   //  OpenAI Management
   //
 
-  getOpenAIRequests = async (query?: AdminQuery): Promise<PaginatedResponse<OpenAIRequest>> => {
-    try {
-      const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai${queryString}`);
-    } catch (error) {
-      logger.error('getOpenAIRequests failed:', error);
-      throw error;
-    }
-  };
-
-  getOpenAIRequest = async (requestId: string): Promise<OpenAIRequest> => {
-    try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai/${requestId}`);
-    } catch (error) {
-      logger.error('getOpenAIRequest failed:', error);
-      throw error;
-    }
-  };
-
   getOpenAIUsage = async (): Promise<OpenAIUsage> => {
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai/usage`);
@@ -622,16 +602,6 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/content${queryString}`);
     } catch (error) {
       logger.error('getUserContent failed:', error);
-      throw error;
-    }
-  };
-
-  getUserOpenAIRequests = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<OpenAIRequest>> => {
-    try {
-      const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/requests${queryString}`);
-    } catch (error) {
-      logger.error('getUserRequests failed:', error);
       throw error;
     }
   };

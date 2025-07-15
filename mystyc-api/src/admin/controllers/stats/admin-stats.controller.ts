@@ -8,6 +8,7 @@ import { AdminUsersStatsService } from '@/admin/services/admin-users-stats.servi
 import { AdminDevicesStatsService } from '@/admin/services/admin-devices-stats.service';
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from '@/admin/services/admin-notifications-stats.service';
+import { OpenAICoreService } from '@/openai/openai-core.service';
 import { AdminOpenAIStatsService } from '@/admin/services/admin-openai-stats.service';
 import { AdminContentStatsService } from '@/admin/services/admin-content-stats.service';
 import { AdminSchedulesStatsService } from '@/admin/services/admin-schedules-stats.service';
@@ -23,6 +24,7 @@ export class AdminStatsController {
     private readonly adminDevicesStatsService: AdminDevicesStatsService,
     private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
+    private readonly openAICoreService: OpenAICoreService,
     private readonly adminOpenAIStatsService: AdminOpenAIStatsService,
     private readonly adminContentStatsService: AdminContentStatsService,
     private readonly adminScheduleStatsService: AdminSchedulesStatsService,
@@ -50,45 +52,47 @@ export class AdminStatsController {
       // Schedule
       scheduleSummary, performance, failures, executions,
       // OpenAI
-      openaiSummary
+      openaiSummary, monthlyUsage, contentTypeUsage
     ] = await Promise.all([
-      // Users (3)
+      // Users
       this.adminUsersStatsService.getRegistrationStats(query),
       this.adminUsersStatsService.getProfileCompletionStats(query),
       this.adminUsersStatsService.getActivityStats(query),
       
-      // Devices (4)
+      // Devices
       this.adminDevicesStatsService.getPlatformStats(query),
       this.adminDevicesStatsService.getFcmTokenStats(query),
       this.adminDevicesStatsService.getDeviceActivityStats(query),
       this.adminDevicesStatsService.getUserAgentStats(query),
       
-      // Auth Events (4)
+      // Auth Events
       this.adminAuthEventsStatsService.getSummaryStats(query),
       this.adminAuthEventsStatsService.getSessionDurationStats(query),
       this.adminAuthEventsStatsService.getPatternStats(query),
       this.adminAuthEventsStatsService.getGeographicStats(query),
       
-      // Notifications (4)
+      // Notifications
       this.adminNotificationsStatsService.getDeliveryStats(query),
       this.adminNotificationsStatsService.getTypeStats(query),
       this.adminNotificationsStatsService.getEngagementStats(query),
       this.adminNotificationsStatsService.getPatternStats(query),
       
-      // Content (4)
+      // Content
       this.adminContentStatsService.getSummaryStats(query),
       this.adminContentStatsService.getSourceStats(query),
       this.adminContentStatsService.getGenerationStats(query),
       this.adminContentStatsService.getTimelineStats(query),
       
-      // Schedule (4)
+      // Schedule
       this.adminScheduleStatsService.getSummaryStats(query),
       this.adminScheduleStatsService.getPerformanceStats(query),
       this.adminScheduleStatsService.getFailureStats(query),
       this.adminScheduleExecutionStatsService.getOverallScheduleStats(query),
       
-      // OpenAI (1)
-      this.adminOpenAIStatsService.getSummaryStats(query)
+      // OpenAI
+      this.adminOpenAIStatsService.getSummaryStats(query),
+      this.adminOpenAIStatsService.getMonthlyUsageStats(query),
+      this.adminOpenAIStatsService.getContentTypeUsageStats(query),
     ]);
 
     return {
@@ -98,7 +102,7 @@ export class AdminStatsController {
       notifications: { delivery, type: notificationType, engagement, pattern: notificationPattern },
       content: { summary: contentSummary, sources, generation, timeline },
       schedule: { summary: scheduleSummary, performance, failures, executions },
-      openai: { summary: openaiSummary }
+      openai: { currentMonthlyUsage: openaiSummary.currentMonth, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage }
     };
   }
 }

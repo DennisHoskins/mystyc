@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
-import { UserProfileDocument } from '@/users/schemas/userProfile.schema';
+import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
 import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
 import { 
   RegistrationStatsResponse,
