@@ -61,7 +61,7 @@ export default function ContentsTabPanel() {
       },
       {
         id: 'users',
-        label: 'Users',
+        label: 'User',
         count: summary?.users.total,
         content: (
           <UsersContentTable

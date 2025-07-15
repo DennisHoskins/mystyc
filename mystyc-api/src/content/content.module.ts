@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { FirebaseModule } from '@/auth/firebase.module';
@@ -23,7 +23,7 @@ import { OpenAIUsage, OpenAIUsageSchema } from '@/openai/schemas/openai-usage.sc
       { name: OpenAIUsage.name, schema: OpenAIUsageSchema }
     ]),
     FirebaseModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
     SchedulesModule,
     OpenAIModule,
   ],

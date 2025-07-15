@@ -11,6 +11,7 @@ import { ContentService } from '@/content/content.service';
 import { NotificationContentService } from '@/content/notification-content.service';
 import { WebsiteContentService } from '@/content/website-content.service';
 import { UserContentService } from '@/content/user-content.service';
+import { UserProfilesService } from '@/users/user-profiles.service';
 import { Content } from '@/common/interfaces/content.interface';
 import { AdminController } from './admin.controller';
 import { CreateContentDto } from '@/content/dto/create-content.dto';
@@ -27,6 +28,7 @@ export class AdminContentController extends AdminController<Content> {
     private readonly notificationContentService: NotificationContentService,
     private readonly websiteContentService: WebsiteContentService,
     private readonly userContentService: UserContentService,
+    private readonly userProfilesService: UserProfilesService,
   ) {
     super();
   }
@@ -151,7 +153,7 @@ export class AdminContentController extends AdminController<Content> {
   }
 
   /**
-   * Creates contet from OpenAI
+   * Creates content from OpenAI
    * @param prompt: The prompt sent to OpenAI to generate the content
    * @returns Promise<Content> - New content object
    */
@@ -171,7 +173,14 @@ export class AdminContentController extends AdminController<Content> {
     }, 'AdminContentController');
 
     const today = new Date().toISOString().split('T')[0];
-    const result = await this.userContentService.generateUserContent(today, user.uid);
+
+    // Get userProfile
+    const userProfile = await this.userProfilesService.findByFirebaseUid(user.uid);
+    if (!userProfile) {
+      throw new NotFoundException("Unable to load User Profile");
+    }
+
+    const result = await this.userContentService.generateUserContent(today, userProfile);
 
     return result;
   }

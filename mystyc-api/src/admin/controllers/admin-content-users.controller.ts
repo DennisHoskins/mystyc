@@ -7,6 +7,7 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
+import { UserProfilesService } from '@/users/user-profiles.service';
 import { ContentService } from '@/content/content.service';
 import { UserContentService } from '@/content/user-content.service';
 import { Content } from '@/common/interfaces/content.interface';
@@ -23,6 +24,7 @@ export class AdminUsersContentController extends AdminController<Content> {
   constructor(
     protected service: ContentService,
     private readonly userContentService: UserContentService,
+    private readonly userProfilesService: UserProfilesService,
   ) {
     super();
   }
@@ -95,8 +97,15 @@ export class AdminUsersContentController extends AdminController<Content> {
       prompt: 'prompt: ' + prompt,
     }, 'AdminUserContentController');
 
+    // Get userProfile
+    const userProfile = await this.userProfilesService.findByFirebaseUid(user.uid);
+    if (!userProfile) {
+      throw new NotFoundException("Unable to load User Profile");
+    }
+
     const today = new Date().toISOString().split('T')[0];
-    const result = await this.userContentService.generateUserContent(today, user.uid);
+
+    const result = await this.userContentService.generateUserContent(today, userProfile);
 
     return result;
   }

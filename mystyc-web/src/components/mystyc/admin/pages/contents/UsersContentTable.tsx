@@ -99,6 +99,11 @@ export default function UsersContentTable({ isActive = false } : { isActive: boo
           u.error
           ? <span className="text-red-500">{u.title}</span>
           : u.title},
+    { key: 'cost', header: 'Cost', link: (u) => `/admin/content/${u._id}`, align: "right",
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">${u.openAIData?.cost}</span>
+          : "$" + u.openAIData?.cost},
     { key: 'user', header: 'User', link: (u) => `/admin/users/${u.userId}`, 
       render: (u) =>
           u.error

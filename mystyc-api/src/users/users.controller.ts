@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Post, Patch, Get, Body, Req, Headers, UnauthorizedException } from '@nestjs/common';
+import { Controller, UseGuards, Post, Patch, Get, Body, Req, Headers, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 
@@ -8,8 +8,10 @@ import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
+import { Content } from '@/common/interfaces/content.interface';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
+import { UserContentService } from '@/content/user-content.service';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-register.dto';
 import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
@@ -23,6 +25,7 @@ export class UsersController {
   constructor(
     private readonly userService: UsersService,
     private readonly userProfileService: UserProfilesService,
+    private readonly userContentService: UserContentService,
   ) {}
 
   /**
@@ -241,6 +244,27 @@ export class UsersController {
     const userProfile = await this.userProfileService.findByFirebaseUid(firebaseUser.uid);
 
     return { userProfile };
+  }
+
+  /**
+   * Gets user content data
+   * @param firebaseUserFromDecorator - Firebase user from auth guard
+   * @returns Promise<{content: Content | null}> - Content data or null if not found
+   */
+  @Get('content')
+  @UseGuards(FirebaseAuthGuard)
+  async getContent(@FirebaseUser() firebaseUserFromDecorator): Promise<{ content: Content | null }> {
+    this.logger.debug('Getting content via GET /content', { 
+      uid: firebaseUserFromDecorator.uid 
+    });
+
+    const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const content = await this.userContentService.getOrGenerateUserContent(firebaseUser.uid, today);
+
+    return { content };
   }
 
   private transformFirebaseUser(decodedToken: any): FirebaseUserInterface {

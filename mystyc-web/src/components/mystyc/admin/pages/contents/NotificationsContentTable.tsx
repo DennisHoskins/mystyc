@@ -100,6 +100,11 @@ export default function NotificationsContentTable({ isActive = false } : { isAct
           u.error
           ? <span className="text-red-500">{u.title}</span>
           : u.title},
+    { key: 'cost', header: 'Cost', link: (u) => `/admin/content/${u._id}`, align: "right",
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">${u.openAIData?.cost}</span>
+          : "$" + u.openAIData?.cost},
     { key: 'notification', header: 'Notification', link: (u) => `/admin/notifications/${u.notificationId}`, 
       render: (u) =>
           u.error

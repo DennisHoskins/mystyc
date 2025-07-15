@@ -55,7 +55,7 @@ export class WebsiteContentService {
       }, 'WebsiteContentService');
 
       // Generate website content for the target date with scheduleId
-      const content = await this.getOrGenerateWebsiteContent(targetDate, payload.scheduleId, payload.executionId);
+      let content = await this.getOrGenerateWebsiteContent(targetDate, payload.scheduleId, payload.executionId);
 
       logger.info('Scheduled website content generation completed', {
         scheduleId: payload.scheduleId,
@@ -117,7 +117,7 @@ export class WebsiteContentService {
     }
 
     // Generate new website content
-    return this.generateWebsiteContent(date, scheduleId, executionId);
+    return await this.generateWebsiteContent(date, scheduleId, executionId);
   }
 
   /**
@@ -163,9 +163,9 @@ export class WebsiteContentService {
     const savedContent = await content.save();
 
     // Fire off OpenAI generation asynchronously (no await)
-    this.openAIService.generateWebsiteContent(date, savedContent._id.toString());
+    const updatedContent = await this.openAIService.generateWebsiteContent(date, savedContent);
 
-    return this.transformToWebsiteContent(savedContent);
+    return this.transformToWebsiteContent(updatedContent);
   }
 
   /**
@@ -173,7 +173,7 @@ export class WebsiteContentService {
    */
   async getTodaysWebsiteContent(): Promise<ContentInterface> {
     const today = new Date().toISOString().split('T')[0];
-    return this.getOrGenerateWebsiteContent(today);
+    return await this.getOrGenerateWebsiteContent(today);
   }
 
   // Admin methods for pagination/stats

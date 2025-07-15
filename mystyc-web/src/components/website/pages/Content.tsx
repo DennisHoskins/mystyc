@@ -24,7 +24,7 @@ export default function WebsiteContent() {
   return (
     <>
       <Heading level={1} className="text-center mb-8">
-        {data ? data.title + " @ " + data.date : ' Content'}
+        {data ? data.title + " @ " + data.date : ' Loading...'}
       </Heading>
       <Text  className="text-gray-600 mb-10 text-lg md:text-xl text-center mx-auto">{data ? data.message : ''}</Text>
       {data && data.data && (

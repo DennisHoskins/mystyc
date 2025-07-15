@@ -51,6 +51,11 @@ export default function ContentTable({
           u.error
           ? <span className="text-red-500">{u.title}</span>
           : u.title},
+    { key: 'cost', header: 'Cost', link: (u) => `/admin/content/${u._id}`, align: "right",
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">${u.openAIData?.cost}</span>
+          : "$" + u.openAIData?.cost},
   ];
 
   const sourceColumn: Column<Content> = {

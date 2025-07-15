@@ -5,6 +5,7 @@ import { sessionManager, InvalidSessionError } from '../../sessionManager';
 import { authTokenManager } from '../../authTokenManager';
 import { User } from '@/interfaces/user.interface';
 import { Device } from '@/interfaces/device.interface';
+import { Content } from '@/interfaces/content.interface';
 import { logger } from '@/util/logger';
 
 // Handle user routes
@@ -63,6 +64,49 @@ async function handleUserRoute(request: NextRequest): Promise<NextResponse> {
   return NextResponse.json(user, { status: 200 });
 }
 
+async function handleUserContentRoute(request: NextRequest): Promise<NextResponse> {
+  logger.log(`[mystyc] Get user content attempt started`);
+
+  const body = await request.json();
+  const { deviceInfo } = body;
+
+  logger.log("[mystyc] DeviceInfo destructured:", deviceInfo);
+
+  const headersList = await headers();
+  
+  let session;
+  try {
+    session = await sessionManager.getCurrentSession(headersList, deviceInfo);
+  } catch (err) {
+    if (err instanceof InvalidSessionError) {
+      throw err;
+    }
+    throw err;
+  }
+
+  if (!session) {
+    logger.log('[mystyc] No Current Session');
+    return NextResponse.json(null, { status: 200 });
+  }
+
+  // Call Nest to get fresh user data
+  const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/content`, {
+    method: 'GET',
+    headers: {
+      'Authorization': authTokenManager.createAuthHeader(session.authToken),
+    },
+  });
+
+  if (!nestResponse.ok) {
+    logger.error('[mystyc] Failed to fetch user content from Nest:', nestResponse.status);
+    throw new InvalidSessionError(`[mystyc] Failed to fetch user content from Nest: ${nestResponse.status}`);
+  }
+
+  const content: Content = await nestResponse.json();
+  
+  return NextResponse.json(content, { status: 200 });
+}
+
 // Handle FCM token update
 async function handleUpdateFcmToken(request: NextRequest, deviceId: string): Promise<NextResponse> {
   logger.log(`[mystyc] UpdateFcmToken attempt started for device:`, deviceId.substring(0, 8));
@@ -116,6 +160,9 @@ export async function POST(
 
     if (route === 'users') {
       return handleUserRoute(request);
+    }
+    if (route === 'users/content') {
+      return handleUserContentRoute(request);
     }
 
     if (route.match(/^devices\/[^\/]+\/updateFcmToken$/)) {

@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
+import { UserProfile } from '@/common/interfaces/user-profile.interface';
+import { UserProfilesService } from '@/users/user-profiles.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
@@ -12,6 +14,7 @@ import { logger } from '@/common/util/logger';
 export class UserContentService {
   constructor(
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
+    private readonly userProfilesService: UserProfilesService,
     private readonly openAIService: OpenAIUserService,
   ) {}
 
@@ -21,24 +24,31 @@ export class UserContentService {
   async getOrGenerateUserContent(userId: string, date: string): Promise<ContentInterface> {
     logger.info('Getting or generating user content', { date, userId }, 'UserContentService');
 
+    // Get userProfile
+    const userProfile = await this.userProfilesService.findByFirebaseUid(userId);
+    if (!userProfile) {
+      throw new NotFoundException("Unable to load User Profile");
+    }
+
     // Check if user content exists for this date
-    const existing = await this.findUserContentByDate(date);
+    const existing = await this.findUserContentByDate(userId, date);
     if (existing) {
       logger.info('User content found in database', { date }, 'UserContentService');
       return existing;
     }
 
     // Generate new user content
-    return this.generateUserContent(date, userId);
+    return await this.generateUserContent(date, userProfile);
   }
 
   /**
    * Find user content by date
    */
-  async findUserContentByDate(date: string): Promise<ContentInterface | null> {
+  async findUserContentByDate(userId, date: string): Promise<ContentInterface | null> {
     logger.debug('Finding user content by date', { date }, 'UserContentService');
 
     const content = await this.contentModel.findOne({ 
+      userId, 
       date, 
       type: 'user_content' 
     }).exec();
@@ -55,14 +65,14 @@ export class UserContentService {
   /**
    * Generate user content for a specific date using OpenAI with timeout protection
    */
-  async generateUserContent(date: string, userId?: string): Promise<ContentInterface> {
-    logger.info('Generating new user content with OpenAI', { date, userId }, 'UserContentService');
+  async generateUserContent(date: string, userProfile: UserProfile): Promise<ContentInterface> {
+    logger.info('Generating new user content with OpenAI', { date, userId: userProfile.firebaseUid }, 'UserContentService');
 
     // Create content record first to get ID
     const content = new this.contentModel({
       type: 'user_content',
       date,
-      userId,
+      userId: userProfile.firebaseUid,
       title: 'Generating...', // Temporary
       message: 'Generating...', // Temporary
       data: [],
@@ -71,12 +81,13 @@ export class UserContentService {
       generatedAt: new Date(),
       generationDuration: 0
     });
+
     const savedContent = await content.save();
 
-    // Fire off OpenAI generation asynchronously (no await)
-    this.openAIService.generateUserContent(userId, date, savedContent._id.toString());
+    // Wait for OpenAI to generate content
+    const updatedContent = await this.openAIService.generateUserContent(userProfile, date, savedContent);
 
-    return this.transformToUserContent(savedContent);
+    return this.transformToUserContent(updatedContent);
   }
 
   /**

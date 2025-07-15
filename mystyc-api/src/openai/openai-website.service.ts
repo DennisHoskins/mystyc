@@ -26,7 +26,7 @@ export class OpenAIWebsiteService extends OpenAICoreService {
       Format as JSON: { "title": "...", "message": "..." }`;
   }
 
-  async generateWebsiteContent(date: string, contentId: string): Promise<void> {
+  async generateWebsiteContent(date: string, content: ContentDocument): Promise<ContentDocument> {
     const startTime = Date.now();
     let lastError;
 
@@ -34,8 +34,8 @@ export class OpenAIWebsiteService extends OpenAICoreService {
       try {
         // check budget
         if (!(await this.checkBudgetWithBuffer())) {
-          logger.warn('OpenAI budget exceeded, generating fallback content', { date, contentId }, 'OpenAIWebsiteService');
-          return this.generateFallbackContent(date, contentId, startTime, 'Budget exceeded');
+          logger.warn('OpenAI budget exceeded, generating fallback content', { date, contentId: content._id }, 'OpenAIWebsiteService');
+          return await this.generateFallbackContent(date, content._id, startTime, 'Budget exceeded');
         }
 
         const prompt = this.getPrompt(date);
@@ -60,43 +60,42 @@ export class OpenAIWebsiteService extends OpenAICoreService {
 
         await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
 
+        content.title = title;
+        content.message = message;
+        content.imageUrl = this.getDefaultImageUrl(date);
+        content.linkUrl = 'https://mystyc.app';
+        content.linkText = 'Explore Your Mystical Journey';
+        content.data = this.formatContentData(title, message);
+        content.sources = ['openai'];
+        content.status = 'generated';
+        content.generationDuration = Date.now() - startTime;
+        content.openAIData = {
+          prompt: prompt.slice(0, 500), // Truncate prompt for storage
+          model: 'gpt-4o-mini',
+          inputTokens: usage.prompt_tokens,
+          outputTokens: usage.completion_tokens,
+          cost,
+          retryCount: attempt
+        }
+
         // Update content record with successful AI generation
-        await this.contentModel.findByIdAndUpdate(contentId, {
-          title,
-          message,
-          openAIData: {
-            prompt: prompt.slice(0, 500), // Truncate prompt for storage
-            model: 'gpt-4o-mini',
-            inputTokens: usage.prompt_tokens,
-            outputTokens: usage.completion_tokens,
-            cost,
-            retryCount: attempt
-          },
-          imageUrl: this.getDefaultImageUrl(date),
-          linkUrl: 'https://mystyc.app',
-          linkText: 'Explore Your Mystical Journey',
-          data: this.formatContentData(title, message),
-          sources: ['openai'],
-          status: 'generated',
-          generationDuration: Date.now() - startTime
-        });
+        const savedContent = await content.save();
 
         logger.info('Website content generated successfully with OpenAI', { 
           date, 
-          contentId,
+          contentId: savedContent._id,
           duration: Date.now() - startTime,
           cost,
           tokensUsed: usage.prompt_tokens + usage.completion_tokens,
           retryCount: attempt
         }, 'OpenAIWebsiteService');
 
-        return;
-
+        return savedContent;
       } catch (err) {
         lastError = err;
         logger.warn(`OpenAI attempt ${attempt + 1} failed`, { 
           date, 
-          contentId, 
+          contentId: content._id, 
           error: err.message,
           attempt: attempt + 1,
           maxRetries: this.MAX_RETRIES + 1
@@ -110,16 +109,16 @@ export class OpenAIWebsiteService extends OpenAICoreService {
     // All retries failed - generate fallback content
     logger.error('All OpenAI attempts failed, generating fallback content', {
       date,
-      contentId,
+      contentId: content._id, 
       error: lastError?.message,
       totalAttempts: this.MAX_RETRIES + 1
     }, 'OpenAIWebsiteService');
 
-    return this.generateFallbackContent(date, contentId, startTime, lastError?.message);
+    return await this.generateFallbackContent(date, content, startTime, lastError?.message);
   }
 
-  private async generateFallbackContent(date: string, contentId: string, startTime: number, error?: string): Promise<void> {
-    logger.info('Generating fallback content for website', { date, contentId }, 'OpenAIWebsiteService');
+  private async generateFallbackContent(date: string, content: ContentDocument, startTime: number, error?: string): Promise<ContentDocument> {
+    logger.info('Generating fallback content for website', { date, contentId: content._id }, 'OpenAIWebsiteService');
 
     try {
       // Try to get the most recent generated content as fallback
@@ -134,62 +133,61 @@ export class OpenAIWebsiteService extends OpenAICoreService {
 
       if (recentContent) {
         // Update with fallback based on recent content
-        await this.contentModel.findByIdAndUpdate(contentId, {
-          title: recentContent.title,
-          message: recentContent.message,
-          imageUrl: this.getDefaultImageUrl(date),
-          linkUrl: 'https://mystyc.app',
-          linkText: 'Explore Your Mystical Journey',
-          data: recentContent.data,
-          sources: ['fallback'],
-          status: 'fallback',
-          error: error || 'OpenAI generation failed, using fallback content',
-          generationDuration: Date.now() - startTime
-        });
+        content.title = recentContent.title;
+        content.message = recentContent.message;
+        content.imageUrl = this.getDefaultImageUrl(date);
+        content.linkUrl = 'https://mystyc.app';
+        content.linkText = 'Explore Your Mystical Journey';
+        content.data = recentContent.data;
+        content.sources = ['fallback'];
+        content.status = 'fallback';
+        content.error = error || 'OpenAI generation failed, using fallback content';
+        content.generationDuration = Date.now() - startTime;
+
+        const savedContent = await content.save();
 
         logger.info('Fallback content created from recent content', {
           date,
-          contentId,
+          contentId: savedContent._id,
           fallbackSourceDate: recentContent.date
         }, 'OpenAIWebsiteService');
 
-        return;
+        return savedContent;
       }
 
       // No recent content available - create generic fallback
-      await this.contentModel.findByIdAndUpdate(contentId, {
-        title: 'Mystical Insights Await',
-        message: 'The universe whispers secrets to those who listen. Today brings opportunities for growth and discovery.',
-        imageUrl: this.getDefaultImageUrl(date),
-        linkUrl: 'https://mystyc.app',
-        linkText: 'Explore Your Mystical Journey',
-        data: [
+      content.title = 'Mystical Insights Await';
+      content.message = 'The universe whispers secrets to those who listen. Today brings opportunities for growth and discovery.';
+      content.imageUrl = this.getDefaultImageUrl(date);
+      content.linkUrl = 'https://mystyc.app';
+      content.linkText = 'Explore Your Mystical Journey';
+      content.data = [
           { key: 'Cosmic Message', value: 'The stars align in your favor today.' },
           { key: 'Daily Wisdom', value: 'Trust in the journey, even when the path is unclear.' },
           { key: 'Mystical Insight', value: 'Your intuition is your greatest guide.' }
-        ],
-        sources: ['fallback'],
-        status: 'fallback',
-        error: error || 'OpenAI generation failed, using generic fallback content',
-        generationDuration: Date.now() - startTime
-      });
+        ];
+      content.sources = ['fallback'];
+      content.status = 'fallback';
+      content.error = error || 'OpenAI generation failed, using generic fallback content';
+      content.generationDuration = Date.now() - startTime;
 
-      logger.info('Generic fallback content created', { date, contentId }, 'OpenAIWebsiteService');
-
+      const savedContent = await content.save();
+      logger.info('Generic fallback content created', { date, contentId: savedContent._id }, 'OpenAIWebsiteService');
+      return savedContent;
     } catch (fallbackError) {
       logger.error('Fallback content generation failed', {
         date,
-        contentId,
+        contentId: content._id,
         originalError: error,
         fallbackError: fallbackError.message
       }, 'OpenAIWebsiteService');
 
-      // Last resort - mark as failed
-      await this.contentModel.findByIdAndUpdate(contentId, {
-        status: 'failed',
-        error: `Both OpenAI and fallback failed: ${fallbackError.message}`,
-        generationDuration: Date.now() - startTime
-      });
+      content.status = 'failed';
+      content.error = `Both OpenAI and fallback failed: ${fallbackError.message}`;
+      content.generationDuration = Date.now() - startTime;
+
+      const savedContent = await content.save();
+      return savedContent;
     }
   }
 

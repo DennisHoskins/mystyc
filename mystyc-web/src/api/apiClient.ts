@@ -214,6 +214,30 @@ export const apiClient = {
     }
   },
 
+  async getUserContent(): Promise<Content | null> {
+    try {
+      const response = await fetch(`${serverRoot}/mystyc/users/content`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceInfo: getDeviceInfo() })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data?.error === 'InvalidSession') {
+        throw new Error('InvalidSession');
+      }
+      
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async updateFcmToken(deviceId: string, fcmToken: string): Promise<Device> {
     try {
       const response = await fetch(`${serverRoot}/mystyc/devices/[${deviceId}]/updateFcmToken`, {

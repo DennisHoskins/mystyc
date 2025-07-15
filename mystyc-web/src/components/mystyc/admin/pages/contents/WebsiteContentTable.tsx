@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+import { AlarmClockCheck, Globe } from 'lucide-react';
+
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Content } from '@/interfaces';
 import { formatDateForDisplay } from '@/util/dateTime';
@@ -99,11 +101,19 @@ export default function WebsiteContentTable({ isActive = false } : { isActive: b
           u.error
           ? <span className="text-red-500">{u.title}</span>
           : u.title},
-    { key: 'execution', header: 'Execution', link: (u) => `/admin/schedule-executions/${u.executionId}`, 
+    { key: 'cost', header: 'Cost', link: (u) => `/admin/content/${u._id}`, align: "right",
       render: (u) =>
           u.error
-          ? <span className="text-red-500">{u.executionId}</span>
-          : u.executionId},
+          ? <span className="text-red-500">${u.openAIData?.cost}</span>
+          : "$" + u.openAIData?.cost},
+    { key: 'execution', header: 'Source', align: "center",
+      link: (u) => u.executionId 
+        ? `/admin/schedule-executions/${u.executionId}`
+        : null,
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">{u.executionId ? <AlarmClockCheck /> : <Globe />}</span>
+          : <span className='flex-1 flex justify-center'>{u.executionId ? <AlarmClockCheck className='w-4-h-4'/> : <Globe className='w-4-h-4 text-gray-300' />}</span>}
   ];
 
   return (
