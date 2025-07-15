@@ -68,7 +68,7 @@ export default function ScheduleExecutionTabPanel({ executionId }: { executionId
     <Card className='h-[56rem]'>
       <TabPanel 
         tabs={tabs} 
-        defaultActiveTab="content"
+        defaultActiveTab={activeTab}
         onTabChange={setActiveTab}
       />
     </Card>      

@@ -277,6 +277,28 @@ export class UserContentService {
   }
 
   // Admin methods for pagination/stats
+  async getTotal(): Promise<number> {
+    return await this.contentModel.countDocuments({ type: 'user_content' });
+  }
+
+  async findAll(query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { type: 'user_content' } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const content = await this.contentModel.aggregate(pipeline).exec();
+    return content.map(content => this.transformToUserContent(content));
+  }
+
+
   async getTotalByUserId(userId: string): Promise<number> {
     return await this.contentModel.countDocuments({ userId });
   }
@@ -324,6 +346,8 @@ export class UserContentService {
   private transformToUserContent(doc: ContentDocument): ContentInterface {
     return {
       _id: doc._id.toString(),
+      type: doc.type,
+
       date: doc.date,
       
       // User content link

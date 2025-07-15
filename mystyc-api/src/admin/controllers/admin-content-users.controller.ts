@@ -8,8 +8,6 @@ import { UserRole } from '@/common/enums/roles.enum';
 import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
 import { ContentService } from '@/content/content.service';
-import { NotificationContentService } from '@/content/notification-content.service';
-import { WebsiteContentService } from '@/content/website-content.service';
 import { UserContentService } from '@/content/user-content.service';
 import { Content } from '@/common/interfaces/content.interface';
 import { AdminController } from './admin.controller';
@@ -18,96 +16,23 @@ import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
 
-@Controller('admin/content')
-export class AdminContentController extends AdminController<Content> {
-  protected serviceName = 'Content';
+@Controller('admin/content-users')
+export class AdminUsersContentController extends AdminController<Content> {
+  protected serviceName = 'AdminUsersContent';
   
   constructor(
     protected service: ContentService,
-    private readonly notificationContentService: NotificationContentService,
-    private readonly websiteContentService: WebsiteContentService,
     private readonly userContentService: UserContentService,
   ) {
     super();
   }
 
   /**
-   * Returns totals of content types
-   * @returns Promise<ContentSummary> - content totals by type
-   */
-  @Get('summary')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getContentSummary() {
-    const [contentCount, websiteCount, notificationsCount, usersCount] = await Promise.all([
-      this.service.getTotal(),
-      this.websiteContentService.getTotal(),
-      this.notificationContentService.getTotal(),
-      this.userContentService.getTotal(),
-    ]);
-
-    return {
-      content: { total: contentCount },
-      website: { total: websiteCount },
-      notifications: { total: notificationsCount },
-      users: { total: usersCount },
-    };
-  }
-
-  /**
-   * Finds all notification content
+   * Finds all user content
    * @param query - Query parameters for pagination, sorting, and filtering
-   * @returns Promise<AdminListResponse<Content>> - Paginated list of notification content
+   * @returns Promise<AdminListResponse<Content>> - Paginated list of user content
    */
-  @Get('content-notifications')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getNotificationsContent(
-    @Query() query: BaseAdminQueryDto
-  ): Promise<AdminListResponse<Content>> {
-    logger.info('Admin fetching notification content', { 
-      limit: query.limit,
-      offset: query.offset,
-      sortBy: query.sortBy,
-      sortOrder: query.sortOrder
-    }, 'AdminCOntentController');
-    
-    const [data, totalItems] = await Promise.all([
-
-      this.notificationContentService.findAll(query),
-      this.notificationContentService.getTotal()
-
-    ]);
-    
-    const totalPages = Math.ceil(totalItems / (query.limit || 100));
-    
-    logger.info('Notification content retrieved', { 
-      count: data.length,
-      totalItems
-    }, 'AdminContentController');
-    
-    return {
-      data,
-      pagination: {
-        limit: query.limit || 100,
-        offset: query.offset || 0,
-        hasMore: data.length === (query.limit || 100),
-        totalItems,
-        totalPages
-      },
-      sort: query.sortBy ? {
-        field: query.sortBy,
-        order: query.sortOrder || 'desc'
-      } : undefined
-    };
-  }
-
-  /**
-   * Finds all website content
-   * @param query - Query parameters for pagination, sorting, and filtering
-   * @returns Promise<AdminListResponse<Content>> - Paginated list of website content
-   */
-  @Get('content-users')
+  @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getUserContent(
@@ -118,7 +43,7 @@ export class AdminContentController extends AdminController<Content> {
       offset: query.offset,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
-    }, 'AdminCOntentController');
+    }, 'AdminUserContentController');
     
     const [data, totalItems] = await Promise.all([
 
@@ -132,7 +57,7 @@ export class AdminContentController extends AdminController<Content> {
     logger.info('User content retrieved', { 
       count: data.length,
       totalItems
-    }, 'AdminContentController');
+    }, 'AdminUserContentController');
     
     return {
       data,
@@ -151,7 +76,7 @@ export class AdminContentController extends AdminController<Content> {
   }
 
   /**
-   * Creates contet from OpenAI
+   * Creates user content from OpenAI
    * @param prompt: The prompt sent to OpenAI to generate the content
    * @returns Promise<Content> - New content object
    */
@@ -168,7 +93,7 @@ export class AdminContentController extends AdminController<Content> {
     logger.info('Admin create Content', {
       adminUid: user.uid,
       prompt: 'prompt: ' + prompt,
-    }, 'AdminContentController');
+    }, 'AdminUserContentController');
 
     const today = new Date().toISOString().split('T')[0];
     const result = await this.userContentService.generateUserContent(today, user.uid);

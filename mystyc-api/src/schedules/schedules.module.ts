@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { ScheduleService } from './schedule.service';
-import { ScheduleExecutionService } from './schedule-execution.service';
+import { SchedulesService } from './schedules.service';
+import { ScheduleExecutionsService } from './schedule-executions.service';
 import { Schedule, ScheduleSchema } from './schemas/schedule.schema';
 import { ScheduleExecution, ScheduleExecutionSchema } from './schemas/schedule-execution.schema';
 import { DevicesModule } from '@/devices/devices.module';
@@ -15,7 +15,7 @@ import { DevicesModule } from '@/devices/devices.module';
     ]),
     DevicesModule
   ],
-  providers: [ScheduleService, ScheduleExecutionService],
-  exports: [ScheduleService, ScheduleExecutionService],
+  providers: [SchedulesService, ScheduleExecutionsService],
+  exports: [SchedulesService, ScheduleExecutionsService],
 })
-export class ScheduleModule {}
+export class SchedulesModule {}

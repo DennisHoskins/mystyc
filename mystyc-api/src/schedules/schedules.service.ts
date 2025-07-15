@@ -11,21 +11,21 @@ import { ConflictException } from '@nestjs/common';
 
 import { Schedule, ScheduleDocument } from './schemas/schedule.schema';
 import { Schedule as ScheduleInterface } from '@/common/interfaces/schedule.interface';
-import { ScheduleExecutionService } from './schedule-execution.service';
+import { ScheduleExecutionsService } from './schedule-executions.service';
 import { DevicesService } from '@/devices/devices.service';
 import { timezone } from '@/common/util/timezone';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
-export class ScheduleService {
+export class SchedulesService {
   private cachedTimezones: Array<{timezone: string, offsetHours: number}> = [];
 
   constructor(
     @InjectModel(Schedule.name) private scheduleModel: Model<ScheduleDocument>,
     private readonly devicesService: DevicesService,
     private readonly eventEmitter: EventEmitter2,
-    private readonly scheduleExecutionService: ScheduleExecutionService,
+    private readonly scheduleExecutionService: ScheduleExecutionsService,
   ) {
     // Initialize cache on startup
     this.initializeTimezoneCache();

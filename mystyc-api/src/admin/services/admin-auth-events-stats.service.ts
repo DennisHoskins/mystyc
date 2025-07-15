@@ -11,9 +11,20 @@ import {
   SessionDurationStats,
   GeographicDistributionStats
 } from '@/common/interfaces/admin/stats/admin-auth-event-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { logger } from '@/common/util/logger';
 
+@RegisterStatsModule({
+  serviceName: 'AuthEvents',
+  service: AdminAuthEventsStatsService,
+  stats: [
+    { key: 'summary', method: 'getSummaryStats' },
+    { key: 'duration', method: 'getSessionDurationStats' },
+    { key: 'pattern', method: 'getPatternStats' },
+    { key: 'distribution', method: 'getGeographicStats' }
+  ]
+})
 @Injectable()
 export class AdminAuthEventsStatsService {
   constructor(

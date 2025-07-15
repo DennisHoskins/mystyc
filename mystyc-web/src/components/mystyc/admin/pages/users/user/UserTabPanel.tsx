@@ -8,11 +8,13 @@ import { logger } from '@/util/logger';
 import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import UserContentTable from './UserContentTable';
+import UserOpenAIRequestsTable from './UserOpenAIRequestsTable';
 import UserAuthEventsTable from './UserAuthEventsTable';
 import UserNotificationsTable from './UserNotificationsTable';
 
 interface UserSummary {
   content: { total: number };
+  requests: { total: number };
   authEvents: { total: number };
   notifications: { total: number };
 }
@@ -55,6 +57,17 @@ export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | nu
         )
       },
       {
+        id: 'requests',
+        label: 'OpenAI Requests',
+        count: summary?.requests.total,
+        content: (
+          <UserOpenAIRequestsTable
+            firebaseUid={firebaseUid}
+            isActive={activeTab === 'requests'}
+          />
+        )
+      },
+      {
         id: 'auth-events',
         label: 'Auth Events',
         count: summary?.authEvents.total,
@@ -87,7 +100,7 @@ export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | nu
     <Card className='min-h-52'>
       <TabPanel 
         tabs={tabs} 
-        defaultActiveTab="content"
+        defaultActiveTab={activeTab}
         height="900px"
         onTabChange={setActiveTab}
       />

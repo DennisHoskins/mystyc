@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
+import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
 export class NotificationContentTimeoutError extends Error {
@@ -164,6 +165,32 @@ export class NotificationContentService {
     }
   }
 
+  // Admin methods for pagination/stats
+  async getTotal(): Promise<number> {
+    return await this.contentModel.countDocuments({ type: 'notification_content' });
+  }
+
+  async findAll(query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { type: 'notification_content' } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const content = await this.contentModel.aggregate(pipeline).exec();
+    return content.map(content => this.transformToNotificationContent(content));
+  }
+
+  async getTotalByScheduleId(scheduleId: string): Promise<number> {
+    return await this.contentModel.countDocuments({ scheduleId });
+  }
+
   /**
    * Finds notification content by notification ID
    * @param notificationId - Notification ID to find content for
@@ -319,10 +346,13 @@ export class NotificationContentService {
   private transformToNotificationContent(doc: ContentDocument): ContentInterface {
     return {
       _id: doc._id.toString(),
+      type: doc.type,
       date: doc.date,
+
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
       notificationId: doc.notificationId,
+
       title: doc.title,
       message: doc.message,
       data: doc.data,

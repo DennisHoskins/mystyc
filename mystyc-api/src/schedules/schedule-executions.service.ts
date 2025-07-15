@@ -9,7 +9,7 @@ import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
-export class ScheduleExecutionService {
+export class ScheduleExecutionsService {
   constructor(
     @InjectModel(ScheduleExecutionSchema.name) private scheduleExecutionModel: Model<ScheduleExecutionDocument>,
   ) {}

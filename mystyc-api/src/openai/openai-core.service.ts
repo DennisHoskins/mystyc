@@ -6,6 +6,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 import { OpenAIUsageDocument, OpenAIUsage } from './schemas/openai-usage.schema';
 import { OpenAIRequestDocument, OpenAIRequest } from './schemas/openai-request.schema';
+import { OpenAIRequest as OpenAIRequestInterface } from '@/common/interfaces/openai-request.interface';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class OpenAICoreService implements OnModuleInit {
 
   protected MAX_RETRIES = 2; // Maximum number of retry attempts
   protected REQUEST_TIMEOUT_MS = 30000; // 30 seconds timeout
-  protected MONTHLY_BUDGET = 20.00; // $/month budget
+  protected MONTHLY_BUDGET = 10.00; // $/month budget
   protected TOKEN_BUDGET = Math.floor(this.MONTHLY_BUDGET * 50000);
   protected MAX_TOKENS_PER_REQUEST = 500; // ~$0.15 max per request
   protected ESTIMATED_REQUEST_COST = 0.20; // Buffer for budget checking
@@ -222,5 +223,22 @@ export class OpenAICoreService implements OnModuleInit {
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
     return this.requestModel.find().sort(sortObj).skip(offset).limit(limit).exec();
+  }
+
+  protected transformToRequest(doc: OpenAIRequestDocument): OpenAIRequestInterface {
+    return {
+      _id: doc._id.toString(),
+      prompt: doc.prompt,
+      inputTokens: doc.inputTokens,
+      outputTokens: doc.outputTokens,
+      cost: doc.cost,
+      requestType: doc.requestType,
+      linkedEntityId: doc.linkedEntityId,
+      model: doc.model,
+      retryCount: doc.retryCount,
+      error: doc.error,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    };
   }
 }

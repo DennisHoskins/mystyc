@@ -4,8 +4,8 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
-import { ScheduleService } from '@/schedule/schedule.service';
-import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
+import { SchedulesService } from '@/schedules/schedules.service';
+import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { Schedule } from '@/common/interfaces/schedule.interface';
@@ -13,19 +13,19 @@ import { ScheduleExecution } from '@/common/interfaces/schedule-execution.interf
 import { Content } from '@/common/interfaces/content.interface';
 import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
-import { CreateScheduleDto } from '@/schedule/dto/create-schedule.dto';
-import { UpdateScheduleDto } from '@/schedule/dto/update-schedule.dto';
+import { CreateScheduleDto } from '@/schedules/dto/create-schedule.dto';
+import { UpdateScheduleDto } from '@/schedules/dto/update-schedule.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/schedules')
-export class AdminScheduleController extends AdminController<Schedule> {
+export class AdminSchedulesController extends AdminController<Schedule> {
   protected serviceName = 'Schedule';
   
   constructor(
-    protected service: ScheduleService,
-    private readonly scheduleExecutionService: ScheduleExecutionService,
+    protected service: SchedulesService,
+    private readonly scheduleExecutionService: ScheduleExecutionsService,
     private readonly contentService: ContentService,
     private readonly notificationsService: NotificationsService
   ) {

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
+import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
 import { OpenAIWebsiteService } from '@/openai/openai-website.service';
@@ -22,7 +22,7 @@ export class WebsiteContentService {
   constructor(
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
     private readonly openAIService: OpenAIWebsiteService,
-    private readonly scheduleExecutionService: ScheduleExecutionService
+    private readonly scheduleExecutionService: ScheduleExecutionsService
   ) {}
  
   /**
@@ -364,6 +364,27 @@ export class WebsiteContentService {
   }
 
   // Admin methods for pagination/stats
+  async getTotal(): Promise<number> {
+    return await this.contentModel.countDocuments({ type: 'website_content' });
+  }
+
+  async findAll(query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { type: 'website_content' } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const content = await this.contentModel.aggregate(pipeline).exec();
+    return content.map(content => this.transformToWebsiteContent(content));
+  }
+
   async getTotalByScheduleId(scheduleId: string): Promise<number> {
     return await this.contentModel.countDocuments({ scheduleId });
   }
@@ -432,14 +453,12 @@ export class WebsiteContentService {
   private transformToWebsiteContent(doc: ContentDocument): ContentInterface {
     return {
       _id: doc._id.toString(),
+      type: doc.type,
       date: doc.date,
       
       // Website content links
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
-      
-      // Notification content links
-      notificationId: doc.notificationId,
 
       // AI request link
       openAIRequestId: doc.openAIRequestId,

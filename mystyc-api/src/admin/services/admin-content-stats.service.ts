@@ -9,9 +9,20 @@ import {
   ContentSourceStats,
   ContentTimelineStats
 } from '@/common/interfaces/admin/stats/admin-content-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { logger } from '@/common/util/logger';
 
+@RegisterStatsModule({
+  serviceName: 'Content',
+  service: AdminContentStatsService,
+  stats: [
+    { key: 'summary', method: 'getSummaryStats' },
+    { key: 'sources', method: 'getSourceStats' },
+    { key: 'generation', method: 'getGenerationStats' },
+    { key: 'timeline', method: 'getTimelineStats' }
+  ]
+})
 @Injectable()
 export class AdminContentStatsService {
   constructor(
@@ -90,7 +101,7 @@ export class AdminContentStatsService {
         coverageRate = Math.round((result.daysWithContent / dateRangeInDays) * 100);
       }
 
-      logger.info(' content summary stats generated', {
+      logger.info('Content summary stats generated', {
         totalContent: result.totalContent,
         successRate: result.successRate
       }, 'AdminContentStatsService');

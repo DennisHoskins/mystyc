@@ -143,7 +143,7 @@ export class ContentService {
   }
 
   /**
-   * Get total count by user (for future user-content)
+   * Get total count by user
    */
   async getTotalByFirebaseUid(firebaseUid: string): Promise<number> {
     return await this.contentModel.countDocuments({ userId: firebaseUid });
@@ -252,11 +252,13 @@ export class ContentService {
   /**
    * Transform aggregation result to interface (for pipeline queries)
    */
-  transformToContent(doc: any): ContentInterface {
+  transformToContent(doc: ContentDocument): ContentInterface {
     return {
       _id: doc._id.toString(),
       date: doc.date,
       
+      type: doc.type,
+
       // Website content links
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,

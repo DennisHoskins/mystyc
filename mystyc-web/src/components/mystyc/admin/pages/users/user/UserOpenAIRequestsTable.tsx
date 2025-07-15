@@ -3,19 +3,19 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Content } from '@/interfaces';
+import { OpenAIRequest } from '@/interfaces';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/mystyc/admin/ui/AdminError';
-import ContentTable from '@/components/mystyc/admin/pages/contents/ContentTable';
+import OpenAIRequestsTable from '@/components/mystyc/admin/pages/openai/OpenAIRequestsTable';
 
-interface UserContentTableProps {
+interface UserOpenAIRequestsTableProps {
   firebaseUid: string;
   isActive?: boolean;
 }
 
-export default function UserContent({ firebaseUid, isActive = false }: UserContentTableProps) {
-  const [content, setContent] = useState<Content[]>([]);
+export default function UserOpenAIRequests({ firebaseUid, isActive = false }: UserOpenAIRequestsTableProps) {
+  const [requests, setRequests] = useState<OpenAIRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -25,27 +25,27 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
-  const loadUserContent = useCallback(async (page: number) => {
+  const loadUserOpenAIRequests = useCallback(async (page: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getUserContent(firebaseUid, {
+      const response = await apiClientAdmin.getUserOpenAIRequests(firebaseUid, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
         sortOrder: 'desc',
       });
 
-      setContent(response.data);
+      setRequests(response.data);
       setHasMore(response.pagination.hasMore);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);
       setHasLoaded(true);
     } catch (err) {
-      logger.error('Failed to load content:', err);
-      setError('Failed to load content. Please try again.');
+      logger.error('Failed to load requests:', err);
+      setError('Failed to load requests. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -54,9 +54,9 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
   // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
-      loadUserContent(0);
+      loadUserOpenAIRequests(0);
     }
-  }, [isActive, hasLoaded, loadUserContent]);
+  }, [isActive, hasLoaded, loadUserOpenAIRequests]);
 
   // Show loading state if tab is active but hasn't loaded yet
   if (isActive && !hasLoaded && !loading) {
@@ -71,24 +71,24 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
   if (error) {
     return (
       <AdminErrorPage
-        title='Unable to load user content'
+        title='Unable to load user requests'
         error={error}
-        onRetry={() => loadUserContent(0)}
+        onRetry={() => loadUserOpenAIRequests(0)}
       />
     )
   }
 
   return (
-    <ContentTable
-      data={content}
+    <OpenAIRequestsTable
+      data={requests}
       hideSourceColumn={true}
       loading={loading}
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
       hasMore={hasMore}
-      onPageChange={loadUserContent}
-      onRefresh={() => loadUserContent(currentPage)}
+      onPageChange={loadUserOpenAIRequests}
+      onRefresh={() => loadUserOpenAIRequests(currentPage)}
     />
   );
 }

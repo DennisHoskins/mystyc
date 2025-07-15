@@ -1,6 +1,5 @@
 'use client';
 
-import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
@@ -11,8 +10,8 @@ export default function Error() {
   };
 
   return (
-    <Card className="flex flex-1 items-center justify-center">
-      <div className="w-full max-w-md  text-center">
+    <div className="flex flex-1 items-center justify-center">
+      <div className="w-full max-w-md text-center mx-4 px-6 border rounded-md p-6 shadow-sm bg-white">
         <div className="text-6xl mb-6">💥</div>
         
         <Heading level={2} className="mb-4">
@@ -29,6 +28,6 @@ export default function Error() {
           </Button>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

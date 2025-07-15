@@ -8,7 +8,7 @@ import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationContentService, NotificationContentTimeoutError } from '@/content/notification-content.service';
-import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
+import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
 import { Device } from '@/common/interfaces/device.interface';
@@ -22,7 +22,7 @@ export class NotificationsService {
     private readonly deviceService: DevicesService,
     private readonly userProfileService: UserProfilesService,
     private readonly notificationContentService: NotificationContentService,
-    private readonly scheduleExecutionService: ScheduleExecutionService
+    private readonly scheduleExecutionService: ScheduleExecutionsService
   ) {}
 
   // Notification schedule methods

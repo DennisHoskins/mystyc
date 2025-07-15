@@ -5,7 +5,10 @@ import { Model } from 'mongoose';
 import { OpenAICoreService } from './openai-core.service';
 import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
 import { OpenAIRequest, OpenAIRequestDocument } from './schemas/openai-request.schema';
+import { OpenAIRequest as OpenAIRequestInterface } from '@/common/interfaces/openai-request.interface';
 import { OpenAIContextDto } from './dto/openai-context.dto';
+import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
+import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class OpenAIUserService extends OpenAICoreService {
@@ -66,5 +69,51 @@ export class OpenAIUserService extends OpenAICoreService {
       },
       retryCount: 1,
     };
+  }
+
+  async getTotalByFirebaseUid(firebaseUid: string): Promise<number> {
+    return await this.requestModel.countDocuments({ 
+      linkedEntityId: firebaseUid,
+      requestType: 'user_content'
+    });
+  }
+
+  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto): Promise<OpenAIRequestInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding user requests with query', { 
+      linkedEntityId: firebaseUid,
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'OpenAIUserService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { linkedEntityId: firebaseUid } },
+      { $match: { requestType: 'user_content' } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const requests = await this.requestModel
+      .aggregate(pipeline)
+      .exec();
+
+    logger.debug('User requests found', { 
+      firebaseUid,
+      count: requests.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'OpenAIUserService');
+
+    return requests.map(request => this.transformToRequest(request));
   }
 }

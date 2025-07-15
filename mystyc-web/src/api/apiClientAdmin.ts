@@ -365,12 +365,56 @@ class AdminApiClient {
   //  Content Management
   //
 
+  getContentsSummary = async (): Promise<{
+    content: { total: number };
+    notifications: { total: number };
+    website: { total: number };
+    users: { total: number };
+  }> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content/summary`);
+    } catch (error) {
+      logger.error('getContentSummary failed:', error);
+      throw error;
+    }
+  };
+
   getContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content${queryString}`);
     } catch (error) {
       logger.error('getContents failed:', error);
+      throw error;
+    }
+  };
+
+  getNotificationsContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-notifications${queryString}`);
+    } catch (error) {
+      logger.error('getNotificationsContents failed:', error);
+      throw error;
+    }
+  };
+
+  getWebsiteContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-website${queryString}`);
+    } catch (error) {
+      logger.error('getWebsiteContents failed:', error);
+      throw error;
+    }
+  };
+
+  getUserContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-users${queryString}`);
+    } catch (error) {
+      logger.error('getUserContents failed:', error);
       throw error;
     }
   };
@@ -531,6 +575,7 @@ class AdminApiClient {
 
   getUserSummary = async (firebaseUid: string): Promise<{
     content: { total: number };
+    requests: { total: number };
     authEvents: { total: number };
     notifications: { total: number };
   }> => {
@@ -577,6 +622,16 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/content${queryString}`);
     } catch (error) {
       logger.error('getUserContent failed:', error);
+      throw error;
+    }
+  };
+
+  getUserOpenAIRequests = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<OpenAIRequest>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/requests${queryString}`);
+    } catch (error) {
+      logger.error('getUserRequests failed:', error);
       throw error;
     }
   };

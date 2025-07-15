@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export enum ContentType {
   WEBSITE = 'website_content',
-  BLOG_POST = 'blog_post',
+  BLOG_POST = 'blog_content',
   NOTIFICATION_CONTENT = 'notification_content',
   USER_CONTENT = 'user_content',
   PLUS_CONTENT = 'plus_content',

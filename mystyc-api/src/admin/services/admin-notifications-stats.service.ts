@@ -11,9 +11,20 @@ import {
   NotificationEngagementStats,
   NotificationPatternsStats
 } from '@/common/interfaces/admin/stats/admin-notification-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { logger } from '@/common/util/logger';
 
+@RegisterStatsModule({
+  serviceName: 'Notifications',
+  service: AdminNotificationsStatsService,
+  stats: [
+    { key: 'delivery', method: 'getDeliveryStats' },
+    { key: 'type', method: 'getTypeStats' },
+    { key: 'engagement', method: 'getEngagementStats' },
+    { key: 'pattern', method: 'getPatternStats' }
+  ]
+})
 @Injectable()
 export class AdminNotificationsStatsService {
   constructor(

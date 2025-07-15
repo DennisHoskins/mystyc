@@ -6,101 +6,94 @@ import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { UserProfileDocument } from '@/users/schemas/userProfile.schema';
 import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
 import { 
- RegistrationStatsResponse,
- ProfileCompletionStats,
- UserActivityStats
+  RegistrationStatsResponse,
+  ProfileCompletionStats,
+  UserActivityStats
 } from '@/common/interfaces/admin/stats/admin-user-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+import { StatsAggregationBuilder } from '@/admin/stats/pipeline-builder';
 import { logger } from '@/common/util/logger';
 
+@RegisterStatsModule({
+  serviceName: 'Users',
+  service: AdminUsersStatsService,
+  stats: [
+    { key: 'registrations', method: 'getRegistrationStats' },
+    { key: 'profiles', method: 'getProfileCompletionStats' },
+    { key: 'activity', method: 'getActivityStats' }
+  ]
+})
 @Injectable()
 export class AdminUsersStatsService {
- constructor(
-   @InjectModel('UserProfile') private userModel: Model<UserProfileDocument>,
-   @InjectModel('AuthEvent') private authEventModel: Model<AuthEventDocument>,
-   private readonly userProfilesService: UserProfilesService,
-   private readonly authEventsService: AuthEventsService,
- ) {}
+  constructor(
+    @InjectModel('UserProfile') private userModel: Model<UserProfileDocument>,
+    @InjectModel('AuthEvent') private authEventModel: Model<AuthEventDocument>,
+    private readonly userProfilesService: UserProfilesService,
+    private readonly authEventsService: AuthEventsService,
+  ) {}
 
- async getRegistrationStats(query?: AdminStatsQueryDto): Promise<RegistrationStatsResponse> {
-   logger.info('Generating registration stats', { query }, 'AdminUsersStatsService');
+  async getRegistrationStats(query?: AdminStatsQueryDto): Promise<RegistrationStatsResponse> {
+    logger.info('Generating registration stats', { query }, 'AdminUsersStatsService');
 
-   const { period = 'daily', limit = 30 } = query || {};
-   const now = new Date();
-   
-   // Calculate overall date range
-   let startDate: Date;
-   if (period === 'daily') {
-     startDate = new Date(now);
-     startDate.setDate(now.getDate() - (limit - 1));
-     startDate.setHours(0, 0, 0, 0);
-   } else if (period === 'weekly') {
-     startDate = new Date(now);
-     startDate.setDate(now.getDate() - ((limit - 1) * 7));
-     startDate.setDate(startDate.getDate() - startDate.getDay());
-     startDate.setHours(0, 0, 0, 0);
-   } else { // monthly
-     startDate = new Date(now.getFullYear(), now.getMonth() - (limit - 1), 1);
-   }
+    const { period = 'daily', limit = 30 } = query || {};
+    const now = new Date();
+    
+    // Calculate overall date range
+    let startDate: Date;
+    if (period === 'daily') {
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - (limit - 1));
+      startDate.setHours(0, 0, 0, 0);
+    } else if (period === 'weekly') {
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - ((limit - 1) * 7));
+      startDate.setDate(startDate.getDate() - startDate.getDay());
+      startDate.setHours(0, 0, 0, 0);
+    } else { // monthly
+      startDate = new Date(now.getFullYear(), now.getMonth() - (limit - 1), 1);
+    }
 
-   // Single aggregation query to get all registration counts
-   const pipeline: any[] = [
-     {
-       $match: {
-         createdAt: { $gte: startDate }
-       }
-     },
-     {
-       $group: {
-         _id: period === 'daily' 
-           ? { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }
-           : period === 'weekly'
-           ? { $dateToString: { format: "%Y-%m-%d", date: { 
-               $dateFromParts: { 
-                 year: { $year: "$createdAt" },
-                 month: { $month: "$createdAt" },
-                 day: { $subtract: [{ $dayOfMonth: "$createdAt" }, { $dayOfWeek: "$createdAt" }] }
-               }
-             }}}
-           : { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-         count: { $sum: 1 }
-       }
-     },
-     { $sort: { _id: 1 } }
-   ];
+    // Use the pipeline builder for date filtering and grouping
+    const pipeline = StatsAggregationBuilder
+      .create()
+      .dateFilter({ startDate: startDate.toISOString(), endDate: now.toISOString() })
+      .groupByDatePeriod(period)
+      .sort('_id', 1)
+      .build();
 
-   const aggregateResults = await this.userModel.aggregate(pipeline);
-   const resultMap = new Map(aggregateResults.map(r => [r._id, r.count]));
+    const aggregateResults = await this.userModel.aggregate(pipeline);
+    const resultMap = new Map(aggregateResults.map(r => [r._id, r.count]));
 
-   // Generate complete date range with zeros for missing dates
-   const data: Array<{ date: string; count: number }> = [];
-   for (let i = limit - 1; i >= 0; i--) {
-     let dateLabel: string;
+    // Generate complete date range with zeros for missing dates
+    const data: Array<{ date: string; count: number }> = [];
+    for (let i = limit - 1; i >= 0; i--) {
+      let dateLabel: string;
 
-     if (period === 'daily') {
-       const currentDate = new Date(now);
-       currentDate.setDate(now.getDate() - i);
-       dateLabel = currentDate.toISOString().split('T')[0];
-     } else if (period === 'weekly') {
-       const currentDate = new Date(now);
-       currentDate.setDate(now.getDate() - (i * 7));
-       currentDate.setDate(currentDate.getDate() - currentDate.getDay());
-       dateLabel = currentDate.toISOString().split('T')[0];
-     } else { // monthly
-       const currentDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-       dateLabel = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
-     }
+      if (period === 'daily') {
+        const currentDate = new Date(now);
+        currentDate.setDate(now.getDate() - i);
+        dateLabel = currentDate.toISOString().split('T')[0];
+      } else if (period === 'weekly') {
+        const currentDate = new Date(now);
+        currentDate.setDate(now.getDate() - (i * 7));
+        currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+        dateLabel = currentDate.toISOString().split('T')[0];
+      } else { // monthly
+        const currentDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        dateLabel = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+      }
 
-    const count = (resultMap.get(dateLabel) as number) || 0;
-    data.push({ date: dateLabel, count });
-   }
+      const count = (resultMap.get(dateLabel) as number) || 0;
+      data.push({ date: dateLabel, count });
+    }
 
-   return {
-     period,
-     data,
-     totalPeriods: limit
-   };
- }
+    return {
+      period,
+      data,
+      totalPeriods: limit
+    };
+  }
 
   async getProfileCompletionStats(query?: AdminStatsQueryDto): Promise<ProfileCompletionStats> {
     logger.info('Generating profile completion stats', { query }, 'AdminUsersStatsService');
@@ -142,67 +135,67 @@ export class AdminUsersStatsService {
     return stats;
   }
 
- async getActivityStats(query?: AdminStatsQueryDto): Promise<UserActivityStats> {
-   logger.info('Generating user activity stats', { query }, 'AdminUsersStatsService');
+  async getActivityStats(query?: AdminStatsQueryDto): Promise<UserActivityStats> {
+    logger.info('Generating user activity stats', { query }, 'AdminUsersStatsService');
 
-   const now = new Date();
-   const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-   const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-   const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-   // Get total users count efficiently
-   const totalUsers = await this.userModel.countDocuments();
+    // Get total users count efficiently
+    const totalUsers = await this.userModel.countDocuments();
 
-   // Single aggregation to get unique active users for all time periods
-   const pipeline: any[] = [
-     {
-       $match: {
-         timestamp: { $gte: last30Days }
-       }
-     },
-     {
-       $group: {
-         _id: "$firebaseUid",
-         lastActivity: { $max: "$timestamp" }
-       }
-     },
-     {
-       $group: {
-         _id: null,
-         activeUsersLast24Hours: {
-           $sum: { $cond: [{ $gte: ["$lastActivity", last24Hours] }, 1, 0] }
-         },
-         activeUsersLast7Days: {
-           $sum: { $cond: [{ $gte: ["$lastActivity", last7Days] }, 1, 0] }
-         },
-         activeUsersLast30Days: {
-           $sum: { $cond: [{ $gte: ["$lastActivity", last30Days] }, 1, 0] }
-         }
-       }
-     }
-   ];
+    // Single aggregation to get unique active users for all time periods
+    const pipeline: any[] = [
+      {
+        $match: {
+          timestamp: { $gte: last30Days }
+        }
+      },
+      {
+        $group: {
+          _id: "$firebaseUid",
+          lastActivity: { $max: "$timestamp" }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          activeUsersLast24Hours: {
+            $sum: { $cond: [{ $gte: ["$lastActivity", last24Hours] }, 1, 0] }
+          },
+          activeUsersLast7Days: {
+            $sum: { $cond: [{ $gte: ["$lastActivity", last7Days] }, 1, 0] }
+          },
+          activeUsersLast30Days: {
+            $sum: { $cond: [{ $gte: ["$lastActivity", last30Days] }, 1, 0] }
+          }
+        }
+      }
+    ];
 
-   const [result] = await this.authEventModel.aggregate(pipeline);
-   
-   const activeUsers = result || {
-     activeUsersLast24Hours: 0,
-     activeUsersLast7Days: 0,
-     activeUsersLast30Days: 0
-   };
+    const [result] = await this.authEventModel.aggregate(pipeline);
+    
+    const activeUsers = result || {
+      activeUsersLast24Hours: 0,
+      activeUsersLast7Days: 0,
+      activeUsersLast30Days: 0
+    };
 
-   const inactiveUsers = totalUsers - activeUsers.activeUsersLast30Days;
+    const inactiveUsers = totalUsers - activeUsers.activeUsersLast30Days;
 
-   const stats = {
-     totalUsers,
-     activeUsers: {
-       last24Hours: activeUsers.activeUsersLast24Hours,
-       last7Days: activeUsers.activeUsersLast7Days,
-       last30Days: activeUsers.activeUsersLast30Days
-     },
-     inactiveUsers: Math.max(0, inactiveUsers)
-   };
+    const stats = {
+      totalUsers,
+      activeUsers: {
+        last24Hours: activeUsers.activeUsersLast24Hours,
+        last7Days: activeUsers.activeUsersLast7Days,
+        last30Days: activeUsers.activeUsersLast30Days
+      },
+      inactiveUsers: Math.max(0, inactiveUsers)
+    };
 
-   logger.info('User activity stats generated', stats, 'AdminUsersStatsService');
-   return stats;
- }
+    logger.info('User activity stats generated', stats, 'AdminUsersStatsService');
+    return stats;
+  }
 }

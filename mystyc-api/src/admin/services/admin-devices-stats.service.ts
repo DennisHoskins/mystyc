@@ -11,9 +11,20 @@ import {
   DeviceActivityStats,
   DeviceUserAgentStats
 } from '@/common/interfaces/admin/stats/admin-device-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { logger } from '@/common/util/logger';
 
+@RegisterStatsModule({
+  serviceName: 'Devices',
+  service: AdminDevicesStatsService,
+  stats: [
+    { key: 'platforms', method: 'getPlatformStats' },
+    { key: 'fcmTokens', method: 'getFcmTokenStats' },
+    { key: 'activity', method: 'getDeviceActivityStats' },
+    { key: 'userAgents', method: 'getUserAgentStats' }
+  ]
+})
 @Injectable()
 export class AdminDevicesStatsService {
   constructor(

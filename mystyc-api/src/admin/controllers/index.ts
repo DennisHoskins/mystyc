@@ -5,8 +5,11 @@ export { AdminNotificationsController } from './admin-notifications.controller';
 export { AdminNotificationsSendController } from './admin-notifications-send.controller';
 export { AdminOpenAIController } from './admin-openai.controller';
 export { AdminContentController } from './admin-content.controller';
-export { AdminScheduleController } from './admin-schedule.controller';
-export { AdminScheduleExecutionController } from './admin-schedule-execution.controller';
+export { AdminWebsiteContentController } from './admin-content-website.controller';
+export { AdminNotificationsContentController } from './admin-content-notifications.controller';
+export { AdminUsersContentController } from './admin-content-users.controller';
+export { AdminSchedulesController } from './admin-schedules.controller';
+export { AdminScheduleExecutionsController } from './admin-schedule-executions.controller';
 
 export { AdminStatsController } from './stats/admin-stats.controller';
 export { AdminUsersStatsController } from './stats/admin-users-stats.controller';
@@ -15,5 +18,5 @@ export { AdminAuthEventsStatsController } from './stats/admin-auth-events-stats.
 export { AdminNotificationsStatsController } from './stats/admin-notifications-stats.controller';
 export { AdminContentStatsController } from './stats/admin-content-stats.controller';
 export { AdminOpenAIStatsController } from './stats/admin-openai-stats.controller';
-export { AdminScheduleStatsController } from './stats/admin-schedule-stats.controller';
-export { AdminScheduleExecutionStatsController } from './stats/admin-schedule-execution-stats.controller';
+export { AdminSchedulesStatsController } from './stats/admin-schedules-stats.controller';
+export { AdminScheduleExecutionsStatsController } from './stats/admin-schedule-executions-stats.controller';

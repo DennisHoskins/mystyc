@@ -1,76 +1,12 @@
-import { Controller, Query, Get, UseGuards } from '@nestjs/common';
-
-import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
-import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
-import { DevicesService } from '@/devices/devices.service';
+import { Controller } from '@nestjs/common';
 import { AdminDevicesStatsService } from '@/admin/services/admin-devices-stats.service';
-import { Device } from '@/common/interfaces/device.interface';
-import { 
-  PlatformStatsResponse,
-  FcmTokenStats,
-  DeviceActivityStats,
-  DeviceUserAgentStats,
-  DeviceStats
-} from '@/common/interfaces/admin/stats/admin-device-stats.interface';
-import { AdminController } from '../admin.controller';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { createStatsController } from '@/admin/stats/create-stats-controller';
+
+const BaseController = createStatsController('Devices');
 
 @Controller('admin/stats/devices')
-export class AdminDevicesStatsController extends AdminController<Device> {
-  protected serviceName = 'Devices';
-
-  constructor(
-    protected service: DevicesService,
-    private readonly adminDevicesStatsService: AdminDevicesStatsService,
-  ) {
-    super();
-  }
-
-  @Get()
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getStats(@Query() query: AdminStatsQueryDto): Promise<DeviceStats> {
-     const [platforms, fcmTokens, activity, userAgents] = await Promise.all([
-      this.adminDevicesStatsService.getPlatformStats(query),
-      this.adminDevicesStatsService.getFcmTokenStats(query),
-      this.adminDevicesStatsService.getDeviceActivityStats(query),
-      this.adminDevicesStatsService.getUserAgentStats(query),
-    ]);
-    return {
-      platforms,
-      fcmTokens,
-      activity,
-      userAgents
-    }
-  }
-
-  @Get('stats/platform')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getPlatformStats(@Query() query: AdminStatsQueryDto): Promise<PlatformStatsResponse> {
-    return this.adminDevicesStatsService.getPlatformStats(query);
-  }
-
-  @Get('stats/fcmToken')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getFcmTokenStats(@Query() query: AdminStatsQueryDto): Promise<FcmTokenStats> {
-    return this.adminDevicesStatsService.getFcmTokenStats(query);
-  }
-
-  @Get('stats/activity')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getActivityStats(@Query() query: AdminStatsQueryDto): Promise<DeviceActivityStats> {
-    return this.adminDevicesStatsService.getDeviceActivityStats(query);
-  }
-
-  @Get('stats/userAgent')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getUserAgentStats(@Query() query: AdminStatsQueryDto): Promise<DeviceUserAgentStats> {
-    return this.adminDevicesStatsService.getUserAgentStats(query);
+export class AdminDevicesStatsController extends BaseController {
+  constructor(public service: AdminDevicesStatsService) {
+    super(service);
   }
 }

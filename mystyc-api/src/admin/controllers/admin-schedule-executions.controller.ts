@@ -4,7 +4,7 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
-import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
+import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { ScheduleExecution } from '@/common/interfaces/schedule-execution.interface';
@@ -16,11 +16,11 @@ import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/schedule-executions')
-export class AdminScheduleExecutionController extends AdminController<ScheduleExecution> {
+export class AdminScheduleExecutionsController extends AdminController<ScheduleExecution> {
   protected serviceName = 'ScheduleExecution';
   
   constructor(
-    protected service: ScheduleExecutionService,
+    protected service: ScheduleExecutionsService,
     protected contentService: ContentService,
     protected notificationsService: NotificationsService
   ) {

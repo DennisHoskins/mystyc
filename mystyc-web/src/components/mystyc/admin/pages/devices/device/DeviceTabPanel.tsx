@@ -68,7 +68,7 @@ export default function DeviceTabPanel({ deviceId }: { deviceId: string }) {
     <Card className='h-[56rem]'>
       <TabPanel 
         tabs={tabs} 
-        defaultActiveTab="auth-events"
+        defaultActiveTab={activeTab}
         onTabChange={setActiveTab}
       />
     </Card>      

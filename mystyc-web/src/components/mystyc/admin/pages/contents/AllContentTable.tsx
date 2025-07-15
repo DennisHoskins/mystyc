@@ -1,20 +1,20 @@
 'use client';
 
-import { useEffect, useCallback, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Content } from '@/interfaces';
+import { formatDateForDisplay } from '@/util/dateTime';
+import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
-import AdminErrorPage from '@/components/mystyc/admin/ui/AdminError';
-import ContentTable from '@/components/mystyc/admin/pages/contents/ContentTable';
+import AdminError from '@/components/mystyc/admin/ui/AdminError';
+import ContentTable from './ContentTable';
 
-interface UserContentTableProps {
-  firebaseUid: string;
-  isActive?: boolean;
-}
-
-export default function UserContent({ firebaseUid, isActive = false }: UserContentTableProps) {
+export default function AllContentTable({ isActive = false } : { isActive: boolean }) {
+  const { handleSessionError } = useSessionErrorHandler();
+  const { setBusy } = useBusy();
   const [content, setContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,15 +25,16 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
-  const loadUserContent = useCallback(async (page: number) => {
+  const loadAllContent = useCallback(async (page: number) => {
     try {
-      setLoading(true);
       setError(null);
+      setBusy(1000);
+      setLoading(true);
 
-      const response = await apiClientAdmin.getUserContent(firebaseUid, {
+      const response = await apiClientAdmin.getContents({
         limit: LIMIT,
         offset: page * LIMIT,
-        sortBy: 'createdAt',
+        sortBy: 'date',
         sortOrder: 'desc',
       });
 
@@ -44,19 +45,23 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
       setTotalItems(response.pagination.totalItems);
       setHasLoaded(true);
     } catch (err) {
-      logger.error('Failed to load content:', err);
-      setError('Failed to load content. Please try again.');
+      const wasSessionError = await handleSessionError(err, 'ContentsPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load content:', err);
+        setError('Failed to load content. Please try again.');
+      }
     } finally {
+      setBusy(false);
       setLoading(false);
     }
-  }, [firebaseUid]);
+  }, [setBusy, handleSessionError]);
 
   // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
-      loadUserContent(0);
+      loadAllContent(0);
     }
-  }, [isActive, hasLoaded, loadUserContent]);
+  }, [isActive, hasLoaded, loadAllContent]);
 
   // Show loading state if tab is active but hasn't loaded yet
   if (isActive && !hasLoaded && !loading) {
@@ -70,25 +75,24 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
 
   if (error) {
     return (
-      <AdminErrorPage
-        title='Unable to load user content'
-        error={error}
-        onRetry={() => loadUserContent(0)}
-      />
+        <AdminError 
+          title={"Unable to load content"}
+          error={error} 
+          onRetry={() => loadAllContent(0)}
+        />
     )
   }
 
   return (
     <ContentTable
       data={content}
-      hideSourceColumn={true}
       loading={loading}
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
       hasMore={hasMore}
-      onPageChange={loadUserContent}
-      onRefresh={() => loadUserContent(currentPage)}
+      onPageChange={loadAllContent}
+      onRefresh={() => loadAllContent(currentPage)}
     />
   );
 }

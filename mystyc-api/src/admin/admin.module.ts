@@ -7,17 +7,21 @@ import {
   AdminAuthEventsController,
   AdminOpenAIController,
   AdminContentController,
-  AdminScheduleController,
-  AdminScheduleExecutionController,
+  AdminWebsiteContentController,
+  AdminNotificationsContentController,
+  AdminUsersContentController,
+  AdminSchedulesController,
+  AdminScheduleExecutionsController,
   AdminNotificationsController,
   AdminNotificationsSendController,
+  
   AdminStatsController,
   AdminUsersStatsController,
   AdminDevicesStatsController,
   AdminAuthEventsStatsController,
   AdminNotificationsStatsController,
-  AdminScheduleStatsController,
-  AdminScheduleExecutionStatsController,
+  AdminSchedulesStatsController,
+  AdminScheduleExecutionsStatsController,
   AdminContentStatsController,
   AdminOpenAIStatsController,
 } from './controllers';
@@ -29,8 +33,8 @@ import { AdminAuthEventsStatsService } from './services/admin-auth-events-stats.
 import { AdminNotificationsStatsService } from './services/admin-notifications-stats.service';
 import { AdminContentStatsService } from './services/admin-content-stats.service';
 import { AdminOpenAIStatsService } from './services/admin-openai-stats.service';
-import { AdminScheduleStatsService } from './services/admin-schedule-stats.service';
-import { AdminScheduleExecutionStatsService } from './services/admin-schedule-execution-stats.service';
+import { AdminSchedulesStatsService } from './services/admin-schedules-stats.service';
+import { AdminScheduleExecutionsStatsService } from './services/admin-schedule-executions-stats.service';
 
 import { UserProfileSchema } from '@/users/schemas/userProfile.schema';
 import { DeviceSchema } from '@/devices/schemas/device.schema';
@@ -38,8 +42,8 @@ import { AuthEventSchema } from '@/auth-events/schemas/auth-event.schema';
 import { NotificationSchema } from '@/notifications/schemas/notification.schema';
 import { ContentSchema } from '@/content/schemas/content.schema';
 import { OpenAIRequestSchema } from '@/openai/schemas/openai-request.schema';
-import { ScheduleSchema } from '@/schedule/schemas/schedule.schema';
-import { ScheduleExecutionSchema } from '@/schedule/schemas/schedule-execution.schema';
+import { ScheduleSchema } from '@/schedules/schemas/schedule.schema';
+import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.schema';
 
 @Module({
   imports: [
@@ -60,9 +64,12 @@ controllers: [
     AdminDevicesController,
     AdminAuthEventsController,
     AdminContentController,
+    AdminWebsiteContentController,
+    AdminNotificationsContentController,
+    AdminUsersContentController,
     AdminOpenAIController,
-    AdminScheduleController,
-    AdminScheduleExecutionController,
+    AdminSchedulesController,
+    AdminScheduleExecutionsController,
     AdminNotificationsController,
     AdminNotificationsSendController,
     AdminStatsController,
@@ -70,8 +77,8 @@ controllers: [
     AdminDevicesStatsController,
     AdminAuthEventsStatsController,
     AdminNotificationsStatsController,
-    AdminScheduleStatsController,
-    AdminScheduleExecutionStatsController,
+    AdminSchedulesStatsController,
+    AdminScheduleExecutionsStatsController,
     AdminContentStatsController,
     AdminOpenAIStatsController,
   ],
@@ -82,8 +89,8 @@ controllers: [
     AdminNotificationsStatsService,
     AdminOpenAIStatsService,
     AdminContentStatsService,
-    AdminScheduleStatsService,
-    AdminScheduleExecutionStatsService,
+    AdminSchedulesStatsService,
+    AdminScheduleExecutionsStatsService,
   ]
 })
 export class AdminModule {}

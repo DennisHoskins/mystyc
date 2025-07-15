@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
-import { ScheduleService } from '@/schedule/schedule.service';
-import { ScheduleExecutionService } from '@/schedule/schedule-execution.service';
+import { SchedulesService } from '@/schedules/schedules.service';
+import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { ScheduleDocument } from '@/schedule/schemas/schedule.schema';
-import { ScheduleExecutionDocument } from '@/schedule/schemas/schedule-execution.schema';
+import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
+import { ScheduleExecutionDocument } from '@/schedules/schemas/schedule-execution.schema';
 import { ContentDocument } from '@/content/schemas/content.schema';
 import { NotificationDocument } from '@/notifications/schemas/notification.schema';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
@@ -20,17 +19,25 @@ import {
   ScheduleRecentExecutionStats,
   ScheduleExecutionSummaryStats
 } from '@/common/interfaces/admin/stats/admin-schedule-execution-stats.interface';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { logger } from '@/common/util/logger';
 
+@RegisterStatsModule({
+  serviceName: 'ScheduleExecutions',
+  service: AdminScheduleExecutionsStatsService,
+  stats: [
+    { key: 'executions', method: 'getOverallScheduleStats' }
+  ]
+})
 @Injectable()
-export class AdminScheduleExecutionStatsService {
+export class AdminScheduleExecutionsStatsService {
   constructor(
     @InjectModel('Schedule') private scheduleModel: Model<ScheduleDocument>,
     @InjectModel('ScheduleExecution') private scheduleExecutionModel: Model<ScheduleExecutionDocument>,
     @InjectModel('Content') private contentModel: Model<ContentDocument>,
     @InjectModel('Notification') private notificationModel: Model<NotificationDocument>,
-    private readonly scheduleService: ScheduleService,
-    private readonly scheduleExecutionService: ScheduleExecutionService,
+    private readonly scheduleService: SchedulesService,
+    private readonly scheduleExecutionService: ScheduleExecutionsService,
     private readonly contentService: ContentService,
     private readonly notificationsService: NotificationsService,
   ) {}

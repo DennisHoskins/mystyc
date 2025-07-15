@@ -1,76 +1,12 @@
-import { Controller, Query, Get, UseGuards } from '@nestjs/common';
-
-import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
-import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
-import { AuthEventsService } from '@/auth-events/auth-events.service';
+import { Controller } from '@nestjs/common';
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
-import { AuthEvent } from '@/common/interfaces/auth-event.interface';
-import { 
-  AuthEventSummaryStats,
-  AuthenticationPatternsStats,
-  SessionDurationStats,
-  GeographicDistributionStats,
-  AuthEventStats
-} from '@/common/interfaces/admin/stats/admin-auth-event-stats.interface';
-import { AdminController } from '../admin.controller';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { createStatsController } from '@/admin/stats/create-stats-controller';
+
+const BaseController = createStatsController('AuthEvents');
 
 @Controller('admin/stats/auth-events')
-export class AdminAuthEventsStatsController extends AdminController<AuthEvent> {
-  protected serviceName = 'AuthEvents';
-
-  constructor(
-    protected service: AuthEventsService,
-    private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
-  ) {
-    super();
-  }
-
-  @Get()
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getStats(@Query() query: AdminStatsQueryDto): Promise<AuthEventStats> {
-    const [summary, duration, pattern, distribution] = await Promise.all([
-      this.adminAuthEventsStatsService.getSummaryStats(query),
-      this.adminAuthEventsStatsService.getSessionDurationStats(query),
-      this.adminAuthEventsStatsService.getPatternStats(query),
-      this.adminAuthEventsStatsService.getGeographicStats(query)
-    ]);
-    return {
-      summary,
-      duration,
-      pattern,
-      distribution
-    }
-  }
-
-  @Get('stats/summary')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getSummaryStats(@Query() query: AdminStatsQueryDto): Promise<AuthEventSummaryStats> {
-    return this.adminAuthEventsStatsService.getSummaryStats(query);
-  }
-
-  @Get('stats/pattern')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getPatternStats(@Query() query: AdminStatsQueryDto): Promise<AuthenticationPatternsStats> {
-    return this.adminAuthEventsStatsService.getPatternStats(query);
-  }
-
-  @Get('stats/duration')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getDurationStats(@Query() query: AdminStatsQueryDto): Promise<SessionDurationStats> {
-    return this.adminAuthEventsStatsService.getSessionDurationStats(query);
-  }
-
-  @Get('stats/distribution')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getDistributionStats(@Query() query: AdminStatsQueryDto): Promise<GeographicDistributionStats> {
-    return this.adminAuthEventsStatsService.getGeographicStats(query);
+export class AdminAuthEventsStatsController extends BaseController {
+  constructor(public service: AdminAuthEventsStatsService) {
+    super(service);
   }
 }

@@ -1,22 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ScheduleService } from '@/schedule/schedule.service';
-import { ScheduleDocument } from '@/schedule/schemas/schedule.schema';
+import { SchedulesService } from '@/schedules/schedules.service';
+import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
 import { 
   ScheduleSummaryStats,
   SchedulePerformanceStats,
-  ScheduleFailureStats,
-  ScheduleStats
+  ScheduleFailureStats
 } from '@/common/interfaces/admin/stats/admin-schedule-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
+import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { logger } from '@/common/util/logger';
 
+@RegisterStatsModule({
+  serviceName: 'Schedules',
+  service: AdminSchedulesStatsService,
+  stats: [
+    { key: 'summary', method: 'getSummaryStats' },
+    { key: 'performance', method: 'getPerformanceStats' },
+    { key: 'failures', method: 'getFailureStats' }
+  ]
+})
 @Injectable()
-export class AdminScheduleStatsService {
+export class AdminSchedulesStatsService {
   constructor(
     @InjectModel('Schedule') private scheduleModel: Model<ScheduleDocument>,
-    private readonly scheduleService: ScheduleService,
+    private readonly scheduleService: SchedulesService,
   ) {}
 
   async getSummaryStats(query?: AdminStatsQueryDto): Promise<ScheduleSummaryStats> {
@@ -171,30 +180,6 @@ export class AdminScheduleStatsService {
 
     } catch (error) {
       logger.error('Failed to generate schedule failure stats', {
-        error: error.message
-      }, 'AdminScheduleStatsService');
-      throw error;
-    }
-  }
-
-  async getStats(query?: AdminStatsQueryDto): Promise<ScheduleStats> {
-    logger.info('Generating comprehensive schedule stats', { query }, 'AdminScheduleStatsService');
-    
-    try {
-      const [summary, performance, failures] = await Promise.all([
-        this.getSummaryStats(query),
-        this.getPerformanceStats(query),
-        this.getFailureStats(query)
-      ]);
-
-      return {
-        summary,
-        performance,
-        failures
-      };
-
-    } catch (error) {
-      logger.error('Failed to generate comprehensive schedule stats', {
         error: error.message
       }, 'AdminScheduleStatsService');
       throw error;

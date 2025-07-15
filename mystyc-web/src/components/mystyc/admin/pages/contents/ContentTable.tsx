@@ -19,7 +19,7 @@ interface ContentTableProps {
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
-  hideSourceCoulumn?: boolean;
+  hideSourceColumn?: boolean;
 }
 
 export default function ContentTable({
@@ -33,7 +33,7 @@ export default function ContentTable({
   hasMore,
   onPageChange,
   onRefresh,
-  hideSourceCoulumn = false
+  hideSourceColumn = false
 }: ContentTableProps) {
   const baseColumns: Column<Content>[] = [
     { key: 'date', header: 'Created', link: (u) => `/admin/content/${u._id}`, 
@@ -51,6 +51,11 @@ export default function ContentTable({
           u.error
           ? <span className="text-red-500">{u.title}</span>
           : u.title},
+    { key: 'request', header: 'Request', link: (u) => `/admin/openai/${u.openAIRequestId}`, 
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">{u.openAIRequestId}</span>
+          : u.openAIRequestId},
   ];
 
   const sourceColumn: Column<Content> = {
@@ -69,7 +74,7 @@ export default function ContentTable({
       Globe
   };
 
-  const columns = hideSourceCoulumn 
+  const columns = hideSourceColumn 
     ? baseColumns 
     : [
         baseColumns[0],

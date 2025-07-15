@@ -10,22 +10,16 @@ import { logger } from '@/util/logger';
 
 import Button from '@/components/ui/Button';
 import AdminListLayout from '@/components/mystyc/admin/ui/AdminListLayout';
-import ContentTable from './ContentTable';
 import ContentIcon from '@/components/mystyc/admin/ui/icons/ContentIcon';
 import ContentDashboard from './ContentDashboard';
+import ContentsTabPanel from './ContentsTabPanel';
 
 export default function ContentPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [content, setContent] = useState<Content[]>([]);
   const [stats, setStats] = useState<StatsResponseWithQuery<ContentStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 20;
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
@@ -37,19 +31,6 @@ export default function ContentPage() {
       setError(null);
       setBusy(1000);
       setLoading(true);
-
-      const response = await apiClientAdmin.getContents({
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'date',
-        sortOrder: 'desc',
-      });
-
-      setContent(response.data);
-      setHasMore(response.pagination.hasMore);
-      setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
-      setTotalItems(response.pagination.totalItems);
 
       const statsQuery = getDefaultDashboardStatsQuery();
       const stats = await apiClientAdmin.getContentStats(statsQuery);
@@ -91,10 +72,14 @@ export default function ContentPage() {
     }
   }
 
+  if (loading) {
+    return;
+  }
+
   return (
    <AdminListLayout
       error={error}
-      onRetry={() => loadContent(currentPage)}
+      onRetry={() => null}
       breadcrumbs={breadcrumbs}
       icon={ContentIcon}
       button={
@@ -126,18 +111,7 @@ export default function ContentPage() {
           charts={['coverage']}
         />
       ]}
-      tableContent={
-        <ContentTable 
-          data={content}
-          loading={loading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          hasMore={hasMore}
-          onPageChange={loadContent}
-          onRefresh={() => loadContent(currentPage)}
-        />
-      }
+      tableContent={<ContentsTabPanel />}
     />   
   );
 }
