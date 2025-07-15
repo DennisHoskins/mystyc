@@ -78,6 +78,18 @@ export class AdminContentStatsService {
 
       const [result] = await this.contentModel.aggregate(pipeline);
 
+console.log();
+console.log();
+console.log();
+console.log('Date filter:', dateFilter);
+console.log('Query:', query);
+console.log('Pipeline:', JSON.stringify(pipeline, null, 2));
+console.log();
+console.log('Aggregation result:', result);
+console.log();
+console.log();
+
+
       if (!result) {
         return {
           totalContent: 0,
@@ -380,8 +392,14 @@ export class AdminContentStatsService {
     if (!query?.startDate && !query?.endDate) return null;
     
     const filter: any = {};
-    if (query.startDate) filter.$gte = new Date(query.startDate);
-    if (query.endDate) filter.$lte = new Date(query.endDate);
+    if (query.startDate) {
+      filter.$gte = new Date(query.startDate);
+    }
+    if (query.endDate) {
+      const endDate = new Date(query.endDate);
+      endDate.setHours(23, 59, 59, 999);
+      filter.$lte = endDate;
+    }
     
     return Object.keys(filter).length > 0 ? filter : null;
   }

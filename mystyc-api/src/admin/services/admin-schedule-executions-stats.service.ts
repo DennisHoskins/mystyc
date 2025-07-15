@@ -594,8 +594,14 @@ export class AdminScheduleExecutionsStatsService {
     if (!query?.startDate && !query?.endDate) return null;
     
     const filter: any = {};
-    if (query.startDate) filter.$gte = new Date(query.startDate);
-    if (query.endDate) filter.$lte = new Date(query.endDate);
+    if (query.startDate) {
+      filter.$gte = new Date(query.startDate);
+    }
+    if (query.endDate) {
+      const endDate = new Date(query.endDate);
+      endDate.setHours(23, 59, 59, 999);
+      filter.$lte = endDate;
+    }
     
     return Object.keys(filter).length > 0 ? filter : null;
   }

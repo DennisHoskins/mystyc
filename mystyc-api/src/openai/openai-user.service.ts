@@ -22,7 +22,7 @@ export class OpenAIUserService extends OpenAICoreService {
   getPrompt(date: string, name: string): string {
     return `
       Generate mystical daily content for ${date} and mention this user's name: ${name}. Include:
-      1. A mystical title (max 50 characters) that includes ${name}
+      1. A short mystical title (max 50 characters) that includes ${name}
       2. A mystical message (max 200 characters) specifically for ${name}
       Format as JSON: { "title": "...", "message": "..." }`;
   }
@@ -62,7 +62,7 @@ export class OpenAIUserService extends OpenAICoreService {
 
         await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
 
-        content.title = title;
+        content.title = fullName + ", " + title;
         content.message = message;
         content.imageUrl = this.getDefaultImageUrl(date);
         content.linkUrl = 'https://mystyc.app';

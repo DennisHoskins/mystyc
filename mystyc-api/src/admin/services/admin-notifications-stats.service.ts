@@ -44,7 +44,11 @@ export class AdminNotificationsStatsService {
       const dateMatch: any = {};
       if (query?.startDate || query?.endDate) {
         if (query.startDate) dateMatch.$gte = new Date(query.startDate);
-        if (query.endDate) dateMatch.$lte = new Date(query.endDate);
+        if (query.endDate) {
+          const endDate = new Date(query.endDate);
+          endDate.setHours(23, 59, 59, 999);
+          dateMatch.$lte = endDate;
+        }
       } else {
         // Default to last 30 days for performance
         const thirtyDaysAgo = new Date();

@@ -4,7 +4,7 @@ import { createStatsController } from '@/admin/stats/create-stats-controller';
 
 const BaseController = createStatsController('ScheduleExecutions');
 
-@Controller('admin/stats/schedules')
+@Controller('admin/stats/schedule-executions')
 export class AdminScheduleExecutionsStatsController extends BaseController {
   constructor(public service: AdminScheduleExecutionsStatsService) {
     super(service);
