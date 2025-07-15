@@ -20,13 +20,13 @@ export default function ContentSidebarPanel({ content }: { content: Content }) {
 
       <hr/>
 
-      {content.openAIRequestId ? (
+      {/* {content.openAIRequestId ? (
         <div className='mt-4'>
           <OpenAIRequestInfoPanel requestId={content.openAIRequestId} />
         </div>
       ) : (
         <FormError message='Request not found' />
-      )}
+      )} */}
    </div>
   );
 }

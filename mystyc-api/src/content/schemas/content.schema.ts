@@ -19,6 +19,28 @@ export class DataItem {
 }
 export const DataItemSchema = SchemaFactory.createForClass(DataItem);
 
+@Schema()
+export class OpenAIData {
+  @Prop()
+  prompt?: string;
+
+  @Prop()
+  model?: string;
+
+  @Prop()
+  inputTokens?: number;
+
+  @Prop()
+  outputTokens?: number;
+
+  @Prop()
+  cost?: number;
+
+  @Prop()
+  retryCount?: number;
+}
+export const OpenAIDataSchema = SchemaFactory.createForClass(OpenAIData);
+
 @Schema({ timestamps: true, collection: 'content' })
 export class Content {
   @Prop({ 
@@ -32,7 +54,6 @@ export class Content {
   @Prop({ required: true, index: true })
   date: string; // Format: "2025-07-07"
 
-  // Website content links
   @Prop({ index: true })
   scheduleId?: string;
 
@@ -42,12 +63,11 @@ export class Content {
   @Prop({ index: true })
   notificationId?: string;
 
-  @Prop({ index: true }) 
-  openAIRequestId?: string;  
-
-  // User content links
   @Prop({ index: true })
   userId?: string;
+
+  @Prop()
+  openAIData?: OpenAIData;
 
   @Prop({ required: true })
   title: string;
@@ -95,10 +115,10 @@ ContentSchema.index({ type: 1, status: 1 });
 ContentSchema.index({ date: -1 });
 ContentSchema.index({ scheduleId: -1 });
 ContentSchema.index({ executionId: -1 });
-ContentSchema.index({ notificationId: -1 }); // NEW: Index for notification content
-ContentSchema.index({ firebaseUid: -1 }); // NEW: Index for user content
+ContentSchema.index({ notificationId: -1 });
+ContentSchema.index({ userId: -1 });
 ContentSchema.index({ status: 1, date: -1 });
 ContentSchema.index({ generatedAt: -1 });
 ContentSchema.index({ sources: 1 });
 ContentSchema.index({ viewCount: -1 });
-ContentSchema.index({ openAIRequestId: 1 });
+ContentSchema.index({ "openAIData.cost": -1 });

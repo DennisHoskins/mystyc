@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { OpenAIRequestDocument } from '@/openai/schemas/openai-request.schema';
+import { OpenAIUsageDocument } from '@/openai/schemas/openai-usage.schema';
 import { OpenAICoreService } from '@/openai/openai-core.service';
 import { 
-  OpenAIRequestSummaryStats
-} from '@/common/interfaces/admin/stats/admin-openai-request-stats.interface';
+  OpenAIUsageSummaryStats
+} from '@/common/interfaces/admin/stats/admin-openai-usage-stats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { logger } from '@/common/util/logger';
@@ -20,11 +20,11 @@ import { logger } from '@/common/util/logger';
 @Injectable()
 export class AdminOpenAIStatsService {
   constructor(
-    @InjectModel('OpenAIRequest') private openAIRequestModel: Model<OpenAIRequestDocument>,
+    @InjectModel('OpenAIUsage') private openAIUsageModel: Model<OpenAIUsageDocument>,
     private readonly openAIService: OpenAICoreService,
   ) {}
 
-  async getSummaryStats(query?: AdminStatsQueryDto): Promise<OpenAIRequestSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQueryDto): Promise<OpenAIUsageSummaryStats> {
     logger.info('Generating openai summary stats', { query }, 'AdminOpenAIStatsService');
     
     try {
@@ -32,77 +32,22 @@ export class AdminOpenAIStatsService {
       
       const pipeline: any[] = [
         ...(dateFilter ? [{ $match: { createdAt: dateFilter } }] : []),
-        {
-          $group: {
-            _id: null,
-            totalRequests: { $sum: 1 },
-            totalTokens: { $sum: '$tokensUsed' },
-            totalCost: { $sum: '$cost' },
-            successfulRequests: {
-              $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] }
-            },
-            failedRequests: {
-              $sum: { $cond: [{ $eq: ['$status', 'failed'] }, 1, 0] }
-            }
-          }
-        },
-        {
-          $addFields: {
-            successRate: {
-              $cond: [
-                { $gt: ['$totalRequests', 0] },
-                { $round: [{ $multiply: [{ $divide: ['$successfulRequests', '$totalRequests'] }, 100] }] },
-                0
-              ]
-            },
-            averageTokensPerRequest: {
-              $cond: [
-                { $gt: ['$totalRequests', 0] },
-                { $round: [{ $divide: ['$totalTokens', '$totalRequests'] }] },
-                0
-              ]
-            },
-            averageCostPerRequest: {
-              $cond: [
-                { $gt: ['$totalRequests', 0] },
-                { $round: [{ $divide: ['$totalCost', '$totalRequests'] }, 4] },
-                0
-              ]
-            }
-          }
-        }
       ];
 
-      const [result] = await this.openAIRequestModel.aggregate(pipeline);
+      const [result] = await this.openAIUsageModel.aggregate(pipeline);
 
       if (!result) {
         return {
-          totalRequests: 0,
-          successfulRequests: 0,
-          failedRequests: 0,
-          successRate: 0,
-          totalTokens: 0,
-          totalCost: 0,
-          averageTokensPerRequest: 0,
-          averageCostPerRequest: 0
+          totalUsage: 0,
         };
       }
 
       logger.info('OpenAI summary stats generated', {
-        totalRequests: result.totalRequests,
-        successRate: result.successRate,
-        totalCost: result.totalCost
+        totalUsage: result.totalUsage,
       }, 'AdminOpenAIStatsService');
 
       return {
-        totalRequests: result.totalRequests,
-        successfulRequests: result.successfulRequests,
-        failedRequests: result.failedRequests,
-        successRate: result.successRate,
-        totalTokens: result.totalTokens || 0,
-        totalCost: result.totalCost || 0,
-        averageTokensPerRequest: result.averageTokensPerRequest,
-        averageCostPerRequest: result.averageCostPerRequest
+        totalUsage: result.totalUsage,
       };
 
     } catch (error) {
@@ -113,14 +58,7 @@ export class AdminOpenAIStatsService {
 
       // Return default values if aggregation fails
       return {
-        totalRequests: 0,
-        successfulRequests: 0,
-        failedRequests: 0,
-        successRate: 0,
-        totalTokens: 0,
-        totalCost: 0,
-        averageTokensPerRequest: 0,
-        averageCostPerRequest: 0
+        totalUsage: 0,
       };
     }
   }

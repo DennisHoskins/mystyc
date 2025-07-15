@@ -100,11 +100,6 @@ export default function NotificationsContentTable({ isActive = false } : { isAct
           u.error
           ? <span className="text-red-500">{u.title}</span>
           : u.title},
-    { key: 'request', header: 'Request', link: (u) => `/admin/openai/${u.openAIRequestId}`, 
-      render: (u) =>
-          u.error
-          ? <span className="text-red-500">{u.openAIRequestId}</span>
-          : u.openAIRequestId},
     { key: 'notification', header: 'Notification', link: (u) => `/admin/notifications/${u.notificationId}`, 
       render: (u) =>
           u.error

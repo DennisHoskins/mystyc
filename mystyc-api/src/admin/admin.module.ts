@@ -41,7 +41,7 @@ import { DeviceSchema } from '@/devices/schemas/device.schema';
 import { AuthEventSchema } from '@/auth-events/schemas/auth-event.schema';
 import { NotificationSchema } from '@/notifications/schemas/notification.schema';
 import { ContentSchema } from '@/content/schemas/content.schema';
-import { OpenAIRequestSchema } from '@/openai/schemas/openai-request.schema';
+import { OpenAIUsageSchema } from '@/openai/schemas/openai-usage.schema';
 import { ScheduleSchema } from '@/schedules/schemas/schedule.schema';
 import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.schema';
 
@@ -53,7 +53,7 @@ import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.
       { name: 'Device', schema: DeviceSchema },
       { name: 'AuthEvent', schema: AuthEventSchema },
       { name: 'Notification', schema: NotificationSchema },
-      { name: 'OpenAIRequest', schema: OpenAIRequestSchema },
+      { name: 'OpenAIUsageSchema', schema: OpenAIUsageSchema },
       { name: 'Content', schema: ContentSchema },
       { name: 'Schedule', schema: ScheduleSchema },
       { name: 'ScheduleExecution', schema: ScheduleExecutionSchema },

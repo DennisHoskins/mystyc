@@ -270,7 +270,7 @@ export class ContentService {
       userId: doc.userId,
 
       // OpenAI links
-      openAIRequestId: doc.openAIRequestId,
+      openAIData: doc.openAIData,
 
       // Core content
       title: doc.title,

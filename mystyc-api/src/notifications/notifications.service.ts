@@ -811,7 +811,6 @@ export class NotificationsService {
       sentAt: doc.sentAt,
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
-      contentId: doc.contentId,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

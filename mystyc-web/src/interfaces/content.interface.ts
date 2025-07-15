@@ -3,26 +3,37 @@ export interface DataItem {
   value: string;
 }
 
+export interface OpenAIData {
+  prompt?: string;
+  model?: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  cost?: number;
+}
+
 export interface Content {
   _id?: string;
   date: string; // Format: "2025-07-07"
 
-  // Website content audit trail
+  type: 'notification_content' | 'website_content' | 'user_content' | 'plus_content' | 'blog_content';
+
+  // Schedule audit trail
   scheduleId?: string;
   executionId?: string;
   
-  // Notification content links
+  // Notification link
   notificationId?: string;
   
-  // User content links
+  // User link
   userId?: string;
 
   // OpenAI link
-  openAIRequestId?: string;  
+  openAIData?: OpenAIData;
   
   // Core content
   title: string;
   message: string;
+  
   imageUrl?: string;
   linkUrl?: string;
   linkText?: string;

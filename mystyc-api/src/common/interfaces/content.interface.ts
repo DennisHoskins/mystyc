@@ -3,6 +3,14 @@ export interface DataItem {
   value: string;
 }
 
+export interface OpenAIData {
+  prompt?: string;
+  model?: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  cost?: number;
+}
+
 export interface Content {
   _id?: string;
   date: string; // Format: "2025-07-07"
@@ -20,7 +28,7 @@ export interface Content {
   userId?: string;
 
   // OpenAI link
-  openAIRequestId?: string;  
+  openAIData?: OpenAIData;
   
   // Core content
   title: string;

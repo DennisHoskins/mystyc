@@ -6,12 +6,12 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 
 import { OpenAICoreService } from '@/openai/openai-core.service';
-import { OpenAIRequest } from '@/common/interfaces/openai-request.interface';
+import { OpenAIUsage } from '@/common/interfaces/openai-usage.interface';
 import { AdminController } from './admin.controller';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/openai')
-export class AdminOpenAIController extends AdminController<OpenAIRequest> {
+export class AdminOpenAIController extends AdminController<OpenAIUsage> {
   protected serviceName = 'OpenAI';
   
   constructor(protected service: OpenAICoreService) {

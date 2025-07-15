@@ -15,8 +15,6 @@ export interface Notification {
   sentAt?: Date;
   scheduleId?: string;
   executionId?: string;
-  contentId?: string;
-  openAIRequestId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

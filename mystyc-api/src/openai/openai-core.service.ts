@@ -5,8 +5,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
 
 import { OpenAIUsageDocument, OpenAIUsage } from './schemas/openai-usage.schema';
-import { OpenAIRequestDocument, OpenAIRequest } from './schemas/openai-request.schema';
-import { OpenAIRequest as OpenAIRequestInterface } from '@/common/interfaces/openai-request.interface';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -22,7 +20,6 @@ export class OpenAICoreService implements OnModuleInit {
 
   constructor(
     @InjectModel(OpenAIUsage.name) private usageModel: Model<OpenAIUsageDocument>,
-    @InjectModel(OpenAIRequest.name) protected requestModel: Model<OpenAIRequestDocument>,
   ) {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -41,21 +38,6 @@ export class OpenAICoreService implements OnModuleInit {
     } catch (err) {
       logger.error('Initial usage sync failed', { error: (err as Error).message }, 'OpenAIService');
     }
-  }
-
-  protected async saveRequestRecord(data: {
-    prompt: string;
-    inputTokens: number;
-    outputTokens: number;
-    cost: number;
-    requestType: string;
-    linkedEntityId: string;
-    model: string;
-    retryCount: number;
-    error?: string;
-  }): Promise<OpenAIRequestDocument> {
-    const request = new this.requestModel(data);
-    return request.save();
   }
 
   // Updated budget check: match on 'month' and sum 'costUsed'
@@ -130,11 +112,12 @@ export class OpenAICoreService implements OnModuleInit {
       // Aggregate token usage via local requestModel
       const startIso = monthStartDate.toISOString();
       const endIso = new Date().toISOString();
-      const agg = await this.requestModel.aggregate([
-        { $match: { createdAt: { $gte: new Date(startIso), $lt: new Date(endIso) } } },
-        { $group: { _id: null, totalInput: { $sum: '$inputTokens' }, totalOutput: { $sum: '$outputTokens' } } }
-      ]);
-      const tokensUsed = (agg[0]?.totalInput || 0) + (agg[0]?.totalOutput || 0);
+      // const agg = await this.requestModel.aggregate([
+      //   { $match: { createdAt: { $gte: new Date(startIso), $lt: new Date(endIso) } } },
+      //   { $group: { _id: null, totalInput: { $sum: '$inputTokens' }, totalOutput: { $sum: '$outputTokens' } } }
+      // ]);
+      // const tokensUsed = (agg[0]?.totalInput || 0) + (agg[0]?.totalOutput || 0);
+      const tokensUsed = 0;
 
       const month = startIso.substring(0, 7);
       await this.usageModel.findOneAndUpdate(
@@ -208,37 +191,5 @@ export class OpenAICoreService implements OnModuleInit {
       { $inc: { tokensUsed: tokens, costUsed: cost }, $setOnInsert: { tokenBudget: this.TOKEN_BUDGET, costBudget: this.MONTHLY_BUDGET }, $set: { lastSyncedAt: new Date() } },
       { upsert: true },
     );
-  }
-
-  async findById(id: string): Promise<any> {
-    return this.requestModel.findById(id).exec();
-  }
-
-  async getTotal(): Promise<number> {
-    return this.requestModel.countDocuments();
-  }
-
-  async findAll(query: any): Promise<any[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
-    const sortObj: any = {};
-    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
-    return this.requestModel.find().sort(sortObj).skip(offset).limit(limit).exec();
-  }
-
-  protected transformToRequest(doc: OpenAIRequestDocument): OpenAIRequestInterface {
-    return {
-      _id: doc._id.toString(),
-      prompt: doc.prompt,
-      inputTokens: doc.inputTokens,
-      outputTokens: doc.outputTokens,
-      cost: doc.cost,
-      requestType: doc.requestType,
-      linkedEntityId: doc.linkedEntityId,
-      model: doc.model,
-      retryCount: doc.retryCount,
-      error: doc.error,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    };
   }
 }
