@@ -11,7 +11,7 @@ import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/mystyc/admin/ui/AdminListLayout';
 import ContentIcon from '@/components/mystyc/admin/ui/icons/ContentIcon';
-//import OpenAITable from './OpenAITable';
+import OpenAIUsageTable from './OpenAIUsageTable';
 import OpenAIDashboard from './OpenAIUsageDashboard';
 
 export default function SchedulesPage() {
@@ -68,6 +68,9 @@ export default function SchedulesPage() {
     loadUsage(0);
   }, [loadUsage])
 
+// dashboard
+// table
+
   return (
    <AdminListLayout
       error={error}
@@ -81,6 +84,34 @@ export default function SchedulesPage() {
           charts={['stats']}
         />
       }
+      itemContent={[
+        <OpenAIDashboard 
+          key={'budget'}
+          stats={stats} 
+          charts={['budget']}
+        />,
+        <OpenAIDashboard 
+          key={'types'}
+          stats={stats} 
+          charts={['content-types']}
+        />,
+        <OpenAIDashboard 
+          key={'trends'}
+          stats={stats} 
+          charts={['trends']}
+        />
+      ]}
+      tableContent={
+        <OpenAIUsageTable 
+          data={usage}
+          loading={loading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasMore={hasMore}
+          onPageChange={loadUsage}
+          onRefresh={() => loadUsage(currentPage)}
+        />
+      }
     />   
-    );
+  );
 }

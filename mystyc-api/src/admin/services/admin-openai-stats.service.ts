@@ -17,7 +17,8 @@ import { logger } from '@/common/util/logger';
   serviceName: 'OpenAI',
   service: AdminOpenAIStatsService,
   stats: [
-    { key: 'summary', method: 'getSummaryStats' },
+    { key: 'currentMonthlyUsage', method: 'getCurrentMonthlyUsageStats' },
+    { key: 'usageSummary', method: 'getSummaryStats' },
     { key: 'monthlyUsage', method: 'getMonthlyUsageStats' },
     { key: 'contentTypeUsage', method: 'getContentTypeUsageStats' }
   ]
@@ -29,6 +30,10 @@ export class AdminOpenAIStatsService {
     @InjectModel('OpenAIUsage') private openAIUsageModel: Model<OpenAIUsageDocument>,
     private readonly openAIService: OpenAICoreService,
   ) {}
+
+  async getCurrentMonthlyUsageStats() {
+    return await this.openAIService.getUsageStats();
+  }
 
   async getSummaryStats(query?: AdminStatsQueryDto): Promise<OpenAIUsageSummaryStats> {
     logger.info('Generating OpenAI summary stats', { query }, 'AdminOpenAIStatsService');
@@ -70,11 +75,12 @@ export class AdminOpenAIStatsService {
             month: currentUsage.month,
             costUsed: currentUsage.costUsed,
             costBudget: currentUsage.costBudget,
-            costRemaining: currentUsage.costBudget - currentUsage.costUsed,
+            costRemaining: Math.max(0, currentUsage.costBudget - currentUsage.costUsed),
+            costUsagePercent: currentUsage.costUsagePercent,
             tokensUsed: currentUsage.tokensUsed,
             tokenBudget: currentUsage.tokenBudget,
-            tokensRemaining: currentUsage.tokenBudget - currentUsage.tokensUsed,
-            usagePercentage: currentUsage.costUsagePercent
+            tokensRemaining: Math.max(0, currentUsage.tokenBudget - currentUsage.tokensUsed),
+            tokenUsagePercent: currentUsage.tokenUsagePercent
           },
           totalRequests: 0,
           totalCost: 0,
@@ -98,10 +104,11 @@ export class AdminOpenAIStatsService {
           costUsed: currentUsage.costUsed,
           costBudget: currentUsage.costBudget,
           costRemaining: Math.max(0, currentUsage.costBudget - currentUsage.costUsed),
+          costUsagePercent: currentUsage.costUsagePercent,
           tokensUsed: currentUsage.tokensUsed,
           tokenBudget: currentUsage.tokenBudget,
           tokensRemaining: Math.max(0, currentUsage.tokenBudget - currentUsage.tokensUsed),
-          usagePercentage: currentUsage.costUsagePercent
+          tokenUsagePercent: currentUsage.costUsagePercent
         },
         totalRequests: contentResult.totalRequests,
         totalCost: Math.round(contentResult.totalCost * 100) / 100,
