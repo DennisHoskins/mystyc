@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { BookOpen } from 'lucide-react';
+
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { ContentStats } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -83,8 +85,13 @@ export default function ContentPage() {
       breadcrumbs={breadcrumbs}
       icon={ContentIcon}
       button={
-        <Button onClick={createContent}>
-          Create Content
+        <Button 
+          className='flex items-center'
+          onClick={createContent}
+        >
+          <BookOpen className='w-4 h-4 mt-[2px] mr-0 sm:mr-2' />
+          <span className='hidden lg:block'>Create Content</span>
+          <span className='hidden sm:block lg:hidden'>Create</span>
         </Button>
       }
       description="Manage content entries: view, edit, and monitor generation status, sources, and performance metrics"

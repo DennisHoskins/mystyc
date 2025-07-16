@@ -266,6 +266,10 @@ export class SchedulesService {
           await this.emitScheduledEvent(task, executionId, timezoneData.timezone, timezoneData);
         }
       } else {
+        if (serverTime.getHours() != task.time.hour || serverTime.getMinutes() != task.time.minute) {
+          return;
+        }
+        
         // Create execution log for global schedule
         executionLog = await this.scheduleExecutionService.create({
           scheduleId: task._id,

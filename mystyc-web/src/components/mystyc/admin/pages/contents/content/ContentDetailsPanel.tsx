@@ -20,11 +20,6 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
     }
   };
 
-  const formatDuration = (ms: number) => {
-    if (ms < 1000) return `${ms}ms`;
-    return `${(ms / 1000).toFixed(2)}s`;
-  };
-
   return (
     <div className='min-h-10'>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -44,8 +39,8 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
         </AdminDetailGroup>
         <AdminDetailGroup>
           <AdminDetailField
-            label="Generation Time"
-            value={formatDuration(content.generationDuration)}
+            label="Date"
+            value={content.date}
           />
           {content.sources && content.sources.length > 0 && (
             <AdminDetailField
@@ -56,10 +51,6 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
         </AdminDetailGroup>
 
         <AdminDetailGroup>
-          <AdminDetailField
-            label="Date"
-            value={content.date}
-          />
           <AdminDetailField
             label="Title"
             value={content.title}

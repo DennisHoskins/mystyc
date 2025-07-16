@@ -6,7 +6,7 @@ import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import SubscriberIcon from '@/components/mystyc/admin/ui/icons/SubscriberIcon'
 
-export default function AdminDashboardSubscribers({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardSubscriptions({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
     return;
   }
@@ -15,10 +15,10 @@ export default function AdminDashboardSubscribers({ stats } : { stats?: StatsRes
     <AdminDashboardItemLayout
       className='col-span-1 flex flex-col'
       icon={<SubscriberIcon />}
-      title="Subscribers"
+      title="Subscriptions"
       link="/admin/subscribers"
     >
-      Subscribers
+      Subscriptions
     </AdminDashboardItemLayout>
   );
 }

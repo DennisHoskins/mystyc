@@ -3,8 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SchedulesService } from '@/schedules/schedules.service';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
-import { ContentService } from '@/content/content.service';
-import { NotificationsService } from '@/notifications/notifications.service';
 import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
 import { ScheduleExecutionDocument } from '@/schedules/schemas/schedule-execution.schema';
 import { ContentDocument } from '@/content/schemas/content.schema';
@@ -26,7 +24,9 @@ import { logger } from '@/common/util/logger';
   serviceName: 'ScheduleExecutions',
   service: AdminScheduleExecutionsStatsService,
   stats: [
-    { key: 'executions', method: 'getOverallScheduleStats' }
+    { key: 'systemOverview', method: 'getOverallStatistics' },
+    { key: 'byEventType', method: 'getEventTypeStatistics' },
+    { key: 'recentExecutions', method: 'getRecentExecutions' },
   ]
 })
 @Injectable()
@@ -38,8 +38,6 @@ export class AdminScheduleExecutionsStatsService {
     @InjectModel('Notification') private notificationModel: Model<NotificationDocument>,
     private readonly scheduleService: SchedulesService,
     private readonly scheduleExecutionService: ScheduleExecutionsService,
-    private readonly contentService: ContentService,
-    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -157,16 +155,14 @@ export class AdminScheduleExecutionsStatsService {
     logger.info('Generating overall schedule stats', { query }, 'AdminScheduleExecutionStatsService');
 
     try {
-      const dateFilter = this.buildDateFilter(query);
-      
       // Overall system statistics
-      const systemOverview = await this.getOverallStatistics(dateFilter);
+      const systemOverview = await this.getOverallStatistics(query);
       
       // Performance by event type
-      const byEventType = await this.getEventTypeStatistics(dateFilter);
+      const byEventType = await this.getEventTypeStatistics(query);
       
       // Recent executions
-      const recentExecutions = await this.getRecentExecutions(dateFilter);
+      const recentExecutions = await this.getRecentExecutions(query);
 
       const result: ScheduleExecutionStats = {
         systemOverview,
@@ -450,8 +446,11 @@ export class AdminScheduleExecutionsStatsService {
     return { executionTrend, eventDeliveryTrend };
   }
 
-  private async getOverallStatistics(dateFilter: any): Promise<ScheduleSystemOverviewStats> {
+  private async getOverallStatistics(query?: AdminStatsQueryDto): Promise<ScheduleSystemOverviewStats> {
     const matchCondition: any = {};
+
+    const dateFilter = this.buildDateFilter(query);
+      
     if (dateFilter) {
       matchCondition.executedAt = dateFilter;
     }
@@ -529,7 +528,9 @@ export class AdminScheduleExecutionsStatsService {
     return result && result.total > 0 ? Math.round((result.sent / result.total) * 100) : 0;
   }
 
-  private async getEventTypeStatistics(dateFilter: any): Promise<ScheduleEventTypeStats[]> {
+  private async getEventTypeStatistics(query?: AdminStatsQueryDto): Promise<ScheduleEventTypeStats[]> {
+    const dateFilter = this.buildDateFilter(query);
+
     const matchCondition: any = {};
     if (dateFilter) {
       matchCondition.executedAt = dateFilter;
@@ -565,7 +566,8 @@ export class AdminScheduleExecutionsStatsService {
     }));
   }
 
-  private async getRecentExecutions(dateFilter: any): Promise<ScheduleRecentExecutionStats[]> {
+  private async getRecentExecutions(query?: AdminStatsQueryDto): Promise<ScheduleRecentExecutionStats[]> {
+    const dateFilter = this.buildDateFilter(query);
     const matchCondition: any = {};
     if (dateFilter) {
       matchCondition.executedAt = dateFilter;

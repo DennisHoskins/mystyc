@@ -1,6 +1,6 @@
 'use client';
 
-import { IdCard } from 'lucide-react'
+import { IdCard } from 'lucide-react';
 
 export default function MessageIcon({ size = 6 }: { size?: number }) {
   return (

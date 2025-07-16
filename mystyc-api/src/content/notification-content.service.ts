@@ -351,6 +351,8 @@ export class NotificationContentService {
       executionId: doc.executionId,
       notificationId: doc.notificationId,
 
+      openAIData: doc.openAIData,
+
       title: doc.title,
       message: doc.message,
       data: doc.data,

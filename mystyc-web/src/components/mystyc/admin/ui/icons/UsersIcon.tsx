@@ -1,6 +1,6 @@
 'use client';
 
-import { Users } from 'lucide-react'
+import { Users } from 'lucide-react';
 
 export default function UserIcon({ size = 6 }: { size?: number }) {
   return (

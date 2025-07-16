@@ -73,6 +73,7 @@ export class AdminOpenAIStatsService {
         return {
           currentMonth: {
             month: currentUsage.month,
+            totalRequests: currentUsage.totalRequests,
             costUsed: currentUsage.costUsed,
             costBudget: currentUsage.costBudget,
             costRemaining: Math.max(0, currentUsage.costBudget - currentUsage.costUsed),
@@ -101,6 +102,7 @@ export class AdminOpenAIStatsService {
       return {
         currentMonth: {
           month: currentUsage.month,
+          totalRequests: currentUsage.totalRequests,
           costUsed: currentUsage.costUsed,
           costBudget: currentUsage.costBudget,
           costRemaining: Math.max(0, currentUsage.costBudget - currentUsage.costUsed),
@@ -154,7 +156,13 @@ export class AdminOpenAIStatsService {
         {
           $addFields: {
             totalTokens: { $add: ['$inputTokens', '$outputTokens'] },
-            averageCostPerRequest: { $divide: ['$cost', '$requests'] }
+            averageCostPerRequest: {
+              $cond: [
+                { $gt: ['$requests', 0] },
+                { $divide: ['$cost', '$requests'] },
+                0
+              ]
+            }
           }
         },
         { $sort: { _id: -1 } },
@@ -173,7 +181,8 @@ export class AdminOpenAIStatsService {
             costBudget: 1,
             tokenBudget: 1,
             costUsed: 1,
-            tokensUsed: 1
+            tokensUsed: 1,
+            totalRequests: 1
           }
         }
       ];
@@ -187,12 +196,13 @@ export class AdminOpenAIStatsService {
           costBudget: 10.00, // Default budget
           tokenBudget: 500000,
           costUsed: month.cost,
-          tokensUsed: month.totalTokens
+          tokensUsed: month.totalTokens,
+          totalRequests: month.requests
         };
 
         return {
           month: month._id,
-          requests: month.requests,
+          requests: budget.totalRequests || month.requests,
           cost: Math.round(month.cost * 100) / 100,
           totalTokens: month.totalTokens,
           inputTokens: month.inputTokens,
@@ -238,7 +248,7 @@ export class AdminOpenAIStatsService {
         {
           $group: {
             _id: '$type',
-            requests: { $sum: 1 },
+            requests: { $sum: '$openAIData.totalRequests'  },
             cost: { $sum: '$openAIData.cost' },
             inputTokens: { $sum: '$openAIData.inputTokens' },
             outputTokens: { $sum: '$openAIData.outputTokens' },
@@ -249,7 +259,13 @@ export class AdminOpenAIStatsService {
         {
           $addFields: {
             totalTokens: { $add: ['$inputTokens', '$outputTokens'] },
-            averageCostPerRequest: { $divide: ['$cost', '$requests'] }
+            averageCostPerRequest: {
+              $cond: [
+                { $gt: ['$requests', 0] },  // <- Check if requests > 0
+                { $divide: ['$cost', '$requests'] },
+                0  // <- Default to 0 if no requests
+              ]
+            }
           }
         },
         { $sort: { cost: -1 } }

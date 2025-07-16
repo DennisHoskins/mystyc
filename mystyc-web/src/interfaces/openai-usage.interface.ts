@@ -1,6 +1,6 @@
 export interface OpenAIUsage {
   month: string;         // "YYYY-MM"
-  totalQueries: number;
+  totalRequests: number;
   tokensUsed: number;
   tokenUsagePercent: number;
   costUsed: number;      // in USD

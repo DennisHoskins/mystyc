@@ -10,7 +10,7 @@ import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
 import AdminItemLayout from '@/components/mystyc/admin/ui/AdminItemLayout';
-import UserIcon from '@/components/mystyc/admin/ui/icons//UserIcon';
+import UserIcon from '@/components/mystyc/admin/ui/icons/UserIcon';
 import UserDetailsPanel from './UserDetailsPanel';
 import UserProfilePanel from './UserProfilePanel';
 import UserDevicesPanel from './UserDevicesPanel';
@@ -65,7 +65,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
         error={'User Not Found'}
         onRetry={loadUser}
         breadcrumbs={breadcrumbs}
-        icon={<UserIcon size={6}/>}
+        icon={<UserIcon size={6} userProfile={user} />}
         title={'Unknown User'}
       />
     );
@@ -76,7 +76,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       error={error}
       onRetry={loadUser}
       breadcrumbs={breadcrumbs}
-      icon={<UserIcon size={6}/>}
+      icon={<UserIcon size={6} userProfile={user} />}
       title={user && user.fullName ? user.fullName : `Unknown User`}
       headerContent={<UserDetailsPanel user={user} />}
       sectionsContent={[

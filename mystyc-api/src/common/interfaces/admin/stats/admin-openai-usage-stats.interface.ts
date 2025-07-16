@@ -1,5 +1,6 @@
 export interface OpenAICurrentMonthUsage {
   month: string;
+  totalRequests: number;
   costUsed: number;
   costBudget: number;
   costRemaining: number;
@@ -52,7 +53,7 @@ export interface OpenAIContentTypeUsageData {
 export interface OpenAIContentTypeUsageStats {
   totalCost: number;
   usageByContentType: OpenAIContentTypeUsageData[];
-}
+} 
 
 export interface OpenAIUsageStats {
   currentMonthlyUsage: OpenAICurrentMonthUsage,

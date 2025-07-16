@@ -1,5 +1,6 @@
 export interface OpenAICurrentMonthUsage {
   month: string;
+  totalRequests: number;
   costUsed: number;
   costBudget: number;
   costRemaining: number;

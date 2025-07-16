@@ -1,6 +1,6 @@
 'use client';
 
-import { Globe } from 'lucide-react'
+import { Globe } from 'lucide-react';
 
 export default function TrafficIcon({ size = 6 }: { size?: number }) {
   return (

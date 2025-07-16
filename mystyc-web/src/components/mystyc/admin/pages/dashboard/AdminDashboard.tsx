@@ -4,7 +4,7 @@ import { AdminStatsResponseExtended } from '@/interfaces';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import AdminDashboardTraffic from './AdminDashboardTraffic';
-import AdminDashboardSubscribers from './AdminDashboardSubscribers';
+import AdminDashboardSubscriptions from './AdminDashboardSubscriptions';
 import AdminDashboardOpenAI from './AdminDashboardOpenAI';
 import AdminDashboardSchedules from './AdminDashboardSchedules';
 import AdminDashboardContent from './AdminDashboardContent';
@@ -23,7 +23,7 @@ export default function AdminDashboard({ stats } : { stats?: StatsResponseWithQu
       <AdminDashboardTraffic stats={stats} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4 min-h-[15em]">
-        <AdminDashboardSubscribers stats={stats} />
+        <AdminDashboardSubscriptions stats={stats} />
         <AdminDashboardOpenAI stats={stats} />
       </div>
 

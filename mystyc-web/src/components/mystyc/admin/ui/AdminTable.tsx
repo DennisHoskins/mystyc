@@ -162,7 +162,7 @@ export default function AdminTable<T>({
             {totalItems && <Badge total={totalItems} />}
           </div>
         )}        
-        <Text className='mt-4 pt-4 border-t border-gray-100'>{emptyMessage}</Text>
+        <Text className='mt-4'>{emptyMessage}</Text>
         {(onRefresh || onPageChange) && (
           <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
             <div>

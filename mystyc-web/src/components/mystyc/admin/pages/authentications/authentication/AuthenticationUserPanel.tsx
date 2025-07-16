@@ -64,7 +64,7 @@ export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string | n
   return (
     <div className='flex flex-col'>
       <div className="flex items-center space-x-2 mb-4">
-        <Avatar size={'small'} icon={UserIcon} />
+        <Avatar size={'small'} icon={<UserIcon userProfile={user} />} />
         <div>
           <Heading level={5}>{user.fullName || 'Unknown User'}</Heading>
         </div>

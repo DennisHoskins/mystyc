@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { logger } from '@/util/logger';
 
-import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import AllContentTable from './AllContentTable';
 import WebsiteContentTable from './WebsiteContentTable';
@@ -83,13 +82,11 @@ export default function ContentsTabPanel() {
   }, [activeTab, summary]);
 
   return (
-    <Card className='min-h-52'>
-      <TabPanel 
-        tabs={tabs} 
-        defaultActiveTab={activeTab}
-        height="900px"
-        onTabChange={setActiveTab}
-      />
-    </Card>      
+    <TabPanel 
+      tabs={tabs} 
+      defaultActiveTab={activeTab}
+      height="900px"
+      onTabChange={setActiveTab}
+    />
   );
 }

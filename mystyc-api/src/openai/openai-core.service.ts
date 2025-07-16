@@ -154,6 +154,7 @@ export class OpenAICoreService implements OnModuleInit {
   async getUsageStats(): Promise<{
     month: string;
     lastSyncedAt: Date;
+    totalRequests: number;  // <- Add this
     tokensUsed: number;
     tokenBudget: number;
     tokensRemaining: number;
@@ -165,7 +166,8 @@ export class OpenAICoreService implements OnModuleInit {
   }> {
     const currentMonth = new Date().toISOString().substring(0, 7);
     const usage = await this.usageModel.findOne({ month: currentMonth }).exec();
-    const lastSyncedAt = usage?.lastSyncedAt || new Date(); // <-- Fix null access
+    const lastSyncedAt = usage?.lastSyncedAt || new Date();
+    const totalRequests = usage?.totalRequests || 0;  // <- Add this
     const tokensUsed = usage?.tokensUsed || 0;
     const costUsed = usage?.costUsed || 0;
     const tokenBudget = usage?.tokenBudget || this.TOKEN_BUDGET;
@@ -173,6 +175,7 @@ export class OpenAICoreService implements OnModuleInit {
     return {
       month: currentMonth,
       lastSyncedAt,
+      totalRequests,  // <- Add this
       tokensUsed,
       tokenBudget,
       tokensRemaining: tokenBudget - tokensUsed,
@@ -194,7 +197,7 @@ export class OpenAICoreService implements OnModuleInit {
     const currentMonth = new Date().toISOString().substring(0, 7);
     await this.usageModel.findOneAndUpdate(
       { month: currentMonth },
-      { $inc: { tokensUsed: tokens, costUsed: cost, totalQueries: 1 }, $setOnInsert: { tokenBudget: this.TOKEN_BUDGET, costBudget: this.MONTHLY_BUDGET }, $set: { lastSyncedAt: new Date() } },
+      { $inc: { tokensUsed: tokens, costUsed: cost, totalRequests: 1 }, $setOnInsert: { tokenBudget: this.TOKEN_BUDGET, costBudget: this.MONTHLY_BUDGET }, $set: { lastSyncedAt: new Date() } },
       { upsert: true },
     );
   }
@@ -238,7 +241,7 @@ export class OpenAICoreService implements OnModuleInit {
   private transformToUsage(doc: OpenAIUsageDocument): OpenAIUsageInterface {
     return {
       month: doc.month,
-      totalQueries: doc.totalQueries,
+      totalRequests: doc.totalRequests,
       tokensUsed: doc.tokensUsed,
       tokenUsagePercent: Math.min(100, (doc.tokensUsed / doc.tokenBudget) * 100),
       costUsed: doc.costUsed,

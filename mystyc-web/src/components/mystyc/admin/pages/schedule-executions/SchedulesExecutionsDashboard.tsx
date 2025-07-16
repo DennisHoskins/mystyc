@@ -24,7 +24,8 @@ export default function SchedulesExecutionsDashboard({
   charts = ['stats', 'events', 'performance', 'recent', 'today'],
   height = 100
 }: SchedulesExecutionsDashboardProps) {
-  if (!stats || !stats.data || !stats.data.byEventType || !stats.data.systemOverview) {
+  
+  if (!stats) {
     return null;
   }
 

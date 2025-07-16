@@ -31,8 +31,9 @@ export default function OpenAIUsageTable({
     { key: 'used', header: 'Used', align: 'right', render: (e) => `$${e.costUsed.toFixed(6)}` },
     { key: 'usedPercent', header: '%', align: 'right', render: (e) => `${e.costUsagePercent}%` },
     { key: 'tokens', header: 'Tokens', align: 'right', render: (e) => `${e.tokenBudget}` },
-    { key: 'usedTokens', header: 'Used', align: 'right', render: (e) => `$${e.tokensUsed.toFixed(6)}` },
+    { key: 'usedTokens', header: 'Used', align: 'right', render: (e) => `${e.tokensUsed}` },
     { key: 'usedTokensPercent', header: '%', align: 'right', render: (e) => `${e.tokenUsagePercent}%` },
+    { key: 'totalRequests', header: 'Requests', align: 'right', render: (e) => `${e.totalRequests}` },
   ];
   return (
     <AdminTable<OpenAIUsage>

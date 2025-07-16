@@ -9,7 +9,7 @@ export class OpenAIUsage {
   month: string;         // "YYYY-MM"
 
   @Prop({ required: true, default: 0 })
-  totalQueries: number;
+  totalRequests: number;
 
   @Prop({ required: true, default: 0 })
   tokensUsed: number;

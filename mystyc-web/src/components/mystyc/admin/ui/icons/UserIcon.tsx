@@ -1,9 +1,18 @@
 'use client';
 
-import { User } from 'lucide-react'
+import { User as UserLucide, ShieldUser } from 'lucide-react';
 
-export default function UserIcon({ size = 6 }: { size?: number }) {
+import { UserProfile } from '@/interfaces/user-profile.interface';
+
+export default function UserIcon({ size = 6, userProfile }: { size?: number, userProfile?: UserProfile | null }) {
+  if (userProfile) {
+    if (userProfile.roles.includes("admin")) {
+      return (
+        <ShieldUser className={`w-${size} h-${size} text-gray-500`} />
+      );    
+    }
+  }
   return (
-    <User className={`w-${size} h-${size} text-gray-500`} />
+    <UserLucide className={`w-${size} h-${size} text-gray-500`} />
   );    
 }

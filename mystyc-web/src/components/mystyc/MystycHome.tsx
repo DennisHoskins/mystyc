@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { apiClient } from '@/api/apiClient';
 import { useUser } from '@/components/ui/layout/context/AppContext';
@@ -11,20 +11,24 @@ import Welcome from '@/components/mystyc/pages/welcome/Welcome';
 export default function Mystyc() {
   const [data, setData] = useState<Content | null>(null);
   const user = useUser();
-  if (!user) {
-    return null;
-  }
 
-  const loadContent = async () => {
+  const loadContent = useCallback(async () => {
+    if (!user) {
+      return;
+    }
     const reply = await apiClient.getUserContent();
     setData(reply);
-  }
+  }, [user]);
 
   useEffect(() => {
     loadContent();
-  }, [])
+  }, [loadContent])
 
   console.log(data);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="flex flex-1 items-center justify-center mx-4">

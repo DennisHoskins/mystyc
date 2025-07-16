@@ -12,6 +12,7 @@ import {
   OpenAIUsage, 
   AdminQuery, 
   AdminStatsQuery, 
+  Subscription,
   AdminStatsResponseExtended, 
   SessionStats, 
   TrafficStats, 
@@ -23,6 +24,7 @@ import {
   ScheduleStats,
   ScheduleExecutionStats,
   OpenAIUsageStats,
+  SubscriptionStats,
 } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
@@ -209,6 +211,21 @@ class AdminApiClient {
       };      
     } catch (error) {
       logger.error('getOpenAIUsageStats failed:', error);
+      throw error;
+    }
+  };
+
+  getSubscriptionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
+    try {
+      const queryString = this.buildStatsQueryString(query);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
+    } catch (error) {
+      logger.error('getOpenSubscriptionStats failed:', error);
       throw error;
     }
   };
@@ -462,6 +479,29 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai/usage`);
     } catch (error) {
       logger.error('getOpenAIUsage failed:', error);
+      throw error;
+    }
+  };
+
+  //
+  //  Subscription Management
+  //
+
+  getSubscriptions = async (query?: AdminQuery): Promise<PaginatedResponse<Subscription>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/subscriptions${queryString}`);
+    } catch (error) {
+      logger.error('getSubscriptions failed:', error);
+      throw error;
+    }
+  };
+
+  getSubscription = async (): Promise<Subscription> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/subscriptions`);
+    } catch (error) {
+      logger.error('getSubscription failed:', error);
       throw error;
     }
   };

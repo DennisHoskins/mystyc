@@ -1,0 +1,47 @@
+'use client';
+
+import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { SubscriptionStats } from '@/interfaces';
+
+import KeyStatsGrid from '@/components/mystyc/admin/ui/charts/KeyStatsGrid';
+
+type ChartType = 'stats';
+
+interface SubscriptionsDashboardProps {
+  className?: string | null;
+  stats?: StatsResponseWithQuery<SubscriptionStats> | null;
+  charts?: ChartType[];
+}
+
+export default function SubscriptionsDashboard({ 
+  className,
+  stats,
+  charts = ['stats'],
+}: SubscriptionsDashboardProps) {
+  if (!stats) {
+    return null;
+  }
+
+  const chartComponents = {
+    stats: (
+      <KeyStatsGrid 
+        stats={[
+          { value: stats.data.currentMonthlyTotal.totalAmount, label: 'Total Revenue', color: 'text-blue-600' },
+          { value: `$${stats.data.currentMonthlyTotal.totalSubscribers}`, label: 'Subscribers', color: 'text-green-600' }
+        ]} 
+      />
+    )
+  };
+
+  return (
+    <div className={`@container grow flex flex-col ${className}`}>
+      <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
+        {charts.map((chartType) => (
+          <div key={chartType} className='flex h-full'>
+            {chartComponents[chartType]}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

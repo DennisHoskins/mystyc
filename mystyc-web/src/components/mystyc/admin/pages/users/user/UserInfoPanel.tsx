@@ -40,7 +40,7 @@ export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string }) 
     return (
       <Card className='min-h-22'>
         <div className="flex items-center space-x-4">
-          <Avatar size={'medium'} icon={UserIcon} />
+          <Avatar size={'medium'} icon={<UserIcon userProfile={user} />} />
           <div>
             <Heading level={5}>Loading User...</Heading>
             <Heading level={6}>Firebase Uid:</Heading>
@@ -54,7 +54,7 @@ export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string }) 
     return (
       <Card className='min-h-22'>
         <div className="flex items-center space-x-4">
-          <Avatar size={'medium'} icon={UserIcon} />
+          <Avatar size={'medium'} icon={<UserIcon userProfile={user} />} />
           <div>
             <Heading level={5} className='text-red-400'>{error}</Heading>
             <Heading level={6}>Unable to load User</Heading>
@@ -68,7 +68,7 @@ export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string }) 
     return (
       <Card className='min-h-22'>
         <div className="flex items-center space-x-4">
-          <Avatar size={'medium'} icon={UserIcon} />
+          <Avatar size={'medium'} icon={<UserIcon userProfile={user} />} />
           <div>
             <Heading level={5} className='text-red-400'>User not found</Heading>
             <Heading level={6}>Unable to load User</Heading>
@@ -81,7 +81,7 @@ export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string }) 
   return (
     <Card className='min-h-22'>
       <div className="flex items-center space-x-4">
-        <Avatar size='medium' icon={UserIcon} />
+        <Avatar size={'medium'} icon={<UserIcon userProfile={user} />} />
         <div className='overflow-hidden'>
           <Heading level={5}>{user.fullName || 'Unknown User'}</Heading>
           <Heading level={6}>FirebaseUid: <Link href={`/admin/users/${user.firebaseUid}`}>{user.firebaseUid}</Link></Heading>

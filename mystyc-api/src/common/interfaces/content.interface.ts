@@ -9,6 +9,7 @@ export interface OpenAIData {
   inputTokens?: number;
   outputTokens?: number;
   cost?: number;
+  retryCount?: number;
 }
 
 export interface Content {

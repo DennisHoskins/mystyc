@@ -5,6 +5,7 @@ import { Content } from '@/interfaces';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import OpenAIIcon from '@/components/mystyc/admin/ui/icons/OpenAIIcon';
+import ContentGenerationPanel from './ContentGenerationPanel';
 
 export default function ContentSidebarPanel({ content }: { content: Content }) {
 
@@ -15,19 +16,15 @@ export default function ContentSidebarPanel({ content }: { content: Content }) {
       <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={OpenAIIcon} />
         <div>
-          <Heading level={5}>Content Generation Details</Heading>
+          <Heading level={5}>Content Generation</Heading>
         </div>
       </div>
 
       <hr/>
 
-      {/* {content.openAIRequestId ? (
-        <div className='mt-4'>
-          <OpenAIRequestInfoPanel requestId={content.openAIRequestId} />
-        </div>
-      ) : (
-        <FormError message='Request not found' />
-      )} */}
+      <div className='mt-4'>
+        <ContentGenerationPanel content={content} />
+      </div>
    </div>
   );
 }
