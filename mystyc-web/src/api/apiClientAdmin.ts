@@ -22,7 +22,7 @@ import {
   ContentStats,
   ScheduleStats,
   ScheduleExecutionStats,
-  OpenAIRequestStats,
+  OpenAIUsageStats,
 } from '@/interfaces';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
@@ -198,7 +198,7 @@ class AdminApiClient {
     }
   };
 
-  getOpenAIRequestStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<OpenAIRequestStats>> => {
+  getOpenAIUsageStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<OpenAIUsageStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/openai${queryString}`);
@@ -208,7 +208,7 @@ class AdminApiClient {
         queryString: queryString.replace('?', '')
       };      
     } catch (error) {
-      logger.error('getOpenAIRequestStats failed:', error);
+      logger.error('getOpenAIUsageStats failed:', error);
       throw error;
     }
   };
@@ -446,6 +446,16 @@ class AdminApiClient {
   //
   //  OpenAI Management
   //
+
+  getOpenAIUsages = async (query?: AdminQuery): Promise<PaginatedResponse<OpenAIUsage>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai${queryString}`);
+    } catch (error) {
+      logger.error('getOpenAIUsages failed:', error);
+      throw error;
+    }
+  };
 
   getOpenAIUsage = async (): Promise<OpenAIUsage> => {
     try {

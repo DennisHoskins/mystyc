@@ -72,7 +72,7 @@ export class AdminContentController extends AdminController<Content> {
       offset: query.offset,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
-    }, 'AdminCOntentController');
+    }, 'AdminContentController');
     
     const [data, totalItems] = await Promise.all([
 
@@ -120,7 +120,7 @@ export class AdminContentController extends AdminController<Content> {
       offset: query.offset,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
-    }, 'AdminCOntentController');
+    }, 'AdminContentController');
     
     const [data, totalItems] = await Promise.all([
 

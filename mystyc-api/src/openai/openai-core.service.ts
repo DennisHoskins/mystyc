@@ -4,7 +4,9 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
 
+import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { OpenAIUsageDocument, OpenAIUsage } from './schemas/openai-usage.schema';
+import { OpenAIUsage as OpenAIUsageInterface } from '@/common/interfaces/openai-usage.interface';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -112,12 +114,12 @@ export class OpenAICoreService implements OnModuleInit {
       // Aggregate token usage via local requestModel
       const startIso = monthStartDate.toISOString();
       const endIso = new Date().toISOString();
-      // const agg = await this.requestModel.aggregate([
-      //   { $match: { createdAt: { $gte: new Date(startIso), $lt: new Date(endIso) } } },
-      //   { $group: { _id: null, totalInput: { $sum: '$inputTokens' }, totalOutput: { $sum: '$outputTokens' } } }
-      // ]);
-      // const tokensUsed = (agg[0]?.totalInput || 0) + (agg[0]?.totalOutput || 0);
-      const tokensUsed = 0;
+
+      const agg = await this.usageModel.aggregate([
+        { $match: { createdAt: { $gte: new Date(startIso), $lt: new Date(endIso) } } },
+        { $group: { _id: null, totalInput: { $sum: '$inputTokens' }, totalOutput: { $sum: '$outputTokens' } } }
+      ]);
+      const tokensUsed = (agg[0]?.totalInput || 0) + (agg[0]?.totalOutput || 0);
 
       const month = startIso.substring(0, 7);
       await this.usageModel.findOneAndUpdate(
@@ -154,9 +156,11 @@ export class OpenAICoreService implements OnModuleInit {
     lastSyncedAt: Date;
     tokensUsed: number;
     tokenBudget: number;
+    tokensRemaining: number;
     tokenUsagePercent: number;
     costUsed: number;
     costBudget: number;
+    costRemaining: number;
     costUsagePercent: number;
   }> {
     const currentMonth = new Date().toISOString().substring(0, 7);
@@ -171,9 +175,11 @@ export class OpenAICoreService implements OnModuleInit {
       lastSyncedAt,
       tokensUsed,
       tokenBudget,
+      tokensRemaining: tokenBudget - tokensUsed,
       tokenUsagePercent: Math.min(100, (tokensUsed / tokenBudget) * 100),
       costUsed,
       costBudget,
+      costRemaining: costBudget - costUsed,
       costUsagePercent: Math.min(100, (costUsed / costBudget) * 100),
     };
   }
@@ -191,5 +197,54 @@ export class OpenAICoreService implements OnModuleInit {
       { $inc: { tokensUsed: tokens, costUsed: cost }, $setOnInsert: { tokenBudget: this.TOKEN_BUDGET, costBudget: this.MONTHLY_BUDGET }, $set: { lastSyncedAt: new Date() } },
       { upsert: true },
     );
+  }
+
+  async getTotal(): Promise<number> {
+    return await this.usageModel.countDocuments();
+  }  
+
+  async findAll(query: BaseAdminQueryDto): Promise<OpenAIUsageInterface[]> {
+    const { limit = 50, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding openai usage with query', { 
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'NotificationsService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const usages = await this.usageModel
+      .find()
+      .sort(sortObj)
+      .limit(limit)
+      .skip(offset)
+      .exec();
+
+    logger.debug('OpenAI Usage found', {
+      count: usages.length,
+      limit,
+      offset,
+      sortBy,
+      sortOrder
+    }, 'OpenAICoreService');
+
+    return usages.map(usage => this.transformToUsage(usage));
+  }
+
+  private transformToUsage(doc: OpenAIUsageDocument): OpenAIUsageInterface {
+    return {
+      month: doc.month,
+      tokensUsed: doc.tokensUsed,
+      tokenUsagePercent: Math.min(100, (doc.tokensUsed / doc.tokenBudget) * 100),
+      costUsed: doc.costUsed,
+      tokenBudget: doc.tokenBudget,
+      costBudget: doc.costBudget,
+      costUsagePercent: Math.round((doc.costUsed / doc.costBudget) * 100),
+      lastSyncedAt: doc.lastSyncedAt
+    };
   }
 }

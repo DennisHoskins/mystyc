@@ -18,8 +18,8 @@ import { logger } from '@/common/util/logger';
   service: AdminOpenAIStatsService,
   stats: [
     { key: 'summary', method: 'getSummaryStats' },
-    { key: 'monthly', method: 'getMonthlyUsageStats' },
-    { key: 'contentType', method: 'getContentTypeUsageStats' }
+    { key: 'monthlyUsage', method: 'getMonthlyUsageStats' },
+    { key: 'contentTypeUsage', method: 'getContentTypeUsageStats' }
   ]
 })
 @Injectable()

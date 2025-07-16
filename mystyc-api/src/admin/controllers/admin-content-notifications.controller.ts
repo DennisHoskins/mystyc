@@ -39,7 +39,7 @@ export class AdminNotificationsContentController extends AdminController<Content
       offset: query.offset,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
-    }, 'AdminCOntentController');
+    }, 'AdminContentNotificationsController');
     
     const [data, totalItems] = await Promise.all([
 

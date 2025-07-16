@@ -30,5 +30,5 @@ export * from './admin/stats/admin-schedule-stats.interface';
 export * from './admin/stats/admin-schedule-execution-stats.interface';
 export * from './admin/stats/admin-session-stats.interface';
 export * from './admin/stats/admin-traffic-stats.interface';
-export * from './admin/stats/admin-openai-request-stats.interface';
+export * from './admin/stats/admin-openai-usage-stats.interface';
 

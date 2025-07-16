@@ -5,7 +5,7 @@ import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import AdminDashboardTraffic from './AdminDashboardTraffic';
 import AdminDashboardSubscribers from './AdminDashboardSubscribers';
-import AdminDashboardAI from './AdminDashboardAI';
+import AdminDashboardOpenAI from './AdminDashboardOpenAI';
 import AdminDashboardSchedules from './AdminDashboardSchedules';
 import AdminDashboardContent from './AdminDashboardContent';
 import AdminDashboardUsers from './AdminDashboardUsers';
@@ -24,7 +24,7 @@ export default function AdminDashboard({ stats } : { stats?: StatsResponseWithQu
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4 min-h-[15em]">
         <AdminDashboardSubscribers stats={stats} />
-        <AdminDashboardAI stats={stats} />
+        <AdminDashboardOpenAI stats={stats} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">

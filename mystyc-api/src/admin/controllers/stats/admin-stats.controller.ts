@@ -52,7 +52,7 @@ export class AdminStatsController {
       // Schedule
       scheduleSummary, performance, failures, executions,
       // OpenAI
-      openaiSummary, monthlyUsage, contentTypeUsage
+      currentMonthlyUsage, openaiSummary, monthlyUsage, contentTypeUsage
     ] = await Promise.all([
       // Users
       this.adminUsersStatsService.getRegistrationStats(query),
@@ -90,6 +90,7 @@ export class AdminStatsController {
       this.adminScheduleExecutionStatsService.getOverallScheduleStats(query),
       
       // OpenAI
+      this.openAICoreService.getUsageStats(),
       this.adminOpenAIStatsService.getSummaryStats(query),
       this.adminOpenAIStatsService.getMonthlyUsageStats(query),
       this.adminOpenAIStatsService.getContentTypeUsageStats(query),
@@ -102,7 +103,7 @@ export class AdminStatsController {
       notifications: { delivery, type: notificationType, engagement, pattern: notificationPattern },
       content: { summary: contentSummary, sources, generation, timeline },
       schedule: { summary: scheduleSummary, performance, failures, executions },
-      openai: { currentMonthlyUsage: openaiSummary.currentMonth, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage }
+      openai: { currentMonthlyUsage, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage }
     };
   }
 }
