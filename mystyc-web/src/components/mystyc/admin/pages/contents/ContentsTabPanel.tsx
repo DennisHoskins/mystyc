@@ -10,16 +10,18 @@ import AllContentTable from './AllContentTable';
 import WebsiteContentTable from './WebsiteContentTable';
 import NotificationsContentTable from './NotificationsContentTable';
 import UsersContentTable from './UsersContentTable';
+import UserPlusContentTable from './UserPlusContentTable';
 
 interface ContentSummary {
   content: { total: number };
   website: { total: number };
   notifications: { total: number };
   users: { total: number };
+  plus: { total: number };
 }
 
 export default function ContentsTabPanel() {
-  const [activeTab, setActiveTab] = useState('website');
+  const [activeTab, setActiveTab] = useState('content');
   const [summary, setSummary] = useState<ContentSummary | null>(null);
 
   // Load summary data (all counts)
@@ -39,16 +41,6 @@ export default function ContentsTabPanel() {
   const tabs: Tab[] = useMemo(() => {
     return [
       {
-        id: 'website',
-        label: 'Website',
-        count: summary?.website.total,
-        content: (
-          <WebsiteContentTable
-            isActive={activeTab === 'website'}
-          />
-        )
-      },
-      {
         id: 'notifications',
         label: 'Notifications',
         count: summary?.notifications.total,
@@ -59,12 +51,32 @@ export default function ContentsTabPanel() {
         )
       },
       {
+        id: 'website',
+        label: 'Website',
+        count: summary?.website.total,
+        content: (
+          <WebsiteContentTable
+            isActive={activeTab === 'website'}
+          />
+        )
+      },
+      {
         id: 'users',
         label: 'User',
         count: summary?.users.total,
         content: (
           <UsersContentTable
             isActive={activeTab === 'users'}
+          />
+        )
+      },
+      {
+        id: 'users-plus',
+        label: 'Plus',
+        count: summary?.plus.total,
+        content: (
+          <UserPlusContentTable
+            isActive={activeTab === 'users-plus'}
           />
         )
       },

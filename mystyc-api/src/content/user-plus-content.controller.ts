@@ -1,34 +1,35 @@
 import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 
+import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
+import { SubscriptionLevelGuard } from '@/common/guards/subscription-level.guard';
+import { RequireSubscriptionLevels } from '@/common/decorators/subscription-levels.decorator';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { UserContentService } from './user-content.service';
+import { UserPlusContentService } from './user-plus-content.service';
 import { Content } from '@/common/interfaces/content.interface';
 import { logger } from '@/common/util/logger';
 
-@Controller('user-content')
-export class UserContentController {
+@Controller('plus-content')
+export class UserPlusContentController {
   constructor(
-    private readonly userContentService: UserContentService,
+    private readonly userPlusContentService: UserPlusContentService,
   ) {}
 
   /**
-   * Get today's content (smart routing based on subscription level)
-   * - FREE users: shared daily content
-   * - PLUS users: personalized daily content  
-   * - PRO users: personalized daily content (enhanced in future)
+   * Get today's plus content
    */
   @Post('today')
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(FirebaseAuthGuard, SubscriptionLevelGuard)
+  @RequireSubscriptionLevels(SubscriptionLevel.PLUS, SubscriptionLevel.PRO)
   @Throttle({ default: { limit: 100, ttl: 60000 } })
-  async getTodaysContent(
+  async getTodaysPlusContent(
     @FirebaseUser() firebaseUserFromDecorator,
     @Body() body: { deviceInfo?: any }
   ): Promise<Content> {
-    logger.info('Fetching today\'s user content with smart routing', {
-      uid: firebaseUserFromDecorator.uid
-    }, 'UserContentController');
+    logger.info('Fetching today\'s plus content', { 
+      uid: firebaseUserFromDecorator.uid 
+    }, 'UserPlusContentController');
 
     try{
       const timezone = body.deviceInfo?.timezone || 'UTC';
@@ -45,46 +46,43 @@ export class UserContentController {
         const yesterday = new Date(userLocalDate);
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayDate = yesterday.toISOString().split('T')[0];
-        return this.userContentService.getOrGenerateUserContent(firebaseUserFromDecorator.uid, yesterdayDate);
+        return this.userPlusContentService.getOrGeneratePlusContent(firebaseUserFromDecorator.uid, yesterdayDate);
       }      
       
       // Return today's content in user's timezone
-      const content = await this.userContentService.getOrGenerateUserContent(firebaseUserFromDecorator.uid, userLocalDate);
+      const content = await this.userPlusContentService.getOrGeneratePlusContent(firebaseUserFromDecorator.uid, userLocalDate);
       
-      logger.info('Today\'s user content retrieved via smart routing', {
+      logger.info('Today\'s plus content retrieved', {
         uid: firebaseUserFromDecorator.uid,
         date: content.date,
-        status: content.status,
-        contentType: content.type
-      }, 'UserContentController');
+        status: content.status
+      }, 'UserPlusContentController');
 
       return content;
     } catch (error) {
-      logger.error('Failed to get today\'s user content', {
+      logger.error('Failed to get today\'s plus content', {
         uid: firebaseUserFromDecorator.uid,
         error: error.message
-      }, 'UserContentController');
+      }, 'UserPlusContentController');
       throw error;
     }
   }
 
   /**
-   * Get content for a specific date (smart routing based on subscription level)
-   * - FREE users: shared daily content for that date
-   * - PLUS users: personalized daily content for that date
-   * - PRO users: personalized daily content for that date (enhanced in future)
+   * Get plus content for a specific date
    */
   @Get(':date')
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(FirebaseAuthGuard, SubscriptionLevelGuard)
+  @RequireSubscriptionLevels(SubscriptionLevel.PLUS, SubscriptionLevel.PRO)
   @Throttle({ default: { limit: 100, ttl: 60000 } })
-  async getContentByDate(
+  async getPlusContentByDate(
     @FirebaseUser() firebaseUserFromDecorator,
     @Param('date') date: string
   ): Promise<Content> {
-    logger.info('Fetching user content by date with smart routing', { 
+    logger.info('Fetching plus content by date', { 
       uid: firebaseUserFromDecorator.uid,
       date 
-    }, 'UserContentController');
+    }, 'UserPlusContentController');
 
     // Validate date format
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -92,25 +90,24 @@ export class UserContentController {
     }
 
     try {
-      const content = await this.userContentService.getOrGenerateUserContent(
+      const content = await this.userPlusContentService.getOrGeneratePlusContent(
         firebaseUserFromDecorator.uid, 
         date
       );
       
-      logger.info('User content retrieved via smart routing', {
+      logger.info('Plus content retrieved', {
         uid: firebaseUserFromDecorator.uid,
         date: content.date,
-        status: content.status,
-        contentType: content.type
-      }, 'UserContentController');
+        status: content.status
+      }, 'UserPlusContentController');
 
       return content;
     } catch (error) {
-      logger.error('Failed to get user content', {
+      logger.error('Failed to get plus content', {
         uid: firebaseUserFromDecorator.uid,
         date,
         error: error.message
-      }, 'UserContentController');
+      }, 'UserPlusContentController');
       throw error;
     }
   }

@@ -1,0 +1,128 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+
+import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { Content } from '@/interfaces';
+import { formatDateForDisplay } from '@/util/dateTime';
+import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { logger } from '@/util/logger';
+
+import AdminError from '@/components/mystyc/admin/ui/AdminError';
+import AdminTable, { Column } from '@/components/mystyc/admin/ui/AdminTable';
+
+export default function UserPlusContentTable({ isActive = false } : { isActive: boolean }) {
+  const { handleSessionError } = useSessionErrorHandler();
+  const { setBusy } = useBusy();
+  const [content, setContent] = useState<Content[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const LIMIT = 20;
+
+  const loadUserPlusContent = useCallback(async (page: number) => {
+    try {
+      setError(null);
+      setBusy(1000);
+      setLoading(true);
+
+      const response = await apiClientAdmin.getUserPlusContents({
+        limit: LIMIT,
+        offset: page * LIMIT,
+        sortBy: 'date',
+        sortOrder: 'desc',
+      });
+
+      setContent(response.data);
+      setHasMore(response.pagination.hasMore);
+      setCurrentPage(page);
+      setTotalPages(response.pagination.totalPages);
+      setTotalItems(response.pagination.totalItems);
+      setHasLoaded(true);
+    } catch (err) {
+      const wasSessionError = await handleSessionError(err, 'UserPlusContentsPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load user plus content:', err);
+        setError('Failed to load user plus content. Please try again.');
+      }
+    } finally {
+      setBusy(false);
+      setLoading(false);
+    }
+  }, [setBusy, handleSessionError]);
+
+  // Only load when tab becomes active for the first time
+  useEffect(() => {
+    if (isActive && !hasLoaded) {
+      loadUserPlusContent(0);
+    }
+  }, [isActive, hasLoaded, loadUserPlusContent]);
+
+  // Show loading state if tab is active but hasn't loaded yet
+  if (isActive && !hasLoaded && !loading) {
+    return null;
+  }
+
+  // Don't render anything if tab isn't active and hasn't loaded
+  if (!isActive && !hasLoaded) {
+    return null;
+  }
+
+  if (error) {
+    return (
+        <AdminError 
+          title={"Unable to load user plus content"}
+          error={error} 
+          onRetry={() => loadUserPlusContent(0)}
+        />
+    )
+  }
+
+  const columns: Column<Content>[] = [
+    { key: 'date', header: 'Created', link: (u) => `/admin/content/${u._id}`, 
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">{formatDateForDisplay(u.generatedAt)}</span>
+          : formatDateForDisplay(u.generatedAt)},
+    { key: 'status', header: 'Status', link: (u) => `/admin/content/${u._id}`, 
+      render: (u) =>
+        u.error
+          ? <span className="text-red-500">{u.status}</span>
+          : u.status},
+    { key: 'title', header: 'Title', link: (u) => `/admin/content/${u._id}`, 
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">{u.title}</span>
+          : u.title},
+    { key: 'cost', header: 'Cost', link: (u) => `/admin/content/${u._id}`, align: "right",
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">${u.openAIData?.cost}</span>
+          : "$" + u.openAIData?.cost},
+    { key: 'user', header: 'User', link: (u) => `/admin/users/${u.userId}`, 
+      render: (u) =>
+          u.error
+          ? <span className="text-red-500">{u.userId}</span>
+          : u.userId},
+  ];
+
+  return (
+    <AdminTable<Content>
+      data={content}
+      columns={columns}
+      loading={loading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      hasMore={hasMore}
+      onPageChange={loadUserPlusContent}
+      onRefresh={() => loadUserPlusContent(0)}
+      emptyMessage="No User Plus Content found."
+    />
+  );
+}

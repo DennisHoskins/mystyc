@@ -19,11 +19,15 @@ export class OpenAIUserService extends OpenAICoreService {
 
   async onModuleInit(): Promise<void> {}
 
-  getPrompt(date: string, name: string): string {
+  getPrompt(date: string): string {
     return `
-      Generate mystical daily content for ${date} and mention this user's name: ${name}. Include:
-      1. A short mystical title (max 50 characters) that includes ${name}
-      2. A mystical message (max 200 characters) specifically for ${name}
+      Generate mystical daily content for ${date}. Include:
+      1. A mystical title (max 50 characters) that uses {USER_NAME} as a placeholder for the user's name
+      2. A mystical message (max 200 characters) that uses {USER_NAME} as a placeholder for personalized content
+      
+      Use {USER_NAME} wherever you would normally put the person's name.
+      Make the content feel personal and directed at {USER_NAME} specifically.
+      
       Format as JSON: { "title": "...", "message": "..." }`;
   }
 
@@ -39,8 +43,7 @@ export class OpenAIUserService extends OpenAICoreService {
           return await this.generateFallbackContent(userProfile, date, content, startTime, 'Budget exceeded');
         }
 
-        const fullName = userProfile.fullName || "Knowledge Seeker";
-        const prompt = this.getPrompt(fullName, date);
+        const prompt = this.getPrompt(date);
 
         // get response
         const completion = await this.openai.chat.completions.create({
@@ -62,7 +65,7 @@ export class OpenAIUserService extends OpenAICoreService {
 
         await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
 
-        content.title = fullName + ", " + title;
+        content.title = title;
         content.message = message;
         content.imageUrl = this.getDefaultImageUrl(date);
         content.linkUrl = 'https://mystyc.app';

@@ -5,7 +5,9 @@ import { Model } from 'mongoose';
 import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from '@/common/interfaces/content.interface';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
+import { UserPlusContentService } from './user-plus-content.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
@@ -15,64 +17,115 @@ export class UserContentService {
   constructor(
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
     private readonly userProfilesService: UserProfilesService,
+    private readonly userPlusContentService: UserPlusContentService,
     private readonly openAIService: OpenAIUserService,
   ) {}
 
   /**
+   * TRAFFIC COP: Route users to appropriate content based on subscription level
    * Get or generate user content for a specific date
    */
   async getOrGenerateUserContent(userId: string, date: string): Promise<ContentInterface> {
-    logger.info('Getting or generating user content', { date, userId }, 'UserContentService');
+    logger.info('Routing user content request', { date, userId }, 'UserContentService');
 
-    // Get userProfile
+    // Get userProfile to check subscription level
     const userProfile = await this.userProfilesService.findByFirebaseUid(userId);
     if (!userProfile) {
       throw new NotFoundException("Unable to load User Profile");
     }
 
-    // Check if user content exists for this date
-    const existing = await this.findUserContentByDate(userId, date);
-    if (existing) {
-      logger.info('User content found in database', { date }, 'UserContentService');
-      return existing;
+    // ROUTING LOGIC: Route based on subscription level
+    switch (userProfile.subscription.level) {
+      case SubscriptionLevel.PLUS:
+        logger.debug('Routing PLUS user to plus content service', { userId, date }, 'UserContentService');
+        return await this.userPlusContentService.getOrGeneratePlusContent(userProfile, date);
+      
+      case SubscriptionLevel.PRO:
+        // TODO: Route to UserProContentService when implemented
+        // For now, PRO users get PLUS content
+        logger.debug('Routing PRO user to plus content service (fallback)', { userId, date }, 'UserContentService');
+        return await this.userPlusContentService.getOrGeneratePlusContent(userProfile, date);
+      
+      case SubscriptionLevel.USER:
+      default:
+        logger.debug('Routing USER to shared user content', { userId, date }, 'UserContentService');
+        return await this.getOrGenerateSharedUserContent(userId, date);
     }
-
-    // Generate new user content
-    return await this.generateUserContent(date, userProfile);
   }
 
   /**
-   * Find user content by date
+   * Get or generate shared user content for FREE users
+   * Content is shared by all free users, but we track who triggered generation
    */
-  async findUserContentByDate(userId, date: string): Promise<ContentInterface | null> {
-    logger.debug('Finding user content by date', { date }, 'UserContentService');
+  private async getOrGenerateSharedUserContent(userId: string, date: string): Promise<ContentInterface> {
+    logger.info('Getting or generating shared user content', { date, userId }, 'UserContentService');
+
+    // Get userProfile for content generation
+    const userProfile = await this.userProfilesService.findByFirebaseUid(userId);
+    if (!userProfile) {
+      throw new NotFoundException("Unable to load User Profile");
+    }
+
+    // Check if shared user content exists for this date (regardless of userId)
+    const existing = await this.findSharedUserContentByDate(date);
+    if (existing) {
+      logger.info('Shared user content found in database', { 
+        date, 
+        requestingUser: userId,
+        originalTrigger: existing.userId 
+      }, 'UserContentService');
+      return existing;
+    }
+
+    // Generate new shared user content (this user is first to request today)
+    logger.info('User is first to request content today, triggering generation', { 
+      date, 
+      triggeringUser: userId 
+    }, 'UserContentService');
+    
+    return await this.generateSharedUserContent(date, userProfile);
+  }
+
+  /**
+   * Find shared user content by date (shared among all FREE users)
+   * Returns the same content regardless of who's requesting
+   */
+  async findSharedUserContentByDate(date: string): Promise<ContentInterface | null> {
+    logger.debug('Finding shared user content by date', { date }, 'UserContentService');
 
     const content = await this.contentModel.findOne({ 
-      userId, 
       date, 
       type: 'user_content' 
     }).exec();
 
     if (!content) {
-      logger.debug('User content not found', { date }, 'UserContentService');
+      logger.debug('Shared user content not found', { date }, 'UserContentService');
       return null;
     }
     
-    logger.debug('Found user content for date, returning', { date }, 'UserContentService');
+    logger.debug('Found shared user content for date', { 
+      date, 
+      originalTrigger: content.userId 
+    }, 'UserContentService');
+    
     return this.transformToUserContent(content);
   }
 
   /**
-   * Generate user content for a specific date using OpenAI with timeout protection
+   * Generate shared user content for a specific date using OpenAI
+   * Content is shared among ALL free users, userId tracks who triggered generation
    */
-  async generateUserContent(date: string, userProfile: UserProfile): Promise<ContentInterface> {
-    logger.info('Generating new user content with OpenAI', { date, userId: userProfile.firebaseUid }, 'UserContentService');
+  async generateSharedUserContent(date: string, triggeringUserProfile: UserProfile): Promise<ContentInterface> {
+    logger.info('Generating new shared user content with OpenAI', { 
+      date, 
+      triggeringUserId: triggeringUserProfile.firebaseUid 
+    }, 'UserContentService');
 
-    // Create content record first to get ID
+    // Create content record (userId tracks who triggered generation)
     const content = new this.contentModel({
       type: 'user_content',
       date,
-      userId: userProfile.firebaseUid,
+      userId: triggeringUserProfile.firebaseUid, // Track who triggered generation
       title: 'Generating...', // Temporary
       message: 'Generating...', // Temporary
       data: [],
@@ -85,17 +138,33 @@ export class UserContentService {
     const savedContent = await content.save();
 
     // Wait for OpenAI to generate content
-    const updatedContent = await this.openAIService.generateUserContent(userProfile, date, savedContent);
+    const updatedContent = await this.openAIService.generateUserContent(triggeringUserProfile, date, savedContent);
 
     return this.transformToUserContent(updatedContent);
   }
 
   /**
-   * Get today's website content (convenience method)
+   * Get today's user content (convenience method)
    */
   async getTodaysUserContent(userId: string): Promise<ContentInterface> {
     const today = new Date().toISOString().split('T')[0];
     return this.getOrGenerateUserContent(userId, today);
+  }
+
+  /**
+   * Check if user can access content for a specific tier and date
+   * This method provides content access validation across all tiers
+   */
+  canAccessContentForDate(user: UserProfile, date: string, contentTier: SubscriptionLevel): boolean {
+    logger.debug('Checking content access for user', {
+      userId: user.firebaseUid,
+      userTier: user.subscription.level,
+      contentTier,
+      date
+    }, 'UserContentService');
+
+    // Use the helper method from UserProfilesService
+    return this.userProfilesService.canAccessTierContent(user, date, contentTier);
   }
 
   // Admin methods for pagination/stats
@@ -120,10 +189,20 @@ export class UserContentService {
     return content.map(content => this.transformToUserContent(content));
   }
 
+  /**
+   * Get total count of content triggered by a specific user
+   * This includes user_content they triggered (shared) and plus_content they own (personal)
+   */
   async getTotalByUserId(userId: string): Promise<number> {
     return await this.contentModel.countDocuments({ userId });
   }
 
+  /**
+   * Find content associated with a specific user
+   * This includes:
+   * - user_content they triggered (shared with all free users)
+   * - plus_content they own (personal)
+   */
   async findByUserId(userId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
@@ -142,16 +221,37 @@ export class UserContentService {
   }
 
   /**
+   * Find shared user content triggered by a specific user (admin analytics)
+   */
+  async findTriggeredUserContent(userId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { userId, type: 'user_content' } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const content = await this.contentModel.aggregate(pipeline).exec();
+    return content.map(content => this.transformToUserContent(content));
+  }
+
+  /**
    * Transform document to interface
    */
   private transformToUserContent(doc: ContentDocument): ContentInterface {
     return {
       _id: doc._id.toString(),
       type: doc.type,
-
       date: doc.date,
       
-      // User content link
+      // userId meaning depends on content type:
+      // - user_content: who triggered the shared content generation
+      // - plus_content: who owns the personal content
       userId: doc.userId,
 
       // AI request link

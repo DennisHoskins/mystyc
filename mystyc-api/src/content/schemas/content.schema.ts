@@ -7,6 +7,7 @@ export enum ContentType {
   NOTIFICATION_CONTENT = 'notification_content',
   USER_CONTENT = 'user_content',
   PLUS_CONTENT = 'plus_content',
+  PRO_CONTENT = 'pro_content',
 }
 
 @Schema()

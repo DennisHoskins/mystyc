@@ -3,6 +3,7 @@ import {
   IsOptional, 
   IsString, 
   IsArray, 
+  IsObject,
   IsEnum, 
   MinLength,
   MaxLength,
@@ -11,17 +12,21 @@ import {
   Validate,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-  ValidationArguments
+  ValidationArguments,
+  ValidateNested,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import sanitizeHtml from 'sanitize-html';
 import validator from 'validator';
+import { Type } from 'class-transformer';
+import { SubscriptionDto } from './subscription.dto';
 
 import {
   ValidateFirebaseUid
 } from '@/common/decorators/validation.decorators';
 
 import { UserRole } from '@/common/enums/roles.enum';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { logger } from '@/common/util/logger';
 
 // Custom validator for birth date
@@ -146,4 +151,10 @@ export class CreateUserProfileDto {
     return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
   })
   zodiacSign?: string;
+
+  @IsOptional()
+  @IsObject({ message: 'Subscription must be a valid object' })
+  @ValidateNested()
+  @Type(() => SubscriptionDto)
+  subscription?: SubscriptionDto;
 }

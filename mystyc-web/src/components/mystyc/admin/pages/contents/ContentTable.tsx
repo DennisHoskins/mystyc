@@ -1,6 +1,6 @@
 'use client';
 
-import { AlarmClockCheck, Bell, Globe, User } from 'lucide-react';
+import { AlarmClockCheck, Bell, Globe, Users, UserPlus } from 'lucide-react';
 
 import { Content } from '@/interfaces';
 import { formatDateForDisplay } from '@/util/dateTime';
@@ -55,7 +55,7 @@ export default function ContentTable({
       render: (u) =>
           u.error
           ? <span className="text-red-500">${u.openAIData?.cost}</span>
-          : "$" + u.openAIData?.cost},
+          : "$" + (u.openAIData?.cost ? u.openAIData?.cost : "0")},
   ];
 
   const sourceColumn: Column<Content> = {
@@ -65,12 +65,12 @@ export default function ContentTable({
     link: (u) => 
       u.executionId ? `/admin/schedule-execution/${u.executionId}` :
       u.notificationId ? `/admin/notifications/${u.notificationId}` :
-      u.userId ? `/admin/users/${u.userId}` :
+      u.userId ? (u.type == 'user_content' ? null : `/admin/users/${u.userId}`) :
       null,
     icon: (u) => 
       u.executionId ? AlarmClockCheck :
       u.notificationId ? Bell :
-      u.userId ? User :
+      u.userId ? (u.type == 'user_content' ? Users : UserPlus) : 
       Globe
   };
 

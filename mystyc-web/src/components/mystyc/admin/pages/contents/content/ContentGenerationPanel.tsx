@@ -22,6 +22,10 @@ export default function ContentGenerationPanel({ content }: { content?: Content 
         value={content.openAIData.model}
       />
       <AdminDetailField
+        label="Type"
+        value={content.type}
+      />
+      <AdminDetailField
         label="Generation Time"
         value={formatDuration(content.generationDuration)}
       />

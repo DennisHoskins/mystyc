@@ -16,7 +16,7 @@ export interface Content {
   _id?: string;
   date: string; // Format: "2025-07-07"
 
-  type: 'notification_content' | 'website_content' | 'user_content' | 'plus_content' | 'blog_content';
+  type: 'notification_content' | 'website_content' | 'user_content' | 'plus_content' | 'pro_content' | 'blog_content';
 
   // Schedule audit trail
   scheduleId?: string;

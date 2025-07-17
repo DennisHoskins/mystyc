@@ -14,6 +14,7 @@ import ContentDetailsPanel from './ContentDetailsPanel';
 import ContentPreviewPanel from './ContentPreviewPanel';
 import ContentSidebarPanel from './ContentSidebarPanel';
 import ContentDataPanel from './ContentDataPanel';
+import UserInfoPanel from '../../users/user/UserInfoPanel';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -76,7 +77,10 @@ export default function ContentPage({ contentId }: { contentId: string }) {
       icon={<ContentIcon size={6}/>}
       title={content.title}
       headerContent={<ContentDetailsPanel content={content} />}
-      sectionsContent={[<ContentPreviewPanel key='preview' content={content} />]}
+      sectionsContent={[
+        <>{content.type == "plus_content" && content.userId && <UserInfoPanel key="user" firebaseUid={content.userId} />}</>,
+        <ContentPreviewPanel key='preview' content={content} />
+      ]}
       sidebarContent={<ContentSidebarPanel content={content} />}
       mainContent={<ContentDataPanel content={content} />}
     />

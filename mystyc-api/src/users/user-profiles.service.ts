@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { UserProfileDocument } from './schemas/user-profile.schema';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { UserRole } from '@/common/enums/roles.enum';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
@@ -137,6 +138,54 @@ export class UserProfilesService {
     return users.map(user => this.transformToUserProfile(user));
   }
 
+  /**
+   * Find user profiles by subscription tier with pagination (admin use)
+   * @param tier - Subscription tier to filter by
+   * @param query - Query parameters for pagination and sorting
+   * @returns Promise<UserProfile[]> - Array of user profiles with specified tier
+   */
+  async findBySubscriptionTier(tier: SubscriptionLevel, query: BaseAdminQueryDto): Promise<UserProfile[]> {
+    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    
+    logger.debug('Finding user profiles by subscription tier', { 
+      tier,
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'UserProfileService');
+
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const users = await this.userModel
+      .find({ 'subscription.level': tier })
+      .sort(sortObj)
+      .skip(offset)
+      .limit(limit)
+      .exec();
+
+    logger.debug('User profiles found by subscription tier', {
+      tier,
+      count: users.length,
+      limit,
+      offset,
+      sortBy,
+      sortOrder
+    }, 'UserProfileService');
+
+    return users.map(user => this.transformToUserProfile(user));
+  }
+
+  /**
+   * Get total count of users by subscription tier (admin use)
+   * @param tier - Subscription tier to count
+   * @returns Promise<number> - Count of users with specified tier
+   */
+  async getTotalBySubscriptionTier(tier: SubscriptionLevel): Promise<number> {
+    return await this.userModel.countDocuments({ 'subscription.level': tier });
+  }
+
   // POST/PUT/PATCH Methods (Write Operations)
 
   /**
@@ -212,13 +261,6 @@ export class UserProfilesService {
    * @returns Promise<UserProfile> - Updated user profile object
    * @throws NotFoundException when user profile is not found
    */
-  /**
-   * Updates user roles for authorization purposes
-   * @param firebaseUid - Firebase user unique identifier
-   * @param roles - Array of user roles to assign
-   * @returns Promise<UserProfile> - Updated user profile object
-   * @throws NotFoundException when user profile is not found
-   */
   async updateRoles(firebaseUid: string, roles: UserRole[]): Promise<UserProfile> {
     logger.info('Updating user roles', { firebaseUid, roles }, 'UserProfileService');
 
@@ -242,7 +284,127 @@ export class UserProfilesService {
     return this.transformToUserProfile(updatedUser);
   }
 
+  /**
+   * Updates user subscription tier for subscription management
+   * @param firebaseUid - Firebase user unique identifier
+   * @param tier - Subscription tier to assign
+   * @param startDate - Optional start date for paid subscriptions
+   * @returns Promise<UserProfile> - Updated user profile object
+   * @throws NotFoundException when user profile is not found
+   */
+  async updateSubscriptionTier(firebaseUid: string, tier: SubscriptionLevel, startDate?: Date): Promise<UserProfile> {
+    logger.info('Updating user subscription tier', { firebaseUid, tier, startDate }, 'UserProfileService');
+
+    const updates: any = { 
+      'subscription.level': tier,
+      updatedAt: new Date()
+    };
+
+    // Set start date for paid subscriptions
+    if (startDate) {
+      updates['subscription.startDate'] = startDate;
+    } else if (tier !== SubscriptionLevel.USER) {
+      // If upgrading to paid tier without explicit start date, use current date
+      updates['subscription.startDate'] = new Date();
+    }
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { firebaseUid },
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      logger.warn('User subscription tier update failed - user not found', { firebaseUid }, 'UserProfileService');
+      throw new NotFoundException('User profile not found');
+    }
+
+    logger.info('User subscription tier updated successfully', {
+      firebaseUid,
+      profileId: updatedUser._id.toString(),
+      newTier: tier,
+      startDate: updates['subscription.startDate']
+    }, 'UserProfileService');
+
+    return this.transformToUserProfile(updatedUser);
+  }
+
+  /**
+   * Updates user credit balance for PRO users
+   * @param firebaseUid - Firebase user unique identifier
+   * @param credits - Credit amount to set (positive number)
+   * @returns Promise<UserProfile> - Updated user profile object
+   * @throws NotFoundException when user profile is not found
+   */
+  async updateCreditBalance(firebaseUid: string, credits: number): Promise<UserProfile> {
+    logger.info('Updating user credit balance', { firebaseUid, credits }, 'UserProfileService');
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { firebaseUid },
+      { 
+        $set: { 
+          'subscription.creditBalance': Math.max(0, credits), // Ensure non-negative
+          updatedAt: new Date()
+        }
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      logger.warn('User credit balance update failed - user not found', { firebaseUid }, 'UserProfileService');
+      throw new NotFoundException('User profile not found');
+    }
+
+    logger.info('User credit balance updated successfully', {
+      firebaseUid,
+      profileId: updatedUser._id.toString(),
+      newBalance: updatedUser.subscription.creditBalance
+    }, 'UserProfileService');
+
+    return this.transformToUserProfile(updatedUser);
+  }
+
   // Utility Methods
+
+  /**
+   * Checks if user can access content for a specific tier and date
+   * @param user - User profile to check
+   * @param date - Date string in YYYY-MM-DD format
+   * @param tier - Content tier to check access for
+   * @returns boolean - True if user can access the content
+   */
+  canAccessTierContent(user: UserProfile, date: string, tier: SubscriptionLevel): boolean {
+    // Free tier content is always accessible
+    if (tier === SubscriptionLevel.USER) {
+      return true;
+    }
+
+    // User must have at least the required tier
+    if (user.subscription.level === SubscriptionLevel.USER) {
+      return false; // Free users can't access paid content
+    }
+
+    // Check if user's tier is sufficient
+    const tierHierarchy = [SubscriptionLevel.USER, SubscriptionLevel.PLUS, SubscriptionLevel.PRO];
+    const userTierIndex = tierHierarchy.indexOf(user.subscription.level);
+    const requiredTierIndex = tierHierarchy.indexOf(tier);
+    
+    if (userTierIndex < requiredTierIndex) {
+      return false; // User tier is insufficient
+    }
+
+    // Check subscription start date for paid content
+    if (!user.subscription.startDate) {
+      return false; // No subscription start date
+    }
+
+    // Compare dates at DAY level, not timestamp level
+    const requestDateString = date; // Already in YYYY-MM-DD format
+    const subscriptionStartString = new Date(user.subscription.startDate).toISOString().split('T')[0];
+    
+    // User can access content from their subscription start date forward (day level)
+    return requestDateString >= subscriptionStartString;
+  }
 
   /**
    * Transforms MongoDB document to clean UserProfile interface
@@ -258,6 +420,7 @@ export class UserProfilesService {
       dateOfBirth: doc.dateOfBirth,
       zodiacSign: doc.zodiacSign,
       roles: doc.roles,
+      subscription: doc.subscription,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

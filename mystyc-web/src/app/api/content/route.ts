@@ -40,7 +40,12 @@ export async function POST(request: NextRequest) {
   // Fetch fresh content from Nest service
   logger.log('[getContent] Fetching from Nest');
   const nestResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/website-content/today`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/website-content/today`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceInfo })
+    }
   );
 
   if (!nestResponse.ok) {

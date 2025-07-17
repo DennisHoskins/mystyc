@@ -1,15 +1,16 @@
-import { Controller, Get, Post, UseGuards, Param, Query, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Param, Query, Body, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { ContentService } from '@/content/content.service';
-import { UserContentService } from '@/content/user-content.service';
+import { UserPlusContentService } from '@/content/user-plus-content.service';
 import { Content } from '@/common/interfaces/content.interface';
 import { AdminController } from './admin.controller';
 import { CreateContentDto } from '@/content/dto/create-content.dto';
@@ -17,20 +18,20 @@ import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
 
-@Controller('admin/content-users')
-export class AdminUsersContentController extends AdminController<Content> {
-  protected serviceName = 'AdminUsersContent';
+@Controller('admin/content-users-plus')
+export class AdminUsersPlusContentController extends AdminController<Content> {
+  protected serviceName = 'AdminUsersPlusContent';
   
   constructor(
     protected service: ContentService,
-    private readonly userContentService: UserContentService,
+    private readonly userPlusContentService: UserPlusContentService,
     private readonly userProfilesService: UserProfilesService,
   ) {
     super();
   }
 
   /**
-   * Finds all user content
+   * Finds all user plus content
    * @param query - Query parameters for pagination, sorting, and filtering
    * @returns Promise<AdminListResponse<Content>> - Paginated list of user content
    */
@@ -40,26 +41,26 @@ export class AdminUsersContentController extends AdminController<Content> {
   async getUserContent(
     @Query() query: BaseAdminQueryDto
   ): Promise<AdminListResponse<Content>> {
-    logger.info('Admin fetching user content', { 
+    logger.info('Admin fetching user plus content', { 
       limit: query.limit,
       offset: query.offset,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
-    }, 'AdminUserContentController');
+    }, 'AdminUserPlusContentController');
     
     const [data, totalItems] = await Promise.all([
 
-      this.userContentService.findAll(query),
-      this.userContentService.getTotal()
+      this.userPlusContentService.findAll(query),
+      this.userPlusContentService.getTotal()
 
     ]);
     
     const totalPages = Math.ceil(totalItems / (query.limit || 100));
     
-    logger.info('User content retrieved', { 
+    logger.info('User plus content retrieved', { 
       count: data.length,
       totalItems
-    }, 'AdminUserContentController');
+    }, 'AdminUserPlusContentController');
     
     return {
       data,
@@ -78,7 +79,7 @@ export class AdminUsersContentController extends AdminController<Content> {
   }
 
   /**
-   * Creates user content from OpenAI
+   * Creates user plus content from OpenAI
    * @param prompt: The prompt sent to OpenAI to generate the content
    * @returns Promise<Content> - New content object
    */
@@ -103,9 +104,13 @@ export class AdminUsersContentController extends AdminController<Content> {
       throw new NotFoundException("Unable to load User Profile");
     }
 
+    if (userProfile.subscription.level !== SubscriptionLevel.PLUS) {
+      throw new UnauthorizedException("User is not subscribed to Plus content");
+    }
+
     const today = new Date().toISOString().split('T')[0];
 
-    const result = await this.userContentService.generateSharedUserContent(today, userProfile);
+    const result = await this.userPlusContentService.generatePlusContent(today, userProfile);
 
     return result;
   }

@@ -6,6 +6,11 @@ export interface UserProfile {
   dateOfBirth?: Date | null;
   zodiacSign?: string;
   roles: string[];
+  subscription: {
+    level: string,
+    startDate?: Date | null,
+    creditBalance?: number;
+  }
   createdAt: Date;
   updatedAt: Date;
 }

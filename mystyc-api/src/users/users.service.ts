@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UserRole } from '@/common/enums/roles.enum';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { Device } from '@/common/interfaces/device.interface';
 import { UserProfilesService } from './user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
@@ -252,6 +253,11 @@ export class UsersService {
       firebaseUid: firebaseUser.uid,
       email: firebaseUser.email || '',
       roles: [UserRole.USER],
+      subscription: {
+        level: SubscriptionLevel.USER,
+        startDate: null, // No paid subscription yet
+        creditBalance: 0
+      }      
     };
 
     try {

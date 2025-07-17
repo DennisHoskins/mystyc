@@ -91,10 +91,11 @@ async function handleUserContentRoute(request: NextRequest): Promise<NextRespons
 
   // Call Nest to get fresh user data
   const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/content`, {
-    method: 'GET',
+    method: 'POST',
     headers: {
       'Authorization': authTokenManager.createAuthHeader(session.authToken),
     },
+    body: JSON.stringify({ deviceInfo })
   });
 
   if (!nestResponse.ok) {

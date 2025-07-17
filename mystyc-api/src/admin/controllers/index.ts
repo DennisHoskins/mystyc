@@ -8,6 +8,7 @@ export { AdminContentController } from './admin-content.controller';
 export { AdminWebsiteContentController } from './admin-content-website.controller';
 export { AdminNotificationsContentController } from './admin-content-notifications.controller';
 export { AdminUsersContentController } from './admin-content-users.controller';
+export { AdminUsersPlusContentController } from './admin-content-users-plus.controller';
 export { AdminSchedulesController } from './admin-schedules.controller';
 export { AdminScheduleExecutionsController } from './admin-schedule-executions.controller';
 

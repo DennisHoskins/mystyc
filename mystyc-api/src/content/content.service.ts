@@ -120,7 +120,7 @@ export class ContentService {
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
     const pipeline = [
-      { $match: { userId: firebaseUid } },
+      { $match: { userId: firebaseUid, type: 'plus_content' } },
       { $sort: sortObj },
       { $skip: offset },
       { $limit: limit },
@@ -146,7 +146,7 @@ export class ContentService {
    * Get total count by user
    */
   async getTotalByFirebaseUid(firebaseUid: string): Promise<number> {
-    return await this.contentModel.countDocuments({ userId: firebaseUid });
+    return await this.contentModel.countDocuments({ userId: firebaseUid, type: 'plus_content' });
   }
 
  /**

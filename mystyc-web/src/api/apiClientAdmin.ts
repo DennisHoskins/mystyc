@@ -386,6 +386,7 @@ class AdminApiClient {
     notifications: { total: number };
     website: { total: number };
     users: { total: number };
+    plus: { total: number };
   }> => {
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content/summary`);
@@ -431,6 +432,16 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-users${queryString}`);
     } catch (error) {
       logger.error('getUserContents failed:', error);
+      throw error;
+    }
+  };
+
+  getUserPlusContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-users-plus${queryString}`);
+    } catch (error) {
+      logger.error('getUserPlusContents failed:', error);
       throw error;
     }
   };

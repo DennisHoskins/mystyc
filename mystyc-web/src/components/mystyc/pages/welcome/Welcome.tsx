@@ -9,7 +9,7 @@ export default function Welcome() {
   }
 
   return (
-    <div className="flex items-center justify-center w-64 h-64">
+    <div className="flex-1 flex items-center justify-center w-64 h-64">
       Welcome to Mystyc!
     </div>
   );

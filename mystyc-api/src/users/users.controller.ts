@@ -4,6 +4,9 @@ import { Request } from 'express';
 
 import { Public } from '@/common/decorators/public.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';
@@ -17,6 +20,7 @@ import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-re
 import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
 import { createServiceLogger } from '@/common/util/logger';
 import { logger } from '@/common/util/logger';
+import { UserRole } from '@/common/enums/roles.enum';
 
 @Controller('users')
 export class UsersController {
@@ -126,6 +130,95 @@ export class UsersController {
     const userProfile = await this.userProfileService.updateProfile(firebaseUser.uid, firebaseUser.email, body)
     return userProfile;
   }
+
+  /**
+  * Updates user subscription tier (admin only)
+  * @param body - Subscription update data with firebaseUid, level, and optional startDate
+  * @returns Promise<UserProfile> - Updated user profile object
+  */
+  @Patch('subscription-tier')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 50, ttl: 60000 } })
+  async updateSubscriptionTier(
+    @Body() body: { 
+      firebaseUid: string; 
+      level: SubscriptionLevel; 
+      startDate?: string; // ISO date string
+    }
+  ): Promise<UserProfile> {
+    this.logger.info('Admin updating user subscription tier', {
+      targetFirebaseUid: body.firebaseUid,
+      newLevel: body.level,
+      startDate: body.startDate
+    });
+
+    try {
+      const startDate = body.startDate ? new Date(body.startDate) : undefined;
+      
+      const userProfile = await this.userProfileService.updateSubscriptionTier(
+        body.firebaseUid,
+        body.level,
+        startDate
+      );
+
+      this.logger.info('Subscription tier updated successfully', {
+        targetFirebaseUid: body.firebaseUid,
+        newLevel: body.level,
+        profileId: userProfile.id
+      });
+
+      return userProfile;
+    } catch (error) {
+      this.logger.error('Failed to update subscription tier', {
+        targetFirebaseUid: body.firebaseUid,
+        error: error.message
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Updates user credit balance (admin only, for PRO users)
+   * @param body - Credit update data with firebaseUid and credits amount
+   * @returns Promise<UserProfile> - Updated user profile object
+   */
+  @Patch('credit-balance')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 50, ttl: 60000 } })
+  async updateCreditBalance(
+    @Body() body: { 
+      firebaseUid: string; 
+      credits: number;
+    }
+  ): Promise<UserProfile> {
+    this.logger.info('Admin updating user credit balance', {
+      targetFirebaseUid: body.firebaseUid,
+      credits: body.credits
+    });
+
+    try {
+      const userProfile = await this.userProfileService.updateCreditBalance(
+        body.firebaseUid,
+        body.credits
+      );
+
+      this.logger.info('Credit balance updated successfully', {
+        targetFirebaseUid: body.firebaseUid,
+        newBalance: userProfile.subscription.creditBalance,
+        profileId: userProfile.id
+      });
+
+      return userProfile;
+    } catch (error) {
+      this.logger.error('Failed to update credit balance', {
+        targetFirebaseUid: body.firebaseUid,
+        error: error.message
+      });
+      throw error;
+    }
+  }  
 
   /**
    * Logs out user by clearing device FCM token and recording logout event
@@ -251,20 +344,24 @@ export class UsersController {
    * @param firebaseUserFromDecorator - Firebase user from auth guard
    * @returns Promise<{content: Content | null}> - Content data or null if not found
    */
-  @Get('content')
+  @Post('content')
   @UseGuards(FirebaseAuthGuard)
-  async getContent(@FirebaseUser() firebaseUserFromDecorator): Promise<{ content: Content | null }> {
+  async getContent(
+    @FirebaseUser() firebaseUserFromDecorator,
+    @Body() body: { deviceInfo?: any }
+  ): Promise<Content | null> {
     this.logger.debug('Getting content via GET /content', { 
       uid: firebaseUserFromDecorator.uid 
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
 
-    const today = new Date().toISOString().split('T')[0];
+    const timezone = body.deviceInfo?.timezone || 'UTC';
+    const userLocalDate = new Intl.DateTimeFormat('en-CA', { timeZone: timezone }).format(new Date());
 
-    const content = await this.userContentService.getOrGenerateUserContent(firebaseUser.uid, today);
+    const content = await this.userContentService.getOrGenerateUserContent(firebaseUser.uid, userLocalDate);
 
-    return { content };
+    return content;
   }
 
   private transformFirebaseUser(decodedToken: any): FirebaseUserInterface {
