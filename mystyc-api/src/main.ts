@@ -6,6 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import helmet from 'helmet';
 import * as express from 'express';
+import { raw } from 'express';
 import mongoose from 'mongoose';
 
 import { AppModule } from '@/app.module';
@@ -103,6 +104,9 @@ async function bootstrap() {
   
   // Set global API prefix for all routes
   app.setGlobalPrefix('api');
+
+  // Add stripe webhook
+  app.use('/stripe/webhook', raw({ type: 'application/json' }));
   
   // Start the server on specified port
   const port = process.env.PORT ?? 3000;

@@ -36,7 +36,7 @@ export default function TabPanel({
 
   return (
     <div className={`w-full ${className}`}>
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-100">
         {tabs.map((tab) => (
           <button
             key={tab.id}

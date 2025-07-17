@@ -22,7 +22,7 @@ export default function AdminDashboardOpenAI({ stats } : { stats?: StatsResponse
     >
       <Link
         className='flex-1 flex flex-col'
-        href='/admin/content'
+        href='/admin/openai'
       >
         <div className='flex-1 flex flex-col space-y-4 xl:flex-row xl:space-x-4 xl:space-y-0'>
           <OpenAIUsageDashboard

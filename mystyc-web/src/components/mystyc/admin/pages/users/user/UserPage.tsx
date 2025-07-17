@@ -80,6 +80,9 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       title={user && user.fullName ? user.fullName : `Unknown User`}
       headerContent={<UserDetailsPanel user={user} />}
       sectionsContent={[
+
+        // subscription panel
+
         <Card key='devices' className='h-[22rem]'>
           <UserDevicesPanel firebaseUid={user && user.firebaseUid} />
         </Card>
