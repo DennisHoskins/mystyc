@@ -6,7 +6,10 @@ WORKDIR /api
 
 # Copy package.json and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm ci
+
+RUN ls -la node_modules/ | head -20
+RUN npm list stripe
 
 # Copy the rest of the app
 COPY . .

@@ -8,6 +8,8 @@ import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 
 import { AppServicesModule } from '@/app-services.module';
 import { AdminModule } from '@/admin/admin.module';
+import { PaymentsModule } from '@/payments/payments.module';
+import { StripeModule } from '@/stripe/stripe.module';
 
 import { AppController } from '@/app.controller';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
@@ -35,6 +37,8 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
     ]),
     AppServicesModule,
     AdminModule,
+    PaymentsModule,
+    StripeModule,    
   ],
   controllers: [AppController],
   providers: [

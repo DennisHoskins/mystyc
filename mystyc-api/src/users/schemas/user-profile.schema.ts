@@ -42,6 +42,9 @@ export class UserProfile {
   @Prop({ type: Subscription, default: () => ({}) })
   subscription: Subscription;
 
+  @Prop({ sparse: true, index: true })
+  stripeCustomerId?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,3 +71,4 @@ UserProfileSchema.index({ zodiacSign: 1, createdAt: -1 }); // Users with zodiac 
 UserProfileSchema.index({ 'subscription.level': 1 }); // Find users by subscription tier
 UserProfileSchema.index({ 'subscription.level': 1, 'subscription.startDate': -1 }); // Content access queries
 UserProfileSchema.index({ 'subscription.creditBalance': -1 }); // PRO users with low credits
+UserProfileSchema.index({ stripeCustomerId: 1 }, { sparse: true }); // Stripe ID lookup

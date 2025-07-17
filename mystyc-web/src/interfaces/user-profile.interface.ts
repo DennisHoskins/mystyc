@@ -11,6 +11,7 @@ export interface UserProfile {
     startDate?: Date | null,
     creditBalance?: number;
   }
+  stripeCustomerId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

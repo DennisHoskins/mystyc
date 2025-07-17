@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import Stripe from 'stripe';
 
 import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';
@@ -281,6 +282,50 @@ export class UsersService {
       throw error;
     }
   }
+
+  /**
+   * Creates a Stripe subscription checkout session for a user
+   * @param firebaseUser - Firebase authentication user object
+   * @param priceId - Stripe price ID for the subscription plan (e.g., 'price_plus_monthly', 'price_pro_yearly')
+   * @param successUrl - Frontend URL to redirect to after successful payment completion
+   * @param cancelUrl - Frontend URL to redirect to if user cancels the payment process
+   * @returns Promise<Stripe.Checkout.Session> - Stripe checkout session object with payment URL
+   */
+  async createSubscriptionSession(
+    firebaseUid: string,
+    priceId: string,
+    successUrl: string,
+    cancelUrl: string
+  ): Promise<Stripe.Checkout.Session> {
+    logger.info('Creating subscription session', { firebaseUid, priceId });
+
+    const stripeCustomerId = await this.userProfileService.createStripeCustomer(firebaseUid);
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    
+    const session = await stripe.checkout.sessions.create({
+      customer: stripeCustomerId,
+      payment_method_types: ['card'],
+      line_items: [{
+        price: priceId,
+        quantity: 1,
+      }],
+      mode: 'subscription',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: {
+        firebaseUid, // Important for webhook processing
+      },
+    });
+
+    logger.info('Subscription session created', {
+      firebaseUid,
+      sessionId: session.id,
+      customerId: stripeCustomerId
+    });
+
+    return session;
+  }  
 
   /**
    * Finds user by Firebase UID, returns null if not found (service-level method)

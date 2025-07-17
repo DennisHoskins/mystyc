@@ -1,6 +1,7 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import Stripe from 'stripe';
 
 import { UserProfileDocument } from './schemas/user-profile.schema';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
@@ -139,6 +140,16 @@ export class UserProfilesService {
   }
 
   /**
+   * Find user profiles by stripe customer id
+   * @param stripeCustomerId - Stripe customer identifier
+   * @returns Promise<UserProfile> Matching user profile
+   */
+  async findByStripeCustomerId(stripeCustomerId: string): Promise<UserProfile | null> {
+    const user = await this.userModel.findOne({ stripeCustomerId }).exec();
+    return user ? this.transformToUserProfile(user) : null;
+  }
+
+  /**
    * Find user profiles by subscription tier with pagination (admin use)
    * @param tier - Subscription tier to filter by
    * @param query - Query parameters for pagination and sorting
@@ -250,6 +261,71 @@ export class UserProfilesService {
       firebaseUid,
       profileId: updatedUser._id.toString(),
     }, 'UserProfileService');
+
+    return this.transformToUserProfile(updatedUser);
+  }
+
+  /**
+   * Creates a stripe customer id
+   * @param firebaseUid - Firebase user unique identifier
+   * @param stripeCustomerId - Stripe customer identifier
+   * @returns Promise<UserProfile> - Updated user profile object
+   * @throws NotFoundException when user profile is not found
+   */
+  async createStripeCustomer(firebaseUid: string): Promise<string> {
+    logger.info('Creating or retrieving Stripe customer', { firebaseUid });
+
+    const userProfile = await this.findByFirebaseUid(firebaseUid);
+    if (!userProfile) throw new NotFoundException('User not found');
+
+    // If user already has a Stripe customer, return it
+    if (userProfile.stripeCustomerId) {
+      logger.debug('User already has Stripe customer', { 
+        firebaseUid, 
+        stripeCustomerId: userProfile.stripeCustomerId 
+      });
+      return userProfile.stripeCustomerId;
+    }
+
+    // Create new Stripe customer
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const customer = await stripe.customers.create({
+      email: userProfile.email,
+      name: userProfile.fullName || undefined,
+      metadata: { 
+        firebaseUid,
+        source: 'mystyc-api'
+      }
+    });
+
+    // Save Stripe customer ID to user profile
+    await this.updateStripeCustomerId(firebaseUid, customer.id);
+
+    logger.info('Stripe customer created and linked', {
+      firebaseUid,
+      stripeCustomerId: customer.id
+    });
+
+    return customer.id;
+  }
+
+  /**
+   * Updates stripe customer id
+   * @param firebaseUid - Firebase user unique identifier
+   * @param stripeCustomerId - Stripe customer identifier
+   * @returns Promise<UserProfile> - Updated user profile object
+   * @throws NotFoundException when user profile is not found
+   */
+  async updateStripeCustomerId(firebaseUid: string, stripeCustomerId: string): Promise<UserProfile> {
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { firebaseUid },
+      { stripeCustomerId, updatedAt: new Date() },
+      { new: true }
+    );
+    
+    if (!updatedUser) {
+      throw new NotFoundException('User profile not found');
+    }
 
     return this.transformToUserProfile(updatedUser);
   }

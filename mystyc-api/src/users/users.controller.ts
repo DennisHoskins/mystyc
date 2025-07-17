@@ -131,6 +131,37 @@ export class UsersController {
     return userProfile;
   }
 
+  @Post('start-subscription')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async startSubscription(
+    @FirebaseUser() firebaseUser,
+    @Body() body: { 
+      priceId: string; // Stripe price ID for plus/pro monthly/yearly
+      successUrl: string; // Frontend success page
+      cancelUrl: string; // Frontend cancel page
+    }
+  ): Promise<{ sessionUrl: string }> {
+    try {
+      // This is where createStripeCustomer gets called!
+      const session = await this.userService.createSubscriptionSession(
+        firebaseUser.uid,
+        body.priceId,
+        body.successUrl,
+        body.cancelUrl
+      );
+
+      return { sessionUrl: session.url };
+    } catch (error) {
+      logger.error('Failed to start subscription', {
+        uid: firebaseUser.uid,
+        priceId: body.priceId,
+        error: error.message
+      });
+      throw error;
+    }
+  }  
+
   /**
   * Updates user subscription tier (admin only)
   * @param body - Subscription update data with firebaseUid, level, and optional startDate

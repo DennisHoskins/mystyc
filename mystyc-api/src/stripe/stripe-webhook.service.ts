@@ -21,11 +21,11 @@ export class StripeWebhookService {
       invoiceId: invoice.id,
       customerId: invoice.customer,
       amount: invoice.amount_paid,
-      subscriptionId: invoice.subscription
+      billingReason: invoice.billing_reason
     }, 'StripeWebhookService');
 
     try {
-      // Get user by Stripe customer ID (we'll need to store this mapping)
+      // Get user by Stripe customer ID
       const user = await this.findUserByStripeCustomerId(invoice.customer as string);
       if (!user) {
         logger.warn('User not found for Stripe customer', {
@@ -35,21 +35,30 @@ export class StripeWebhookService {
         return;
       }
 
-      // Determine subscription tier from invoice
+      // Only process subscription invoices
+      if (invoice.billing_reason !== 'subscription_cycle' && invoice.billing_reason !== 'subscription_create') {
+        logger.info('Skipping non-subscription invoice', {
+          invoiceId: invoice.id,
+          billingReason: invoice.billing_reason
+        }, 'StripeWebhookService');
+        return;
+      }
+
+      // Determine subscription tier from invoice line items
       const subscriptionTier = await this.determineSubscriptionTier(invoice);
 
       // Save payment record
       await this.paymentHistoryService.createPayment({
         firebaseUid: user.firebaseUid,
         stripeCustomerId: invoice.customer as string,
-        stripeChargeId: invoice.charge as string || 'unknown',
+        stripeChargeId: invoice.id, // Use invoice ID since charges are separate
         stripeInvoiceId: invoice.id,
-        stripeSubscriptionId: invoice.subscription as string,
-        amount: invoice.amount_paid,
-        currency: invoice.currency.toUpperCase(),
+        stripeSubscriptionId: await this.getSubscriptionIdFromInvoice(invoice),
+        amount: invoice.amount_paid || 0,
+        currency: invoice.currency?.toUpperCase() || 'USD',
         status: 'paid',
         subscriptionTier,
-        paidAt: new Date(invoice.status_transitions.paid_at! * 1000),
+        paidAt: new Date((invoice.status_transitions?.paid_at || Date.now() / 1000) * 1000),
         periodStart: new Date(invoice.period_start * 1000),
         periodEnd: new Date(invoice.period_end * 1000)
       });
@@ -86,7 +95,7 @@ export class StripeWebhookService {
       invoiceId: invoice.id,
       customerId: invoice.customer,
       amount: invoice.amount_due,
-      subscriptionId: invoice.subscription
+      billingReason: invoice.billing_reason
     }, 'StripeWebhookService');
 
     try {
@@ -100,6 +109,15 @@ export class StripeWebhookService {
         return;
       }
 
+      // Only process subscription invoices
+      if (invoice.billing_reason !== 'subscription_cycle' && invoice.billing_reason !== 'subscription_create') {
+        logger.info('Skipping non-subscription invoice failure', {
+          invoiceId: invoice.id,
+          billingReason: invoice.billing_reason
+        }, 'StripeWebhookService');
+        return;
+      }
+
       // Determine subscription tier from invoice
       const subscriptionTier = await this.determineSubscriptionTier(invoice);
 
@@ -109,9 +127,9 @@ export class StripeWebhookService {
         stripeCustomerId: invoice.customer as string,
         stripeChargeId: 'failed',
         stripeInvoiceId: invoice.id,
-        stripeSubscriptionId: invoice.subscription as string,
-        amount: invoice.amount_due,
-        currency: invoice.currency.toUpperCase(),
+        stripeSubscriptionId: await this.getSubscriptionIdFromInvoice(invoice),
+        amount: invoice.amount_due || 0,
+        currency: invoice.currency?.toUpperCase() || 'USD',
         status: 'failed',
         subscriptionTier,
         paidAt: new Date(), // Use current time for failed payments
@@ -189,7 +207,7 @@ export class StripeWebhookService {
         await this.userProfilesService.updateSubscriptionTier(
           user.firebaseUid,
           subscriptionTier === 'plus' ? SubscriptionLevel.PLUS : SubscriptionLevel.PRO,
-          new Date(subscription.current_period_start * 1000)
+          new Date() // Use current time since current_period_start is deprecated
         );
 
         logger.info('Subscription updated - user upgraded', {
@@ -267,37 +285,56 @@ export class StripeWebhookService {
 
   /**
    * Find user by Stripe customer ID
-   * TODO: We need to store Stripe customer IDs on user profiles
    */
   private async findUserByStripeCustomerId(stripeCustomerId: string): Promise<{ firebaseUid: string } | null> {
-    // TODO: Implement this - we need to add stripeCustomerId to UserProfile
-    // For now, return null which will log warnings
-    logger.warn('TODO: Implement user lookup by Stripe customer ID', {
-      stripeCustomerId
-    }, 'StripeWebhookService');
+    const user = await this.userProfilesService.findByStripeCustomerId(stripeCustomerId);
+    return user ? { firebaseUid: user.firebaseUid } : null;
+  }
+
+  /**
+   * Extract subscription ID from invoice line items
+   */
+  private async getSubscriptionIdFromInvoice(invoice: Stripe.Invoice): Promise<string> {
+    // Check if any line items have subscription info
+    const subscriptionIds = invoice.lines?.data
+      ?.map(line => (line as any).subscription) // Line items may have subscription reference
+      ?.filter(Boolean) || [];
     
-    return null;
+    if (subscriptionIds.length > 0) {
+      return subscriptionIds[0] as string;
+    }
+    
+    // Fallback: use invoice metadata or return placeholder
+    return invoice.metadata?.subscriptionId || 'unknown';
   }
 
   /**
    * Determine subscription tier from invoice line items
    */
   private async determineSubscriptionTier(invoice: Stripe.Invoice): Promise<'plus' | 'pro'> {
-    // TODO: Match against your actual Stripe price IDs
-    const priceIds = invoice.lines.data.map(line => line.price?.id).filter(Boolean);
+
+    //
+    // todo: determine pricing strategy
+    //
+
+    // const itemIds = invoice.lines?.data
+    //   ?.map(line => line.id)
+    //   ?.filter((id): id is string => Boolean(id)) || [];
     
-    // Example logic - replace with your actual price IDs
-    if (priceIds.some(id => id?.includes('plus'))) {
-      return 'plus';
-    } else if (priceIds.some(id => id?.includes('pro'))) {
-      return 'pro';
-    }
+    // const PLUS_PRICE_IDS = ['price_plus_monthly', 'price_plus_yearly'];
+    // const PRO_PRICE_IDS = ['price_pro_monthly', 'price_pro_yearly'];
     
-    // Default to plus for now
-    logger.warn('Could not determine subscription tier from invoice, defaulting to plus', {
-      invoiceId: invoice.id,
-      priceIds
-    }, 'StripeWebhookService');
+    // if (itemIds.some(id => PRO_PRICE_IDS.includes(id))) {
+    //   return 'pro';
+    // } else if (itemIds.some(id => PLUS_PRICE_IDS.includes(id))) {
+    //   return 'plus';
+    // }
+
+    // // Default to plus for now
+    // logger.warn('Could not determine subscription tier from invoice, defaulting to plus', {
+    //   invoiceId: invoice.id,
+    //   itemIds
+    // }, 'StripeWebhookService');
     
     return 'plus';
   }
@@ -306,14 +343,19 @@ export class StripeWebhookService {
    * Determine subscription tier from subscription object
    */
   private async determineSubscriptionTierFromSubscription(subscription: Stripe.Subscription): Promise<'plus' | 'pro'> {
-    // TODO: Match against your actual Stripe price IDs
-    const priceIds = subscription.items.data.map(item => item.price.id);
+    // Extract price IDs from subscription items
+    const priceIds = subscription.items?.data
+      ?.map(item => item.price?.id)
+      ?.filter((id): id is string => Boolean(id)) || [];
     
-    // Example logic - replace with your actual price IDs
-    if (priceIds.some(id => id.includes('plus'))) {
-      return 'plus';
-    } else if (priceIds.some(id => id.includes('pro'))) {
+    // TODO: Replace these with your actual Stripe price IDs
+    const PLUS_PRICE_IDS = ['price_plus_monthly', 'price_plus_yearly'];
+    const PRO_PRICE_IDS = ['price_pro_monthly', 'price_pro_yearly'];
+    
+    if (priceIds.some(id => PRO_PRICE_IDS.includes(id))) {
       return 'pro';
+    } else if (priceIds.some(id => PLUS_PRICE_IDS.includes(id))) {
+      return 'plus';
     }
     
     // Default to plus for now
