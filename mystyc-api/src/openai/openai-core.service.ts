@@ -36,7 +36,7 @@ export class OpenAICoreService implements OnModuleInit {
       const stats = await this.getUsageStats();
       const remainingTokens = stats.tokenBudget - stats.tokensUsed;
       const remainingCost = stats.costBudget - stats.costUsed;
-      console.log('Current OpenAI usage stats', { ...stats, remainingTokens, remainingCost }, 'OpenAIService');      
+      logger.info('Current OpenAI usage stats', { ...stats, remainingTokens, remainingCost }, 'OpenAIService');      
     } catch (err) {
       logger.error('Initial usage sync failed', { error: (err as Error).message }, 'OpenAIService');
     }

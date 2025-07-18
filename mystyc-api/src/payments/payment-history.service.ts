@@ -46,6 +46,29 @@ export class PaymentHistoryService {
   }
 
   /**
+   * Find payment by IDs (for webhook processing)
+   */
+  async findById(id?: string): Promise<PaymentHistoryInterface | null> {
+    logger.debug('Finding payment by ID', {
+      id,
+    }, 'PaymentHistoryService');
+
+    const query: any = {};
+    if (id) query._id = id;
+
+    const payment = await this.paymentModel.findOne(query).exec();
+
+    if (!payment) {
+      logger.debug('Payment not found by Stripe IDs', {
+        id,
+      }, 'PaymentHistoryService');
+      return null;
+    }
+
+    return this.transformToPaymentHistory(payment);
+  }
+
+  /**
    * Find payment by Stripe IDs (for webhook processing)
    */
   async findByStripeIds(stripeInvoiceId?: string, stripeChargeId?: string): Promise<PaymentHistoryInterface | null> {
@@ -148,6 +171,19 @@ export class PaymentHistoryService {
   }
 
   // Admin methods for pagination/stats
+  async getTotalAmount(): Promise<number> {
+    const result = await this.paymentModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: '$amount' }
+        }
+      }
+    ]);
+    
+    return result[0]?.totalAmount || 0;
+  }
+
   async getTotal(): Promise<number> {
     return await this.paymentModel.countDocuments();
   }
@@ -180,6 +216,7 @@ export class PaymentHistoryService {
 
     return payments.map(payment => this.transformToPaymentHistory(payment));
   }
+  
 
   /**
    * Get payments by subscription tier (admin analytics)

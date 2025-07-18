@@ -15,7 +15,7 @@ interface DeviceSummary {
   notifications: { total: number };
 }
 
-export default function DeviceTabPanel({ deviceId }: { deviceId: string }) {
+export default function DeviceTabCard({ deviceId }: { deviceId: string }) {
   const [activeTab, setActiveTab] = useState('auth-events');
   const [summary, setSummary] = useState<DeviceSummary | null>(null);
 

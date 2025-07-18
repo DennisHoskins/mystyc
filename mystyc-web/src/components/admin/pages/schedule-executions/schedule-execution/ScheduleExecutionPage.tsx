@@ -11,7 +11,7 @@ import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import ScheduleExecutionDetailsPanel from './ScheduleExecutionDetailsPanel';
-import ScheduleExecutionTabPanel from './ScheduleExecutionTabPanel';
+import ScheduleExecutionTabCard from './ScheduleExecutionTabCard';
 
 export default function ScheduleExecutionPage({ executionId }: { executionId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -77,7 +77,7 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
       icon={<ScheduleIcon size={6} variant='schedule-execution' />}
       title={execution.eventName || `Unknown Schedule Execution`}
       headerContent={<ScheduleExecutionDetailsPanel execution={execution} />}
-      mainContent={<ScheduleExecutionTabPanel executionId={executionId} />}
+      mainContent={<ScheduleExecutionTabCard executionId={executionId} />}
     />
   );
 }

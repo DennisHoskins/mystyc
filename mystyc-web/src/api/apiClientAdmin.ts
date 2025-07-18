@@ -9,10 +9,10 @@ import {
   Content, 
   Schedule, 
   ScheduleExecution,
+  PaymentHistory,
   OpenAIUsage, 
   AdminQuery, 
   AdminStatsQuery, 
-  Subscription,
   AdminStatsResponseExtended, 
   SessionStats, 
   TrafficStats, 
@@ -215,20 +215,20 @@ class AdminApiClient {
     }
   };
 
-  getSubscriptionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
-    try {
-      const queryString = this.buildStatsQueryString(query);
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions${queryString}`);
-      return {
-        data: response,
-        query,
-        queryString: queryString.replace('?', '')
-      };      
-    } catch (error) {
-      logger.error('getOpenSubscriptionStats failed:', error);
-      throw error;
-    }
-  };
+  // getSubscriptionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
+  //   try {
+  //     const queryString = this.buildStatsQueryString(query);
+  //     const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions${queryString}`);
+  //     return {
+  //       data: response,
+  //       query,
+  //       queryString: queryString.replace('?', '')
+  //     };      
+  //   } catch (error) {
+  //     logger.error('getOpenSubscriptionStats failed:', error);
+  //     throw error;
+  //   }
+  // };
 
   getContentStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ContentStats>> => {
     try {
@@ -331,6 +331,16 @@ class AdminApiClient {
       };      
     } catch (error) {
       logger.error('getNotificationStats failed:', error);
+      throw error;
+    }
+  };
+
+  getSubscriptionStats = async (): Promise<SubscriptionStats> => {
+    try {
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions`);
+      return response;
+    } catch (error) {
+      logger.error('getSubscriptionStats failed:', error);
       throw error;
     }
   };
@@ -497,20 +507,31 @@ class AdminApiClient {
   //
   //  Subscription Management
   //
+  getSubscriptionsSummary = async (): Promise<{
+    totalPayments: number;
+    totalSubscriptions: number;
+  }> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/payments/summary`);
+    } catch (error) {
+      logger.error('getSubscriptionsSummary failed:', error);
+      throw error;
+    }
+  };
 
-  getSubscriptions = async (query?: AdminQuery): Promise<PaginatedResponse<Subscription>> => {
+  getPayments = async (query?: AdminQuery): Promise<PaginatedResponse<PaymentHistory>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/subscriptions${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/payments${queryString}`);
     } catch (error) {
       logger.error('getSubscriptions failed:', error);
       throw error;
     }
   };
 
-  getSubscription = async (): Promise<Subscription> => {
+  getPayment = async (paymentId: string): Promise<PaymentHistory> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/subscriptions`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/payments/${paymentId}`);
     } catch (error) {
       logger.error('getSubscription failed:', error);
       throw error;
@@ -614,11 +635,25 @@ class AdminApiClient {
   // User Management
   //
 
+  getUsersSummary = async (): Promise<{
+    users: number;
+    plus: number;
+    total: number;
+  }> => {
+    try {
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/summary`);
+    } catch (error) {
+      logger.error('getUsersSummary failed:', error);
+      throw error;
+    }
+  };
+
   getUserSummary = async (firebaseUid: string): Promise<{
     content: { total: number };
     requests: { total: number };
     authEvents: { total: number };
     notifications: { total: number };
+    payments: { total: number };
   }> => {
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/summary`);
@@ -628,7 +663,7 @@ class AdminApiClient {
     }
   };
 
-  getUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
+  getAllUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users${queryString}`);
@@ -638,10 +673,20 @@ class AdminApiClient {
     }
   };
 
+  getUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/user${queryString}`);
+    } catch (error) {
+      logger.error('getUsers failed:', error);
+      throw error;
+    }
+  };
+
   getPlusUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users-plus${queryString}`);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/plus${queryString}`);
     } catch (error) {
       logger.error('getUsersPlus failed:', error);
       throw error;
@@ -693,6 +738,16 @@ class AdminApiClient {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/notifications${queryString}`);
     } catch (error) {
       logger.error('getUserNotifications failed:', error);
+      throw error;
+    }
+  };
+
+  getUserPayments = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<PaymentHistory>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/payments${queryString}`);
+    } catch (error) {
+      logger.error('getUserPayments failed:', error);
       throw error;
     }
   };

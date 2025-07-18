@@ -9,7 +9,7 @@ interface AdminDetailGroupProps {
 
 export default function AdminDetailGroup({ children, className }: AdminDetailGroupProps) {
   return (
-    <div className={`${className}`}>
+    <div className={`space-y-4 ${className}`}>
       {children}
     </div>
   );

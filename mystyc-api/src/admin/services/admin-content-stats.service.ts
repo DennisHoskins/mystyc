@@ -78,18 +78,6 @@ export class AdminContentStatsService {
 
       const [result] = await this.contentModel.aggregate(pipeline);
 
-console.log();
-console.log();
-console.log();
-console.log('Date filter:', dateFilter);
-console.log('Query:', query);
-console.log('Pipeline:', JSON.stringify(pipeline, null, 2));
-console.log();
-console.log('Aggregation result:', result);
-console.log();
-console.log();
-
-
       if (!result) {
         return {
           totalContent: 0,

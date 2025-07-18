@@ -8,7 +8,7 @@ import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';
 import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
 import PieChartWithLegend from '@/components/admin/ui/charts/PieChartWithLegend';
-import BudgetProgressCard from './BudgetProgressCard';
+import BudgetProgressPanel from './BudgetProgressPanel';
 
 
 type ChartType = 'stats' | 'budget' | 'trends' | 'content-types' | 'performance';
@@ -67,7 +67,7 @@ export default function OpenAIDashboard({
       />
     ),
     budget: (
-      <BudgetProgressCard
+      <BudgetProgressPanel
         costUsed={stats.data.currentMonthlyUsage.costUsed}
         costBudget={stats.data.currentMonthlyUsage.costBudget}
         tokensUsed={stats.data.currentMonthlyUsage.tokensUsed}

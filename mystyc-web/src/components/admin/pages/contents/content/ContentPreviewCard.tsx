@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
-export default function ContentPreviewPanel({ content }: { content: Content }) {
+export default function ContentPreviewCard({ content }: { content: Content }) {
   return (
     <Card className="p-6">
       <Heading level={4} className="mb-4">Content Preview</Heading>

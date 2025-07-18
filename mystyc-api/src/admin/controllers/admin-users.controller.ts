@@ -8,8 +8,10 @@ import { UserProfilesService } from '@/users/user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { NotificationsService } from '@/notifications/notifications.service';
+import { PaymentHistoryService } from '@/payments/payment-history.service';
 import { ContentService } from '@/content/content.service';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
+import { PaymentHistory } from '@/common/interfaces/payment-history.interface';
 import { Device } from '@/common/interfaces/device.interface';
 import { Content } from '@/common/interfaces/content.interface';
 import { AuthEvent } from '@/common/interfaces/auth-event.interface';
@@ -17,6 +19,7 @@ import { Notification } from '@/common/interfaces/notification.interface';
 import { AdminController } from './admin.controller';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
+import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { logger } from '@/common/util/logger';
 
 @Controller('admin/users')
@@ -29,11 +32,142 @@ export class AdminUsersController extends AdminController<UserProfile> {
     private readonly contentService: ContentService,
     private readonly authEventsService: AuthEventsService,
     private readonly notificationsService: NotificationsService,
+    private readonly paymentHistoryService: PaymentHistoryService,
   ) {
     super();
   }
 
   // GET Methods (Read Operations)
+
+  /**
+   * Finds all users
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<UserProfile>> - Paginated list of user profiles
+   */
+  @Get()
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async findAll(@Query() query: BaseAdminQueryDto): Promise<AdminListResponse<UserProfile>> {
+    return super.findAll(query);
+  }
+
+  /**
+   * Gets summary statistics for a user
+   * @param id - firebaseUid
+   * @returns Promise<{}> - User stats
+   */
+  @Get('/summary')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUsersSummary(@Param('firebaseUid') firebaseUid: string) {
+    const [totalCount, usersCount, plusCount] = await Promise.all([
+      this.service.getTotal(),
+      this.service.getTotalBySubscriptionTier(SubscriptionLevel.USER),
+      this.service.getTotalBySubscriptionTier(SubscriptionLevel.PLUS),
+    ]);
+
+    return {
+      total: totalCount,
+      users: usersCount,
+      plus: plusCount
+    };
+  }
+
+  /**
+   * Finds all unsubscribed users
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<UserProfile>> - Paginated list of user profiles
+   */
+  @Get("/user")
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUsers(
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<UserProfile>> {
+    logger.info('Admin fetching user content', { 
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminUsersController');
+    
+    const [data, totalItems] = await Promise.all([
+
+      this.service.findBySubscriptionTier(SubscriptionLevel.USER, query),
+      this.service.getTotalBySubscriptionTier(SubscriptionLevel.USER)
+
+    ]);
+    
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info('User content retrieved', { 
+      count: data.length,
+      totalItems
+    }, 'AdminUsersController');
+    
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+      sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
+  }  
+
+  /**
+   * Finds all users subscribed to mystyc plus
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<UserProfile>> - Paginated list of user profiles
+   */
+  @Get("/plus")
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getPlusUsers(
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<UserProfile>> {
+    logger.info('Admin fetching user plus content', { 
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminUsersController');
+    
+    const [data, totalItems] = await Promise.all([
+
+      this.service.findBySubscriptionTier(SubscriptionLevel.PLUS, query),
+      this.service.getTotalBySubscriptionTier(SubscriptionLevel.PLUS)
+
+    ]);
+    
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info('UserPlus content retrieved', { 
+      count: data.length,
+      totalItems
+    }, 'AdminUsersController');
+    
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+      sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
+  }  
 
   /**
    * Finds user profile by Firebase UID, throws NotFoundException if not found (admin use)
@@ -75,20 +209,27 @@ export class AdminUsersController extends AdminController<UserProfile> {
     }
   }
 
+  /**
+   * Gets summary statistics for a user
+   * @param id - firebaseUid
+   * @returns Promise<{}> - User stats
+   */
   @Get(':firebaseUid/summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getUserSummary(@Param('firebaseUid') firebaseUid: string) {
-    const [contentCount, authEventsCount, notificationsCount] = await Promise.all([
+    const [contentCount, authEventsCount, notificationsCount, paymentsCount] = await Promise.all([
       this.contentService.getTotalByFirebaseUid(firebaseUid),
       this.authEventsService.getTotalByFirebaseUid(firebaseUid),
-      this.notificationsService.getTotalByFirebaseUid(firebaseUid)
+      this.notificationsService.getTotalByFirebaseUid(firebaseUid),
+      this.paymentHistoryService.getTotalByFirebaseUid(firebaseUid)
     ]);
 
     return {
       content: { total: contentCount },
       authEvents: { total: authEventsCount },
       notifications: { total: notificationsCount },
+      payments: { total: paymentsCount },
     };
   }
 
@@ -271,6 +412,56 @@ export class AdminUsersController extends AdminController<UserProfile> {
     const totalPages = Math.ceil(totalItems / (query.limit || 100));
     
     logger.info('User notifications retrieved', { 
+      firebaseUid, 
+      count: data.length,
+      totalItems
+    }, 'AdminUserController');
+    
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+      sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
+  }
+
+  /**
+   * Finds all payments for a specific user (admin use)
+   * @param firebaseUid - Firebase user unique identifier
+   * @param query - Query parameters for pagination, sorting, and filtering
+   * @returns Promise<AdminListResponse<Notification>> - Paginated list of user's payments
+   */
+  @Get(':firebaseUid/payments')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUserPayments(
+    @Param('firebaseUid') firebaseUid: string,
+    @Query() query: BaseAdminQueryDto
+  ): Promise<AdminListResponse<PaymentHistory>> {
+    logger.info('Admin fetching user payments', { 
+      firebaseUid,
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, 'AdminUserController');
+    
+    const [data, totalItems] = await Promise.all([
+      this.paymentHistoryService.findByFirebaseUid(firebaseUid, query),
+      this.paymentHistoryService.getTotalByFirebaseUid(firebaseUid)
+    ]);
+    
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info('User payments retrieved', { 
       firebaseUid, 
       count: data.length,
       totalItems

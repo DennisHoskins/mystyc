@@ -14,7 +14,7 @@ import DeviceIcon from '@/components/admin/ui/icons/DeviceIcon';
 import DeviceDetailsPanel from './DeviceDetailsPanel';
 import DeviceUsersPanel from './DeviceUsersPanel';
 import DeviceSessionPanel from './DeviceSessionPanel';
-import DeviceTabPanel from './DeviceTabPanel';
+import DeviceTabCard from './DeviceTabCard';
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -85,7 +85,7 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
         </Card>
       ]}
       sidebarContent={<DeviceSessionPanel deviceSession={deviceSession} />}
-      mainContent={<DeviceTabPanel deviceId={deviceSession.device.deviceId} />}
+      mainContent={<DeviceTabCard deviceId={deviceSession.device.deviceId} />}
     />
   );
 }

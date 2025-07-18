@@ -11,7 +11,7 @@ interface Breadcrumb {
   href?: string;
 }
 
-interface AdminDetailLayoutProps {
+interface AdminItemLayoutProps {
   error?: string | null;
   onRetry: () => void;
   breadcrumbs: Breadcrumb[];
@@ -23,7 +23,7 @@ interface AdminDetailLayoutProps {
   mainContent?: ReactNode | null;
 }
 
-export default function AdminDetailLayout({
+export default function AdminItemLayout({
   error,
   onRetry,
   breadcrumbs,
@@ -33,7 +33,7 @@ export default function AdminDetailLayout({
   sectionsContent,
   sidebarContent,
   mainContent
-}: AdminDetailLayoutProps) {
+}: AdminItemLayoutProps) {
 
   if (error) {
     return (
@@ -90,7 +90,7 @@ export default function AdminDetailLayout({
         </div>
 
         {mainContent && (
-          <div className="mt-4">
+          <div className="mt-4 space-y-4">
             {mainContent}
           </div>
         )}
@@ -134,7 +134,7 @@ export default function AdminDetailLayout({
       </div>
 
       {mainContent && (
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           {mainContent}
         </div>
       )}

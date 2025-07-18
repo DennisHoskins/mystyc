@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { 
   AdminUsersController,
-  AdminUsersPlusController,
   AdminDevicesController,
   AdminAuthEventsController,
   AdminOpenAIController,
@@ -12,6 +11,7 @@ import {
   AdminNotificationsContentController,
   AdminUsersContentController,
   AdminUsersPlusContentController,
+  AdminPaymentsController,
   AdminSchedulesController,
   AdminScheduleExecutionsController,
   AdminNotificationsController,
@@ -26,6 +26,7 @@ import {
   AdminScheduleExecutionsStatsController,
   AdminContentStatsController,
   AdminOpenAIStatsController,
+  AdminSubscriptionsStatsController
 } from './controllers';
 
 import { AppServicesModule } from '../app-services.module';
@@ -46,6 +47,8 @@ import { ContentSchema } from '@/content/schemas/content.schema';
 import { OpenAIUsageSchema } from '@/openai/schemas/openai-usage.schema';
 import { ScheduleSchema } from '@/schedules/schemas/schedule.schema';
 import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.schema';
+import { PaymentHistorySchema } from '@/payments/schemas/payment-history.schema';
+import { AdminSubscriptionsStatsService } from './services/admin-subscriptions-stats.service';
 
 @Module({
   imports: [
@@ -59,11 +62,11 @@ import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.
       { name: 'Content', schema: ContentSchema },
       { name: 'Schedule', schema: ScheduleSchema },
       { name: 'ScheduleExecution', schema: ScheduleExecutionSchema },
+      { name: 'PaymentHistory', schema: PaymentHistorySchema },
     ])
   ],
 controllers: [
     AdminUsersController,
-    AdminUsersPlusController,
     AdminDevicesController,
     AdminAuthEventsController,
     AdminContentController,
@@ -71,11 +74,13 @@ controllers: [
     AdminNotificationsContentController,
     AdminUsersContentController,
     AdminUsersPlusContentController,
+    AdminPaymentsController,
     AdminOpenAIController,
     AdminSchedulesController,
     AdminScheduleExecutionsController,
     AdminNotificationsController,
     AdminNotificationsSendController,
+    
     AdminStatsController,
     AdminUsersStatsController,
     AdminDevicesStatsController,
@@ -85,6 +90,7 @@ controllers: [
     AdminScheduleExecutionsStatsController,
     AdminContentStatsController,
     AdminOpenAIStatsController,
+    AdminSubscriptionsStatsController
   ],
   providers: [
     AdminUsersStatsService,
@@ -95,6 +101,7 @@ controllers: [
     AdminContentStatsService,
     AdminSchedulesStatsService,
     AdminScheduleExecutionsStatsService,
+    AdminSubscriptionsStatsService
   ]
 })
 export class AdminModule {}

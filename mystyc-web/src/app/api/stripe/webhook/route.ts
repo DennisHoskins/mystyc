@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { logger } from '@/util/logger';
+
 export async function POST(request: NextRequest) {
   try {
-    console.log("[stripeWebhook] got POST");
+    logger.log("[stripeWebhook] got POST");
 
     // Get raw body as ArrayBuffer, then convert to Buffer
     const rawBody = await request.arrayBuffer();
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest) {
     const xForwardedFor = request.headers.get('x-forwarded-for');
     const userAgent = request.headers.get('user-agent');
 
-    console.log("[stripeWebhook] got headers", stripeSignature, xForwardedFor, userAgent);
+    logger.log("[stripeWebhook] got headers", stripeSignature, xForwardedFor, userAgent);
     
     if (stripeSignature) headers['stripe-signature'] = stripeSignature;
     if (xForwardedFor) headers['x-forwarded-for'] = xForwardedFor;
@@ -31,11 +33,11 @@ export async function POST(request: NextRequest) {
       });
 
     const data = await nestResponse.json();
-    console.log("[stripeWebhook] Nest reply", data);
+    logger.log("[stripeWebhook] Nest reply", data);
 
     return NextResponse.json(data, { status: nestResponse.status });
   } catch (error) {
-    console.log(error);
+    logger.log(error);
     return NextResponse.json({ error: 'Webhook proxy failed' }, { status: 500 });
   }
 }

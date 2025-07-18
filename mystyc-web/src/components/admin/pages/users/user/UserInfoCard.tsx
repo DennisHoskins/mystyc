@@ -12,7 +12,7 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
 
-export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string }) {
+export default function UserInfoCard({ firebaseUid }: { firebaseUid: string }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

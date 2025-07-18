@@ -2,61 +2,42 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { Subscription, SubscriptionStats } from '@/interfaces';
+import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { SubscriptionStats } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
-import SubscriptionsTable from './SubscriptionsTable';
+import SubscriptionsTabPanel from './SubscriptionsTabPanel';
 import SubscriptionsDashboard from './SubscriptionsDashboard';
 
 export default function SubscriptionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [schedules, setSubscriptions] = useState<Subscription[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<SubscriptionStats> | null>(null);
+  const [stats, setStats] = useState<SubscriptionStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 20;
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
     { label: 'Subscriptions' },
   ];
 
-  const loadSubscriptions = useCallback(async (page: number) => {
+  const loadStats = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getSubscriptions({
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'date',
-        sortOrder: 'desc',
-      });
-
-      setSubscriptions(response.data);
-      setHasMore(response.pagination.hasMore);
-      setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
-
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getSubscriptionStats(statsQuery);
+      const stats = await apiClientAdmin.getSubscriptionStats();
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
+      const wasSessionError = await handleSessionError(err, 'UsersPage');
       if (!wasSessionError) {
-        logger.error('Failed to load subscriptions:', err);
-        setError('Failed to load subscriptions. Please try again.');
+        logger.error('Failed to load subscription stats:', err);
+        setError('Failed to load subscription stats. Please try again.');
       }
     } finally {
       setBusy(false);
@@ -65,13 +46,17 @@ export default function SubscriptionsPage() {
   }, [setBusy, handleSessionError]);
 
   useEffect(() => {
-    loadSubscriptions(0);
-  }, [loadSubscriptions]);
+    loadStats();
+  }, [loadStats]);
+
+  if (loading) {
+    return null;
+  }
 
   return (
    <AdminListLayout
       error={error}
-      onRetry={() => loadSubscriptions(currentPage)}
+      onRetry={loadStats}
       breadcrumbs={breadcrumbs}
       icon={SubscriptionsIcon}
       description="Manage user subscriptions"
@@ -81,20 +66,7 @@ export default function SubscriptionsPage() {
           charts={['stats']}
         />
       }
-      itemContent={[]}
-      tableContent={[
-        <SubscriptionsTable
-          key='subscriptions'
-          label="Subscriptions"
-          data={schedules}
-          loading={loading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          hasMore={hasMore}
-          onPageChange={loadSubscriptions}
-          onRefresh={() => loadSubscriptions(currentPage)}
-        />
-      ]}
+      tableContent={<SubscriptionsTabPanel />}
     />   
   );
 }

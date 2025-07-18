@@ -2,65 +2,98 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { UserStats, UserProfile } from '@/interfaces';
+import { apiClientAdmin, PaginatedResponse } from '@/api/apiClientAdmin';
+import { UserProfile } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 import { logger } from '@/util/logger';
 
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import UsersTable from './UsersTable';
+import FormError from '@/components/ui/form/FormError';
+
+type UserType = 'users' | 'plus' | 'all';
+
+interface UsersSummary {
+  users: number;
+  plus: number;
+  total: number;
+}
+
+interface PaginationState {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  hasMore: boolean;
+  loaded: boolean;
+}
 
 export default function UsersTabPanel() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [activeTab, setActiveTab] = useState('content');
+  const [activeTab, setActiveTab] = useState<UserType>('all');
+  const [summary, setSummary] = useState<UsersSummary | null>(null);
 
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [usersUsers, setUsersUsers] = useState<UserProfile[]>([]);
   const [usersPlus, setUsersPlus] = useState<UserProfile[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
 
+  // Track pagination state per user type
+  const [paginationState, setPaginationState] = useState<Record<UserType, PaginationState>>({
+    users: { currentPage: 0, totalPages: 0, totalItems: 0, hasMore: true, loaded: false },
+    plus: { currentPage: 0, totalPages: 0, totalItems: 0, hasMore: true, loaded: false },
+    all: { currentPage: 0, totalPages: 0, totalItems: 0, hasMore: true, loaded: false }
+  });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const LIMIT = 20;
 
-  const loadUsers = useCallback(async (type: string, page: number) => {
+  const loadUsers = useCallback(async (type: UserType, page: number) => {
     try {
       setError(null);
       setBusy(1000);
       setLoading(true);
 
-      let response;
+       let response: PaginatedResponse<UserProfile>;
 
-      if (type == 'users') {
+      if (type === 'users') {
         response = await apiClientAdmin.getUsers({
           limit: LIMIT,
           offset: page * LIMIT,
           sortBy: 'createdAt',
           sortOrder: 'asc',
         });
-
-        setUsers(response.data);
-      } else {
+        setUsersUsers(response.data);
+      } else if (type === 'plus') {
         response = await apiClientAdmin.getPlusUsers({
           limit: LIMIT,
           offset: page * LIMIT,
           sortBy: 'createdAt',
           sortOrder: 'asc',
         });
-
         setUsersPlus(response.data);
+      } else if (type === 'all') {
+        response = await apiClientAdmin.getAllUsers({
+          limit: LIMIT,
+          offset: page * LIMIT,
+          sortBy: 'createdAt',
+          sortOrder: 'asc',
+        });
+        setUsers(response.data);
       }
 
-      setHasMore(response.pagination.hasMore);
-      setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
-      setTotalItems(response.pagination.totalItems);
+      // Update pagination for this specific type
+      setPaginationState(prev => ({
+        ...prev,
+        [type]: {
+          currentPage: page,
+          totalPages: response.pagination.totalPages,
+          totalItems: response.pagination.totalItems,
+          hasMore: response.pagination.hasMore,
+          loaded: true
+        }
+      }));
 
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
@@ -74,55 +107,120 @@ export default function UsersTabPanel() {
     }
   }, [setBusy, handleSessionError]);
 
+  // Load default tab on mount
   useEffect(() => {
-    loadUsers(activeTab, currentPage);
-  }, [activeTab])
+    loadUsers(activeTab, 0);
+  }, [loadUsers, activeTab]);
+
+  // Load summary data (all counts)
+  useEffect(() => {
+    const loadSummary = async () => {
+      try {
+        const summaryData = await apiClientAdmin.getUsersSummary();
+        setSummary(summaryData);
+      } catch (err) {
+        logger.error('Failed to load users summary:', err);
+      }
+    };
+
+    loadSummary();
+  }, []);
+
+
+  // Load data when tab changes (only if not already loaded)
+  useEffect(() => {
+    if (!paginationState[activeTab].loaded) {
+      loadUsers(activeTab, 0);
+    }
+  }, [activeTab, paginationState, loadUsers]);
+
+  const getUserData = useCallback((type: UserType): UserProfile[] => {
+    switch(type) {
+      case 'users': return usersUsers;
+      case 'plus': return usersPlus;
+      case 'all': return users;
+      default: return [];
+    }
+  }, [users, usersUsers, usersPlus]);
+
+  const handlePageChange = useCallback((type: UserType, page: number) => {
+    loadUsers(type, page);
+  }, [loadUsers]);
+
+  const handleRefresh = useCallback((type: UserType) => {
+    loadUsers(type, paginationState[type].currentPage);
+  }, [loadUsers, paginationState]);
 
   const tabs: Tab[] = useMemo(() => {
     return [
       {
-        id: 'users',
-        label: 'User',
-        count: 0,
+        id: 'all',
+        label: 'All Users',
+        count: summary?.total,
         content: (
           <UsersTable 
-            data={users}
+            data={getUserData('all')}
             loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            hasMore={hasMore}
-            onPageChange={() => loadUsers("user", 0)}
-            onRefresh={() => loadUsers("user", currentPage)}
+            currentPage={paginationState.all.currentPage}
+            totalPages={paginationState.all.totalPages}
+            totalItems={paginationState.all.totalItems}
+            hasMore={paginationState.all.hasMore}
+            onPageChange={(page) => handlePageChange('all', page)}
+            onRefresh={() => handleRefresh('all')}
           />
         )
       },
       {
-        id: 'users-plus',
-        label: 'Plus',
-        count: 0,
+        id: 'users',
+        label: 'Users',
+        count: summary?.users,
         content: (
           <UsersTable 
-            data={users}
+            data={getUserData('users')}
             loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            hasMore={hasMore}
-            onPageChange={() => loadUsers("plus", 0)}
-            onRefresh={() => loadUsers("plus", currentPage)}
+            currentPage={paginationState.users.currentPage}
+            totalPages={paginationState.users.totalPages}
+            totalItems={paginationState.users.totalItems}
+            hasMore={paginationState.users.hasMore}
+            onPageChange={(page) => handlePageChange('users', page)}
+            onRefresh={() => handleRefresh('users')}
+            hideSubscriptionColumn={true}
           />
         )
-      }
+      },
+      {
+        id: 'plus',
+        label: 'Plus',
+        count: summary?.plus,
+        content: (
+          <UsersTable 
+            data={getUserData('plus')}
+            loading={loading}
+            currentPage={paginationState.plus.currentPage}
+            totalPages={paginationState.plus.totalPages}
+            totalItems={paginationState.plus.totalItems}
+            hasMore={paginationState.plus.hasMore}
+            onPageChange={(page) => handlePageChange('plus', page)}
+            onRefresh={() => handleRefresh('plus')}
+            hideSubscriptionColumn={true}
+          />
+        )
+      },
     ];
-  }, [activeTab]);
+  }, [getUserData, loading, paginationState, summary, handlePageChange, handleRefresh]);
+
+  if (error) {
+    return (
+      <FormError message={error} />
+    )
+  }
 
   return (
     <TabPanel 
       tabs={tabs} 
       defaultActiveTab={activeTab}
       height="900px"
-      onTabChange={setActiveTab}
+      onTabChange={(tabId) => setActiveTab(tabId as UserType)}
     />
   );
 }

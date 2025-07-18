@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
-export default function NotificationGenerationPanel({ notification }: { notification: Notification }) {
+export default function NotificationGenerationCard({ notification }: { notification: Notification }) {
   if (!notification.scheduleId && !notification.executionId) {
     return;
   }

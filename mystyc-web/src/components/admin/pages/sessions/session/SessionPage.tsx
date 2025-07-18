@@ -12,8 +12,8 @@ import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionDetailsPanel from './SessionDetailsPanel';
 import SessionTokensPanel from './SessionTokensPanel';
-import UserInfoPanel from '@/components/admin/pages/users/user/UserInfoPanel';
-import DeviceInfoPanel from '@/components/admin/pages/devices/device/DeviceInfoPanel';
+import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
+import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -84,8 +84,8 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       title={`${session.email} - ${session.deviceName}`}
       headerContent={<SessionDetailsPanel session={session} />}
       sectionsContent={[
-        <UserInfoPanel key='user' firebaseUid={session.uid} />,
-        <DeviceInfoPanel key='device' deviceId={session.deviceId} onLoad={handleDeviceLoad} />
+        <UserInfoCard key='user' firebaseUid={session.uid} />,
+        <DeviceInfoCard key='device' deviceId={session.deviceId} onLoad={handleDeviceLoad} />
       ]}
       sidebarContent={<SessionTokensPanel session={session} device={device} />}
     />

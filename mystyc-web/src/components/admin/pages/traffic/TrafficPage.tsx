@@ -12,9 +12,9 @@ import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon';
 import TrafficDetailsPanel from './TrafficDetailsPanel';
-import TrafficAnalyticsPanel from './TrafficAnalyticsPanel';
+import TrafficAnalyticsCard from './TrafficAnalyticsCard';
 import TrafficSidebarPanel from './TrafficSidebarPanel';
-import TrafficMainPanel from './TrafficMainPanel';
+import TrafficMainCard from './TrafficMainCard';
 
 export default function TrafficPage() {
   const { handleSessionError } = useSessionErrorHandler();
@@ -79,9 +79,9 @@ export default function TrafficPage() {
       headerContent={<TrafficDetailsPanel trafficStats={trafficStats} />}
       sidebarContent={<TrafficSidebarPanel trafficStats={trafficStats} />}
       sectionsContent={[
-        <TrafficAnalyticsPanel key='analytics' trafficStats={trafficStats} />
+        <TrafficAnalyticsCard key='analytics' trafficStats={trafficStats} />
       ]}
-      mainContent={<TrafficMainPanel trafficStats={trafficStats} />}
+      mainContent={<TrafficMainCard trafficStats={trafficStats} />}
     />
   );
 }

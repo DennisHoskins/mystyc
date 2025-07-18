@@ -8,6 +8,7 @@ import { AuthEventsModule } from '@/auth-events/auth-events.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ContentModule } from '@/content/content.module';
 import { OpenAIModule } from '@/openai/openai.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { OpenAIModule } from '@/openai/openai.module';
     NotificationsModule,
     ContentModule,
     OpenAIModule,
+    PaymentsModule,
   ],
   exports: [
     FirebaseModule,
@@ -29,6 +31,7 @@ import { OpenAIModule } from '@/openai/openai.module';
     NotificationsModule,
     ContentModule,
     OpenAIModule,
+    PaymentsModule,
   ],
 })
 export class AppServicesModule {}

@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
-export default function ContentDataPanel({ content }: { content: Content }) {
+export default function ContentDataCard({ content }: { content: Content }) {
   if (!content.data || content.data.length === 0) {
     return null;
   }

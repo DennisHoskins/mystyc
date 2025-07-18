@@ -97,7 +97,7 @@ export default function AdminListLayout({
       </div>
 
       {itemContent && (
-        <div className={`grid grid-cols-1 md:grid-cols-${itemContent.length} gap-4`}>
+        <div className={`grid grid-cols-1 md:grid-cols-${itemContent.length} gap-4 mb-4`}>
           {itemContent.map((item, index) => (
             <Card key={index}>{item}</Card>
           ))}
@@ -106,15 +106,15 @@ export default function AdminListLayout({
 
       {tableContent && (
         Array.isArray(tableContent) ? (
-          <>  
+          <div className='space-y-4'>  
             {tableContent.map((content, index) => (
-              <Card key={index} className='mt-4'>
+              <Card key={index}>
                 {content}
               </Card>
             ))}
-          </>
+          </div>
         ) : (
-          <Card className='mt-4'>{tableContent}</Card>
+          <Card>{tableContent}</Card>
         )
       )}
     </>

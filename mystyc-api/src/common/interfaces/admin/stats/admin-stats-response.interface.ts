@@ -6,6 +6,7 @@ import { OpenAIUsageStats } from './admin-openai-usage-stats.interface'
 import { ContentStats } from './admin-content-stats.interface'
 import { ScheduleStats } from './admin-schedule-stats.interface'
 import { ScheduleExecutionStats } from './admin-schedule-execution-stats.interface'
+import { SubscriptionStats } from './admin-subscription-stats.interface'
 
 export interface AdminStatsResponse {
   users: UserStats,
@@ -17,4 +18,5 @@ export interface AdminStatsResponse {
   schedule: ScheduleStats & {
     executions: ScheduleExecutionStats;
   },
+  subscriptions: SubscriptionStats
 }

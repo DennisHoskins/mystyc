@@ -14,7 +14,7 @@ import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import OpenAIUsageTable from './OpenAIUsageTable';
 import OpenAIDashboard from './OpenAIUsageDashboard';
 
-export default function SchedulesPage() {
+export default function OpenAIPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [usage, setUsage] = useState<OpenAIUsage[]>([]);

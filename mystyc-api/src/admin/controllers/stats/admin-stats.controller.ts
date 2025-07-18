@@ -13,6 +13,7 @@ import { AdminOpenAIStatsService } from '@/admin/services/admin-openai-stats.ser
 import { AdminContentStatsService } from '@/admin/services/admin-content-stats.service';
 import { AdminSchedulesStatsService } from '@/admin/services/admin-schedules-stats.service';
 import { AdminScheduleExecutionsStatsService } from '@/admin/services/admin-schedule-executions-stats.service';
+import { AdminSubscriptionsStatsService } from '@/admin/services/admin-subscriptions-stats.service';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto'; 
 import { AdminStatsResponse } from '@/common/interfaces/admin/stats/admin-stats-response.interface';
 import { logger } from '@/common/util/logger';
@@ -29,6 +30,7 @@ export class AdminStatsController {
     private readonly adminContentStatsService: AdminContentStatsService,
     private readonly adminScheduleStatsService: AdminSchedulesStatsService,
     private readonly adminScheduleExecutionStatsService: AdminScheduleExecutionsStatsService,
+    private readonly adminSubscriptionStatsService: AdminSubscriptionsStatsService,
   ) {}
 
   @Get()
@@ -52,7 +54,9 @@ export class AdminStatsController {
       // Schedule
       scheduleSummary, performance, failures, executions,
       // OpenAI
-      currentMonthlyUsage, openaiSummary, monthlyUsage, contentTypeUsage
+      currentMonthlyUsage, openaiSummary, monthlyUsage, contentTypeUsage,
+      // Subscriptions
+      subscriptionsSummary
     ] = await Promise.all([
       // Users
       this.adminUsersStatsService.getRegistrationStats(query),
@@ -94,6 +98,9 @@ export class AdminStatsController {
       this.adminOpenAIStatsService.getSummaryStats(query),
       this.adminOpenAIStatsService.getMonthlyUsageStats(query),
       this.adminOpenAIStatsService.getContentTypeUsageStats(query),
+
+      // Subscriptions
+      this.adminSubscriptionStatsService.getSummaryStats(),
     ]);
 
     return {
@@ -103,7 +110,8 @@ export class AdminStatsController {
       notifications: { delivery, type: notificationType, engagement, pattern: notificationPattern },
       content: { summary: contentSummary, sources, generation, timeline },
       schedule: { summary: scheduleSummary, performance, failures, executions },
-      openai: { currentMonthlyUsage, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage }
+      openai: { currentMonthlyUsage, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage },
+      subscriptions: { summary: subscriptionsSummary }
     };
   }
 }

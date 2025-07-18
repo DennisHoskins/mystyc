@@ -8,9 +8,6 @@ import OpenAIIcon from '@/components/admin/ui/icons/OpenAIIcon';
 import ContentGenerationPanel from './ContentGenerationPanel';
 
 export default function ContentSidebarPanel({ content }: { content: Content }) {
-
-  console.log(content);
-
   return (
     <div className='flex flex-col'>
       <div className="flex items-center space-x-2 mb-4">

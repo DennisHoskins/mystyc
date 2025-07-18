@@ -81,13 +81,13 @@ export default function SchedulesTimeZonesTable() {
   ];
 
   return (
-    <AdminTable<DisplayRow>
-      label="Timezones"
-      data={displayData}
-      columns={columns}
-      loading={loading}
-      onRefresh={loadTimezones}
-      emptyMessage="No Timezones found."
-    />
+      <AdminTable<DisplayRow>
+        label="Timezones"
+        data={displayData}
+        columns={columns}
+        loading={loading}
+        onRefresh={loadTimezones}
+        emptyMessage="No Timezones found."
+      />
   );
 }

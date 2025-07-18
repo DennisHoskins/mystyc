@@ -15,7 +15,7 @@ interface ScheduleExecutionSummary {
   notifications: { total: number };
 }
 
-export default function ScheduleExecutionTabPanel({ executionId }: { executionId: string }) {
+export default function ScheduleExecutionTabCard({ executionId }: { executionId: string }) {
   const [activeTab, setActiveTab] = useState('content');
   const [summary, setSummary] = useState<ScheduleExecutionSummary | null>(null);
 

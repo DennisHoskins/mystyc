@@ -293,7 +293,7 @@ export class SchedulesService {
         await this.scheduleExecutionService.updateStatus(executionLog._id, 'failed', error.message, duration);
       }
       
-      await this.logScheduleFailure(task._id, task.event_name, error);
+      await this.info(task._id, task.event_name, error);
     }
   }
 
@@ -334,7 +334,7 @@ export class SchedulesService {
 
     // Only refresh cache if it's empty
     if (this.cachedTimezones.length === 0) {
-      console.log("[getMatchingTimezones] Cache empty, refreshing...");
+      logger.info("[getMatchingTimezones] Cache empty, refreshing...");
       const uniqueTimezones = await this.devicesService.getUniqueTimezones();
 
       logger.info("[getMatchingTimezones] Got timezones from devices", { 
@@ -349,15 +349,15 @@ export class SchedulesService {
         cachedTimezones: this.cachedTimezones
       }, 'ScheduleService');
     } else {
-      console.log("[getMatchingTimezones] Using cached timezones");
+      logger.info("[getMatchingTimezones] Using cached timezones");
     }
     
-    console.log("[getMatchingTimezones] getting matching timezones", { timezones: this.cachedTimezones }, serverTime, targetTime);
+    logger.info("[getMatchingTimezones] getting matching timezones", { timezones: this.cachedTimezones }, serverTime, targetTime);
 
     return this.cachedTimezones.filter(tzData => {
       const localTime = this.getLocalTime(serverTime, tzData.offsetHours);
 
-      console.log("[getMatchingTimezones] localTime:", tzData, localTime, localTime.getHours(), localTime.getMinutes());
+      logger.info("[getMatchingTimezones] localTime:", tzData, localTime, localTime.getHours(), localTime.getMinutes());
 
       return localTime.getHours() === targetTime.hour && 
              localTime.getMinutes() === targetTime.minute;

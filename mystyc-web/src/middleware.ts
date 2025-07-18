@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 // import { Ratelimit } from '@upstash/ratelimit';
 // import { Redis } from '@upstash/redis';
+import { logger } from '@/util/logger'
 
 // const ratelimit = new Ratelimit({
 //   redis: Redis.fromEnv(),
@@ -10,7 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
 
-  console.log(host + request.nextUrl.pathname);
+  logger.info(host + request.nextUrl.pathname);
   
   // if (process.env.NODE_ENV === 'production') {
   //   if (host !== 'mystyc.app' && host !== '127.0.0.1:3000') {

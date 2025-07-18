@@ -141,12 +141,6 @@ export class UsersController {
     }
   ): Promise<{ sessionUrl: string }> {
     try {
-
-      console.log('=== SUBSCRIPTION DEBUG ===');
-      console.log('Body:', body);
-      console.log('priceId:', body.priceId);
-      console.log('========================');
-
       const session = await this.userService.createSubscriptionSession(
         firebaseUser.uid,
         body.priceId,

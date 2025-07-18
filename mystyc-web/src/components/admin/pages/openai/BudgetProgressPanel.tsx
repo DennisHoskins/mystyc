@@ -1,18 +1,18 @@
 'use client';
 
-interface BudgetProgressCardProps {
+interface BudgetProgressPanelProps {
   costUsed: number;
   costBudget: number;
   tokensUsed: number;
   tokenBudget: number;
 }
 
-export default function BudgetProgressCard({ 
+export default function BudgetProgressPanel({ 
   costUsed, 
   costBudget, 
   tokensUsed, 
   tokenBudget 
-}: BudgetProgressCardProps) {
+}: BudgetProgressPanelProps) {
   const costUsagePercent = Math.round((costUsed / costBudget) * 100);
   const tokenUsagePercent = Math.round((tokensUsed / tokenBudget) * 100);
 

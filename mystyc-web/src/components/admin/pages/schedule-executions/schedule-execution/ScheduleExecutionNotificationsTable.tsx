@@ -7,7 +7,6 @@ import { formatDateForDisplay } from '@/util/dateTime';
 import { Notification } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import Card from '@/components/ui/Card';
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 
 export default function ScheduleExecutionsNotificationsTable({ executionId, isActive }: { executionId: string | null | undefined, isActive?: boolean }) {
@@ -72,19 +71,17 @@ export default function ScheduleExecutionsNotificationsTable({ executionId, isAc
   ];
 
   return (
-    <Card className='h-[56rem]'>
-      <AdminTable<Notification>
-        data={notifications.data}
-        columns={columns}
-        loading={loading}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        hasMore={hasMore}
-        onPageChange={loadScheduleExecutionNotifications}
-        onRefresh={() => loadScheduleExecutionNotifications(currentPage)}
-        emptyMessage="No Notifications found."
-      />
-    </Card>      
+    <AdminTable<Notification>
+      data={notifications.data}
+      columns={columns}
+      loading={loading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      hasMore={hasMore}
+      onPageChange={loadScheduleExecutionNotifications}
+      onRefresh={() => loadScheduleExecutionNotifications(currentPage)}
+      emptyMessage="No Notifications found."
+    />
   );
 }

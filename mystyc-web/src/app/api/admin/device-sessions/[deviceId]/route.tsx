@@ -10,9 +10,6 @@ export async function POST(
   const { deviceId } = await params;
   const body = await request.json();
 
-
-  console.log("DEVICE SESSION");
-  
   const response = await handleAdmin(
     request, 
     { endpoint: 'devices/{deviceId}', method: "GET" },

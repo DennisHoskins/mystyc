@@ -60,7 +60,7 @@ export default function ContentPage() {
       setLoading(true);
 
       const newContent = await apiClientAdmin.createContent("This is my prompt");
-      console.log(newContent);
+      logger.log(newContent);
 
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'ContentsPage');

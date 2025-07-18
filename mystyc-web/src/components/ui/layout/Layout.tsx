@@ -103,12 +103,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             />
           )}
 
-          <div className="flex flex-1 w-full h-fit">
+          <div 
+            className="flex flex-1 w-full h-fit"
+            onClick={() => {
+              if (menuOpen) {
+                setMenuOpen(false);
+              }
+            }}                      
+          >
             <ScrollWrapper>
               {
                 isGlobalError ? <GlobalError /> :
                 !isOnline ? <Offline /> :
                 (
+
                   <>
                     {isAdmin && 
                       <AdminSidebar 
@@ -117,24 +125,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       /> 
                     }
                     
-                    <div 
-                      className={`transition-all duration-300 ease-in-out flex flex-col flex-1 ${isAdmin ? `md:ml-28 ${sidebarCollapsed ? 'lg:ml-28' : 'lg:ml-80'}` : ''}`}
-                      onClick={() => {
-                        if (menuOpen) {
-                          setMenuOpen(false);
-                        }
-                      }}                      
-                    >
+                    <div className={`transition-all duration-300 ease-in-out flex flex-col flex-1 ${isAdmin ? `md:ml-28 ${sidebarCollapsed ? 'lg:ml-28' : 'lg:ml-80'}` : ''}`}>
                       <PageTransition>
                         <Main>{children}</Main>
                       </PageTransition>
                     </div>
 
                   </>
+
                 )
               }
               <Footer><FooterContent /></Footer>
             </ScrollWrapper>
+            
           </div>
 
         </AppTransition>

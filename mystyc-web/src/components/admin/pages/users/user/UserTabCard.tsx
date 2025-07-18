@@ -10,15 +10,17 @@ import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import UserContentTable from './UserContentTable';
 import UserAuthEventsTable from './UserAuthEventsTable';
 import UserNotificationsTable from './UserNotificationsTable';
+import UserPaymentsTable from './UserPaymentsTable';
 
 interface UserSummary {
   content: { total: number };
   requests: { total: number };
   authEvents: { total: number };
   notifications: { total: number };
+  payments: { total: number };
 }
 
-export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | null }) {
+export default function UserTabCard({ firebaseUid }: { firebaseUid: string | null }) {
   const [activeTab, setActiveTab] = useState('content');
   const [summary, setSummary] = useState<UserSummary | null>(null);
 
@@ -74,6 +76,17 @@ export default function UserTabPanel({ firebaseUid }: { firebaseUid: string | nu
           <UserNotificationsTable
             firebaseUid={firebaseUid}
             isActive={activeTab === 'notifications'}
+          />
+        )
+      },
+      {
+        id: 'payments',
+        label: 'Payments',
+        count: summary?.payments.total,
+        content: (
+          <UserPaymentsTable
+            firebaseUid={firebaseUid}
+            isActive={activeTab === 'payments'}
           />
         )
       }

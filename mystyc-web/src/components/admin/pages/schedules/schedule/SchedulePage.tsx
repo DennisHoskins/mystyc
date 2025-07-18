@@ -11,7 +11,7 @@ import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import ScheduleDetailsPanel from './ScheduleDetailsPanel';
-import ScheduleExecutionsPanel from './ScheduleExecutionsPanel';
+import ScheduleExecutionsCard from './ScheduleExecutionsCard';
 
 export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -32,7 +32,7 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
       const wasSessionError = await handleSessionError(err, 'SchedulePage');
       if (!wasSessionError) {
         logger.error('Failed to load schedule:', err);
-        setError('Failed to load device. Please try again.');
+        setError('Failed to load schedule. Please try again.');
       }
     } finally {
       setBusy(false);
@@ -47,9 +47,7 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Schedules', href: '/admin/schedules' },
-    { 
-      label: schedule ? (schedule.event_name || `Schedule ${scheduleId}`) : ``
-    },
+    { label: schedule ? (schedule.event_name || `Schedule ${scheduleId}`) : ``},
   ], [schedule, scheduleId]);
 
   if (loading) {
@@ -76,7 +74,7 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
       icon={<ScheduleIcon size={6} />}
       title={schedule.event_name || `Unknown Schedule`}
       headerContent={<ScheduleDetailsPanel schedule={schedule} />}
-      mainContent={<ScheduleExecutionsPanel scheduleId={scheduleId} />}
+      mainContent={<ScheduleExecutionsCard scheduleId={scheduleId} />}
     />
   );
 }

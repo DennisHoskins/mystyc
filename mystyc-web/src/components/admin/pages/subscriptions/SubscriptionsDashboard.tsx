@@ -9,7 +9,7 @@ type ChartType = 'stats';
 
 interface SubscriptionsDashboardProps {
   className?: string | null;
-  stats?: StatsResponseWithQuery<SubscriptionStats> | null;
+  stats?: SubscriptionStats | null;
   charts?: ChartType[];
 }
 
@@ -26,8 +26,8 @@ export default function SubscriptionsDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats.data.currentMonthlyTotal.totalAmount, label: 'Total Revenue', color: 'text-blue-600' },
-          { value: `$${stats.data.currentMonthlyTotal.totalSubscribers}`, label: 'Subscribers', color: 'text-green-600' }
+          { value: `$${(stats.summary.totalAmount / 100).toFixed(2)}`, label: 'Total Revenue', color: 'text-green-600' },
+          { value: stats.summary.totalSubscriptions, label: 'Subscriptions', color: 'text-blue-600' },
         ]} 
       />
     )

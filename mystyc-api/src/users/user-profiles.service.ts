@@ -496,6 +496,7 @@ export class UserProfilesService {
       dateOfBirth: doc.dateOfBirth,
       zodiacSign: doc.zodiacSign,
       roles: doc.roles,
+      stripeCustomerId: doc.stripeCustomerId,
       subscription: doc.subscription,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,

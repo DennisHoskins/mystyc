@@ -1,6 +1,5 @@
 'use client';
 
-
 import { Notification } from '@/interfaces';
 
 import Avatar from '@/components/ui/Avatar';

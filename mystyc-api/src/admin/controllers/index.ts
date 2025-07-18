@@ -1,11 +1,11 @@
 export { AdminUsersController } from './admin-users.controller';
-export { AdminUsersPlusController } from './admin-users-plus.controller';
 export { AdminDevicesController } from './admin-devices.controller';
 export { AdminAuthEventsController } from './admin-auth-events.controller';
 export { AdminNotificationsController } from './admin-notifications.controller';
 export { AdminNotificationsSendController } from './admin-notifications-send.controller';
 export { AdminOpenAIController } from './admin-openai.controller';
 export { AdminContentController } from './admin-content.controller';
+export { AdminPaymentsController } from './admin-payments.controller';
 export { AdminWebsiteContentController } from './admin-content-website.controller';
 export { AdminNotificationsContentController } from './admin-content-notifications.controller';
 export { AdminUsersContentController } from './admin-content-users.controller';
@@ -22,3 +22,4 @@ export { AdminContentStatsController } from './stats/admin-content-stats.control
 export { AdminOpenAIStatsController } from './stats/admin-openai-stats.controller';
 export { AdminSchedulesStatsController } from './stats/admin-schedules-stats.controller';
 export { AdminScheduleExecutionsStatsController } from './stats/admin-schedule-executions-stats.controller';
+export { AdminSubscriptionsStatsController } from './stats/admin-subscription-stats.controller';

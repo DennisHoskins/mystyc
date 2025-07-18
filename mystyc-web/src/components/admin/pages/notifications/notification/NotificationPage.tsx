@@ -11,10 +11,10 @@ import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import NotificationDetailsPanel from './NotificationDetailsPanel';
-import NotificationGenerationPanel from './NotificationGenerationPanel';
+import NotificationGenerationCard from './NotificationGenerationCard';
 import NotificationMessagePanel from './NotificationMessagePanel';
-import UserInfoPanel from '@/components/admin/pages/users/user/UserInfoPanel';
-import DeviceInfoPanel from '@/components/admin/pages/devices/device/DeviceInfoPanel';
+import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
+import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -80,9 +80,9 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       title={notification ? `${notification.sentBy}: ${notification.type}` : 'Unknown Notification'}
       headerContent={<NotificationDetailsPanel notification={notification} />}
       sectionsContent={[
-        <NotificationGenerationPanel key='generation' notification={notification} />,
-        <UserInfoPanel key='user' firebaseUid={notification.firebaseUid} />,
-        (notification.deviceId && <DeviceInfoPanel key='device' deviceId={notification.deviceId} />)
+        <NotificationGenerationCard key='generation' notification={notification} />,
+        <UserInfoCard key='user' firebaseUid={notification.firebaseUid} />,
+        (notification.deviceId && <DeviceInfoCard key='device' deviceId={notification.deviceId} />)
       ]}
       sidebarContent={<NotificationMessagePanel notification={notification} />}
     />

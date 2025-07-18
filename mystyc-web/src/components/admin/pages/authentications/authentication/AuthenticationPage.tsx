@@ -12,7 +12,7 @@ import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDetailsPanel from './AuthenticationDetailsPanel';
 import AuthenticationUserPanel from './AuthenticationUserPanel';
-import DeviceInfoPanel from '@/components/admin/pages/devices/device/DeviceInfoPanel';
+import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -77,7 +77,7 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       icon={<AuthenticationIcon size={6} />}
       title={authentication ? authentication.type : 'Unknown Authentication'}
       headerContent={<AuthenticationDetailsPanel authentication={authentication} />}
-      sectionsContent={[(authentication.deviceId && <DeviceInfoPanel key='device' deviceId={authentication.deviceId} />)]}
+      sectionsContent={[(authentication.deviceId && <DeviceInfoCard key='device' deviceId={authentication.deviceId} />)]}
       sidebarContent={<AuthenticationUserPanel firebaseUid={authentication && authentication.firebaseUid} />}
     />
   );

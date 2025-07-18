@@ -73,13 +73,6 @@ export async function handleAdmin(
       return NextResponse.json(data);
     }
 
-console.log()
-console.log()
-console.log(effectiveMethod)
-console.log()
-console.log()
-console.log()
-
     // Forward to Nest with the computed verb
     const searchParams = request.nextUrl.searchParams;
     const queryString = searchParams.toString();

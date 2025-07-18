@@ -14,11 +14,6 @@ export async function POST(
     const body = await request.json();
     const { deviceInfo, priceId } = body;
 
-    console.log('=== NEXT.JS DEBUG ===');
-    console.log('Original body:', body);
-    console.log('priceId:', priceId);
-    console.log('==================');    
-
     logger.log("[mystyc] DeviceInfo destructured:", deviceInfo);
 
     const headersList = await headers();

@@ -14,7 +14,8 @@ import UserIcon from '@/components/admin/ui/icons/UserIcon';
 import UserDetailsPanel from './UserDetailsPanel';
 import UserProfilePanel from './UserProfilePanel';
 import UserDevicesPanel from './UserDevicesPanel';
-import UserTabPanel from './UserTabPanel';
+import UserTabCard from './UserTabCard';
+import UserSubscriptionCard from './UserSubscriptionCard';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -80,15 +81,13 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       title={user && user.fullName ? user.fullName : `Unknown User`}
       headerContent={<UserDetailsPanel user={user} />}
       sectionsContent={[
-
-        // subscription panel
-
-        <Card key='devices' className='h-[22rem]'>
+        <Card key='devices'>
           <UserDevicesPanel firebaseUid={user && user.firebaseUid} />
-        </Card>
+        </Card>,
+        <UserSubscriptionCard key="subscription" user={user} />,
       ]}
       sidebarContent={<UserProfilePanel user={user} />}
-      mainContent={<UserTabPanel firebaseUid={user && user.firebaseUid} />}
+      mainContent={<UserTabCard firebaseUid={user && user.firebaseUid} />}
     />
   );    
 }

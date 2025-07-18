@@ -16,7 +16,7 @@ export default function AdminDashboardSubscriptions({ stats } : { stats?: StatsR
       className='col-span-1 flex flex-col'
       icon={<SubscriberIcon />}
       title="Subscriptions"
-      link="/admin/subscribers"
+      link="/admin/subscriptions"
     >
       Subscriptions
     </AdminDashboardItemLayout>

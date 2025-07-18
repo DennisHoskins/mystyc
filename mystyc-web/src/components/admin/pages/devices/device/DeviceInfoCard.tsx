@@ -12,7 +12,7 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import DeviceIcon from '@/components/admin/ui/icons/DeviceIcon'
 
-export default function DeviceInfoPanel({ deviceId, onLoad }: { deviceId: string, onLoad?: (device: Device) => void; }) {
+export default function DeviceInfoCard({ deviceId, onLoad }: { deviceId: string, onLoad?: (device: Device) => void; }) {
   const [device, setDevice] = useState<Device | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -7,7 +7,6 @@ import { formatDateForDisplay } from '@/util/dateTime';
 import { Content } from '@/interfaces';
 import { logger } from '@/util/logger';
 
-import Card from '@/components/ui/Card';
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 
 export default function ScheduleExecutionsContentTable({ executionId, isActive }: { executionId: string | null | undefined, isActive?: boolean }) {
@@ -71,19 +70,17 @@ export default function ScheduleExecutionsContentTable({ executionId, isActive }
   ];
 
   return (
-    <Card className='h-[56rem]'>
-      <AdminTable<Content>
-        data={content.data}
-        columns={columns}
-        loading={loading}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        hasMore={hasMore}
-        onPageChange={loadScheduleExecutionContent}
-        onRefresh={() => loadScheduleExecutionContent(currentPage)}
-        emptyMessage="No Content found."
-      />
-    </Card>      
+    <AdminTable<Content>
+      data={content.data}
+      columns={columns}
+      loading={loading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      hasMore={hasMore}
+      onPageChange={loadScheduleExecutionContent}
+      onRefresh={() => loadScheduleExecutionContent(currentPage)}
+      emptyMessage="No Content found."
+    />
   );
 }

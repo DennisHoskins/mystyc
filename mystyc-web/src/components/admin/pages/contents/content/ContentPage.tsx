@@ -11,10 +11,10 @@ import { logger } from '@/util/logger';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import ContentDetailsPanel from './ContentDetailsPanel';
-import ContentPreviewPanel from './ContentPreviewPanel';
+import ContentPreviewCard from './ContentPreviewCard';
 import ContentSidebarPanel from './ContentSidebarPanel';
-import ContentDataPanel from './ContentDataPanel';
-import UserInfoPanel from '../../users/user/UserInfoPanel';
+import ContentDataCard from './ContentDataCard';
+import UserInfoCard from '../../users/user/UserInfoCard';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
   const { handleSessionError } = useSessionErrorHandler();
@@ -78,11 +78,13 @@ export default function ContentPage({ contentId }: { contentId: string }) {
       title={content.title}
       headerContent={<ContentDetailsPanel content={content} />}
       sectionsContent={[
-        <span key="user">{content.type == "plus_content" && content.userId && <UserInfoPanel firebaseUid={content.userId} />}</span>,
-        <ContentPreviewPanel key='preview' content={content} />
+        <span key="user">{content.type == "plus_content" && content.userId && <UserInfoCard firebaseUid={content.userId} />}</span>,
       ]}
       sidebarContent={<ContentSidebarPanel content={content} />}
-      mainContent={<ContentDataPanel content={content} />}
+      mainContent={[
+        <ContentPreviewCard key='preview' content={content} />,
+        <ContentDataCard key='content' content={content} />
+    ]}
     />
   );    
 }

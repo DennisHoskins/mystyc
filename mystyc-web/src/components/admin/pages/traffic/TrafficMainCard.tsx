@@ -7,7 +7,7 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import TrafficDashboard from './TrafficDashboard';
 
-export default function TrafficMainPanel({ trafficStats }: { trafficStats: TrafficStats }) {
+export default function TrafficMainCard({ trafficStats }: { trafficStats: TrafficStats }) {
   return (
     <div className="flex flex-col space-y-4">
       <Card>

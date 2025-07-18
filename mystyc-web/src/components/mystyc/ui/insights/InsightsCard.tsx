@@ -37,8 +37,6 @@ export default function Insights({ user } : { user: AppUser }) {
     return;
   }
 
-  console.log(data);
-
   const name = user.userProfile.fullName?.split(" ")[0] || "Knowledge Seeker";
   const title = data.title.replaceAll("{USER_NAME}", name);
   const message = data.message.replaceAll("{USER_NAME}", name);

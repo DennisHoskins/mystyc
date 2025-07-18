@@ -39,20 +39,6 @@ export class StripeWebhookService {
         
         const subscriptionId = (invoice as any).parent?.subscription_details?.subscription;
 
-console.log("");
-console.log("");
-console.log("");
-console.log("");
-console.log("");
-console.log("");
-console.log(subscriptionId);
-console.log("");
-console.log("");
-console.log("");
-console.log("");
-console.log("");
-console.log("");
-
         if (subscriptionId && subscriptionId !== 'unknown') {
           await this.stripe.subscriptions.cancel(subscriptionId, {
             prorate: false,

@@ -11,7 +11,7 @@ import Card from '@/components/ui/Card';
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 
-export default function ScheduleExecutionsPanel({ scheduleId }: { scheduleId: string }) {
+export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: string }) {
   const [executions, setExecutions] = useState<PaginatedResponse<ScheduleExecution> | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);

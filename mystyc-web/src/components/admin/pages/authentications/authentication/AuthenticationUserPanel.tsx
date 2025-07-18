@@ -12,7 +12,7 @@ import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import UserIcon from '@/components/admin/ui/icons/UserIcon'
 
-export default function UserInfoPanel({ firebaseUid }: { firebaseUid: string | null }) {
+export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | null }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
