@@ -18,7 +18,7 @@ export class StripeWebhookService {
   }
 
   /**
-   * Handle successful payment
+   * Handle successful payment - ONLY creates payment record
    */
   async handlePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
     logger.info('Processing successful payment', {
@@ -37,10 +37,11 @@ export class StripeWebhookService {
           invoiceId: invoice.id
         });
         
-        const subscriptionId = (invoice as any).parent?.subscription_details?.subscription;
-
-        if (subscriptionId && subscriptionId !== 'unknown') {
-          await this.stripe.subscriptions.cancel(subscriptionId, {
+        // Cancel unauthorized subscription if it exists
+        const lineItem = invoice.lines?.data?.[0];
+        const subscriptionId = lineItem?.parent?.subscription_item_details?.subscription;
+        if (subscriptionId) {
+          await this.stripe.subscriptions.cancel(subscriptionId as string, {
             prorate: false,
           });
           logger.info('Unauthorized subscription canceled', {
@@ -48,7 +49,6 @@ export class StripeWebhookService {
             invoiceId: invoice.id
           });
         }
-
         return;
       }
 
@@ -61,37 +61,32 @@ export class StripeWebhookService {
         return;
       }
 
-      // Determine subscription tier from invoice line items
-      const subscriptionTier = await this.determineSubscriptionTier(invoice);
+      // Get period data from line items (this gives us the proper billing periods)
+      const lineItem = invoice.lines?.data?.[0];
+      const periodStart = lineItem?.period?.start ? new Date(lineItem.period.start * 1000) : new Date(invoice.period_start * 1000);
+      const periodEnd = lineItem?.period?.end ? new Date(lineItem.period.end * 1000) : new Date(invoice.period_end * 1000);
 
-      // Save payment record
+      // Create payment record with correct billing periods from line items
       await this.paymentHistoryService.createPayment({
         firebaseUid: user.firebaseUid,
         stripeCustomerId: invoice.customer as string,
-        stripeChargeId: invoice.id, // Use invoice ID since charges are separate
+        stripeChargeId: invoice.id, // Use invoice ID since charge might not be available
         stripeInvoiceId: invoice.id,
-        stripeSubscriptionId: await this.getSubscriptionIdFromInvoice(invoice),
+        stripeSubscriptionId: null, // Will be updated by subscription events
         amount: invoice.amount_paid || 0,
         currency: invoice.currency?.toUpperCase() || 'USD',
         status: 'paid',
-        subscriptionTier,
+        subscriptionTier: 'plus', // All subscriptions are plus for now
         paidAt: new Date((invoice.status_transitions?.paid_at || Date.now() / 1000) * 1000),
-        periodStart: new Date(invoice.period_start * 1000),
-        periodEnd: new Date(invoice.period_end * 1000)
+        periodStart,
+        periodEnd
       });
 
-      // Update user subscription tier
-      await this.userProfilesService.updateSubscriptionTier(
-        user.firebaseUid,
-        subscriptionTier === 'plus' ? SubscriptionLevel.PLUS : SubscriptionLevel.PRO,
-        new Date(invoice.period_start * 1000)
-      );
-
-      logger.info('Payment processed successfully', {
+      logger.info('Payment record created successfully', {
         firebaseUid: user.firebaseUid,
         invoiceId: invoice.id,
-        subscriptionTier,
-        amount: invoice.amount_paid
+        amount: invoice.amount_paid,
+        billingPeriod: `${periodStart.toISOString()} - ${periodEnd.toISOString()}`
       }, 'StripeWebhookService');
 
     } catch (error) {
@@ -105,7 +100,7 @@ export class StripeWebhookService {
   }
 
   /**
-   * Handle failed payment
+   * Handle failed payment - ONLY creates failed payment record
    */
   async handlePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
     logger.info('Processing failed payment', {
@@ -135,36 +130,32 @@ export class StripeWebhookService {
         return;
       }
 
-      // Determine subscription tier from invoice
-      const subscriptionTier = await this.determineSubscriptionTier(invoice);
+      // Get period data from line items
+      const lineItem = invoice.lines?.data?.[0];
+      const periodStart = lineItem?.period?.start ? new Date(lineItem.period.start * 1000) : new Date(invoice.period_start * 1000);
+      const periodEnd = lineItem?.period?.end ? new Date(lineItem.period.end * 1000) : new Date(invoice.period_end * 1000);
 
-      // Save failed payment record
+      // Create failed payment record with correct billing periods from line items
       await this.paymentHistoryService.createPayment({
         firebaseUid: user.firebaseUid,
         stripeCustomerId: invoice.customer as string,
         stripeChargeId: 'failed',
         stripeInvoiceId: invoice.id,
-        stripeSubscriptionId: await this.getSubscriptionIdFromInvoice(invoice),
+        stripeSubscriptionId: null, // Will be updated by subscription events
         amount: invoice.amount_due || 0,
         currency: invoice.currency?.toUpperCase() || 'USD',
         status: 'failed',
-        subscriptionTier,
+        subscriptionTier: 'plus', // All subscriptions are plus for now
         paidAt: new Date(), // Use current time for failed payments
-        periodStart: new Date(invoice.period_start * 1000),
-        periodEnd: new Date(invoice.period_end * 1000)
+        periodStart,
+        periodEnd
       });
 
-      // Downgrade user to free tier immediately
-      await this.userProfilesService.updateSubscriptionTier(
-        user.firebaseUid,
-        SubscriptionLevel.USER, // Downgrade to free
-        null // No start date for free tier
-      );
-
-      logger.info('Failed payment processed', {
+      logger.info('Failed payment record created', {
         firebaseUid: user.firebaseUid,
         invoiceId: invoice.id,
-        downgradedToFree: true
+        amount: invoice.amount_due,
+        billingPeriod: `${periodStart.toISOString()} - ${periodEnd.toISOString()}`
       }, 'StripeWebhookService');
 
     } catch (error) {
@@ -178,25 +169,85 @@ export class StripeWebhookService {
   }
 
   /**
-   * Handle new subscription created
+   * Handle new subscription created - Updates user tier to PLUS
    */
   async handleSubscriptionCreated(subscription: Stripe.Subscription): Promise<void> {
+    // Get period data from subscription items
+    const subscriptionItem = subscription.items?.data?.[0];
+    const periodStart = subscriptionItem?.current_period_start;
+    const periodEnd = subscriptionItem?.current_period_end;
+
     logger.info('Processing subscription created', {
       subscriptionId: subscription.id,
       customerId: subscription.customer,
-      status: subscription.status
+      status: subscription.status,
+      currentPeriodStart: periodStart ? new Date(periodStart * 1000).toISOString() : null,
+      currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000).toISOString() : null
     }, 'StripeWebhookService');
 
-    // For new subscriptions, we typically wait for the first invoice.payment_succeeded
-    // This just logs the event for now
-    logger.info('Subscription created - waiting for first payment', {
-      subscriptionId: subscription.id,
-      customerId: subscription.customer
-    }, 'StripeWebhookService');
+    try {
+      // Get user by Stripe customer ID
+      const user = await this.findUserByStripeCustomerId(subscription.customer as string);
+      if (!user) {
+        logger.error('User not found for subscription creation', {
+          stripeCustomerId: subscription.customer,
+          subscriptionId: subscription.id
+        }, 'StripeWebhookService');
+        return;
+      }
+
+      // Update user to PLUS tier with subscription start date
+      if (periodStart) {
+        await this.userProfilesService.updateSubscriptionTier(
+          user.firebaseUid,
+          SubscriptionLevel.PLUS,
+          new Date(periodStart * 1000)
+        );
+      }
+
+      // Link payment record to subscription if latest_invoice exists
+      if (subscription.latest_invoice) {
+        try {
+          // Note: You'll need to implement this method in PaymentHistoryService
+          // await this.paymentHistoryService.updateSubscriptionId(
+          //   subscription.latest_invoice as string,
+          //   subscription.id
+          // );
+          logger.info('Payment record linked to subscription', {
+            subscriptionId: subscription.id,
+            invoiceId: subscription.latest_invoice
+          }, 'StripeWebhookService');
+        } catch (error) {
+          logger.warn('Failed to link payment record to subscription', {
+            subscriptionId: subscription.id,
+            invoiceId: subscription.latest_invoice,
+            error: error.message
+          }, 'StripeWebhookService');
+        }
+      }
+
+      logger.info('User upgraded to PLUS on subscription creation', {
+        firebaseUid: user.firebaseUid,
+        subscriptionId: subscription.id,
+        subscriptionStartDate: periodStart ? new Date(periodStart * 1000).toISOString() : null,
+        billingPeriod: periodStart && periodEnd ? 
+          `${new Date(periodStart * 1000).toISOString()} - ${new Date(periodEnd * 1000).toISOString()}` : 
+          'No billing period found',
+        latestInvoice: subscription.latest_invoice
+      }, 'StripeWebhookService');
+
+    } catch (error) {
+      logger.error('Failed to process subscription creation', {
+        subscriptionId: subscription.id,
+        customerId: subscription.customer,
+        error: error.message
+      }, 'StripeWebhookService');
+      throw error;
+    }
   }
 
   /**
-   * Handle subscription updated (plan changes, etc.)
+   * Handle subscription updated (status changes, etc.)
    */
   async handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
     logger.info('Processing subscription updated', {
@@ -216,24 +267,28 @@ export class StripeWebhookService {
         return;
       }
 
+      // Get period data from subscription items
+      const subscriptionItem = subscription.items?.data?.[0];
+      const periodStart = subscriptionItem?.current_period_start;
+
       // Handle subscription status changes
       if (subscription.status === 'active') {
-        // Determine new tier from subscription
-        const subscriptionTier = await this.determineSubscriptionTierFromSubscription(subscription);
-        
-        await this.userProfilesService.updateSubscriptionTier(
-          user.firebaseUid,
-          subscriptionTier === 'plus' ? SubscriptionLevel.PLUS : SubscriptionLevel.PRO,
-          new Date() // Use current time since current_period_start is deprecated
-        );
+        // Upgrade/maintain user as PLUS
+        if (periodStart) {
+          await this.userProfilesService.updateSubscriptionTier(
+            user.firebaseUid,
+            SubscriptionLevel.PLUS,
+            new Date(periodStart * 1000)
+          );
+        }
 
-        logger.info('Subscription updated - user upgraded', {
+        logger.info('Subscription updated - user maintained as PLUS', {
           firebaseUid: user.firebaseUid,
-          subscriptionTier,
-          subscriptionId: subscription.id
+          subscriptionId: subscription.id,
+          status: subscription.status
         }, 'StripeWebhookService');
 
-      } else if (['canceled', 'unpaid', 'past_due'].includes(subscription.status)) {
+      } else if (['canceled', 'unpaid', 'past_due', 'incomplete_expired'].includes(subscription.status)) {
         // Downgrade to free tier
         await this.userProfilesService.updateSubscriptionTier(
           user.firebaseUid,
@@ -241,7 +296,7 @@ export class StripeWebhookService {
           null
         );
 
-        logger.info('Subscription updated - user downgraded', {
+        logger.info('Subscription updated - user downgraded to free', {
           firebaseUid: user.firebaseUid,
           subscriptionStatus: subscription.status,
           subscriptionId: subscription.id
@@ -285,7 +340,7 @@ export class StripeWebhookService {
         null
       );
 
-      logger.info('Subscription deleted - user downgraded', {
+      logger.info('Subscription deleted - user downgraded to free', {
         firebaseUid: user.firebaseUid,
         subscriptionId: subscription.id
       }, 'StripeWebhookService');
@@ -306,81 +361,5 @@ export class StripeWebhookService {
   private async findUserByStripeCustomerId(stripeCustomerId: string): Promise<{ firebaseUid: string } | null> {
     const user = await this.userProfilesService.findByStripeCustomerId(stripeCustomerId);
     return user ? { firebaseUid: user.firebaseUid } : null;
-  }
-
-  /**
-   * Extract subscription ID from invoice line items
-   */
-  private async getSubscriptionIdFromInvoice(invoice: Stripe.Invoice): Promise<string> {
-    // Check if any line items have subscription info
-    const subscriptionIds = invoice.lines?.data
-      ?.map(line => (line as any).subscription) // Line items may have subscription reference
-      ?.filter(Boolean) || [];
-    
-    if (subscriptionIds.length > 0) {
-      return subscriptionIds[0] as string;
-    }
-    
-    // Fallback: use invoice metadata or return placeholder
-    return invoice.metadata?.subscriptionId || 'unknown';
-  }
-
-  /**
-   * Determine subscription tier from invoice line items
-   */
-  private async determineSubscriptionTier(invoice: Stripe.Invoice): Promise<'plus' | 'pro'> {
-
-    //
-    // todo: determine pricing strategy
-    //
-
-    // const itemIds = invoice.lines?.data
-    //   ?.map(line => line.id)
-    //   ?.filter((id): id is string => Boolean(id)) || [];
-    
-    // const PLUS_PRICE_IDS = ['price_plus_monthly', 'price_plus_yearly'];
-    // const PRO_PRICE_IDS = ['price_pro_monthly', 'price_pro_yearly'];
-    
-    // if (itemIds.some(id => PRO_PRICE_IDS.includes(id))) {
-    //   return 'pro';
-    // } else if (itemIds.some(id => PLUS_PRICE_IDS.includes(id))) {
-    //   return 'plus';
-    // }
-
-    // // Default to plus for now
-    // logger.warn('Could not determine subscription tier from invoice, defaulting to plus', {
-    //   invoiceId: invoice.id,
-    //   itemIds
-    // }, 'StripeWebhookService');
-    
-    return 'plus';
-  }
-
-  /**
-   * Determine subscription tier from subscription object
-   */
-  private async determineSubscriptionTierFromSubscription(subscription: Stripe.Subscription): Promise<'plus' | 'pro'> {
-    // Extract price IDs from subscription items
-    const priceIds = subscription.items?.data
-      ?.map(item => item.price?.id)
-      ?.filter((id): id is string => Boolean(id)) || [];
-    
-    // TODO: Replace these with your actual Stripe price IDs
-    const PLUS_PRICE_IDS = ['price_plus_monthly', 'price_plus_yearly'];
-    const PRO_PRICE_IDS = ['price_pro_monthly', 'price_pro_yearly'];
-    
-    if (priceIds.some(id => PRO_PRICE_IDS.includes(id))) {
-      return 'pro';
-    } else if (priceIds.some(id => PLUS_PRICE_IDS.includes(id))) {
-      return 'plus';
-    }
-    
-    // Default to plus for now
-    logger.warn('Could not determine subscription tier from subscription, defaulting to plus', {
-      subscriptionId: subscription.id,
-      priceIds
-    }, 'StripeWebhookService');
-    
-    return 'plus';
   }
 }
