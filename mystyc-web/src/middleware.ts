@@ -9,7 +9,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
-  console.log(host);
+
+  console.log(host + request.nextUrl.pathname);
   
   // if (process.env.NODE_ENV === 'production') {
   //   if (host !== 'mystyc.app' && host !== '127.0.0.1:3000') {

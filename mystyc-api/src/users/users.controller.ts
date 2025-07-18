@@ -137,26 +137,27 @@ export class UsersController {
   async startSubscription(
     @FirebaseUser() firebaseUser,
     @Body() body: { 
-      priceId: string; // Stripe price ID for plus/pro monthly/yearly
-      successUrl: string; // Frontend success page
-      cancelUrl: string; // Frontend cancel page
+      priceId: string;
     }
   ): Promise<{ sessionUrl: string }> {
     try {
-      // This is where createStripeCustomer gets called!
+
+      console.log('=== SUBSCRIPTION DEBUG ===');
+      console.log('Body:', body);
+      console.log('priceId:', body.priceId);
+      console.log('========================');
+
       const session = await this.userService.createSubscriptionSession(
         firebaseUser.uid,
         body.priceId,
-        body.successUrl,
-        body.cancelUrl
+        'https://mystyc.app/subscribe/success',
+        'https://mystyc.app/subscribe/error'
       );
 
       return { sessionUrl: session.url };
     } catch (error) {
       logger.error('Failed to start subscription', {
         uid: firebaseUser.uid,
-        priceId: body.priceId,
-        error: error.message
       });
       throw error;
     }

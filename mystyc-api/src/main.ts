@@ -28,6 +28,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   logger.info('NestJS application created');
 
+  // Add stripe webhook
+  app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
+
   // MongoDB connection event handlers for monitoring
   mongoose.connection.on('connected', () => {
     logger.info('MongoDB connected');
@@ -104,9 +107,6 @@ async function bootstrap() {
   
   // Set global API prefix for all routes
   app.setGlobalPrefix('api');
-
-  // Add stripe webhook
-  app.use('/stripe/webhook', raw({ type: 'application/json' }));
   
   // Start the server on specified port
   const port = process.env.PORT ?? 3000;

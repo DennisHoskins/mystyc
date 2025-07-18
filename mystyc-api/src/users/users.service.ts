@@ -314,7 +314,7 @@ export class UsersService {
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
-        firebaseUid, // Important for webhook processing
+        firebaseUid,
       },
     });
 

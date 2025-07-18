@@ -263,5 +263,27 @@ export const apiClient = {
     } catch (err) {
       throw err;
     }
+  },
+
+  async startSubscription(): Promise<{sessionUrl: string }> {
+    try {
+      const response = await fetch(`${serverRoot}/mystyc/users/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deviceInfo: getDeviceInfo(),
+          priceId: 'price_1Rlx7OFbaKdrXM9uzrIJCnPq',
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 };

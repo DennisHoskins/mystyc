@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react';
 import { useUser, useBusy } from '@/components/ui/layout/context/AppContext';
-import Mystyc from './(mystyc)/mystyc';
 import WebsiteHome from "@/components/website/WebsiteHome";
+import MystycHome from "@/components/mystyc/MystycHome"
 
 export default function Page() {
   const user = useUser();
@@ -20,6 +20,6 @@ export default function Page() {
   }
 
   return (
-    <Mystyc />
+    <MystycHome user={user} />
   );
 }

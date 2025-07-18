@@ -22,7 +22,7 @@ import AppFooter from '@/components/mystyc/ui/MystycFooter';
 import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
 import GlobalError from '@/components/ui/layout/GlobalError';
 import Offline from '@/components/ui/layout/Offline';
-import AdminSidebar from '@/components/mystyc/admin/ui/AdminSidebar';
+import AdminSidebar from '@/components/admin/ui/AdminSidebar';
 import { logger } from '@/util/logger'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -70,6 +70,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const isAdminPath = pathname.startsWith('/admin');  
   const isAdmin = user && user.isAdmin && isAdminPath;
+  const isUserPlus = user && user.isPlus;
 
   if (pathname.startsWith("/logout")) {
     return (
@@ -88,7 +89,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <TransitionProvider>
         <AppTransition>
 
-          <Header isFullWidth={isAdmin == true}>
+          <Header isPlus={isUserPlus == true} isFullWidth={isAdmin == true}>
             {isWebsite
               ? <WebsiteHeader />
               : <AppHeader menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -116,7 +117,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       /> 
                     }
                     
-                    <div className={`transition-all duration-300 ease-in-out flex flex-col flex-1 ${isAdmin ? `md:ml-28 ${sidebarCollapsed ? 'lg:ml-28' : 'lg:ml-80'}` : ''}`}>
+                    <div 
+                      className={`transition-all duration-300 ease-in-out flex flex-col flex-1 ${isAdmin ? `md:ml-28 ${sidebarCollapsed ? 'lg:ml-28' : 'lg:ml-80'}` : ''}`}
+                      onClick={() => {
+                        if (menuOpen) {
+                          setMenuOpen(false);
+                        }
+                      }}                      
+                    >
                       <PageTransition>
                         <Main>{children}</Main>
                       </PageTransition>

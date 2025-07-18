@@ -1,20 +1,22 @@
 'use client';
 
-import { useUser } from '@/components/ui/layout/context/AppContext';
-import Dashboard from '@/components/mystyc/pages/dashboard/Dashboard';
-import Welcome from '@/components/mystyc/pages/welcome/Welcome';
+import { AppUser } from '@/interfaces/app/app-user.interface';
+import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
+import WelcomeCard from '@/components/mystyc/pages/home/WelcomeCard';
+import InsightsCard from '@/components/mystyc/ui/insights/InsightsCard';
+import UpgradePlusCard from './ui/subscriptions/UpgradePlusCard';
+// import Onboard from '@/components/mystyc/pages/onboard/Onboard';
 
-export default function Mystyc() {
-  const user = useUser();
-  if (!user) {
-    return null;
-  }
+export default function Mystyc({ user } : { user: AppUser }) {
+  useFirebaseMessaging();
 
   return (
-    <div className="flex flex-1 items-center justify-center mx-4">
-      <div className="w-full max-w-md text-center mx-4 px-6 border rounded-md p-6 shadow-sm bg-white flex">
-        {/* {user.isOnboard ? <Dashboard /> : <Welcome />} */}
-        <Dashboard />
+    <div className="flex flex-1 justify-center p-6">
+      <div className='w-full max-w-content text-center space-y-6'>
+        {/* {user.isOnboard ? <Welcome /> : <Onboard />} */}
+        <WelcomeCard user={user} />
+        <InsightsCard user={user} />
+        {!user.isPlus && <UpgradePlusCard />}
       </div>
     </div>
   );

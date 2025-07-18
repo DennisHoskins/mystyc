@@ -7,6 +7,7 @@ import IconEye from '@/components/ui/icons/IconEye';
 type AppLogoProps = {
   orientation?: 'vertical' | 'horizontal';
   showText?: boolean;
+  isPlus?: boolean;
   subheading?: string;
   scale?: number;
   className?: string;
@@ -15,6 +16,7 @@ type AppLogoProps = {
 export default function AppLogo({
   orientation = 'vertical',
   showText = true,
+  isPlus = false,
   subheading,
   scale = 1,
   className = '',
@@ -30,7 +32,7 @@ export default function AppLogo({
       {showText && (
         <div className={`${isVertical ? 'text-center' : 'ml-1'}`}>
           <div style={{ fontSize: titleSize }} className="font-bold tracking-wide text-gray-900">
-            mystyc
+            mystyc{isPlus && <sup>+</sup>}
           </div>
           {subheading && (
             <div style={{ fontSize: subSize }} className="text-gray-500">

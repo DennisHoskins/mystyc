@@ -7,7 +7,7 @@ import { User, Settings, CreditCard, LayoutDashboard, LogOut } from 'lucide-reac
 import { useUser } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-import AdminMenu from '@/components/mystyc/admin/ui/AdminMenu';
+import AdminMenu from '@/components/admin/ui/AdminMenu';
 
 export default function MystycMenu() {
   const user = useUser();

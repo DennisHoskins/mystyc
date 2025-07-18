@@ -5,10 +5,11 @@ import AppLogo from '@/components/ui/AppLogo';
 
 interface HeaderProps {
   children: React.ReactNode;
+  isPlus?: boolean;
   isFullWidth?: boolean;
 }
 
-export default function Header({ children, isFullWidth = false }: HeaderProps) {
+export default function Header({ children, isPlus = false, isFullWidth = false }: HeaderProps) {
   const router = useTransitionRouter();
 
   return (
@@ -16,7 +17,7 @@ export default function Header({ children, isFullWidth = false }: HeaderProps) {
 
       <nav className={`flex w-full ${!isFullWidth ? 'max-w-content' : ''} mx-auto items-center`}>
         <button onClick={() => router.push('/')} className="flex items-center">
-          <AppLogo orientation="horizontal" showText />
+          <AppLogo orientation="horizontal" showText isPlus={isPlus} />
         </button>
 
         <div className="flex space-x-4 ml-auto">

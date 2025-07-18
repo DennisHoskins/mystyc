@@ -6,7 +6,8 @@ import { AppUser } from '@/interfaces/app/app-user.interface';
 const transformUserToAppUser = (user: User): AppUser => ({
   ...user,
   isAdmin: user.userProfile.roles.includes("admin"),
-  isOnboard: user.userProfile.zodiacSign != null
+  isOnboard: user.userProfile.zodiacSign != null,
+  isPlus: user.userProfile.subscription.level == 'plus'
 });
 
 const getInitialState = (serverUser: User | null) => {

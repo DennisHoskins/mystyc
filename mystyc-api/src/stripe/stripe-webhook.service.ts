@@ -8,10 +8,14 @@ import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class StripeWebhookService {
+  private stripe: Stripe;
+
   constructor(
     private readonly userProfilesService: UserProfilesService,
     private readonly paymentHistoryService: PaymentHistoryService,
-  ) {}
+  ) {
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {});
+  }
 
   /**
    * Handle successful payment
@@ -23,15 +27,42 @@ export class StripeWebhookService {
       amount: invoice.amount_paid,
       billingReason: invoice.billing_reason
     }, 'StripeWebhookService');
-
+    
     try {
       // Get user by Stripe customer ID
       const user = await this.findUserByStripeCustomerId(invoice.customer as string);
       if (!user) {
-        logger.warn('User not found for Stripe customer', {
+        logger.error('SECURITY ALERT: Refunding unauthorized payment', {
           stripeCustomerId: invoice.customer,
           invoiceId: invoice.id
-        }, 'StripeWebhookService');
+        });
+        
+        const subscriptionId = (invoice as any).parent?.subscription_details?.subscription;
+
+console.log("");
+console.log("");
+console.log("");
+console.log("");
+console.log("");
+console.log("");
+console.log(subscriptionId);
+console.log("");
+console.log("");
+console.log("");
+console.log("");
+console.log("");
+console.log("");
+
+        if (subscriptionId && subscriptionId !== 'unknown') {
+          await this.stripe.subscriptions.cancel(subscriptionId, {
+            prorate: false,
+          });
+          logger.info('Unauthorized subscription canceled', {
+            subscriptionId,
+            invoiceId: invoice.id
+          });
+        }
+
         return;
       }
 

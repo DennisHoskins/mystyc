@@ -26,16 +26,24 @@ export class StripeWebhookController {
     @Req() request: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string
   ): Promise<{ received: boolean }> {
+
+  console.log('=== WEBHOOK DEBUG ===');
+  console.log('request.body:', typeof request.body, request.body);
+  console.log('request.rawBody:', typeof request.rawBody, request.rawBody?.length);
+  console.log('request.headers content-length:', request.headers['content-length']);
+  console.log('request.headers content-type:', request.headers['content-type']);
+  console.log('=====================');
+
     logger.info('Stripe webhook received', {
       signature: signature ? 'present' : 'missing',
-      contentLength: request.rawBody?.length || 0
+      contentLength: request.body?.length || 0
     }, 'StripeWebhookController');
 
     // Verify webhook signature for security
     let event: Stripe.Event;
     try {
       event = this.stripe.webhooks.constructEvent(
-        request.rawBody!,
+        request.body!,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET!
       );
