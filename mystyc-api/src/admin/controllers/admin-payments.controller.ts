@@ -29,15 +29,14 @@ export class AdminPaymentsController extends AdminController<PaymentHistory> {
   @Get('summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getSubscriptionsSummary() {
-    const [totalPayments, totalSubscribers] = await Promise.all([
+  async getSubscriptionsSummary(): Promise<{totalPayments: number, totalSubscriptions: number}> {
+    const [totalPayments, totalSubscriptions] = await Promise.all([
       this.service.getTotal(),
       this.usersService.getTotalBySubscriptionTier(SubscriptionLevel.PLUS)
     ]);
-
     return {
       totalPayments,
-      totalSubscribers
+      totalSubscriptions
     };
   }
 }

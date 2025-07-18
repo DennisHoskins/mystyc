@@ -2,22 +2,27 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
-//import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-//import { getDefaultDashboardStatsQuery } from '../../AdminHome';
-import { PaymentHistory } from '@/interfaces';
+import { PaymentHistory, UserProfile } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
-
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import PaymentsTable from './PaymentsTable';
 import UsersTable from '../users/UsersTable';
+import FormError from '@/components/ui/form/FormError';
 
 interface SubscriptionSummary {
   totalPayments: number;
   totalSubscriptions: number;
+}
+
+interface PaginationState {
+  currentPage: number;
+  totalPages: number;
+  hasMore: boolean;
+  loaded: boolean;
 }
 
 export default function SubscriptionsTabPanel() {
@@ -25,10 +30,29 @@ export default function SubscriptionsTabPanel() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [summary, setSummary] = useState<SubscriptionSummary | null>(null);
+  const [payments, setPayments] = useState<PaymentHistory[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Separate pagination for each tab
+  const [paymentsPagination, setPaymentsPagination] = useState<PaginationState>({
+    currentPage: 0,
+    totalPages: 0,
+    hasMore: true,
+    loaded: false
+  });
+  
+  const [usersPagination, setUsersPagination] = useState<PaginationState>({
+    currentPage: 0,
+    totalPages: 0,
+    hasMore: true,
+    loaded: false
+  });
 
-  // Load summary data (all counts)
+  const LIMIT = 20;
+
+  // Load summary data
   useEffect(() => {
     const loadSummary = async () => {
       try {
@@ -36,7 +60,6 @@ export default function SubscriptionsTabPanel() {
         setBusy(true);
 
         const summaryData = await apiClientAdmin.getSubscriptionsSummary();
-
         setSummary(summaryData);
       } catch (err) {
         const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
@@ -53,43 +76,89 @@ export default function SubscriptionsTabPanel() {
     loadSummary();
   }, []);
 
-  // const loadPayments = useCallback(async (page: number) => {
-  //   try {
-  //     setError(null);
-  //     setBusy(1000);
-  //     setLoading(true);
+  const loadPayments = useCallback(async (page: number) => {
+    try {
+      setError(null);
+      setBusy(1000);
+      setLoading(true);
 
-  //     const response = await apiClientAdmin.getPayments({
-  //       limit: LIMIT,
-  //       offset: page * LIMIT,
-  //       sortBy: 'date',
-  //       sortOrder: 'desc',
-  //     });
+      const response = await apiClientAdmin.getPayments({
+        limit: LIMIT,
+        offset: page * LIMIT,
+        sortBy: 'paidAt',
+        sortOrder: 'desc',
+      });
 
-  //     setPayments(response.data);
-  //     setHasMore(response.pagination.hasMore);
-  //     setCurrentPage(page);
-  //     setTotalPages(response.pagination.totalPages);
+      setPayments(response.data);
+      setPaymentsPagination({
+        currentPage: page,
+        totalPages: response.pagination.totalPages,
+        hasMore: response.pagination.hasMore,
+        loaded: true
+      });
+    } catch (err) {
+      const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load subscriptions payments:', err);
+        setError('Failed to load subscriptions payments. Please try again.');
+      }
+    } finally {
+      setBusy(false);
+      setLoading(false);
+    }
+  }, [setBusy, handleSessionError]);
 
-  //     // const statsQuery = getDefaultDashboardStatsQuery();
-  //     // const stats = await apiClientAdmin.getSubscriptionStats(statsQuery);
-  //     // setStats(stats);
-  //   } catch (err) {
-  //     const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
-  //     if (!wasSessionError) {
-  //       logger.error('Failed to load subscriptions:', err);
-  //       setError('Failed to load subscriptions. Please try again.');
-  //     }
-  //   } finally {
-  //     setBusy(false);
-  //     setLoading(false);
-  //   }
-  // }, [setBusy, handleSessionError]);
+  const loadUsers = useCallback(async (page: number) => {
+    try {
+      setError(null);
+      setBusy(1000);
+      setLoading(true);
 
-  // useEffect(() => {
-  //   loadPayments
-  //   (0);
-  // }, [loadPayments]);
+      const response = await apiClientAdmin.getPlusUsers({
+        limit: LIMIT,
+        offset: page * LIMIT,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      });
+
+      setUsers(response.data);
+      setUsersPagination({
+        currentPage: page,
+        totalPages: response.pagination.totalPages,
+        hasMore: response.pagination.hasMore,
+        loaded: true
+      });
+    } catch (err) {
+      const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
+      if (!wasSessionError) {
+        logger.error('Failed to load subscription users:', err);
+        setError('Failed to load subscription users. Please try again.');
+      }
+    } finally {
+      setBusy(false);
+      setLoading(false);
+    }
+  }, [setBusy, handleSessionError]);
+
+  // Load default data for active tab on mount
+  useEffect(() => {
+    if (activeTab === 'payments' && !paymentsPagination.loaded) {
+      loadPayments(0);
+    } else if (activeTab === 'users' && !usersPagination.loaded) {
+      loadUsers(0);
+    }
+  }, [activeTab, paymentsPagination.loaded, usersPagination.loaded, loadPayments, loadUsers]);
+
+  // Handle tab change and load data if needed
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    
+    if (tabId === 'payments' && !paymentsPagination.loaded) {
+      loadPayments(0);
+    } else if (tabId === 'users' && !usersPagination.loaded) {
+      loadUsers(0);
+    }
+  };
 
   const tabs: Tab[] = useMemo(() => {
     return [
@@ -98,7 +167,15 @@ export default function SubscriptionsTabPanel() {
         label: 'Payments',
         count: summary?.totalPayments,
         content: (
-          <></>
+          <PaymentsTable
+            data={payments}
+            loading={loading}
+            currentPage={paymentsPagination.currentPage}
+            totalPages={paymentsPagination.totalPages}
+            hasMore={paymentsPagination.hasMore}
+            onPageChange={loadPayments}
+            onRefresh={() => loadPayments(paymentsPagination.currentPage)}
+          />
         )
       },
       {
@@ -106,21 +183,29 @@ export default function SubscriptionsTabPanel() {
         label: 'Users',
         count: summary?.totalSubscriptions,
         content: (
-          <></>
+          <UsersTable
+            data={users}
+            loading={loading}
+            currentPage={usersPagination.currentPage}
+            totalPages={usersPagination.totalPages}
+            hasMore={usersPagination.hasMore}
+            onPageChange={loadUsers}
+            onRefresh={() => loadUsers(usersPagination.currentPage)}
+          />
         )
       }
     ];
-  }, [activeTab, summary]);
+  }, [summary, payments, users, loading, paymentsPagination, usersPagination, loadPayments, loadUsers]);
 
-  if (loading) {
-    return null;
+  if (error) {
+    return <FormError message={error} />;
   }
 
   return (
     <TabPanel 
       tabs={tabs} 
       defaultActiveTab={activeTab}
-      onTabChange={setActiveTab}
+      onTabChange={handleTabChange}
     />
   );
 }

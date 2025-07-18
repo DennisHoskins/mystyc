@@ -13,7 +13,7 @@ interface UsersTableProps {
   loading: boolean;
   currentPage: number;
   totalPages: number;
-  totalItems: number;
+  totalItems?: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;

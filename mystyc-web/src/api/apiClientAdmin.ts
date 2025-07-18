@@ -512,7 +512,8 @@ class AdminApiClient {
     totalSubscriptions: number;
   }> => {
     try {
-      return await this.fetchWithAuth(`${API_BASE_URL}/admin/payments/summary`);
+      const results = await this.fetchWithAuth(`${API_BASE_URL}/admin/payments/summary`);
+      return results;
     } catch (error) {
       logger.error('getSubscriptionsSummary failed:', error);
       throw error;
