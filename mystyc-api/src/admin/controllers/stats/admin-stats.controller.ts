@@ -56,7 +56,7 @@ export class AdminStatsController {
       // OpenAI
       currentMonthlyUsage, openaiSummary, monthlyUsage, contentTypeUsage,
       // Subscriptions
-      subscriptionsSummary
+      subscriptionsSummary, subscriptionsRevenue, subscriptionsLifecycle, subscriptionsPaymentHealth
     ] = await Promise.all([
       // Users
       this.adminUsersStatsService.getRegistrationStats(query),
@@ -100,7 +100,10 @@ export class AdminStatsController {
       this.adminOpenAIStatsService.getContentTypeUsageStats(query),
 
       // Subscriptions
-      this.adminSubscriptionStatsService.getSummaryStats(),
+      this.adminSubscriptionStatsService.getSummaryStats(query),
+      this.adminSubscriptionStatsService.getRevenueStats(query),
+      this.adminSubscriptionStatsService.getLifecycleStats(query),
+      this.adminSubscriptionStatsService.getPaymentHealthStats(query),
     ]);
 
     return {
@@ -111,7 +114,12 @@ export class AdminStatsController {
       content: { summary: contentSummary, sources, generation, timeline },
       schedule: { summary: scheduleSummary, performance, failures, executions },
       openai: { currentMonthlyUsage, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage },
-      subscriptions: { summary: subscriptionsSummary }
+      subscriptions: { 
+        summary: subscriptionsSummary, 
+        revenue: subscriptionsRevenue, 
+        lifecycle: subscriptionsLifecycle, 
+        paymentHealth: subscriptionsPaymentHealth 
+      }
     };
   }
 }

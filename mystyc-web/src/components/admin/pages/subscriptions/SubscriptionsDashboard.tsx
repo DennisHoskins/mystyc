@@ -26,7 +26,7 @@ export default function SubscriptionsDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: `$${(stats.summary.totalAmount / 100).toFixed(2)}`, label: 'Total Revenue', color: 'text-green-600' },
+          { value: `$${stats.summary.totalAmount}`, label: 'Total Revenue', color: 'text-green-600' },
           { value: stats.summary.totalSubscriptions, label: 'Subscriptions', color: 'text-blue-600' },
         ]} 
       />
