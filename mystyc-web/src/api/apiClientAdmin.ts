@@ -335,10 +335,15 @@ class AdminApiClient {
     }
   };
 
-  getSubscriptionStats = async (): Promise<SubscriptionStats> => {
+  getSubscriptionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
     try {
-      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions`);
-      return response;
+      const queryString = this.buildStatsQueryString(query);
+      const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions${queryString}`);
+      return {
+        data: response,
+        query,
+        queryString: queryString.replace('?', '')
+      };      
     } catch (error) {
       logger.error('getSubscriptionStats failed:', error);
       throw error;

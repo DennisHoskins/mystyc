@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { SubscriptionStats } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
@@ -16,7 +16,7 @@ import SubscriptionsDashboard from './SubscriptionsDashboard';
 export default function SubscriptionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [stats, setStats] = useState<SubscriptionStats | null>(null);
+  const [stats, setStats] = useState<StatsResponseWithQuery<SubscriptionStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,6 +66,23 @@ export default function SubscriptionsPage() {
           charts={['stats']}
         />
       }
+      itemContent={[
+        <SubscriptionsDashboard 
+          key={'subscriptions'}
+          stats={stats} 
+          charts={['newSubscriptions']}
+        />,
+        <SubscriptionsDashboard 
+          key={'churn'}
+          stats={stats} 
+          charts={['mrr']}
+        />,
+        <SubscriptionsDashboard 
+          key={'payments'}
+          stats={stats} 
+          charts={['growth']}
+        />,
+      ]}
       tableContent={<SubscriptionsTabPanel />}
     />   
   );

@@ -4,7 +4,9 @@ import { AdminStatsResponseExtended } from '@/interfaces';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
+import SubscriptionsDashboard  from '../subscriptions/SubscriptionsDashboard';
 import SubscriberIcon from '@/components/admin/ui/icons/SubscriberIcon'
+import Link from '@/components/ui/Link';
 
 export default function AdminDashboardSubscriptions({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
@@ -18,7 +20,33 @@ export default function AdminDashboardSubscriptions({ stats } : { stats?: StatsR
       title="Subscriptions"
       link="/admin/subscriptions"
     >
-      Subscriptions
+      <Link
+        className='flex-1 flex flex-col'
+        href='/admin/subscriptions'
+      >
+        <div className='flex-1 flex flex-col space-y-4 xl:flex-row xl:space-x-4 xl:space-y-0'>
+          <SubscriptionsDashboard
+            className='w-full xl:w-64'
+            stats={{
+              data: stats.data.subscriptions,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
+            charts={['stats']}
+            height={100}
+          />
+          <SubscriptionsDashboard
+            className='w-full'
+            stats={{
+              data: stats.data.subscriptions,
+              query: stats.query,
+              queryString: stats.queryString,
+            }}
+            charts={['mrr']}
+            height={100}
+          />
+        </div>
+      </Link>
     </AdminDashboardItemLayout>
   );
 }
