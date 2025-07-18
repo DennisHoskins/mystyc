@@ -56,7 +56,7 @@ export default function Insights({ user } : { user: AppUser }) {
                 <a
                   href={`/insights/${item.key.replaceAll(" ", "-").toLowerCase()}`}
                   key={index} 
-                  className="border flex flex-col p-6 space-y-6 items-center hover:scale-105 transition-all"
+                  className="border flex flex-col p-6 space-y-6 items-center hover:scale-[101%] transition-all bg-gray-50"
                 >
                   <Heading level={3}>{item.key.replaceAll("{USER_NAME}", name)}</Heading>
                   <Text className='mt-2'>{item.value.replaceAll("{USER_NAME}", name)}</Text>

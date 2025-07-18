@@ -14,7 +14,7 @@ export default function UpgradePlusCard() {
       <a
         href="/subscribe"
         onClick={() => router.push("/subscribe") }
-        className="flex flex-col p-6 space-y-6 items-center hover:scale-105 transition-all"
+        className="flex flex-col p-6 space-y-6 items-center hover:scale-[101%] transition-all"
       >
         <Heading level={3}>Dig Deeper</Heading>
         <Text className="max-w-xl">

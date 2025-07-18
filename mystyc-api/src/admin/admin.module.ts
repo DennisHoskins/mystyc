@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { 
   AdminUsersController,
+  AdminUsersPlusController,
   AdminDevicesController,
   AdminAuthEventsController,
   AdminOpenAIController,
@@ -62,6 +63,7 @@ import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.
   ],
 controllers: [
     AdminUsersController,
+    AdminUsersPlusController,
     AdminDevicesController,
     AdminAuthEventsController,
     AdminContentController,

@@ -25,13 +25,13 @@ export default function AdminMenu() {
           <Globe className="inline-block mr-2 h-4 w-4" />
           Traffic
         </MenuItem>
-        <MenuItem onClick={() => router.push('/admin/subscriptions')}>
-          <CircleDollarSign className="inline-block mr-2 h-4 w-4" />
-          Subscriptions
-        </MenuItem>
         <MenuItem onClick={() => router.push('/admin/openai')}>
           <Sparkle className="inline-block mr-2 h-4 w-4" />
           OpenAI Usage
+        </MenuItem>
+        <MenuItem onClick={() => router.push('/admin/subscriptions')}>
+          <CircleDollarSign className="inline-block mr-2 h-4 w-4" />
+          Subscriptions
         </MenuItem>
         <MenuItem onClick={() => router.push('/admin/content')}>
           <BookOpenText className="inline-block mr-2 h-4 w-4" />

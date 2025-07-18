@@ -638,6 +638,16 @@ class AdminApiClient {
     }
   };
 
+  getPlusUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${API_BASE_URL}/admin/users-plus${queryString}`);
+    } catch (error) {
+      logger.error('getUsersPlus failed:', error);
+      throw error;
+    }
+  };
+
   getUser = async (firebaseUid: string): Promise<UserProfile> => {
     try {
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}`);
