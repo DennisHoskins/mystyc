@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 
 import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
-import { useToast } from '@/components/ui/layout/context/AppContext';
 import { useUser } from '@/components/ui/layout/context/AppContext';
 import { TransitionProvider } from '@/components/ui/layout/context/TransitionContext';
 
@@ -29,8 +28,6 @@ import { logger } from '@/util/logger'
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useUser();
-  const showToast = useToast();
-  const { isSubscribed, setSubscribed } = useAppStore();
   const isWebsite = !user;
   const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((s) => s.setSidebarCollapsed);
@@ -46,15 +43,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     apiClient.registerVisit(pathname)
   }, [pathname])  
-
-  useEffect(() => {
-    if (!isSubscribed) {
-      return;
-    }
-
-    showToast("Welcome to Mystyc Plus!", "success");
-    setSubscribed(false);
-  }, [isSubscribed, setSubscribed, showToast])  
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
@@ -107,7 +95,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <TransitionProvider>
         <AppTransition>
-          <Header isFullWidth={isAdmin == true}>{header}</Header>
+          <Header isFullWidth={isAdmin == true} isPlus={(user && user.isPlus) === true}>{header}</Header>
           {menu}  
           <ScrollWrapper>
             {content}

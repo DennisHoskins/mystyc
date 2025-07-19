@@ -1,18 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import SubscribeErrorPage from '@/components/mystyc/pages/subscribe/SubscribeErrorPage';
 
-import { useAppStore } from '@/store/appStore';
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-
-export default function SubscribeErrorPage() {
-  const router = useTransitionRouter();
-  const { setSubscribeError } = useAppStore();
-  
-  useEffect(() => {
-    setSubscribeError(true);
-    router.replace("/subscribe");
-  }, [setSubscribeError, router])
-
-  return null;
+export default function Page() {
+  return <SubscribeErrorPage />
 }
+

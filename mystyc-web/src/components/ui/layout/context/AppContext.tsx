@@ -1,17 +1,14 @@
 'use client';
 
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
+import { createContext, useContext, useRef, useCallback } from 'react';
 import { useStore } from 'zustand';
 
-import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
 import { createUserStore, UserState } from '@/store/userStore';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 
 import Layout from '@/components/ui/layout/Layout';
 import Working from '@/components/ui/working/Working';
 import Toast from '@/components/ui/toast/Toast';
-import { logger } from '@/util/logger';
 
 const UserStoreContext = createContext<ReturnType<typeof createUserStore> | null>(null);
 
@@ -20,55 +17,19 @@ interface AppContextProps {
 }
 
 export default function AppContext({ children }: AppContextProps) {
-  const { handleSessionError } = useSessionErrorHandler();
-  const [loading, setLoading] = useState(true);
-  const storeRef = useRef<ReturnType<typeof createUserStore> | null>(null);
-  if (!storeRef.current) {
-    storeRef.current = createUserStore(null);
-  }
-
-  useEffect(() => {
-    const getServerUser = async () => {
-      if (document.readyState !== 'complete') {
-        await new Promise(resolve => window.addEventListener('load', resolve));
-      }
-      
-      const currentUser = storeRef.current?.getState().user;
-      if (currentUser) {
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        const user = await apiClient.getUser();
-        if (!user) {
-          setLoading(false);
-          return;
-        }
-
-        storeRef.current = createUserStore(user);
-      } catch(err: any) {
-        const sessionError = await handleSessionError(err, 'AppContext');
-        if (!sessionError) {
-          logger.error("[AppContext] getServerUser", err);
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    getServerUser();
-  }, [handleSessionError])
+  console.log("AppContext - start of render");
+  
+  const storeRef = useRef<ReturnType<typeof createUserStore>>(createUserStore(null));
 
   const hasHydrated = useAppStore((state) => state.hasHydrated);  
+  console.log("AppContext - hasHydrated:", hasHydrated);
+  
   if (!hasHydrated) {
     return null
   }  
 
-  if (loading) {
-    return;
-  }
-
+  console.log("AppContext - rendering children");
+  
   return (
     <UserStoreContext.Provider value={storeRef.current}>
       <Layout>
@@ -108,13 +69,17 @@ export const useInitialized = () => {
 export const useSetUser = () => {
   const store = useContext(UserStoreContext);
   if (!store) throw new Error('useSetUser must be used within UserStoreProvider');
-  return useStore(store, (state: UserState) => state.setUser);
+  
+  const selector = useCallback((state: UserState) => state.setUser, []);
+  return useStore(store, selector);
 };
 
 export const useClearUser = () => {
   const store = useContext(UserStoreContext);
   if (!store) throw new Error('useClearUser must be used within UserStoreProvider');
-  return useStore(store, (state: UserState) => state.clearUser);
+  
+  const selector = useCallback((state: UserState) => state.clearUser, []);
+  return useStore(store, selector);
 };
 
 export const useBusy = () => {

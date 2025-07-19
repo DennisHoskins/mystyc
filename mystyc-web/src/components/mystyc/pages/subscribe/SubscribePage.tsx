@@ -3,66 +3,94 @@
 import { useState, useEffect } from "react";
 
 import { apiClient } from "@/api/apiClient";
-import { useAppStore } from '@/store/appStore';
+import { useUser, useInitialized } from "@/components/ui/layout/context/AppContext";
 import { useBusy } from "@/components/ui/layout/context/AppContext";  
+import { useTransitionRouter } from "@/hooks/useTransitionRouter";
 import { logger } from "@/util/logger";
 
+import Card from "@/components/ui/Card";
 import Heading from "@/components/ui/Heading";
 import Text from "@/components/ui/Text";
 import Button from "@/components/ui/Button";
 import FormError from "@/components/ui/form/FormError";
 
-export default function SubscribePage() {
+export default function SubscribePage({ error } : { error?: string }) {
+  const router = useTransitionRouter();
+  const user = useUser();
+  const initialized = useInitialized();
   const { setBusy } = useBusy();
-  const [error, setError] = useState<string | null>(null);
-  const { isSubscribeError, setSubscribeError } = useAppStore();
+  const [upgradeError, setUpgradeError] = useState<string | null>(error || null);
 
-  useEffect(() => {
-    if (!isSubscribeError) {
-      return;
-    }
-
-    setError("There was a problem procesing your Subscription. Please try again later.")
-    setSubscribeError(false);
-  }, [isSubscribeError, setSubscribeError])
+  const MYSTYC_PLUS_PRICE_ID = 'price_1Rlx7OFbaKdrXM9uzrIJCnPq';
 
   const upgradeToPlus = async () => {
     try {
-      setError("");
+      setUpgradeError("");
       setBusy(true);
-      const response = await apiClient.startSubscription();
+      const response = await apiClient.startSubscription(MYSTYC_PLUS_PRICE_ID);
       window.location.href = response.sessionUrl;
     } catch(err) {
       logger.log(err);
-      setError('Failed to subscribe. Please try again.');
+      setUpgradeError('Failed to subscribe. Please try again.');
     } finally {
       setBusy(false);
     }
   };
 
+  useEffect(() => {
+    if (!initialized) {
+      return;
+    }
+
+    if (!user) {
+      router.replace("/", false);
+      return;
+    }
+    if (user.isPlus) {
+
+      console.log("");
+      console.log("");
+      console.log("");
+      console.log("");
+      console.log("[SubscriptionPage] User is already Plus, redirecting to account page");
+      console.log("");
+      console.log("");
+      console.log("");
+      console.log("");
+
+      router.replace("/account", false);
+    }
+  }, [initialized, user, router]);  
+
+  if (!initialized || !user || user.isPlus) {
+    return null;
+  } 
+
   return (
-    <div className="text-center items-center space-y-6 flex flex-col">
-      <Heading level={2}>Get Mystyc Plus</Heading>
-      <Text className="max-w-xl text-center">
-        Get access to mystical insights that dive deeper into your zodiac traits, birth chart influences, and personal cosmic timeline - beyond daily guidance to truly personalized mystical coaching.
-      </Text>
+    <Card className='w-full md:max-w-lg text-center p-4 m-4'>
+      <div className="text-center items-center space-y-6 flex flex-col">
+        <Heading level={2}>Get Mystyc Plus</Heading>
+        <Text className="max-w-xl text-center">
+          Get access to mystical insights that dive deeper into your zodiac traits, birth chart influences, and personal cosmic timeline - beyond daily guidance to truly personalized mystical coaching.
+        </Text>
 
-      <ul>
-        <li>Reason 1</li>
-        <li>Reason 2</li>
-        <li>Reason 3</li>
-        <li>Reason 4</li>
-        <li>Reason 5</li>
-      </ul>
+        <ul>
+          <li>Reason 1</li>
+          <li>Reason 2</li>
+          <li>Reason 3</li>
+          <li>Reason 4</li>
+          <li>Reason 5</li>
+        </ul>
 
-      {error && <FormError message={error} />}
+        {upgradeError && <FormError message={upgradeError} />}
 
-      <Button 
-        onClick={upgradeToPlus}
-        className="w-full max-w-md"
-      >
-        Upgrade
-      </Button>
-    </div>
+        <Button 
+          onClick={upgradeToPlus}
+          className="w-full max-w-md"
+        >
+          Upgrade
+        </Button>
+      </div>
+    </Card>
   );
 }

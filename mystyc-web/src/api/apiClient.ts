@@ -265,14 +265,14 @@ export const apiClient = {
     }
   },
 
-  async startSubscription(): Promise<{sessionUrl: string }> {
+  async startSubscription(priceId: string): Promise<{sessionUrl: string}> {
     try {
       const response = await fetch(`${serverRoot}/mystyc/users/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           deviceInfo: getDeviceInfo(),
-          priceId: 'price_1Rlx7OFbaKdrXM9uzrIJCnPq',
+          priceId
         })
       });
 
