@@ -47,17 +47,6 @@ export default function SubscribePage({ error } : { error?: string }) {
       return;
     }
     if (user.isPlus) {
-
-      console.log("");
-      console.log("");
-      console.log("");
-      console.log("");
-      console.log("[SubscriptionPage] User is already Plus, redirecting to account page");
-      console.log("");
-      console.log("");
-      console.log("");
-      console.log("");
-
       router.replace("/account", false);
     }
   }, [initialized, user, router]);  

@@ -285,5 +285,47 @@ export const apiClient = {
     } catch (err) {
       throw err;
     }
+  },
+
+  async getCustomerBillingPortal(): Promise<{ portalUrl: string }> {
+    try {
+      const response = await fetch(`${serverRoot}/mystyc/users/billing-portal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deviceInfo: getDeviceInfo(),
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async cancelSubscription(): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${serverRoot}/mystyc/users/cancel-subscription`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deviceInfo: getDeviceInfo(),
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 };
