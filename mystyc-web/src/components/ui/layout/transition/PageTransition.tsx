@@ -93,7 +93,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
   }));
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 transition-all duration-300 ease-in-out">
       <Transition ref={transitionRef} transition="transition-page">
         {currentChildren}
       </Transition>
