@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
+import { useToast } from '@/components/ui/layout/context/AppContext';
 import { useUser } from '@/components/ui/layout/context/AppContext';
 import { TransitionProvider } from '@/components/ui/layout/context/TransitionContext';
 
@@ -28,6 +29,8 @@ import { logger } from '@/util/logger'
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useUser();
+  const showToast = useToast();
+  const { isSubscribed, setSubscribed } = useAppStore();
   const isWebsite = !user;
   const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((s) => s.setSidebarCollapsed);
@@ -43,6 +46,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     apiClient.registerVisit(pathname)
   }, [pathname])  
+
+  useEffect(() => {
+    if (!isSubscribed) {
+      return;
+    }
+
+    showToast("Welcome to Mystyc Plus!", "success");
+    setSubscribed(false);
+  }, [isSubscribed, setSubscribed, showToast])  
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
@@ -70,7 +82,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const isAdminPath = pathname.startsWith('/admin');  
   const isAdmin = user && user.isAdmin && isAdminPath;
-  const isUserPlus = user && user.isPlus;
 
   if (pathname.startsWith("/logout")) {
     return (
@@ -89,7 +100,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <TransitionProvider>
         <AppTransition>
 
-          <Header isPlus={isUserPlus == true} isFullWidth={isAdmin == true}>
+          <Header isFullWidth={isAdmin == true}>
             {isWebsite
               ? <WebsiteHeader />
               : <AppHeader menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -103,20 +114,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             />
           )}
 
-          <div 
-            className="flex flex-1 w-full h-fit"
-            onClick={() => {
-              if (menuOpen) {
-                setMenuOpen(false);
-              }
-            }}                      
-          >
+          <div className="flex flex-1 w-full h-fit">
             <ScrollWrapper>
               {
                 isGlobalError ? <GlobalError /> :
                 !isOnline ? <Offline /> :
                 (
-
                   <>
                     {isAdmin && 
                       <AdminSidebar 
@@ -132,12 +135,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </div>
 
                   </>
-
                 )
               }
               <Footer><FooterContent /></Footer>
             </ScrollWrapper>
-            
           </div>
 
         </AppTransition>

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { apiClient } from "@/api/apiClient";
+import { useAppStore } from '@/store/appStore';
 import { useBusy } from "@/components/ui/layout/context/AppContext";  
 import { logger } from "@/util/logger";
 
@@ -14,6 +15,16 @@ import FormError from "@/components/ui/form/FormError";
 export default function SubscribePage() {
   const { setBusy } = useBusy();
   const [error, setError] = useState<string | null>(null);
+  const { isSubscribeError, setSubscribeError } = useAppStore();
+
+  useEffect(() => {
+    if (!isSubscribeError) {
+      return;
+    }
+
+    setError("There was a problem procesing your Subscription. Please try again later.")
+    setSubscribeError(false);
+  }, [isSubscribeError, setSubscribeError])
 
   const upgradeToPlus = async () => {
     try {

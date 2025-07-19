@@ -7,6 +7,8 @@ export interface AppState {
   isGlobalError: boolean;
   isLoggedOut: boolean;
   isLoggedOutByServer: boolean;
+  isSubscribed: boolean;
+  isSubscribeError: boolean;
   isBusy: boolean;
   busyTimer: NodeJS.Timeout | null;
   toasts: { id: string; message: string; type: 'success' | 'error' | 'info'; timestamp: number }[];
@@ -20,6 +22,8 @@ export interface AppState {
   setGlobalError: (isGlobalError: boolean) => void;
   setLoggedOut: (isLoggedOut: boolean) => void;
   setLoggedOutByServer: (isLoggedOutByServer: boolean) => void;
+  setSubscribed: (isSubscribed: boolean) => void;
+  setSubscribeError: (isSubscribeError: boolean) => void;
   setBusy: (delayMs?: number) => void;
   clearBusy: () => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -38,6 +42,8 @@ const initialState = {
   isGlobalError: false,
   isLoggedOut: false,
   isLoggedOutByServer: false,
+  isSubscribed: false,
+  isSubscribeError: false,
   busyTimer: null,
   toasts: [],
   hasHydrated: false,
@@ -70,6 +76,8 @@ export const useAppStore = create<AppState>()(
       setGlobalError: (isGlobalError) => set({ isGlobalError }),
       setLoggedOut: (isLoggedOut) => set({ isLoggedOut }),
       setLoggedOutByServer: (isLoggedOutByServer) => set({ isLoggedOutByServer }),
+      setSubscribed: (isSubscribed) => set({ isSubscribed }),
+      setSubscribeError: (isSubscribeError) => set({ isSubscribeError }),
       showToast: (message, type = 'info') => {
         const toast = { id: Math.random().toString(36).substr(2, 9), message, type, timestamp: Date.now() };
         set((state) => ({ toasts: [...state.toasts, toast] }));
@@ -90,7 +98,9 @@ export const useAppStore = create<AppState>()(
       name: 'app-storage',
       partialize: (state) => ({ 
         sidebarCollapsed: state.sidebarCollapsed,
-        isLoggedOutByServer: state.isLoggedOutByServer 
+        isLoggedOutByServer: state.isLoggedOutByServer, 
+        isSubscribed: state.isSubscribed,
+        isSubscribeError: state.isSubscribeError 
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

@@ -74,7 +74,7 @@ export default function SubscriptionsTabPanel() {
     };
 
     loadSummary();
-  }, []);
+  }, [setBusy, handleSessionError]);
 
   const loadPayments = useCallback(async (page: number) => {
     try {
