@@ -23,6 +23,7 @@ export default function AccountPage() {
   const { setBusy } = useBusy();
   const showToast = useToast();
   const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState<string>("");
   const [error, setError] = useState<string>("");
 
@@ -43,7 +44,6 @@ export default function AccountPage() {
 
     const loadBillingPortal = async () => {
       try {
-        setBusy(true);
         const response = await apiClient.getCustomerBillingPortal();
         if (response) {
           setUrl(response.portalUrl);
@@ -54,7 +54,7 @@ export default function AccountPage() {
         logger.error("Failed to load billing portal:", err);
         setError('Failed to load billing portal. Please try again.');
       } finally {
-        setBusy(false);
+        setLoading(false);
       }
     }
 
@@ -123,7 +123,7 @@ export default function AccountPage() {
                 className="w-full max-w-md"
                 disabled={!url}
               >
-                Go to Stripe Billing Portal
+                {loading ? "Loading..." : "Go to Stripe Billing Portal"}
               </Button>
               <Button 
                 onClick={cancelSubscription}
