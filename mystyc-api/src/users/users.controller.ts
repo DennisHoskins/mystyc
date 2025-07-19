@@ -247,6 +247,44 @@ export class UsersController {
   }  
 
   /**
+   * Creates a Stripe customer portal session for billing management
+   * @param firebaseUser - Firebase user from auth guard
+   * @param body - Request body containing return URL for after portal visit
+   * @returns Promise<{portalUrl: string}> - Secure Stripe portal URL
+   */
+  @Post('billing-portal')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async createBillingPortalSession(
+    @FirebaseUser() firebaseUser,
+    @Body() body: { returnUrl: string }
+  ): Promise<{ portalUrl: string }> {
+    const portalUrl = await this.userService.createCustomerPortalSession(
+      firebaseUser.uid,
+      body.returnUrl
+    );
+    return { portalUrl };
+  }
+
+  /**
+   * Cancels user's active subscription immediately with no refund
+   * @param firebaseUser - Firebase user from auth guard
+   * @returns Promise<{success: boolean, message: string}> - Cancellation confirmation
+   */
+  @Post('cancel-subscription')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  async cancelSubscription(
+    @FirebaseUser() firebaseUser
+  ): Promise<{ success: boolean; message: string }> {
+    await this.userService.cancelSubscription(firebaseUser.uid);
+    return { 
+      success: true, 
+      message: 'Subscription cancelled successfully' 
+    };
+  }
+
+  /**
    * Logs out user by clearing device FCM token and recording logout event
    * @param firebaseUserFromDecorator - Firebase user from auth guard
    * @param logoutDto - Logout data with device ID and client timestamp

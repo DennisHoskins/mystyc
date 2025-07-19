@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsOptional } from 'class-validator';
 import { Document } from 'mongoose';
 
 export type PaymentHistoryDocument = PaymentHistory & Document;
@@ -17,7 +18,8 @@ export class PaymentHistory {
   @Prop({ required: true, index: true })
   stripeInvoiceId: string;
 
-  @Prop({ required: true, index: true })
+  @IsOptional()
+  @Prop({ index: true })
   stripeSubscriptionId: string;
 
   @Prop({ required: true })

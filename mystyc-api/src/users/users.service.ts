@@ -328,6 +328,89 @@ export class UsersService {
   }  
 
   /**
+   * Creates a Stripe Customer Portal session for billing management
+   * @param firebaseUid - Firebase user unique identifier  
+   * @param returnUrl - URL to redirect user after portal session
+   * @returns Promise<string> - Stripe customer portal URL
+   * @throws NotFoundException when user profile is not found
+   * @throws Error when user has no Stripe customer ID
+   */
+  async createCustomerPortalSession(firebaseUid: string, returnUrl: string): Promise<string> {
+    logger.info('Creating customer portal session', { firebaseUid });
+
+    const userProfile = await this.userProfileService.findByFirebaseUid(firebaseUid);
+    if (!userProfile) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!userProfile.stripeCustomerId) {
+      throw new Error('User does not have a Stripe customer ID');
+    }
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    
+    const session = await stripe.billingPortal.sessions.create({
+      customer: userProfile.stripeCustomerId,
+      return_url: returnUrl,
+    });
+
+    logger.info('Customer portal session created', {
+      firebaseUid,
+      sessionId: session.id,
+      customerId: userProfile.stripeCustomerId
+    });
+
+    return session.url!;
+  }
+
+  /**
+   * Cancels user's active subscription immediately with no refund
+   * @param firebaseUid - Firebase user unique identifier
+   * @returns Promise<void>
+   * @throws NotFoundException when user profile is not found
+   * @throws Error when no active subscription found or cancellation fails
+   */
+  async cancelSubscription(firebaseUid: string): Promise<void> {
+    logger.info('Cancelling subscription', { firebaseUid });
+
+    const userProfile = await this.userProfileService.findByFirebaseUid(firebaseUid);
+    if (!userProfile) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!userProfile.stripeCustomerId) {
+      throw new Error('User does not have a Stripe customer ID');
+    }
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    
+    // Find active subscriptions for this customer
+    const subscriptions = await stripe.subscriptions.list({
+      customer: userProfile.stripeCustomerId,
+      status: 'active',
+    });
+
+    if (subscriptions.data.length === 0) {
+      throw new Error('No active subscription to cancel');
+    }
+
+    // Cancel all active subscriptions (should only be 1)
+    for (const subscription of subscriptions.data) {
+      await stripe.subscriptions.cancel(subscription.id);
+      logger.info('Subscription cancelled', {
+        firebaseUid,
+        subscriptionId: subscription.id,
+        customerId: userProfile.stripeCustomerId
+      });
+    }
+
+    logger.info('All subscriptions cancelled successfully', {
+      firebaseUid,
+      cancelledCount: subscriptions.data.length
+    });
+  }  
+
+  /**
    * Finds user by Firebase UID, returns null if not found (service-level method)
    * @param firebaseUser - Firebase authentication user object
    * @returns Promise<User | null> - User object if found, null if not found

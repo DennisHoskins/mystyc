@@ -293,7 +293,7 @@ export class SchedulesService {
         await this.scheduleExecutionService.updateStatus(executionLog._id, 'failed', error.message, duration);
       }
       
-      await this.info(task._id, task.event_name, error);
+      await this.logScheduleFailure(task._id, task.event_name, error);
     }
   }
 
@@ -352,12 +352,12 @@ export class SchedulesService {
       logger.info("[getMatchingTimezones] Using cached timezones");
     }
     
-    logger.info("[getMatchingTimezones] getting matching timezones", { timezones: this.cachedTimezones }, serverTime, targetTime);
+    logger.info("[getMatchingTimezones] getting matching timezones", { timezones: this.cachedTimezones, serverTime: serverTime, targetTime: targetTime });
 
     return this.cachedTimezones.filter(tzData => {
       const localTime = this.getLocalTime(serverTime, tzData.offsetHours);
 
-      logger.info("[getMatchingTimezones] localTime:", tzData, localTime, localTime.getHours(), localTime.getMinutes());
+      logger.info("[getMatchingTimezones] localTime:", { tzData, localTime, localHours: localTime.getHours(), localMinutes: localTime.getMinutes() });
 
       return localTime.getHours() === targetTime.hour && 
              localTime.getMinutes() === targetTime.minute;
