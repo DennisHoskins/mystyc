@@ -6,6 +6,7 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
 import { DevicesService } from './devices.service';
 import { Device } from '@/common/interfaces/device.interface';
+import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { logger } from '@/common/util/logger';
 
 @Controller('devices')
@@ -23,7 +24,7 @@ export class DevicesController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async updateFcmToken(
-    @FirebaseUser() firebaseUser,
+    @FirebaseUser() firebaseUser: FirebaseUserInterface,
     @Body() updateFcmTokenDto: UpdateFcmTokenDto
   ): Promise<Device> {
     logger.info('Updating FCM token via controller', {
@@ -47,7 +48,7 @@ export class DevicesController {
       logger.error('FCM token update failed via controller', {
         uid: firebaseUser.uid,
         deviceId: updateFcmTokenDto.deviceId,
-        error: error.message
+        error
       }, 'DevicesController');
 
       throw error;

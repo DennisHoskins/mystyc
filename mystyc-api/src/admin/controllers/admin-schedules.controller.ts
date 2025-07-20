@@ -62,7 +62,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     } catch (error) {
       logger.error('Failed to create schedule', {
         eventName: createScheduleDto.event_name,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -110,7 +110,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
       
       logger.error('Failed to update schedule', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -143,7 +143,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     } catch (error) {
       logger.error('Failed to enable schedule', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -176,7 +176,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     } catch (error) {
       logger.error('Failed to disable schedule', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -217,7 +217,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
       
       logger.error('Failed to delete schedule', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -245,7 +245,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
       };
     } catch (error) {
       logger.error('Failed to update Timezone cache', {
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -260,7 +260,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
   @Get('/timezones')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getCachedTimezones(): Promise<Array<{timezone: string, offsetHours: number}>> {
+  async getCachedTimezones(): Promise<Array<{timezone: string, offsetHours: number}> | null> {
     logger.info('Admin fetching schedule cached timezones', {}, 'AdminScheduleController');
 
     try {
@@ -270,7 +270,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
       return timezones;
     } catch (error) {
       logger.error('Failed to fetch schedule executions', {
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -334,7 +334,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     } catch (error) {
       logger.error('Failed to fetch schedule executions', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -398,7 +398,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     } catch (error) {
       logger.error('Failed to fetch schedule content', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -462,7 +462,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     } catch (error) {
       logger.error('Failed to fetch schedule notifications', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }
@@ -524,7 +524,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     } catch (error) {
       logger.error('Failed to fetch schedule summary', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'AdminScheduleController');
       throw error;
     }

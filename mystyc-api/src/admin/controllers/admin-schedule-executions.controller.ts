@@ -100,7 +100,7 @@ export class AdminScheduleExecutionsController extends AdminController<ScheduleE
     } catch (error) {
       logger.error('Failed to fetch schedule execution content', {
         executionId: id,
-        error: error.message
+        error
       }, 'AdminScheduleExecutionController');
       throw error;
     }
@@ -164,7 +164,7 @@ export class AdminScheduleExecutionsController extends AdminController<ScheduleE
     } catch (error) {
       logger.error('Failed to fetch schedule notifications', {
         executionId: id,
-        error: error.message
+        error
       }, 'AdminScheduleExecutionController');
       throw error;
     }

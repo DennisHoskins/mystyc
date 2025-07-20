@@ -22,7 +22,7 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI),
+    MongooseModule.forRoot(process.env.MONGO_URI!),
     ThrottlerModule.forRoot([
       {
         name: 'default',

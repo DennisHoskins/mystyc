@@ -56,9 +56,11 @@ export class OpenAIWebsiteService extends OpenAICoreService {
         const { title, message } = JSON.parse(response);
 
         const usage = completion.usage;
-        const cost = this.calculateCost(usage.prompt_tokens, usage.completion_tokens);
+        const cost = this.calculateCost(usage?.prompt_tokens, usage?.completion_tokens);
 
-        await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
+        if (usage?.prompt_tokens && usage?.completion_tokens === undefined) {
+          await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
+        }
 
         content.title = title;
         content.message = message;
@@ -72,8 +74,8 @@ export class OpenAIWebsiteService extends OpenAICoreService {
         content.openAIData = {
           prompt: prompt.slice(0, 500), // Truncate prompt for storage
           model: 'gpt-4o-mini',
-          inputTokens: usage.prompt_tokens,
-          outputTokens: usage.completion_tokens,
+          inputTokens: usage?.prompt_tokens || 0,
+          outputTokens: usage?.completion_tokens || 0,
           cost,
           retryCount: attempt
         }
@@ -86,7 +88,7 @@ export class OpenAIWebsiteService extends OpenAICoreService {
           contentId: savedContent._id,
           duration: Date.now() - startTime,
           cost,
-          tokensUsed: usage.prompt_tokens + usage.completion_tokens,
+          tokensUsed: usage?.prompt_tokens && usage.completion_tokens ? usage.prompt_tokens + usage.completion_tokens : 0,
           retryCount: attempt
         }, 'OpenAIWebsiteService');
 
@@ -96,7 +98,7 @@ export class OpenAIWebsiteService extends OpenAICoreService {
         logger.warn(`OpenAI attempt ${attempt + 1} failed`, { 
           date, 
           contentId: content._id, 
-          error: err.message,
+          error: err,
           attempt: attempt + 1,
           maxRetries: this.MAX_RETRIES + 1
         }, 'OpenAIWebsiteService');
@@ -110,11 +112,12 @@ export class OpenAIWebsiteService extends OpenAICoreService {
     logger.error('All OpenAI attempts failed, generating fallback content', {
       date,
       contentId: content._id, 
-      error: lastError?.message,
+      error: lastError,
       totalAttempts: this.MAX_RETRIES + 1
     }, 'OpenAIWebsiteService');
 
-    return await this.generateFallbackContent(date, content, startTime, lastError?.message);
+    const message = lastError instanceof Error ? lastError?.message : 'OpenAI generation failed';
+    return await this.generateFallbackContent(date, content, startTime, message);
   }
 
   private async generateFallbackContent(date: string, content: ContentDocument, startTime: number, error?: string): Promise<ContentDocument> {
@@ -179,11 +182,11 @@ export class OpenAIWebsiteService extends OpenAICoreService {
         date,
         contentId: content._id,
         originalError: error,
-        fallbackError: fallbackError.message
+        error: fallbackError
       }, 'OpenAIWebsiteService');
 
       content.status = 'failed';
-      content.error = `Both OpenAI and fallback failed: ${fallbackError.message}`;
+      content.error = `Both OpenAI and fallback failed: ${fallbackError}`;
       content.generationDuration = Date.now() - startTime;
 
       const savedContent = await content.save();

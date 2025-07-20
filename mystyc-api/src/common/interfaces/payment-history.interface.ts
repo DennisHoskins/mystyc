@@ -4,7 +4,7 @@ export interface PaymentHistory {
   stripeCustomerId: string;
   stripeChargeId: string;
   stripeInvoiceId: string;
-  stripeSubscriptionId: string;
+  stripeSubscriptionId?: string | null;
   amount: number; // Amount in cents
   currency: string; // USD, EUR, etc.
   status: 'paid' | 'failed' | 'refunded' | 'disputed';

@@ -7,46 +7,46 @@ import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 @Schema()
 export class Subscription {
   @Prop({ type: String, enum: SubscriptionLevel, default: SubscriptionLevel.USER, required: true })
-  level: SubscriptionLevel;
+  level!: SubscriptionLevel;
 
   @Prop({ type: Date })
-  startDate: Date;
+  startDate!: Date;
 
   @Prop({ type: Number, default: 0 })
-  creditBalance: number;
+  creditBalance!: number;
 }
 
 @Schema({ timestamps: true, collection: 'userProfiles' })
 export class UserProfile {
   @Prop({ required: true })
-  firebaseUid: string;
+  firebaseUid!: string;
 
   @Prop()
-  emailAddress: string;
+  emailAddress!: string;
   
   @Prop({ type: [String], enum: UserRole, default: [UserRole.USER], required: true })
-  roles: UserRole[];  
+  roles!: UserRole[];  
 
   @Prop()
-  fullName: string;
+  fullName!: string;
 
   @Prop({ type: Date })
-  dateOfBirth: Date;
+  dateOfBirth!: Date;
 
   @Prop()
-  zodiacSign: string;
+  zodiacSign!: string;
 
   @Prop()
-  email: string;
+  email!: string;
 
   @Prop({ type: Subscription, default: () => ({}) })
-  subscription: Subscription;
+  subscription!: Subscription;
 
   @Prop({ sparse: true, index: true })
   stripeCustomerId?: string;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type UserProfileDocument = UserProfile & Document;

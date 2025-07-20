@@ -117,7 +117,7 @@ export class AdminContentStatsService {
       };
     } catch (error) {
       logger.error('Failed to generate content summary stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminContentStatsService');
       throw error;
@@ -190,7 +190,7 @@ export class AdminContentStatsService {
       const totalAttempts = statusResult[0]?.totalAttempts || 0;
       
       // Format status breakdown
-      const generationsByStatus = (statusResult[0]?.statuses || []).map(s => ({
+      const generationsByStatus = (statusResult[0]?.statuses || []).map((s : { status: number, count: number }) => ({
         status: s.status,
         count: s.count,
         percentage: totalAttempts > 0 ? Math.round((s.count / totalAttempts) * 100) : 0
@@ -230,7 +230,7 @@ export class AdminContentStatsService {
       };
     } catch (error) {
       logger.error('Failed to generate content generation stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminContentStatsService');
       throw error;
@@ -285,12 +285,12 @@ export class AdminContentStatsService {
 
       // Format source breakdown
       const contentBySources = (result.sourceGroups || [])
-        .map(group => ({
+        .map((group: { sources: string[]; count: number }) => ({
           sources: group.sources,
           count: group.count,
           percentage: Math.round((group.count / result.totalContent) * 100)
         }))
-        .sort((a, b) => b.count - a.count);
+        .sort((a: { sources: string[]; count: number }, b: { sources: string[]; count: number }) => b.count - a.count);
 
       return {
         totalContent: result.totalContent,
@@ -299,7 +299,7 @@ export class AdminContentStatsService {
       };
     } catch (error) {
       logger.error('Failed to generate content source stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminContentStatsService');
       throw error;
@@ -369,7 +369,7 @@ export class AdminContentStatsService {
       };
     } catch (error) {
       logger.error('Failed to generate content timeline stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminContentStatsService');
       throw error;

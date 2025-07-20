@@ -4,31 +4,31 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true, collection: 'authEvents' })
 export class AuthEvent {
   @Prop({ required: true, index: true })
-  firebaseUid: string;
+  firebaseUid!: string;
 
   @Prop({ required: true, index: true })
-  email: string;
+  email!: string;
 
   @Prop({ required: true, index: true })
-  deviceId: string;
+  deviceId!: string;
 
   @Prop({ required: true, index: true })
-  deviceName: string;
+  deviceName!: string;
 
   @Prop({ required: true, enum: ['create', 'login', 'logout', 'server-logout'], index: true })
-  type: 'create' | 'login' | 'logout' | 'server-logout';
+  type!: 'create' | 'login' | 'logout' | 'server-logout';
 
   @Prop({ required: true })
-  ip: string;
+  ip!: string;
 
   @Prop({ required: true, index: true })
-  timestamp: Date; // server UTC
+  timestamp!: Date; // server UTC
 
   @Prop({ required: true })
-  clientTimestamp: Date; // client-provided
+  clientTimestamp!: Date; // client-provided
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type AuthEventDocument = AuthEvent & Document;

@@ -69,8 +69,10 @@ export class WebsiteContentService {
       // Tell schedule execution it succeeded
       const duration = Date.now() - startTime;
       await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);
-    } catch (error) {
+    } catch (err: unknown) {
       const duration = Date.now() - startTime;
+
+      const error = err instanceof Error ? err : new Error(String(err));
       
       // Check if this is a timeout error
       if (error instanceof ContentGenerationTimeoutError || error.name === 'ContentGenerationTimeoutError') {
@@ -78,7 +80,7 @@ export class WebsiteContentService {
           scheduleId: payload.scheduleId,
           executionId: payload.executionId,
           timezone: payload.timezone || 'global',
-          error: error.message,
+          error,
           duration,
           scheduledTime: payload.scheduledTime,
         }, 'WebsiteContentService');
@@ -90,7 +92,7 @@ export class WebsiteContentService {
           scheduleId: payload.scheduleId,
           executionId: payload.executionId,
           timezone: payload.timezone || 'global',
-          error: error.message,
+          error,
           duration,
           scheduledTime: payload.scheduledTime,
         }, 'WebsiteContentService');

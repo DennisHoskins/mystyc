@@ -87,9 +87,11 @@ export class OpenAIUserPlusService extends OpenAICoreService {
         const { title, message } = JSON.parse(response);
 
         const usage = completion.usage;
-        const cost = this.calculateCost(usage.prompt_tokens, usage.completion_tokens);
+        const cost = this.calculateCost(usage?.prompt_tokens, usage?.completion_tokens);
 
-        await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
+        if (usage?.prompt_tokens && usage?.completion_tokens === undefined) {
+          await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
+        }
 
         // Enhanced content formatting for plus users
         content.title = `${userProfile.fullName || 'Mystical Seeker'}: ${title}`;
@@ -104,8 +106,8 @@ export class OpenAIUserPlusService extends OpenAICoreService {
         content.openAIData = {
           prompt: prompt.slice(0, 500), // Truncate prompt for storage
           model: 'gpt-4o-mini',
-          inputTokens: usage.prompt_tokens,
-          outputTokens: usage.completion_tokens,
+          inputTokens: usage?.prompt_tokens || 0,
+          outputTokens: usage?.completion_tokens || 0,
           cost,
           retryCount: attempt
         }
@@ -119,7 +121,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
           userId: userProfile.firebaseUid,
           duration: Date.now() - startTime,
           cost,
-          tokensUsed: usage.prompt_tokens + usage.completion_tokens,
+          tokensUsed: usage?.prompt_tokens && usage?.completion_tokens ? usage.prompt_tokens + usage.completion_tokens : 0,
           retryCount: attempt
         }, 'OpenAIUserPlusService');
 
@@ -130,7 +132,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
           date, 
           contentId: content._id,
           userId: userProfile.firebaseUid,
-          error: err.message,
+          error: err,
           attempt: attempt + 1,
           maxRetries: this.MAX_RETRIES + 1
         }, 'OpenAIUserPlusService');
@@ -145,11 +147,12 @@ export class OpenAIUserPlusService extends OpenAICoreService {
       date,
       contentId: content._id,
       userId: userProfile.firebaseUid,
-      error: lastError?.message,
+      error: lastError,
       totalAttempts: this.MAX_RETRIES + 1
     }, 'OpenAIUserPlusService');
 
-    return await this.generateFallbackPlusContent(userProfile, date, content, startTime, lastError?.message);
+    const message = lastError instanceof Error ? lastError?.message : 'OpenAI generation failed';
+    return await this.generateFallbackPlusContent(userProfile, date, content, startTime, message);
   }
 
   private async generateFallbackPlusContent(userProfile: UserProfile, date: string, content: ContentDocument, startTime: number, error?: string): Promise<ContentDocument> {
@@ -228,11 +231,11 @@ export class OpenAIUserPlusService extends OpenAICoreService {
         contentId: content._id,
         userId: userProfile.firebaseUid,
         originalError: error,
-        fallbackError: fallbackError.message
+        fallbackError
       }, 'OpenAIUserPlusService');
 
       content.status = 'failed';
-      content.error = `Both OpenAI and fallback failed: ${fallbackError.message}`;
+      content.error = `Both OpenAI and fallback failed: ${fallbackError}`;
       content.generationDuration = Date.now() - startTime;
 
       const savedContent = await content.save();
@@ -256,7 +259,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
 
   private getEnhancedImageUrl(date: string, userProfile: UserProfile): string {
     // Enhanced image selection based on zodiac sign
-    const zodiacImages = {
+    const zodiacImages: Record<string, string> = {
       'Aries': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b',
       'Taurus': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
       'Gemini': 'https://images.unsplash.com/photo-1516912481808-3406841bd33c',

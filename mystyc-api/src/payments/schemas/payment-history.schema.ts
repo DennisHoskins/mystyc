@@ -7,52 +7,52 @@ export type PaymentHistoryDocument = PaymentHistory & Document;
 @Schema({ timestamps: true, collection: 'paymentHistory' })
 export class PaymentHistory {
   @Prop({ required: true, index: true })
-  firebaseUid: string;
+  firebaseUid!: string;
 
   @Prop({ required: true, index: true })
-  stripeCustomerId: string;
+  stripeCustomerId!: string;
 
   @Prop({ required: true, index: true })
-  stripeChargeId: string;
+  stripeChargeId!: string;
 
   @Prop({ required: true, index: true })
-  stripeInvoiceId: string;
+  stripeInvoiceId!: string;
 
   @IsOptional()
   @Prop({ index: true })
-  stripeSubscriptionId: string;
+  stripeSubscriptionId!: string;
 
   @Prop({ required: true })
-  amount: number; // Amount in cents
+  amount!: number; // Amount in cents
 
   @Prop({ required: true, default: 'USD' })
-  currency: string;
+  currency!: string;
 
   @Prop({ 
     required: true, 
     enum: ['paid', 'failed', 'refunded', 'disputed'],
     index: true 
   })
-  status: string;
+  status!: string;
 
   @Prop({ 
     required: true, 
     enum: ['plus', 'pro'],
     index: true 
   })
-  subscriptionTier: string;
+  subscriptionTier!: string;
 
   @Prop({ required: true, index: true })
-  paidAt: Date;
+  paidAt!: Date;
 
   @Prop({ required: true })
-  periodStart: Date;
+  periodStart!: Date;
 
   @Prop({ required: true })
-  periodEnd: Date;
+  periodEnd!: Date;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export const PaymentHistorySchema = SchemaFactory.createForClass(PaymentHistory);

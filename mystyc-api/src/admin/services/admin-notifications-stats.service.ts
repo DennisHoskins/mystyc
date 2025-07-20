@@ -158,7 +158,7 @@ export class AdminNotificationsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate notification delivery stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminNotificationsStatsService');
       throw error;
@@ -259,7 +259,7 @@ export class AdminNotificationsStatsService {
       }
 
       // Sort by count descending
-      const sortedTypeBreakdown = result.typeBreakdown.sort((a, b) => b.count - a.count);
+      const sortedTypeBreakdown = result.typeBreakdown.sort((a: { count: number }, b: { count: number }) => b.count - a.count);
 
       logger.info('Notification type stats generated', {
         totalNotifications: result.totalNotifications,
@@ -273,7 +273,7 @@ export class AdminNotificationsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate notification type stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminNotificationsStatsService');
       throw error;
@@ -449,7 +449,7 @@ export class AdminNotificationsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate notification engagement stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminNotificationsStatsService');
       throw error;
@@ -576,7 +576,7 @@ export class AdminNotificationsStatsService {
       
       if (peakHoursResult[0]) {
         totalNotifications = peakHoursResult[0].totalNotifications;
-        peakHours = peakHoursResult[0].peakHours.sort((a, b) => b.count - a.count);
+        peakHours = peakHoursResult[0].peakHours.sort((a: { count: number }, b: { count: number }) => b.count - a.count);
       }
 
       // Process volume trends
@@ -596,7 +596,7 @@ export class AdminNotificationsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate notification pattern stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminNotificationsStatsService');
       throw error;

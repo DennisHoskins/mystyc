@@ -60,11 +60,11 @@ export class AdminNotificationsSendController {
     try {
       await this.notificationsService.sendToDevice(
         device, 
-        sendNotificationDto.title, 
-        sendNotificationDto.body, 
+        sendNotificationDto.title || "Default Title", 
+        sendNotificationDto.body || "Default Body", 
         "https://mystyc.app",
         'admin',
-        user.email,
+        user.email || "admin@mystyc.com",
         null, null, null,
         results,
       );
@@ -79,7 +79,7 @@ export class AdminNotificationsSendController {
     } catch (error) {
       logger.error('Notification batch failed', { 
         adminUid: user.uid,
-        error: error.message 
+        error 
       }, 'AdminNotificationsSendController');
       throw error;
     }

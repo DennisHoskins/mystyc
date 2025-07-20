@@ -73,6 +73,13 @@ class Logger {
     const sanitized = { ...context };
     
     Object.keys(sanitized).forEach(key => {
+
+      const val = sanitized[key];
+      if (val instanceof Error) {
+        sanitized[key] = val.message;
+        return;
+      }
+
       const lowerKey = key.toLowerCase();
       
       // Check if key contains any sensitive pattern
@@ -156,7 +163,7 @@ class Logger {
       }
     } catch (error) {
       // CRITICAL: Never call logger methods here - use console directly to avoid infinite recursion
-      console.error('[LOGGER ERROR] Failed to format message:', error.message);
+      console.error('[LOGGER ERROR] Failed to format message:', error);
       return `[LOGGER ERROR] ${message}`;
     }
   }

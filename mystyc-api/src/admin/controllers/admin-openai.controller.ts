@@ -41,7 +41,7 @@ export class AdminOpenAIController extends AdminController<OpenAIUsage> {
       return usage;
     } catch (error) {
       logger.error('Failed to get OpenAI usage', {
-        error: error.message
+        error
       }, 'OpenAIController');
       throw error;
     }

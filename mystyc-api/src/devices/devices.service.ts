@@ -44,7 +44,7 @@ export class DevicesService {
     } catch (error) {
       logger.error('Failed to find device by ID', {
         id,
-        error: error.message
+        error
       }, 'DeviceService');
 
       return null;
@@ -300,8 +300,7 @@ export class DevicesService {
       logger.error('Device upsert failed', {
         firebaseUid,
         deviceId: deviceDto.deviceId,
-        error: error.message,
-        code: error.code
+        error,
       }, 'DeviceService');
 
       throw error;
@@ -358,7 +357,7 @@ export class DevicesService {
       logger.error('FCM token update failed', {
         firebaseUid,
         deviceId: updateFcmTokenDto.deviceId,
-        error: error.message
+        error
       }, 'DeviceService');
 
       throw error;
@@ -413,7 +412,7 @@ export class DevicesService {
       logger.error('FCM token update failed', {
         firebaseUid,
         deviceId: deviceId,
-        error: error.message
+        error
       }, 'DeviceService');
 
       throw error;
@@ -442,7 +441,7 @@ export class DevicesService {
     } catch (error) {
       logger.error('Failed to remove invalid FCM token', {
         deviceId,
-        error: error.message
+        error
       }, 'DeviceService');
     }
   }

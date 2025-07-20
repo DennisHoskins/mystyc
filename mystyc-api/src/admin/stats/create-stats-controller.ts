@@ -14,7 +14,7 @@ export function createStatsController<T>(moduleName: string) {
   }
 
   class DynamicStatsController {
-    public serviceName = config.serviceName;
+    public serviceName = config!.serviceName;
     
     constructor(public service: any) {}
 
@@ -23,12 +23,12 @@ export function createStatsController<T>(moduleName: string) {
     @UseGuards(FirebaseAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     async getStats(@Query() query: AdminStatsQueryDto) {
-      const promises = config.stats.map(stat => 
+      const promises = config!.stats.map(stat => 
         this.service[stat.method](query)
       );
       const results = await Promise.all(promises);
       
-      return config.stats.reduce((acc, stat, index) => {
+      return config!.stats.reduce<Record<string, any>>((acc, stat, index) => {
         acc[stat.key] = results[index];
         return acc;
       }, {});
@@ -42,7 +42,7 @@ export function createStatsController<T>(moduleName: string) {
       @Param('statType') statType: string, 
       @Query() query: AdminStatsQueryDto
     ) {
-      const stat = config.stats.find(s => s.key === statType);
+      const stat = config!.stats.find(s => s.key === statType);
       if (!stat) {
         throw new NotFoundException(`Stat type ${statType} not found`);
       }

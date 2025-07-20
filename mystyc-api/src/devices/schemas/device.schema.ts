@@ -4,40 +4,40 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true, collection: 'devices' })
 export class Device {
   @Prop({ required: true, index: true })
-  firebaseUid: string;
+  firebaseUid!: string;
 
   @Prop({ required: true, index: true })
-  deviceId: string;
+  deviceId!: string;
 
   @Prop({ required: true })
-  deviceName: string;
+  deviceName!: string;
 
   @Prop({ required: true })
-  platform: string;
+  platform!: string;
 
   @Prop()
-  fcmToken: string;
+  fcmToken!: string;
 
   @Prop()
-  fcmTokenUpdatedAt: Date;
+  fcmTokenUpdatedAt!: Date;
 
   @Prop()
-  appVersion: string;
+  appVersion!: string;
 
   @Prop({ required: true })
-  userAgent: string;
+  userAgent!: string;
 
   @Prop({ type: Object })
-  userAgentParsed: Record<string, any>;
+  userAgentParsed!: Record<string, any>;
 
   @Prop({ required: true })
-  timezone: string;
+  timezone!: string;
 
   @Prop({ required: true })
-  language: string;
+  language!: string;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type DeviceDocument = Device & Document;

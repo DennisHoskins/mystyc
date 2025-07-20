@@ -75,7 +75,7 @@ export class UsersService {
       logger.error('User session registration failed', {
         firebaseUid: firebaseUser.uid,
         deviceId: loginRegisterDto.device.deviceId,
-        error: error.message
+        error
       }, 'UsersService');
 
       throw error;
@@ -139,7 +139,7 @@ export class UsersService {
       logger.error('User session logout failed', {
         firebaseUid: firebaseUser.uid,
         deviceId: logoutDto.device.deviceId,
-        error: error.message
+        error
       }, 'UsersService');
 
       throw error;
@@ -156,7 +156,7 @@ export class UsersService {
     firebaseUid: string, 
     deviceId: string, 
     clientTimestamp: string,
-    serverIp
+    serverIp: string,
   ): Promise<null> {
     logger.info('Server Logout', {
       firebaseUid: firebaseUid,
@@ -212,7 +212,7 @@ export class UsersService {
       logger.error('Server Logout FCM token update failed', {
         firebaseUid: firebaseUid,
         deviceId: deviceId,
-        error: error.message
+        error
       }, 'UsersService');
 
       throw error;
@@ -276,7 +276,7 @@ export class UsersService {
     } catch(error) {
       logger.error('User creation failed', {
         firebaseUid: firebaseUser.uid,
-        error: error.message
+        error
       }, 'UsersService');
 
       throw error;
@@ -435,7 +435,7 @@ export class UsersService {
     } catch(error) {
       logger.error('User lookup failed', { 
         firebaseUid: firebaseUser.uid,
-        error: error.message 
+        error
       }, 'UsersService');
       throw error;
     }

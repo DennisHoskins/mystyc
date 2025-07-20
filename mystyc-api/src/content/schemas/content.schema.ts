@@ -13,10 +13,10 @@ export enum ContentType {
 @Schema()
 export class DataItem {
   @Prop({ required: true })
-  key: string;
+  key!: string;
 
   @Prop({ required: true })
-  value: string;
+  value!: string;
 }
 export const DataItemSchema = SchemaFactory.createForClass(DataItem);
 
@@ -50,10 +50,10 @@ export class Content {
     default: ContentType.WEBSITE,
     index: true 
   })
-  type: ContentType;
+  type!: ContentType;
 
   @Prop({ required: true, index: true })
-  date: string; // Format: "2025-07-07"
+  date!: string; // Format: "2025-07-07"
 
   @Prop({ index: true })
   scheduleId?: string;
@@ -71,10 +71,10 @@ export class Content {
   openAIData?: OpenAIData;
 
   @Prop({ required: true })
-  title: string;
+  title!: string;
 
   @Prop({ required: true })
-  message: string;
+  message!: string;
 
   @Prop()
   imageUrl?: string;
@@ -86,25 +86,25 @@ export class Content {
   linkText?: string;
 
   @Prop({ type: [DataItemSchema], required: true })
-  data: DataItem[];
+  data!: DataItem[];
 
   @Prop({ type: [String], default: [] })
-  sources: string[]; // ["static", "horoscope-api", "openai"]
+  sources!: string[]; // ["static", "horoscope-api", "openai"]
 
   @Prop({ required: true, enum: ['pending', 'generated', 'failed', 'fallback'], default: 'generated' })
-  status: 'pending' | 'generated' | 'failed' | 'fallback';
+  status!: 'pending' | 'generated' | 'failed' | 'fallback';
 
   @Prop()
   error?: string;
 
   @Prop({ required: true })
-  generatedAt: Date;
+  generatedAt!: Date;
 
   @Prop({ required: true, default: 0 })
-  generationDuration: number; // milliseconds
+  generationDuration!: number; // milliseconds
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type ContentDocument = Content & Document;

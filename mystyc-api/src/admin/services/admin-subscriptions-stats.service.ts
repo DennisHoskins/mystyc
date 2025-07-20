@@ -92,7 +92,7 @@ export class AdminSubscriptionsStatsService {
       return result;
     } catch (error) {
       logger.error('Failed to generate subscription summary stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminSubscriptionsStatsService');
       throw error;
@@ -144,8 +144,8 @@ export class AdminSubscriptionsStatsService {
 
       // Format monthly revenue data
       const monthlyRevenue = monthlyResults.map(month => {
-        const plusData = month.tierBreakdown.find(t => t.tier === 'plus') || { revenue: 0, count: 0 };
-        const proData = month.tierBreakdown.find(t => t.tier === 'pro') || { revenue: 0, count: 0 };
+        const plusData = month.tierBreakdown.find((t: { tier: string; revenue: number; count: number }) => t.tier === 'plus') || { revenue: 0, count: 0 };
+        const proData  = month.tierBreakdown.find((t: { tier: string; revenue: number; count: number }) => t.tier === 'pro')  || { revenue: 0, count: 0 };        
         
         return {
           month: month._id,
@@ -199,7 +199,7 @@ export class AdminSubscriptionsStatsService {
       return result;
     } catch (error) {
       logger.error('Failed to generate subscription revenue stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminSubscriptionsStatsService');
       throw error;
@@ -273,8 +273,8 @@ export class AdminSubscriptionsStatsService {
       const subscriptionResults = await this.userProfileModel.aggregate(newSubscriptionsPipeline);
       
       const newSubscriptions = subscriptionResults.map(day => {
-        const plusCount = day.tierCounts.find(t => t.tier === SubscriptionLevel.PLUS)?.count || 0;
-        const proCount = day.tierCounts.find(t => t.tier === SubscriptionLevel.PRO)?.count || 0;
+        const plusCount = day.tierCounts.find((t: { tier: SubscriptionLevel; count: number }) => t.tier === SubscriptionLevel.PLUS)?.count || 0;
+        const proCount = day.tierCounts.find((t: { tier: SubscriptionLevel; count: number }) => t.tier === SubscriptionLevel.PRO)?.count || 0;
         
         return {
           date: day._id,
@@ -298,7 +298,7 @@ export class AdminSubscriptionsStatsService {
       return result;
     } catch (error) {
       logger.error('Failed to generate subscription lifecycle stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminSubscriptionsStatsService');
       throw error;
@@ -366,7 +366,7 @@ export class AdminSubscriptionsStatsService {
 
       const [statusResult] = await this.paymentHistoryModel.aggregate(statusPipeline);
       
-      const paymentsByStatus = statusResult ? statusResult.statuses.map(status => ({
+      const paymentsByStatus = statusResult ? statusResult.statuses.map((status: { status: string; count: number; total: number; totalAmount: number }) => ({
         status: status.status as 'paid' | 'failed' | 'refunded' | 'disputed',
         count: status.count,
         percentage: Math.round((status.count / statusResult.total) * 100),
@@ -444,7 +444,7 @@ export class AdminSubscriptionsStatsService {
       return result;
     } catch (error) {
       logger.error('Failed to generate subscription payment health stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminSubscriptionsStatsService');
       throw error;

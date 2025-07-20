@@ -1,6 +1,7 @@
-import { ValidateFirebaseToken } from '@/common/decorators/validation.decorators';
+import { IsString, MinLength } from 'class-validator';
 
 export class VerifyTokenDto {
-  @ValidateFirebaseToken()
-  idToken: string;
+  @IsString()
+  @MinLength(100)  // Basic length check for JWT
+  idToken!: string;
 }

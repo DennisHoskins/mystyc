@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true, collection: 'notifications' })
 export class Notification {
   @Prop({ required: true, index: true })
-  firebaseUid: string;
+  firebaseUid!: string;
 
   @Prop({ index: true })
   deviceId?: string;
@@ -16,19 +16,19 @@ export class Notification {
   fcmToken?: string; // The actual FCM token used to send
 
   @Prop({ required: true })
-  title: string;
+  title!: string;
 
   @Prop({ required: true })
-  body: string;
+  body!: string;
 
   @Prop({ required: true, enum: ['test', 'admin', 'broadcast', 'schedule'], index: true })
-  type: 'test' | 'admin' | 'broadcast' | 'schedule';
+  type!: 'test' | 'admin' | 'broadcast' | 'schedule';
 
   @Prop({ required: true, enum: ['api'], default: 'api', index: true })
-  source: 'api';
+  source!: 'api';
 
   @Prop({ required: true, enum: ['pending', 'sent', 'failed'], default: 'pending', index: true })
-  status: 'pending' | 'sent' | 'failed';
+  status!: 'pending' | 'sent' | 'failed';
 
   @Prop()
   messageId?: string;
@@ -37,7 +37,7 @@ export class Notification {
   error?: string;
 
   @Prop({ required: true, index: true })
-  sentBy: string;
+  sentBy!: string;
 
   @Prop()
   sentAt?: Date;
@@ -48,8 +48,8 @@ export class Notification {
   @Prop({ index: true })
   executionId?: string;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type NotificationDocument = Notification & Document;

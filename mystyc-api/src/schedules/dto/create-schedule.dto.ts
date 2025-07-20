@@ -6,42 +6,42 @@ import {
   ValidateNested,
   IsInt,
   Min,
-  Max
+  Max,
+  MaxLength
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { SanitizeText } from '@/common/decorators/sanitization.decorators';
 
 export class ScheduleTimeDto {
-  @IsInt({ message: 'Hour must be an integer' })
-  @Min(0, { message: 'Hour must be between 0 and 23' })
-  @Max(23, { message: 'Hour must be between 0 and 23' })
+  @IsInt()
+  @Min(0)
+  @Max(23)
   @Type(() => Number)
-  hour: number;
+  hour: number = 0;
 
-  @IsInt({ message: 'Minute must be an integer' })
-  @Min(0, { message: 'Minute must be between 0 and 59' })
-  @Max(59, { message: 'Minute must be between 0 and 59' })
+  @IsInt()
+  @Min(0)
+  @Max(59)
   @Type(() => Number)
-  minute: number;
+  minute: number = 0;
 }
 
 export class CreateScheduleDto {
   @ValidateNested()
   @Type(() => ScheduleTimeDto)
-  time: ScheduleTimeDto;
+  time: ScheduleTimeDto | undefined;
 
-  @IsString({ message: 'Event name must be a string' })
-  @IsNotEmpty({ message: 'Event name cannot be empty' })
-  @SanitizeText('event_name', { maxLength: 100 })
-  event_name: string;
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  event_name: string | undefined;
 
   @IsOptional()
-  @IsBoolean({ message: 'Enabled must be a boolean' })
+  @IsBoolean()
   @Type(() => Boolean)
   enabled?: boolean = true;
 
   @IsOptional()
-  @IsBoolean({ message: 'Timezone aware must be a boolean' })
+  @IsBoolean()
   @Type(() => Boolean)
   timezone_aware?: boolean = false;
 }

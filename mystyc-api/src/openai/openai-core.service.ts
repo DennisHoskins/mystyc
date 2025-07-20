@@ -187,13 +187,13 @@ export class OpenAICoreService implements OnModuleInit {
     };
   }
 
-  protected calculateCost(inputTokens: number, outputTokens: number): number {
+  protected calculateCost(inputTokens: number = 0, outputTokens: number = 0): number {
     const inputCost = (inputTokens / 1000) * 0.000075;
     const outputCost = (outputTokens / 1000) * 0.0003;
     return Number((inputCost + outputCost).toFixed(6));
   }
 
-  protected async incrementUsage(tokens: number, cost: number): Promise<void> {
+  protected async incrementUsage(tokens: number = 0, cost: number = 0): Promise<void> {
     const currentMonth = new Date().toISOString().substring(0, 7);
     await this.usageModel.findOneAndUpdate(
       { month: currentMonth },

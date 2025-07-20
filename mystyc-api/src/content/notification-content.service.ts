@@ -61,7 +61,7 @@ export class NotificationContentService {
         scheduleId,
         executionId,
         date,
-        error: error.message
+        error
       }, 'NotificationContentService');
       
       // Re-throw to let existing error handling in event handler catch it
@@ -105,9 +105,10 @@ export class NotificationContentService {
       const template = this.notificationContentTemplates[dateHash % this.notificationContentTemplates.length];
 
       const dataItems = template.data.map(obj => {
-        const key = Object.keys(obj)[0];
-        return { key, value: obj[key] };
-      });      
+        const record = obj as Record<string,string>;
+        const key = Object.keys(record)[0];
+        return { key, value: record[key] };
+      });
 
       const contentData = {
         type: 'notification_content',
@@ -139,7 +140,7 @@ export class NotificationContentService {
         scheduleId, 
         executionId, 
         date: targetDate,
-        error: error.message
+        error
       }, 'NotificationContentService');
 
       // Save failed attempt
@@ -153,7 +154,7 @@ export class NotificationContentService {
         data: [],
         sources: ['notification_templates'],
         status: 'failed',
-        error: error.message,
+        error,
         generatedAt: new Date(),
         generationDuration: Date.now() - startTime
       });
@@ -262,9 +263,10 @@ export class NotificationContentService {
       const template = this.notificationContentTemplates[dateHash % this.notificationContentTemplates.length];
 
       const dataItems = template.data.map(obj => {
-        const key = Object.keys(obj)[0];
-        return { key, value: obj[key] };
-      });      
+        const record = obj as Record<string,string>;
+        const key = Object.keys(record)[0];
+        return { key, value: record[key] };
+      });
 
       const contentData = {
         type: 'notification_content',
@@ -291,7 +293,7 @@ export class NotificationContentService {
     } catch (error) {
       logger.error('Legacy notification content generation failed', {
         date,
-        error: error.message
+        error
       }, 'NotificationContentService');
       throw error;
     }

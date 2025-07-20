@@ -4,10 +4,10 @@ import { Document } from 'mongoose';
 @Schema()
 export class ScheduleTime {
   @Prop({ required: true, min: 0, max: 23 })
-  hour: number;
+  hour!: number;
 
   @Prop({ required: true, min: 0, max: 59 })
-  minute: number;
+  minute!: number;
 }
 
 export const ScheduleTimeSchema = SchemaFactory.createForClass(ScheduleTime);
@@ -15,19 +15,19 @@ export const ScheduleTimeSchema = SchemaFactory.createForClass(ScheduleTime);
 @Schema({ timestamps: true, collection: 'schedules' })
 export class Schedule {
   @Prop({ type: ScheduleTimeSchema, required: true })
-  time: ScheduleTime;
+  time!: ScheduleTime;
 
   @Prop({ required: true })
-  event_name: string;
+  event_name!: string;
 
   @Prop({ required: true, default: true })
-  enabled: boolean;
+  enabled!: boolean;
 
   @Prop({ required: true, default: false })
-  timezone_aware: boolean;
+  timezone_aware!: boolean;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type ScheduleDocument = Schedule & Document;

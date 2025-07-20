@@ -49,7 +49,7 @@ export class ScheduleExecutionsService {
       logger.error('Failed to create schedule execution log', {
         scheduleId: createDto.scheduleId,
         eventName: createDto.eventName,
-        error: error.message
+        error
       }, 'ScheduleExecutionService');
       throw error;
     }
@@ -99,7 +99,7 @@ export class ScheduleExecutionsService {
       logger.error('Failed to update schedule execution status', {
         executionId,
         status,
-        error: updateError.message
+        error: updateError
       }, 'ScheduleExecutionService');
       throw updateError;
     }
@@ -183,7 +183,7 @@ export class ScheduleExecutionsService {
     } catch (error) {
       logger.error('Failed to find schedule executions', {
         scheduleId,
-        error: error.message
+        error
       }, 'ScheduleExecutionService');
       throw error;
     }
@@ -221,7 +221,7 @@ export class ScheduleExecutionsService {
     } catch (error) {
       logger.error('Failed to find latest execution', {
         scheduleId,
-        error: error.message
+        error
       }, 'ScheduleExecutionService');
       throw error;
     }
@@ -274,7 +274,7 @@ export class ScheduleExecutionsService {
     } catch (error) {
       logger.error('Failed to get execution stats', {
         scheduleId,
-        error: error.message
+        error
       }, 'ScheduleExecutionService');
       throw error;
     }
@@ -314,7 +314,7 @@ export class ScheduleExecutionsService {
     } catch (error) {
       logger.error('Failed to find executions by date range', {
         scheduleId,
-        error: error.message
+        error
       }, 'ScheduleExecutionService');
       throw error;
     }

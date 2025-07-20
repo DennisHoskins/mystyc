@@ -46,7 +46,7 @@ export class StripeWebhookController {
       }, 'StripeWebhookController');
     } catch (error) {
       logger.error('Stripe webhook signature verification failed', {
-        error: error.message,
+        error,
         signature: signature ? 'present' : 'missing'
       }, 'StripeWebhookController');
       
@@ -68,7 +68,7 @@ export class StripeWebhookController {
       logger.error('Stripe webhook processing failed', {
         eventType: event.type,
         eventId: event.id,
-        error: error.message
+        error
       }, 'StripeWebhookController');
       
       // Still return 200 to Stripe to avoid retries for unrecoverable errors

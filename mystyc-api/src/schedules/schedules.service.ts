@@ -38,7 +38,7 @@ export class SchedulesService {
       await this.refreshTimezoneCache();
     } catch (error) {
       logger.error('Failed to initialize timezone cache', {
-        error: error.message
+        error
       }, 'ScheduleService');
       // Don't throw - let the service start even if cache fails
     }
@@ -74,8 +74,7 @@ export class SchedulesService {
     } catch (error) {
       logger.error('Failed to create schedule', {
         eventName: createScheduleDto.event_name,
-        error: error.message,
-        code: error.code
+        error,
       }, 'ScheduleService');
 
       throw new ConflictException('Could not create schedule');
@@ -116,7 +115,7 @@ export class SchedulesService {
     } catch (error) {
       logger.error('Failed to update schedule', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'ScheduleService');
 
       throw error;
@@ -143,7 +142,7 @@ export class SchedulesService {
     } catch (error) {
       logger.error('Failed to delete schedule', {
         scheduleId: id,
-        error: error.message
+        error
       }, 'ScheduleService');
 
       throw error;
@@ -172,13 +171,13 @@ export class SchedulesService {
       }, 'ScheduleService');
     } catch (error) {
       logger.error('Failed to refresh timezone cache', {
-        error: error.message
+        error
       }, 'ScheduleService');
       // Keep using existing cache
     }
   }
 
-  async getTimezoneCache(): Promise<Array<{timezone: string, offsetHours: number}>>  {
+  async getTimezoneCache(): Promise<Array<{timezone: string, offsetHours: number}> | null>  {
     logger.info('Getting timezone cache', {}, 'ScheduleService');
     
     try {
@@ -198,10 +197,12 @@ export class SchedulesService {
       return cachedTimezones;
     } catch (error) {
       logger.error('Failed to get timezone cache', {
-        error: error.message
+        error
       }, 'ScheduleService');
       // Keep using existing cache
     }
+
+    return null;
   }
 
   @Cron('*/30 * * * *')
@@ -226,7 +227,7 @@ export class SchedulesService {
       }, 'ScheduleService');
     } catch (error) {
       logger.error('Failed to check scheduled tasks', {
-        error: error.message
+        error
       }, 'ScheduleService');
     }
   }
@@ -236,6 +237,11 @@ export class SchedulesService {
   private async processScheduledTask(task: ScheduleInterface, serverTime: Date): Promise<void> {
     const executionStartTime = Date.now();
     let executionLog: any = null;
+
+    if (!task._id) {
+      logger.warn('Skipping task with missing ID', { task }, 'ScheduleService');
+      return;      
+    }
 
     try {
       if (task.timezone_aware) {
@@ -288,12 +294,14 @@ export class SchedulesService {
       }
     } catch (error) {
       // Update execution log as failed if we created one
-      if (executionLog) {
-        const duration = Date.now() - executionStartTime;
-        await this.scheduleExecutionService.updateStatus(executionLog._id, 'failed', error.message, duration);
+      if (error instanceof Error) {
+        if (executionLog) {
+          const duration = Date.now() - executionStartTime;
+          await this.scheduleExecutionService.updateStatus(executionLog._id, 'failed', error.message, duration);
+        }
+        
+        await this.logScheduleFailure(task._id, task.event_name, error);
       }
-      
-      await this.logScheduleFailure(task._id, task.event_name, error);
     }
   }
 
@@ -432,7 +440,7 @@ export class SchedulesService {
     logger.error('Schedule execution failed', {
       taskId,
       eventName,
-      error: error.message,
+      error,
       executedAt: new Date().toISOString()
     }, 'ScheduleService');
   }

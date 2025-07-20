@@ -22,6 +22,15 @@ import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response
 import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
 import { logger } from '@/common/util/logger';
 
+function isErrorWithStatus(e: unknown): e is { status: number } {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'status' in e &&
+    typeof (e as any).status === 'number'
+  );
+}  
+
 @Controller('admin/users')
 export class AdminUsersController extends AdminController<UserProfile> {
   protected serviceName = 'Users';
@@ -196,13 +205,13 @@ export class AdminUsersController extends AdminController<UserProfile> {
       
       return user;
     } catch (error) {
-      if (error.status === 404) {
+      if (isErrorWithStatus(error) && error.status === 404) {
         throw error;
       }
       
       logger.error('Failed to get user', {
         firebaseUid,
-        error: error.message
+        error
       }, 'AdminUserController');
       
       throw error;

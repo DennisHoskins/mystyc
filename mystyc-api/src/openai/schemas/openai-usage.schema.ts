@@ -6,25 +6,25 @@ export type OpenAIUsageDocument = OpenAIUsage & Document;
 @Schema({ timestamps: true })
 export class OpenAIUsage {
   @Prop({ required: true, unique: true })
-  month: string;         // "YYYY-MM"
+  month!: string;         // "YYYY-MM"
 
   @Prop({ required: true, default: 0 })
-  totalRequests: number;
+  totalRequests!: number;
 
   @Prop({ required: true, default: 0 })
-  tokensUsed: number;
+  tokensUsed!: number;
 
   @Prop({ required: true, default: 0 })
-  costUsed: number;      // in USD
+  costUsed!: number;      // in USD
 
   @Prop({ required: true })
-  tokenBudget: number;
+  tokenBudget!: number;
 
   @Prop({ required: true })
-  costBudget: number;    // in USD
+  costBudget!: number;    // in USD
 
   @Prop()
-  lastSyncedAt: Date;
+  lastSyncedAt!: Date;
 }
 
 export const OpenAIUsageSchema = SchemaFactory.createForClass(OpenAIUsage);

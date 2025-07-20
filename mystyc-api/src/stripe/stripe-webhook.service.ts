@@ -93,7 +93,7 @@ export class StripeWebhookService {
       logger.error('Failed to process successful payment', {
         invoiceId: invoice.id,
         customerId: invoice.customer,
-        error: error.message
+        error
       }, 'StripeWebhookService');
       throw error;
     }
@@ -162,7 +162,7 @@ export class StripeWebhookService {
       logger.error('Failed to process failed payment', {
         invoiceId: invoice.id,
         customerId: invoice.customer,
-        error: error.message
+        error
       }, 'StripeWebhookService');
       throw error;
     }
@@ -221,7 +221,7 @@ export class StripeWebhookService {
           logger.warn('Failed to link payment record to subscription', {
             subscriptionId: subscription.id,
             invoiceId: subscription.latest_invoice,
-            error: error.message
+            error
           }, 'StripeWebhookService');
         }
       }
@@ -240,7 +240,7 @@ export class StripeWebhookService {
       logger.error('Failed to process subscription creation', {
         subscriptionId: subscription.id,
         customerId: subscription.customer,
-        error: error.message
+        error
       }, 'StripeWebhookService');
       throw error;
     }
@@ -307,7 +307,7 @@ export class StripeWebhookService {
       logger.error('Failed to process subscription update', {
         subscriptionId: subscription.id,
         customerId: subscription.customer,
-        error: error.message
+        error
       }, 'StripeWebhookService');
       throw error;
     }
@@ -349,7 +349,7 @@ export class StripeWebhookService {
       logger.error('Failed to process subscription deletion', {
         subscriptionId: subscription.id,
         customerId: subscription.customer,
-        error: error.message
+        error
       }, 'StripeWebhookService');
       throw error;
     }

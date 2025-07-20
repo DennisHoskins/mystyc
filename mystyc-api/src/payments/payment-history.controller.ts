@@ -4,6 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
+import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { UserRole } from '@/common/enums/roles.enum';
 import { PaymentHistoryService } from './payment-history.service';
@@ -24,7 +25,7 @@ export class PaymentHistoryController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 50, ttl: 60000 } })
   async getUserPaymentHistory(
-    @FirebaseUser() firebaseUser,
+    @FirebaseUser() firebaseUser: FirebaseUserInterface,
     @Query() query: BaseAdminQueryDto
   ): Promise<{ payments: PaymentHistory[]; total: number }> {
     logger.info('Fetching user payment history', {
@@ -49,7 +50,7 @@ export class PaymentHistoryController {
     } catch (error) {
       logger.error('Failed to get user payment history', {
         uid: firebaseUser.uid,
-        error: error.message
+        error
       }, 'PaymentHistoryController');
       throw error;
     }
@@ -85,7 +86,7 @@ export class PaymentHistoryController {
       return { payments, total };
     } catch (error) {
       logger.error('Failed to get all payment history', {
-        error: error.message
+        error
       }, 'PaymentHistoryController');
       throw error;
     }
@@ -124,7 +125,7 @@ export class PaymentHistoryController {
     } catch (error) {
       logger.error('Failed to get payments by tier', {
         tier,
-        error: error.message
+        error
       }, 'PaymentHistoryController');
       throw error;
     }
@@ -163,7 +164,7 @@ export class PaymentHistoryController {
     } catch (error) {
       logger.error('Failed to get payments by status', {
         status,
-        error: error.message
+        error
       }, 'PaymentHistoryController');
       throw error;
     }
@@ -197,7 +198,7 @@ export class PaymentHistoryController {
     } catch (error) {
       logger.error('Failed to get recent failed payments', {
         days: dayCount,
-        error: error.message
+        error
       }, 'PaymentHistoryController');
       throw error;
     }

@@ -43,7 +43,7 @@ export class UserProfilesService {
     } catch (error) {
       logger.error('Failed to find user profile by ID', {
         id,
-        error: error.message
+        error
       }, 'UserProfileService');
 
       return null;
@@ -221,11 +221,10 @@ export class UserProfilesService {
       }, 'UserProfileService');
 
       return this.transformToUserProfile(savedUser);
-    } catch (err) {
+    } catch (error) {
       logger.error('Failed to create user profile', {
         firebaseUid: createUserDto.firebaseUid,
-        error: err.message,
-        code: err.code,
+        error,
       }, 'UserProfileService');
 
       throw new ConflictException('Could not create user');
@@ -368,7 +367,7 @@ export class UserProfilesService {
    * @returns Promise<UserProfile> - Updated user profile object
    * @throws NotFoundException when user profile is not found
    */
-  async updateSubscriptionTier(firebaseUid: string, tier: SubscriptionLevel, startDate?: Date): Promise<UserProfile> {
+  async updateSubscriptionTier(firebaseUid: string, tier: SubscriptionLevel, startDate?: Date | null): Promise<UserProfile> {
     logger.info('Updating user subscription tier', { firebaseUid, tier, startDate }, 'UserProfileService');
 
     const updates: any = { 

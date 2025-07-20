@@ -97,11 +97,11 @@ export class AdminAuthEventsStatsService {
       }
 
       // Calculate percentages
-      const eventsByTypeWithPercentage = result.eventsByType.map(event => ({
+      const eventsByTypeWithPercentage = result.eventsByType.map((event: { type: string; count: number }) => ({
         type: event.type,
         count: event.count,
         percentage: Math.round((event.count / result.totalEvents) * 100)
-      })).sort((a, b) => b.count - a.count);
+      })).sort((a: { type: string; count: number }, b: { type: string; count: number }) => b.count - a.count);
 
       logger.info('Auth event summary stats generated', {
         totalEvents: result.totalEvents,
@@ -115,7 +115,7 @@ export class AdminAuthEventsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate auth event summary stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminAuthEventsStatsService');
       throw error;
@@ -213,14 +213,14 @@ export class AdminAuthEventsStatsService {
       // Process peak hours
       let peakHours = [];
       let totalEvents = 0;
-      
+
       if (peakHoursResult[0]) {
         totalEvents = peakHoursResult[0].totalEvents;
-        peakHours = peakHoursResult[0].peakHours.map(hour => ({
+        peakHours = peakHoursResult[0].peakHours.map((hour: { hour: number, count: number }) => ({
           hour: hour.hour,
           count: hour.count,
           percentage: Math.round((hour.count / totalEvents) * 100)
-        })).sort((a, b) => b.count - a.count);
+        })).sort((a: { hour: number, count: number }, b: { hour: number, count: number }) => b.count - a.count);
       }
 
       // Process active users
@@ -253,7 +253,7 @@ export class AdminAuthEventsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate auth event pattern stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminAuthEventsStatsService');
       throw error;
@@ -464,7 +464,7 @@ export class AdminAuthEventsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate session duration stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminAuthEventsStatsService');
       throw error;
@@ -562,7 +562,7 @@ export class AdminAuthEventsStatsService {
 
     } catch (error) {
       logger.error('Failed to generate geographic distribution stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminAuthEventsStatsService');
       throw error;

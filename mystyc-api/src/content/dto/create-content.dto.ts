@@ -1,13 +1,11 @@
-import { IsOptional, IsString } from 'class-validator';
-import { ValidateClientTimestamp } from '@/common/decorators/validation.decorators';
+import { IsOptional, IsString, IsISO8601 } from 'class-validator';
 
 export class CreateContentDto {
-  // Prompt
   @IsOptional()
-  @IsString({ message: 'Prompt must be a string' })
+  @IsString()
   prompt?: string;
 
   @IsOptional()
-  @ValidateClientTimestamp()
-  clientTimestamp: string;
+  @IsISO8601()
+  clientTimestamp?: string;
 }

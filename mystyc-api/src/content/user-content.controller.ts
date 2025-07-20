@@ -4,6 +4,7 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { UserContentService } from './user-content.service';
+import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { Content } from '@/common/interfaces/content.interface';
 import { logger } from '@/common/util/logger';
 
@@ -23,7 +24,7 @@ export class UserContentController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   async getTodaysContent(
-    @FirebaseUser() firebaseUserFromDecorator,
+    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
     @Body() body: { deviceInfo?: any }
   ): Promise<Content> {
     logger.info('Fetching today\'s user content with smart routing', {
@@ -62,7 +63,7 @@ export class UserContentController {
     } catch (error) {
       logger.error('Failed to get today\'s user content', {
         uid: firebaseUserFromDecorator.uid,
-        error: error.message
+        error
       }, 'UserContentController');
       throw error;
     }
@@ -78,7 +79,7 @@ export class UserContentController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   async getContentByDate(
-    @FirebaseUser() firebaseUserFromDecorator,
+    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
     @Param('date') date: string
   ): Promise<Content> {
     logger.info('Fetching user content by date with smart routing', { 
@@ -109,7 +110,7 @@ export class UserContentController {
       logger.error('Failed to get user content', {
         uid: firebaseUserFromDecorator.uid,
         date,
-        error: error.message
+        error
       }, 'UserContentController');
       throw error;
     }

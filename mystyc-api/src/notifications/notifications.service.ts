@@ -95,8 +95,10 @@ export class NotificationsService {
       // tell schedule execution it succeeded
       const duration = Date.now() - startTime; 
       await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);        
-    } catch (error) {
+    } catch (err) {
       const duration = Date.now() - startTime;
+
+      const error = err instanceof Error ? err : new Error(String(err));
       
       // Check if this is a timeout error from content generation
       if (error instanceof NotificationContentTimeoutError || error.name === 'NotificationContentTimeoutError') {
@@ -104,7 +106,7 @@ export class NotificationsService {
           scheduleId: payload.scheduleId,
           executionId: payload.executionId,
           timezone: payload.timezone || 'global',
-          error: error.message,
+          error,
           duration,
           scheduledTime: payload.scheduledTime,
         }, 'NotificationsService');
@@ -115,7 +117,7 @@ export class NotificationsService {
           scheduleId: payload.scheduleId,
           executionId: payload.executionId,
           timezone: payload.timezone || 'global',
-          error: error.message,
+          error,
           duration,
           scheduledTime: payload.scheduledTime,
         }, 'NotificationsService');
@@ -194,16 +196,18 @@ export class NotificationsService {
       // tell schedule execution it succeeded
       const duration = Date.now() - startTime; 
       await this.scheduleExecutionService.updateStatus(payload.executionId, 'completed', undefined, duration);        
-} catch (error) {
-  const duration = Date.now() - startTime;
+    } catch (err) {
+      const duration = Date.now() - startTime;
+
+      const error = err instanceof Error ? err : new Error(String(err));
   
     // Check if this is a timeout error from content generation
-    if (error instanceof NotificationContentTimeoutError || error.name === 'NotificationContentTimeoutError') {
-      logger.warn('Scheduled notifications timed out during content generation', {
+      if (error instanceof NotificationContentTimeoutError || error.name === 'NotificationContentTimeoutError') {
+        logger.warn('Scheduled notifications timed out during content generation', {
         scheduleId: payload.scheduleId,
         executionId: payload.executionId,
         timezone: payload.timezone || 'global',
-        error: error.message,
+        error,
         duration,
         scheduledTime: payload.scheduledTime,
       }, 'NotificationsService');
@@ -214,7 +218,7 @@ export class NotificationsService {
         scheduleId: payload.scheduleId,
         executionId: payload.executionId,
         timezone: payload.timezone || 'global',
-        error: error.message,
+        error,
         duration,
         scheduledTime: payload.scheduledTime,
       }, 'NotificationsService');
@@ -286,7 +290,7 @@ export class NotificationsService {
         scheduleId,
         executionId,
         contentId,
-        error: error.message
+        error
       }, 'NotificationsService');
       throw error;
     }
@@ -385,9 +389,9 @@ export class NotificationsService {
     url: string,
     type: 'test' | 'admin' | 'broadcast' | 'schedule',
     sentBy: string,
-    scheduleId?: string,
-    executionId?: string,
-    contentId?: string,
+    scheduleId?: string | null,
+    executionId?: string | null,
+    contentId?: string | null,
     results?: any,
   ): Promise<void> {
     if (!device.fcmToken) {
@@ -436,8 +440,10 @@ export class NotificationsService {
         title: title.substring(0, 50) + '...'
       }, 'NotificationsService');
 
-    } catch (error) {
+    } catch (err) {
       // Update notification as failed
+      const error = err instanceof Error ? err : new Error(String(err));
+
       await this.updateNotificationStatus(notificationId, 'failed', undefined, error.message);
       
       if (results) {
@@ -447,7 +453,7 @@ export class NotificationsService {
           firebaseUid: device.firebaseUid,
           fcmToken: device.fcmToken.substring(0, 20) + '...',
           status: 'failed',
-          error: error.message,
+          error,
           notificationId,
           scheduleId,
           executionId,
@@ -458,7 +464,7 @@ export class NotificationsService {
       logger.error('Notification failed', {
         notificationId,
         deviceId: device.deviceId,
-        error: error.message
+        error
       }, 'NotificationsService');
     }
   }
@@ -486,7 +492,7 @@ export class NotificationsService {
     } catch (error) {
       logger.error('Failed to find notification by ID', {
         notificationId,
-        error: error.message
+        error
       }, 'NotificationsService');
 
       return null;
@@ -751,9 +757,9 @@ export class NotificationsService {
     body: string;
     type: 'test' | 'admin' | 'broadcast' | 'schedule';
     sentBy: string;
-    scheduleId?: string;
-    executionId?: string;
-    contentId?: string;
+    scheduleId?: string | null;
+    executionId?: string | null;
+    contentId?: string | null;
   }): Promise<NotificationDocument> {
     const notification = new this.notificationModel({
       ...data,

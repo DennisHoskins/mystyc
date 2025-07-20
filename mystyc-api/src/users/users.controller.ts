@@ -43,7 +43,7 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ auth: { limit: 10, ttl: 60000 } })
   async registerSession(
-    @FirebaseUser() firebaseUserFromDecorator,
+    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
     @Body() loginRegisterDto: AuthEventLoginRegisterDto,
     @Req() request: Request
   ): Promise<User> {
@@ -77,7 +77,7 @@ export class UsersController {
       this.logger.error('Session registration failed via controller', {
         uid: firebaseUser.uid,
         deviceId: loginRegisterDto.device.deviceId,
-        error: error.message
+        error
       });
 
       throw error;
@@ -93,7 +93,7 @@ export class UsersController {
   @Get('me')
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ auth: { limit: 20, ttl: 60000 } })
-  async getCurrentUser(@FirebaseUser() firebaseUserFromDecorator): Promise<User> {
+  async getCurrentUser(@FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface): Promise<User> {
     try {
       const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
       
@@ -102,7 +102,7 @@ export class UsersController {
       this.logger.debug('Current user retrieved successfully', { uid: firebaseUser.uid });
       return user;
     } catch (error) {
-      this.logger.error('Get current user failed', { error: error.message });
+      this.logger.error('Get current user failed', { error });
       throw error;
     }
   }
@@ -117,7 +117,7 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 100, ttl: 600000 } })
   async updateProfile(
-    @FirebaseUser() firebaseUserFromDecorator, 
+    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface, 
     @Body() body: UpdateUserProfileDto
   ): Promise<UserProfile> {
     this.logger.info('Updating profile via PATCH /update-profile', { 
@@ -127,7 +127,7 @@ export class UsersController {
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
-    const userProfile = await this.userProfileService.updateProfile(firebaseUser.uid, firebaseUser.email, body)
+    const userProfile = await this.userProfileService.updateProfile(firebaseUser.uid, firebaseUser.email!, body)
     return userProfile;
   }
 
@@ -135,11 +135,11 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async startSubscription(
-    @FirebaseUser() firebaseUser,
+    @FirebaseUser() firebaseUser: FirebaseUserInterface,
     @Body() body: { 
       priceId: string;
     }
-  ): Promise<{ sessionUrl: string }> {
+  ): Promise<{ sessionUrl: string | null }> {
     try {
       const session = await this.userService.createSubscriptionSession(
         firebaseUser.uid,
@@ -198,7 +198,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error('Failed to update subscription tier', {
         targetFirebaseUid: body.firebaseUid,
-        error: error.message
+        error
       });
       throw error;
     }
@@ -240,7 +240,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error('Failed to update credit balance', {
         targetFirebaseUid: body.firebaseUid,
-        error: error.message
+        error
       });
       throw error;
     }
@@ -256,7 +256,7 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async createBillingPortalSession(
-    @FirebaseUser() firebaseUser,
+    @FirebaseUser() firebaseUser: FirebaseUserInterface,
     @Body() body: { returnUrl: string }
   ): Promise<{ portalUrl: string }> {
     const portalUrl = await this.userService.createCustomerPortalSession(
@@ -275,7 +275,7 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   async cancelSubscription(
-    @FirebaseUser() firebaseUser
+    @FirebaseUser() firebaseUser: FirebaseUserInterface
   ): Promise<{ success: boolean; message: string }> {
     await this.userService.cancelSubscription(firebaseUser.uid);
     return { 
@@ -295,7 +295,7 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ auth: { limit: 10, ttl: 60000 } })
   async logout(
-    @FirebaseUser() firebaseUserFromDecorator,
+    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
     @Body() logoutDto: AuthEventLogoutDto,
     @Req() request: Request
   ): Promise<{ success: boolean; message: string }> {
@@ -330,7 +330,7 @@ export class UsersController {
       this.logger.error('Logout recording failed via controller', {
         uid: firebaseUser.uid,
         deviceId: logoutDto.device.deviceId,
-        error: error.message
+        error
       });
 
       throw error;
@@ -377,7 +377,7 @@ export class UsersController {
       logger.error('Server logout failed', {
         firebaseUid: body.firebaseUid,
         deviceId: body.deviceId,
-        error: error.message
+        error
       });
 
       throw error;
@@ -391,7 +391,7 @@ export class UsersController {
    */
   @Get('profile')
   @UseGuards(FirebaseAuthGuard)
-  async getProfile(@FirebaseUser() firebaseUserFromDecorator): Promise<{ userProfile: UserProfile | null }> {
+  async getProfile(@FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface): Promise<{ userProfile: UserProfile | null }> {
     this.logger.debug('Getting profile via GET /profile', { 
       uid: firebaseUserFromDecorator.uid 
     });
@@ -411,7 +411,7 @@ export class UsersController {
   @Post('content')
   @UseGuards(FirebaseAuthGuard)
   async getContent(
-    @FirebaseUser() firebaseUserFromDecorator,
+    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
     @Body() body: { deviceInfo?: any }
   ): Promise<Content | null> {
     this.logger.debug('Getting content via GET /content', { 

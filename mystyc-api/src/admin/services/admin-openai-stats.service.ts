@@ -121,7 +121,7 @@ export class AdminOpenAIStatsService {
 
     } catch (error) {
       logger.error('Failed to generate OpenAI summary stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminOpenAIStatsService');
       throw error;
@@ -225,7 +225,7 @@ export class AdminOpenAIStatsService {
 
     } catch (error) {
       logger.error('Failed to generate OpenAI monthly usage stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminOpenAIStatsService');
       throw error;
@@ -299,7 +299,7 @@ export class AdminOpenAIStatsService {
 
     } catch (error) {
       logger.error('Failed to generate OpenAI content type usage stats', {
-        error: error.message,
+        error,
         query
       }, 'AdminOpenAIStatsService');
       throw error;

@@ -51,7 +51,7 @@ export class WebsiteContentController {
       return content;
     } catch (error) {
       logger.error('Failed to get today\'s website content', {
-        error: error.message
+        error
       }, 'ContentController');
       throw error;
     }
@@ -83,7 +83,7 @@ export class WebsiteContentController {
     } catch (error) {
       logger.error('Failed to get website content', {
         date,
-        error: error.message
+        error
       }, 'ContentController');
       throw error;
     }

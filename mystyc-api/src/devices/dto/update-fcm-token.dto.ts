@@ -1,16 +1,21 @@
 import {
-  ValidateFirebaseUid,
-  ValidateDeviceId,
-  ValidateFcmTokenRequired,
-} from '@/common/decorators/validation.decorators';
+  IsString,
+  IsNotEmpty,
+  Length,
+} from 'class-validator';
 
 export class UpdateFcmTokenDto {
-  @ValidateFirebaseUid()
-  firebaseUid: string;
+  @IsString()
+  @IsNotEmpty()
+  firebaseUid!: string;
 
-  @ValidateDeviceId()
-  deviceId: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(8, 64)
+  deviceId!: string;
 
-  @ValidateFcmTokenRequired()
-  fcmToken: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(100, 500)
+  fcmToken!: string;
 }

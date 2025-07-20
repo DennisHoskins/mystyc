@@ -39,7 +39,7 @@ export class PaymentHistoryService {
       logger.error('Failed to create payment record', {
         firebaseUid: paymentData.firebaseUid,
         stripeInvoiceId: paymentData.stripeInvoiceId,
-        error: error.message
+        error
       }, 'PaymentHistoryService');
       throw error;
     }

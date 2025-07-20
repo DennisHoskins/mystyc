@@ -76,7 +76,7 @@ export class AdminDevicesStatsService {
       };
     }
 
-    const platformsWithPercentage = result.platforms.map(p => ({
+    const platformsWithPercentage = result.platforms.map((p: { platform: string, count: number }) => ({
       platform: p.platform,
       count: p.count,
       percentage: Math.round((p.count / result.totalDevices) * 100)
@@ -84,7 +84,7 @@ export class AdminDevicesStatsService {
 
     return {
       totalDevices: result.totalDevices,
-      platforms: platformsWithPercentage.sort((a, b) => b.count - a.count)
+      platforms: platformsWithPercentage.sort((a: { platform: string, count: number }, b: { platform: string, count: number }) => b.count - a.count)
     };
   }
 

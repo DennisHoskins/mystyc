@@ -4,10 +4,10 @@ import { Document } from 'mongoose';
 @Schema()
 export class ScheduledTime {
   @Prop({ required: true, min: 0, max: 23 })
-  hour: number;
+  hour!: number;
 
   @Prop({ required: true, min: 0, max: 59 })
-  minute: number;
+  minute!: number;
 }
 
 export const ScheduledTimeSchema = SchemaFactory.createForClass(ScheduledTime);
@@ -15,16 +15,16 @@ export const ScheduledTimeSchema = SchemaFactory.createForClass(ScheduledTime);
 @Schema({ timestamps: true, collection: 'scheduleExecutions' })
 export class ScheduleExecution {
   @Prop({ required: true, index: true })
-  scheduleId: string;
+  scheduleId!: string;
 
   @Prop({ required: true, index: true })
-  eventName: string;
+  eventName!: string;
 
   @Prop({ type: ScheduledTimeSchema, required: true })
-  scheduledTime: ScheduledTime;
+  scheduledTime!: ScheduledTime;
 
   @Prop({ required: true, index: true })
-  executedAt: Date;
+  executedAt!: Date;
 
   @Prop({ index: true })
   timezone?: string;
@@ -33,7 +33,7 @@ export class ScheduleExecution {
   localTime?: Date;
 
   @Prop({ required: true, enum: ['running', 'completed', 'failed', 'timeout'], default: 'running', index: true })
-  status: 'running' | 'completed' | 'failed' | 'timeout';
+  status!: 'running' | 'completed' | 'failed' | 'timeout';
 
   @Prop()
   error?: string;
@@ -41,8 +41,8 @@ export class ScheduleExecution {
   @Prop()
   duration?: number;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type ScheduleExecutionDocument = ScheduleExecution & Document;

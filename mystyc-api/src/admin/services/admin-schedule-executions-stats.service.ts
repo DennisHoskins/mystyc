@@ -91,7 +91,7 @@ export class AdminScheduleExecutionsStatsService {
     } catch (error) {
       logger.error('Failed to generate schedule execution stats', {
         scheduleId,
-        error: error.message
+        error
       }, 'AdminScheduleExecutionStatsService');
       throw error;
     }
@@ -140,7 +140,7 @@ export class AdminScheduleExecutionsStatsService {
     } catch (error) {
       logger.error('Failed to generate schedule history stats', {
         scheduleId,
-        error: error.message
+        error
       }, 'AdminScheduleExecutionStatsService');
       throw error;
     }
@@ -178,7 +178,7 @@ export class AdminScheduleExecutionsStatsService {
       return result;
     } catch (error) {
       logger.error('Failed to generate overall schedule stats', {
-        error: error.message
+        error
       }, 'AdminScheduleExecutionStatsService');
       throw error;
     }

@@ -1,19 +1,15 @@
-import {
-  ValidateFirebaseUid,
-  ValidateClientTimestamp,
-} from '@/common/decorators/validation.decorators';
-import { ValidateNested } from 'class-validator';
-import { DeviceDto } from '@/devices/dto/device.dto';
+import { IsString, ValidateNested, IsISO8601 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { DeviceDto } from '@/devices/dto/device.dto';
 
 export class AuthEventLogoutDto {
-  @ValidateFirebaseUid()
-  firebaseUid: string;
+  @IsString()
+  firebaseUid!: string;
 
   @ValidateNested()
   @Type(() => DeviceDto)
-  device: DeviceDto;
+  device!: DeviceDto;
 
-  @ValidateClientTimestamp()
-  clientTimestamp: string;
+  @IsISO8601()
+  clientTimestamp!: string;
 }

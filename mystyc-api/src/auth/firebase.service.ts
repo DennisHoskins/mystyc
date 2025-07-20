@@ -5,35 +5,41 @@ import { DecodedIdToken } from '@/common/interfaces/decodedToken.interface';
 import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { logger } from '@/common/util/logger';
 
+interface FirebaseAuthError extends Error {
+  code: string;
+}
+
+function isFirebaseAuthError(err: unknown): err is FirebaseAuthError {
+  return (
+    err instanceof Error &&
+    Object.prototype.hasOwnProperty.call(err, 'code') &&
+    typeof (err as any).code === 'string'
+  );
+}
+
 @Injectable()
 export class FirebaseService {
-
   constructor() {}
 
   // Authentication and Token Verification Methods
 
-  /**
-   * Verifies Firebase ID token and returns decoded token information
-   * Includes comprehensive security logging and error categorization
-   * @param idToken - Firebase ID token to verify
-   * @param requestContext - Optional request context for security logging (IP, user agent, endpoint, method)
-   * @returns Promise<DecodedIdToken> - Decoded and verified token information
-   * @throws UnauthorizedException for invalid, expired, or revoked tokens
-   */
-  async verifyIdToken(idToken: string, requestContext?: {
-    ip?: string;
-    userAgent?: string;
-    endpoint?: string;
-    method?: string;
-  }): Promise<DecodedIdToken> {
+  async verifyIdToken(
+    idToken: string,
+    requestContext?: {
+      ip?: string;
+      userAgent?: string;
+      endpoint?: string;
+      method?: string;
+    }
+  ): Promise<DecodedIdToken> {
     logger.debug('Starting token verification', {
       tokenLength: idToken?.length || 0,
       ...requestContext
     }, 'FirebaseService');
-    
+
     try {
       const result = await firebaseAdmin.auth().verifyIdToken(idToken, true);
-      
+
       logger.debug('Token verified successfully via Firebase Admin', {
         uid: result.uid,
         exp: result.exp,
@@ -44,7 +50,7 @@ export class FirebaseService {
         signInProvider: result.firebase?.sign_in_provider,
         ...requestContext
       }, 'FirebaseService');
-      
+
       // Log successful verification for security monitoring
       logger.info('Token verification successful', {
         uid: result.uid,
@@ -52,12 +58,15 @@ export class FirebaseService {
         tokenAge: Date.now() / 1000 - result.iat,
         ...requestContext
       }, 'FirebaseService');
-      
+
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      const code = isFirebaseAuthError(err) ? err.code : undefined;
+
       const securityContext = {
-        error: error.message,
-        errorCode: error.code,
+        error: err,
+        errorCode: code,
         tokenLength: idToken?.length || 0,
         tokenPrefix: idToken?.substring(0, 20) + '...',
         timestamp: new Date().toISOString(),
@@ -67,22 +76,22 @@ export class FirebaseService {
       let errorCategory = 'unknown';
       let securitySeverity = 'medium';
       
-      if (error.code === 'auth/id-token-expired') {
+      if (code === 'auth/id-token-expired') {
         errorCategory = 'expired_token';
         securitySeverity = 'low'; // Normal expiration
-      } else if (error.code === 'auth/invalid-id-token') {
+      } else if (code === 'auth/invalid-id-token') {
         errorCategory = 'invalid_token';
         securitySeverity = 'high'; // Potential attack
-      } else if (error.code === 'auth/id-token-revoked') {
+      } else if (code === 'auth/id-token-revoked') {
         errorCategory = 'revoked_token';
         securitySeverity = 'high'; // Compromised token
-      } else if (error.code === 'auth/user-disabled') {
+      } else if (code === 'auth/user-disabled') {
         errorCategory = 'disabled_user';
         securitySeverity = 'medium';
-      } else if (error.code === 'auth/user-not-found') {
+      } else if (code === 'auth/user-not-found') {
         errorCategory = 'user_not_found';
         securitySeverity = 'medium';
-      } else if (error.code === 'auth/argument-error') {
+      } else if (code === 'auth/argument-error') {
         errorCategory = 'malformed_token';
         securitySeverity = 'high'; // Potential attack
       }
@@ -112,14 +121,6 @@ export class FirebaseService {
     }
   }
 
-  // User Management Methods
-
-  /**
-   * Retrieves Firebase user information by UID
-   * @param uid - Firebase user unique identifier
-   * @returns Promise<FirebaseUser> - Firebase user profile information
-   * @throws UnauthorizedException when user not found or access denied
-   */
   async getUserById(uid: string): Promise<FirebaseUser> {
     logger.debug('Getting Firebase user by UID', { uid }, 'FirebaseService');
     
@@ -142,17 +143,20 @@ export class FirebaseService {
         photoURL: userRecord.photoURL,
         emailVerified: userRecord.emailVerified,
       };
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      const code = isFirebaseAuthError(err) ? err.code : undefined;
+
       logger.error('Failed to get Firebase user', { 
         uid, 
-        error: error.message,
-        errorCode: error.code
+        error: err,
+        errorCode: code
       }, 'FirebaseService');
       
-      if (error.code === 'auth/user-not-found') {
+      if (code === 'auth/user-not-found') {
         logger.security('User lookup failed - user not found', {
           uid,
-          error: error.message,
+          error: err,
           potentialIssue: 'token_user_mismatch'
         });
       }
@@ -161,15 +165,6 @@ export class FirebaseService {
     }
   }
 
-  // Admin Security Methods
-
-  /**
-   * Revokes all refresh tokens for a user (admin action for security)
-   * Forces user to re-authenticate on all devices and sessions
-   * @param firebaseUid - Firebase user unique identifier
-   * @returns Promise<void>
-   * @throws Error when token revocation fails
-   */
   async revokeRefreshTokens(firebaseUid: string): Promise<void> {
     logger.info('Revoking all refresh tokens for user', { firebaseUid }, 'FirebaseService');
     
@@ -182,14 +177,17 @@ export class FirebaseService {
         action: 'admin_token_revocation'
       });
       
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      const code = isFirebaseAuthError(err) ? err.code : undefined;
+
       logger.error('Failed to revoke refresh tokens', {
         firebaseUid,
-        error: error.message,
-        errorCode: error.code
+        error: err,
+        errorCode: code
       }, 'FirebaseService');
       
-      throw error;
+      throw err;
     }
   }
 }

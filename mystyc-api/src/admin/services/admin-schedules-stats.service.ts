@@ -110,7 +110,7 @@ export class AdminSchedulesStatsService {
 
     } catch (error) {
       logger.error('Failed to generate schedule summary stats', {
-        error: error.message
+        error
       }, 'AdminScheduleStatsService');
       throw error;
     }
@@ -161,7 +161,7 @@ export class AdminSchedulesStatsService {
 
     } catch (error) {
       logger.error('Failed to generate schedule performance stats', {
-        error: error.message
+        error
       }, 'AdminScheduleStatsService');
       throw error;
     }
@@ -180,7 +180,7 @@ export class AdminSchedulesStatsService {
 
     } catch (error) {
       logger.error('Failed to generate schedule failure stats', {
-        error: error.message
+        error
       }, 'AdminScheduleStatsService');
       throw error;
     }

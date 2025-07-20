@@ -120,6 +120,6 @@ async function bootstrap() {
 
 // Start the application and handle any startup errors
 bootstrap().catch(error => {
-  logger.error('Application failed to start', { error: error.message, stack: error.stack });
+  logger.error('Application failed to start', { error, stack: error.stack });
   process.exit(1);
 });
