@@ -1,15 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UAParser } from 'ua-parser-js';
 
 import { Device, DeviceDocument } from './schemas/device.schema';
-import { Device as DeviceInterface } from '@/common/interfaces/device.interface';
+import { Device as TDevice, validateDeviceSafe } from 'mystyc-common';
+
 import { DeviceDto } from './dto/device.dto';
 import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
-import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
 
 @Injectable()
 export class DevicesService {
@@ -22,9 +22,9 @@ export class DevicesService {
   /**
    * Finds device by MongoDB ID, returns null if not found (admin use)
    * @param id - MongoDB ObjectId as string
-   * @returns Promise<DeviceInterface | null> - Device record if found, null if not found
+   * @returns Promise<TDevice | null> - Device record if found, null if not found
    */
-  async findById(id: string): Promise<DeviceInterface | null> {
+  async findById(id: string): Promise<TDevice | null> {
     logger.debug('Finding device by ID', { id }, 'DeviceService');
 
     try {
@@ -54,9 +54,9 @@ export class DevicesService {
   /**
    * Finds device by unique device ID, returns null if not found (service-level method)
    * @param deviceId - Unique device identifier
-   * @returns Promise<DeviceInterface | null> - Device record if found, null if not found
+   * @returns Promise<TDevice | null> - Device record if found, null if not found
    */
-  async findByDeviceId(deviceId: string): Promise<DeviceInterface | null> {
+  async findByDeviceId(deviceId: string): Promise<TDevice | null> {
     logger.debug('Finding device by device ID', { deviceId }, 'DeviceService');
 
     const device = await this.deviceModel.findOne({ deviceId }).exec();
@@ -93,9 +93,9 @@ export class DevicesService {
   /**
    * Retrieves device records with pagination and sorting (admin use)
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
-   * @returns Promise<DeviceInterface[]> - Array of device records with applied query params
+   * @returns Promise<TDevice[]> - Array of device records with applied query params
    */
-  async findAll(query: BaseAdminQueryDto): Promise<DeviceInterface[]> {
+  async findAll(query: BaseAdminQueryDto): Promise<TDevice[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding devices with query', { 
@@ -154,9 +154,9 @@ export class DevicesService {
    * Retrieves user's device records with pagination and sorting (admin use)
    * @param firebaseUid - Firebase user unique identifier
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
-   * @returns Promise<DeviceInterface[]> - Array of device records with applied query params
+   * @returns Promise<TDevice[]> - Array of device records with applied query params
    */
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto = {}): Promise<DeviceInterface[]> {
+  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto = {}): Promise<TDevice[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user devices with query', { 
@@ -196,7 +196,7 @@ export class DevicesService {
     return devices.map(device => this.transformToDevice(device));
   }  
 
-  async findByTimezoneWithFcmToken(timezone: string): Promise<DeviceInterface[]> {
+  async findByTimezoneWithFcmToken(timezone: string): Promise<TDevice[]> {
     logger.debug('Finding devices by timezone with FCM tokens', { timezone }, 'DeviceService');
 
     const pipeline: any[] = [
@@ -242,9 +242,9 @@ export class DevicesService {
    * Parses user agent and stores device metadata for tracking and analytics
    * @param firebaseUid - Firebase user unique identifier
    * @param deviceDto - Complete device information from client
-   * @returns Promise<DeviceInterface> - Created or updated device record
+   * @returns Promise<TDevice> - Created or updated device record
    */
-  async upsertDevice(firebaseUid: string, deviceDto: DeviceDto): Promise<DeviceInterface> {
+  async upsertDevice(firebaseUid: string, deviceDto: DeviceDto): Promise<TDevice> {
     logger.info('Upserting device', {
       firebaseUid,
       deviceId: deviceDto.deviceId,
@@ -252,12 +252,24 @@ export class DevicesService {
     }, 'DeviceService');
 
     try {
+
+      const validation = validateDeviceSafe(deviceDto);
+      if (!validation.success) {
+        logger.error('Device validation failed', {
+          firebaseUid,
+          errors: validation.error.errors
+        });
+        throw new BadRequestException(validation.error.errors);
+      }
+
+      const validDevice = validation.data;      
+
       // Parse user agent to extract browser, OS, and device type information
-      const parser = new UAParser(deviceDto.userAgent);
+      const parser = new UAParser(validDevice.userAgent);
       const userAgentParsed = parser.getResult();
 
       logger.debug('User agent parsed', {
-        original: deviceDto.userAgent.substring(0, 100),
+        original: validDevice.userAgent?.substring(0, 100),
         parsed: {
           browser: userAgentParsed.browser.name,
           os: userAgentParsed.os.name,
@@ -267,18 +279,18 @@ export class DevicesService {
 
       // Upsert device - creates new or updates existing device record
       const device = await this.deviceModel.findOneAndUpdate(
-        { firebaseUid, deviceId: deviceDto.deviceId },
+        { firebaseUid, deviceId: validDevice.deviceId },
         {
           firebaseUid,
-          deviceId: deviceDto.deviceId,
-          deviceName: deviceDto.deviceName,
-          platform: deviceDto.platform,
-          appVersion: deviceDto.appVersion,
+          deviceId: validDevice.deviceId,
+          deviceName: validDevice.deviceName,
+          platform: validDevice.platform,
+          appVersion: validDevice.appVersion,
           fcmToken: null,
-          userAgent: deviceDto.userAgent,
+          userAgent: validDevice.userAgent,
           userAgentParsed,
-          timezone: deviceDto.timezone,
-          language: deviceDto.language,
+          timezone: validDevice.timezone,
+          language: validDevice.language,
           updatedAt: new Date()
         },
         { 
@@ -312,10 +324,10 @@ export class DevicesService {
    * Called after login when client obtains notification permission
    * @param firebaseUid - Firebase user unique identifier
    * @param updateFcmTokenDto - Device ID and new FCM token
-   * @returns Promise<DeviceInterface> - Updated device record with FCM token
+   * @returns Promise<TDevice> - Updated device record with FCM token
    * @throws NotFoundException when device is not found
    */
-  async updateFcmToken(firebaseUid: string, updateFcmTokenDto: UpdateFcmTokenDto): Promise<DeviceInterface> {
+  async updateFcmToken(firebaseUid: string, updateFcmTokenDto: UpdateFcmTokenDto): Promise<TDevice> {
     logger.info('Updating FCM token', {
       firebaseUid,
       deviceId: updateFcmTokenDto.deviceId
@@ -368,10 +380,10 @@ export class DevicesService {
    * Clears FCM token from device during logout to stop push notifications
    * @param firebaseUid - Firebase user unique identifier
    * @param logoutDto - Logout data containing device ID and timestamp
-   * @returns Promise<DeviceInterface> - Updated device record with cleared FCM token
+   * @returns Promise<TDevice> - Updated device record with cleared FCM token
    * @throws NotFoundException when device is not found
    */
-  async logoutDevice(firebaseUid: string, deviceId: string, clientTimestamp: string): Promise<DeviceInterface> {
+  async logoutDevice(firebaseUid: string, deviceId: string, clientTimestamp: string): Promise<TDevice> {
     logger.info('Clearing FCM token', {
       firebaseUid,
       deviceId: deviceId
@@ -449,11 +461,11 @@ export class DevicesService {
   // Utility Methods
 
   /**
-   * Transforms MongoDB document to clean DeviceInterface object
+   * Transforms MongoDB document to clean TDevice object
    * @param doc - MongoDB device document
-   * @returns DeviceInterface - Clean device object without MongoDB metadata
+   * @returns TDevice - Clean device object without MongoDB metadata
    */
-  private transformToDevice(doc: DeviceDocument): DeviceInterface {
+  private transformToDevice(doc: DeviceDocument): TDevice {
     return {
       firebaseUid: doc.firebaseUid,
       deviceId: doc.deviceId,

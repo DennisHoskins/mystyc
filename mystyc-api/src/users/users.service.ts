@@ -5,7 +5,7 @@ import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
 import { User } from '@/common/interfaces/user.interface';
 import { UserRole } from '@/common/enums/roles.enum';
 import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
-import { Device } from '@/common/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { UserProfilesService } from './user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';

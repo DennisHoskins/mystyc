@@ -11,7 +11,7 @@ import { NotificationContentService, NotificationContentTimeoutError } from '@/c
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
-import { Device } from '@/common/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 

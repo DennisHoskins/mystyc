@@ -1,24 +1,17 @@
-# Use official Node.js image
-FROM node:20
+FROM node:20-alpine
 
-# Create app directory
 WORKDIR /api
 
-# Copy package.json and install dependencies
-COPY package*.json ./
+COPY mystyc-common/package*.json /mystyc-common/
+COPY mystyc-common/tsconfig.json /mystyc-common/
+COPY mystyc-common/src /mystyc-common/src
+RUN cd /mystyc-common && npm install && npm run build && npm link
+
+COPY mystyc-api/package*.json ./
 RUN npm ci
+RUN npm link mystyc-common
 
-RUN ls -la node_modules/ | head -20
-RUN npm list stripe
-
-# Copy the rest of the app
-COPY . .
-
-# Expose app port
-EXPOSE 3000
-
-# Allocate memory
+COPY mystyc-api/ ./
 ENV NODE_OPTIONS="--max-old-space-size=3072"
-
-# Run the app
-CMD ["npm", "run", "start"]
+EXPOSE 3001
+CMD ["npm", "run", "start:dev"]

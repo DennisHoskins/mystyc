@@ -5,7 +5,7 @@ import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
 import { DevicesService } from './devices.service';
-import { Device } from '@/common/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
 import { logger } from '@/common/util/logger';
 

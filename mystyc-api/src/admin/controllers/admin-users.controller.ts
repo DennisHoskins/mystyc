@@ -12,7 +12,7 @@ import { PaymentHistoryService } from '@/payments/payment-history.service';
 import { ContentService } from '@/content/content.service';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { PaymentHistory } from '@/common/interfaces/payment-history.interface';
-import { Device } from '@/common/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { Content } from '@/common/interfaces/content.interface';
 import { AuthEvent } from '@/common/interfaces/auth-event.interface';
 import { Notification } from '@/common/interfaces/notification.interface';

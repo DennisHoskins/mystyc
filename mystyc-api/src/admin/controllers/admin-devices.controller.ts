@@ -8,7 +8,7 @@ import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { Device } from '@/common/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { UserProfile } from '@/common/interfaces/user-profile.interface';
 import { AdminController } from './admin.controller';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
