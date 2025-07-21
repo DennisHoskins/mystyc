@@ -3,10 +3,12 @@
 
 # But keep these directories
 !/mystyc-api/
+!/mystyc-common/
 !/mystyc-web/
 
 # Make sure contents of those directories are not ignored
 !/mystyc-api/**
+!/mystyc-common/**
 !/mystyc-web/**
 
 # Allow .gitignore itself
