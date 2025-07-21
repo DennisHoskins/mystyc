@@ -1,6 +1,6 @@
 'use client';
 
-import { Device } from '@/interfaces';
+import { Device } from 'mystyc-common';
 
 import Text from '@/components/ui/Text';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

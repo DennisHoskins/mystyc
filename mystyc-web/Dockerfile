@@ -1,30 +1,21 @@
-# Use official Node.js image
 FROM node:18-alpine
 
-# Create app directory
-WORKDIR /web
+WORKDIR /web/mystyc-web
 
-# Copy package.json and install dependencies
-COPY package.json package-lock.json ./
-RUN npm ci
-
-# Install ts-node so `npm run swEnvBuild` can find it
-RUN npm install ts-node
-
-# Copy the rest of the app
-COPY . .
-
-# Build service worker .env
-RUN npm run swEnvBuild
-
-# Allocate memory
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 
-# Build the app
-RUN npm run build
+# Copy package files only (to cache deps install)
+COPY mystyc-web/package*.json ./
 
-# Expose app port
+# Copy shared lib package.json and link it after install (if needed)
+COPY mystyc-common/package.json ../mystyc-common/
+
+RUN npm install
+
+# Copy full source AFTER install for dev mode live mount
+COPY mystyc-web/ ./
+COPY mystyc-common/ ../mystyc-common/
+
 EXPOSE 3000
 
-# Run the app
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]

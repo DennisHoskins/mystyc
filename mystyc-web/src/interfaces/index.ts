@@ -8,7 +8,7 @@ export * from './user.interface';
 export * from './user-role.interface';
 export * from './user-profile.interface';
 export * from './user-profile-update.interface';
-export * from './device.interface';
+
 export * from './device-session.interface';
 export * from './update-fcm-token.interface';
 export * from './auth-event.interface';

@@ -1,5 +1,5 @@
 import { User } from '@/interfaces/user.interface';
-import { Device } from '@/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { Content } from '@/interfaces/content.interface';
 import { logger } from '@/util/logger'
 

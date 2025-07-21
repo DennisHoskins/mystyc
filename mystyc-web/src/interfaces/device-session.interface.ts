@@ -1,4 +1,4 @@
-import { Device } from '@/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { Session } from '@/interfaces/session.interface';
 
 export interface DeviceSession {

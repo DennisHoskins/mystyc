@@ -1,6 +1,6 @@
 'use client';
 
-import { Device } from '@/interfaces';
+import { Device } from 'mystyc-common';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 import { IconComponent } from '@/components/ui/icons/Icon';

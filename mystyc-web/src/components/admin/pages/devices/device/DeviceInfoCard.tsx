@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Device } from '@/interfaces';
+import { Device } from 'mystyc-common';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';

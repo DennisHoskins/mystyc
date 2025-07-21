@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { Device, DeviceStats } from '@/interfaces';
+import { Device } from 'mystyc-common';
+import { DeviceStats } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';

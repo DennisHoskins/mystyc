@@ -2,7 +2,6 @@ import {
   Session, 
   SessionDevice, 
   UserProfile, 
-  Device, 
   DeviceSession, 
   AuthEvent, 
   Notification, 
@@ -26,6 +25,8 @@ import {
   OpenAIUsageStats,
   SubscriptionStats,
 } from '@/interfaces';
+
+import { Device } from 'mystyc-common';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
 

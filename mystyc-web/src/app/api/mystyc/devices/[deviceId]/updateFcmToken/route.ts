@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 
 import { sessionManager } from '../../../../sessionManager';
 import { authTokenManager } from '../../../../authTokenManager';
-import { Device } from '@/interfaces/device.interface';
+import { Device } from 'mystyc-common';
 import { logger } from '@/util/logger';
 
 export async function POST(

@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Session, Device } from '@/interfaces';
+import { Device } from 'mystyc-common';
+import { Session } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';

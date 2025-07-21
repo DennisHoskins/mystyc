@@ -1,7 +1,7 @@
 'use client';
 
 import { MonitorSmartphone, Monitor, Tablet, Smartphone } from 'lucide-react'
-import { Device } from '@/interfaces';
+import { Device } from 'mystyc-common';
 
 export default function DeviceIcon({ device, size = 6 }: { device?: Device, size?: number }) {
   if (!device) {
