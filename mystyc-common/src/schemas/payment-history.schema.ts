@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const PaymentStatus = z.enum(['paid', 'failed', 'refunded', 'disputed']);
 export const SubscriptionTier = z.enum(['plus', 'pro']);
@@ -29,7 +30,11 @@ export type PaymentHistory = z.infer<typeof PaymentHistorySchema>;
 export type PaymentStatusValue = z.infer<typeof PaymentStatus>;
 export type SubscriptionTierValue = z.infer<typeof SubscriptionTier>;
 
-export const validatePaymentHistory = (data: unknown) => PaymentHistorySchema.parse(data);
-export const validatePaymentHistorySafe = (data: unknown) => PaymentHistorySchema.safeParse(data);
-export const validatePaymentHistoryInput = (data: unknown) => PaymentHistoryInputSchema.parse(data);
-export const validatePaymentHistoryInputSafe = (data: unknown) => PaymentHistoryInputSchema.safeParse(data);
+export const validatePaymentHistory = (data: unknown) => 
+  validateWithError(PaymentHistorySchema, data, { schema: 'PaymentHistory' });
+export const validatePaymentHistorySafe = (data: unknown) => 
+  validateSafely(PaymentHistorySchema, data);
+export const validatePaymentHistoryInput = (data: unknown) => 
+  validateWithError(PaymentHistoryInputSchema, data, { schema: 'PaymentHistoryInput' });
+export const validatePaymentHistoryInputSafe = (data: unknown) => 
+  validateSafely(PaymentHistoryInputSchema, data);

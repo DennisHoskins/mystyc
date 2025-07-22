@@ -146,11 +146,7 @@ export class FirebaseService {
 
       const validation = validateFirebaseUserSafe(firebaseUserData);
       if (!validation.success) {
-        logger.error('Firebase user validation failed', {
-          uid,
-          errors: validation.error.errors
-        });
-        throw new UnauthorizedException('Invalid Firebase user data');
+        throw validation.error;
       }
 
       return validation.data;

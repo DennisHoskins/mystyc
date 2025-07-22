@@ -3,11 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import Stripe from 'stripe';
 
-import { UserProfileDocument } from './schemas/user-profile.schema';
+import { z } from 'zod';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
 import { UserProfile, ZodiacSignType, UserProfileInputSchema } from 'mystyc-common/schemas';
-import { CreateUserProfileDto } from './dto/create-user-profile.dto';
-import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
+import { CreateUserProfileSchema, UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
+
+import { UserProfileDocument } from './schemas/user-profile.schema';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -204,45 +205,15 @@ export class UserProfilesService {
    * @returns Promise<UserProfile> - Created user profile object
    * @throws ConflictException when user creation fails (duplicate key, validation errors)
    */
-  async create(createUserDto: CreateUserProfileDto): Promise<UserProfile> {
+  async create(createUserDto: z.infer<typeof CreateUserProfileSchema>): Promise<UserProfile> {
     logger.info('Creating new user profile', {
       firebaseUid: createUserDto.firebaseUid,
       email: createUserDto.email,
     }, 'UserProfileService');
 
-    console.log("============================");
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log(createUserDto);
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log("");
-
-    // ADD VALIDATION
     const validation = UserProfileInputSchema.safeParse(createUserDto);
-
-    console.log("============================");
-
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log(validation);
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log("");
-
-
     if (!validation.success) {
-      logger.error('User profile validation failed', {
-        firebaseUid: createUserDto.firebaseUid,
-        errors: validation.error.errors
-      });
-      throw new ConflictException(validation.error.errors);
+      throw validation.error;
     }
 
     try {
@@ -272,7 +243,7 @@ export class UserProfilesService {
    * @returns Promise<UserProfile> - Updated user profile object
    * @throws NotFoundException when user profile is not found
    */
-  async updateProfile(firebaseUid: string, email: string, updates: UpdateUserProfileDto): Promise<UserProfile> {
+  async updateProfile(firebaseUid: string, email: string, updates: z.infer<typeof UpdateUserProfileSchema>): Promise<UserProfile> {
     logger.info('Updating user profile', {
       firebaseUid,
       email,

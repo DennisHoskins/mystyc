@@ -6,6 +6,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 
+import { ValidationExceptionFilter } from '@/common/filters/validation-exception.filter';
+
 import { AppServicesModule } from '@/app-services.module';
 import { AdminModule } from '@/admin/admin.module';
 import { PaymentsModule } from '@/payments/payments.module';
@@ -42,6 +44,10 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
   ],
   controllers: [AppController],
   providers: [
+    {
+      provide: APP_FILTER,
+      useClass: ValidationExceptionFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: ThrottlerExceptionFilter,

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { UserRole } from '../constants/roles.enum';
 import { SubscriptionLevel } from '../constants/subscription-levels.enum';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const ZodiacSign = z.enum([
   'Aries',
@@ -17,7 +18,7 @@ export const ZodiacSign = z.enum([
   'Pisces'
 ]);
 
-const SubscriptionSchema = z.object({
+export const SubscriptionSchema = z.object({
   level: z.nativeEnum(SubscriptionLevel),
   startDate: z.coerce.date().optional().nullable(),
   creditBalance: z.number().min(0).default(0)
@@ -48,5 +49,11 @@ export type UserProfileInput = z.input<typeof UserProfileInputSchema>;
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 export type ZodiacSignType = z.infer<typeof ZodiacSign>;
 
-export const validateUserProfile = (data: unknown) => UserProfileSchema.parse(data);
-export const validateUserProfileSafe = (data: unknown) => UserProfileSchema.safeParse(data);
+export const validateUserProfile = (data: unknown) => 
+  validateWithError(UserProfileSchema, data, { schema: 'UserProfile' });
+export const validateUserProfileSafe = (data: unknown) => 
+  validateSafely(UserProfileSchema, data);
+export const validateUserProfileInput = (data: unknown) => 
+  validateWithError(UserProfileInputSchema, data, { schema: 'UserProfileInput' });
+export const validateUserProfileInputSafe = (data: unknown) => 
+  validateSafely(UserProfileInputSchema, data);

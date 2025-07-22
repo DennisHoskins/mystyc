@@ -2,22 +2,21 @@ import { Controller, UseGuards, Post, Patch, Get, Body, Req, Headers, Unauthoriz
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 
+import { z } from 'zod';
+import { FirebaseUser as FirebaseUserInterface, UserProfile, Content } from 'mystyc-common/schemas';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+import { LoginRegisterRequestSchema, LogoutRequestSchema, UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
+
 import { Public } from '@/common/decorators/public.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas';
 import { User } from 'mystyc-common/schemas/user.schema';
-import { UserProfile } from 'mystyc-common/schemas/';
-import { Content } from 'mystyc-common/schemas';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
 import { UserContentService } from '@/content/user-content.service';
-import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
-import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-register.dto';
-import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
+import { ZodValidationPipe } from '@/common/pipes/zod-validation.pipe';
 import { createServiceLogger } from '@/common/util/logger';
 import { logger } from '@/common/util/logger';
 import { UserRole } from 'mystyc-common/constants/roles.enum';
@@ -44,14 +43,14 @@ export class UsersController {
   @Throttle({ auth: { limit: 10, ttl: 60000 } })
   async registerSession(
     @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
-    @Body() loginRegisterDto: AuthEventLoginRegisterDto,
+    @Body(new ZodValidationPipe(LoginRegisterRequestSchema)) body: z.infer<typeof LoginRegisterRequestSchema>,
     @Req() request: Request
   ): Promise<User> {
     this.logger.info('Registering user session via POST /users/me', {
       uid: firebaseUserFromDecorator.uid,
-      deviceId: loginRegisterDto.device.deviceId,
+      deviceId: body.device.deviceId,
       authType: 'register',
-      platform: loginRegisterDto.device.platform
+      platform: body.device.platform
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
@@ -62,13 +61,13 @@ export class UsersController {
     try {
       const user = await this.userService.registerSession(
         firebaseUser,
-        loginRegisterDto,
+        body,
         serverIp
       );
 
       this.logger.info('Session registered successfully via controller', {
         uid: firebaseUser.uid,
-        deviceId: loginRegisterDto.device.deviceId,
+        deviceId: body.device.deviceId,
         serverIp
       });
 
@@ -76,7 +75,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error('Session registration failed via controller', {
         uid: firebaseUser.uid,
-        deviceId: loginRegisterDto.device.deviceId,
+        deviceId: body.device.deviceId,
         error
       });
 
@@ -118,7 +117,7 @@ export class UsersController {
   @Throttle({ default: { limit: 100, ttl: 600000 } })
   async updateProfile(
     @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface, 
-    @Body() body: UpdateUserProfileDto
+    @Body() body: z.infer<typeof UpdateUserProfileSchema>
   ): Promise<UserProfile> {
     this.logger.info('Updating profile via PATCH /update-profile', { 
       uid: firebaseUserFromDecorator.uid,
@@ -296,12 +295,12 @@ export class UsersController {
   @Throttle({ auth: { limit: 10, ttl: 60000 } })
   async logout(
     @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
-    @Body() logoutDto: AuthEventLogoutDto,
+    @Body(new ZodValidationPipe(LogoutRequestSchema)) body: z.infer<typeof LogoutRequestSchema>,
     @Req() request: Request
   ): Promise<{ success: boolean; message: string }> {
     this.logger.info('User logout via POST /users/logout', {
       uid: firebaseUserFromDecorator.uid,
-      deviceId: logoutDto.device.deviceId,
+      deviceId: body.device.deviceId,
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
@@ -312,13 +311,13 @@ export class UsersController {
     try {
       await this.userService.logout(
         firebaseUser,
-        logoutDto,
+        body,
         serverIp
       );
 
       this.logger.info('Logout recorded successfully via controller', {
         uid: firebaseUser.uid,
-        deviceId: logoutDto.device.deviceId,
+        deviceId: body.device.deviceId,
         serverIp
       });
 
@@ -329,7 +328,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error('Logout recording failed via controller', {
         uid: firebaseUser.uid,
-        deviceId: logoutDto.device.deviceId,
+        deviceId: body.device.deviceId,
         error
       });
 

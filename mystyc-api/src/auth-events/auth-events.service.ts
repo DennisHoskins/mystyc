@@ -163,11 +163,7 @@ export class AuthEventsService {
 
     const validation = validateAuthEventInputSafe(data);
     if (!validation.success) {
-      logger.error('Auth event validation failed', {
-        firebaseUid: data.firebaseUid,
-        errors: validation.error.errors
-      });
-      throw new BadRequestException(validation.error.errors);
+      throw validation.error;
     }
 
     const event = new this.authEventModel({

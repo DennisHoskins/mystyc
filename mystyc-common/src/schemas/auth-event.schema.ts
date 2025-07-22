@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const AuthEventType = z.enum(['create', 'login', 'logout', 'server-logout']);
 
@@ -23,7 +24,11 @@ export type AuthEventInput = z.input<typeof AuthEventInputSchema>;
 export type AuthEvent = z.infer<typeof AuthEventSchema>;
 export type AuthEventTypeValue = z.infer<typeof AuthEventType>;
 
-export const validateAuthEvent = (data: unknown) => AuthEventSchema.parse(data);
-export const validateAuthEventSafe = (data: unknown) => AuthEventSchema.safeParse(data);
-export const validateAuthEventInput = (data: unknown) => AuthEventInputSchema.parse(data);
-export const validateAuthEventInputSafe = (data: unknown) => AuthEventInputSchema.safeParse(data);
+export const validateAuthEvent = (data: unknown) => 
+  validateWithError(AuthEventSchema, data, { schema: 'AuthEvent' });
+export const validateAuthEventSafe = (data: unknown) => 
+  validateSafely(AuthEventSchema, data);
+export const validateAuthEventInput = (data: unknown) => 
+  validateWithError(AuthEventInputSchema, data, { schema: 'AuthEventInput' });
+export const validateAuthEventInputSafe = (data: unknown) => 
+  validateSafely(AuthEventInputSchema, data);

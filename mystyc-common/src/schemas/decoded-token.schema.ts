@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 const FirebaseJwtDataSchema = z.object({
   identities: z.record(z.any()), // [key: string]: any
@@ -23,5 +24,7 @@ export const DecodedIdTokenSchema = z.object({
 
 export type DecodedIdToken = z.infer<typeof DecodedIdTokenSchema>;
 
-export const validateDecodedIdToken = (data: unknown) => DecodedIdTokenSchema.parse(data);
-export const validateDecodedIdTokenSafe = (data: unknown) => DecodedIdTokenSchema.safeParse(data);
+export const validateDecodedIdToken = (data: unknown) => 
+  validateWithError(DecodedIdTokenSchema, data, { schema: 'DecodedIdToken' });
+export const validateDecodedIdTokenSafe = (data: unknown) => 
+  validateSafely(DecodedIdTokenSchema, data);

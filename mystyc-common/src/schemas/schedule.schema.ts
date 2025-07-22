@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const ScheduleTimeSchema = z.object({
   hour: z.number().int().min(0).max(23),
@@ -22,7 +23,11 @@ export type ScheduleTime = z.infer<typeof ScheduleTimeSchema>;
 export type ScheduleInput = z.input<typeof ScheduleInputSchema>;
 export type Schedule = z.infer<typeof ScheduleSchema>;
 
-export const validateSchedule = (data: unknown) => ScheduleSchema.parse(data);
-export const validateScheduleSafe = (data: unknown) => ScheduleSchema.safeParse(data);
-export const validateScheduleInput = (data: unknown) => ScheduleInputSchema.parse(data);
-export const validateScheduleInputSafe = (data: unknown) => ScheduleInputSchema.safeParse(data);
+export const validateSchedule = (data: unknown) => 
+  validateWithError(ScheduleSchema, data, { schema: 'Schedule' });
+export const validateScheduleSafe = (data: unknown) => 
+  validateSafely(ScheduleSchema, data);
+export const validateScheduleInput = (data: unknown) => 
+  validateWithError(ScheduleInputSchema, data, { schema: 'ScheduleInput' });
+export const validateScheduleInputSafe = (data: unknown) => 
+  validateSafely(ScheduleInputSchema, data);

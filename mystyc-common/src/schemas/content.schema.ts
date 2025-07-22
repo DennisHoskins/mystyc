@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const DataItemSchema = z.object({
   key: z.string().min(1).trim(),
@@ -59,7 +60,11 @@ export type Content = z.infer<typeof ContentSchema>;
 export type ContentTypeValue = z.infer<typeof ContentType>;
 export type ContentStatusValue = z.infer<typeof ContentStatus>;
 
-export const validateContent = (data: unknown) => ContentSchema.parse(data);
-export const validateContentSafe = (data: unknown) => ContentSchema.safeParse(data);
-export const validateContentInput = (data: unknown) => ContentInputSchema.parse(data);
-export const validateContentInputSafe = (data: unknown) => ContentInputSchema.safeParse(data);
+export const validateContent = (data: unknown) => 
+  validateWithError(ContentSchema, data, { schema: 'Content' });
+export const validateContentSafe = (data: unknown) => 
+  validateSafely(ContentSchema, data);
+export const validateContentInput = (data: unknown) => 
+  validateWithError(ContentInputSchema, data, { schema: 'ContentInput' });
+export const validateContentInputSafe = (data: unknown) => 
+  validateSafely(ContentInputSchema, data);

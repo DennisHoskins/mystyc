@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const FirebaseUserSchema = z.object({
   uid: z.string().min(20).max(128),
@@ -10,5 +11,7 @@ export const FirebaseUserSchema = z.object({
 
 export type FirebaseUser = z.infer<typeof FirebaseUserSchema>;
 
-export const validateFirebaseUser = (data: unknown) => FirebaseUserSchema.parse(data);
-export const validateFirebaseUserSafe = (data: unknown) => FirebaseUserSchema.safeParse(data);
+export const validateFirebaseUser = (data: unknown) => 
+  validateWithError(FirebaseUserSchema, data, { schema: 'FirebaseUser' });
+export const validateFirebaseUserSafe = (data: unknown) => 
+  validateSafely(FirebaseUserSchema, data);

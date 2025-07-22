@@ -137,11 +137,7 @@ export class UserContentService {
 
     const validation = validateContentInputSafe(contentData);
     if (!validation.success) {
-      logger.error('User content validation failed', {
-        date, userId: triggeringUserProfile.firebaseUid,
-        errors: validation.error.errors
-      }, 'UserContentService');
-      throw new Error('Invalid user content data');
+      throw validation.error;
     }
 
     const content = new this.contentModel(validation.data);

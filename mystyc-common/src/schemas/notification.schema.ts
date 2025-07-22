@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const NotificationType = z.enum(['test', 'admin', 'broadcast', 'schedule']);
 export const NotificationSource = z.enum(['api']);
@@ -33,7 +34,11 @@ export type Notification = z.infer<typeof NotificationSchema>;
 export type NotificationTypeValue = z.infer<typeof NotificationType>;
 export type NotificationStatusValue = z.infer<typeof NotificationStatus>;
 
-export const validateNotification = (data: unknown) => NotificationSchema.parse(data);
-export const validateNotificationSafe = (data: unknown) => NotificationSchema.safeParse(data);
-export const validateNotificationInput = (data: unknown) => NotificationInputSchema.parse(data);
-export const validateNotificationInputSafe = (data: unknown) => NotificationInputSchema.safeParse(data);
+export const validateNotification = (data: unknown) => 
+  validateWithError(NotificationSchema, data, { schema: 'Notification' });
+export const validateNotificationSafe = (data: unknown) => 
+  validateSafely(NotificationSchema, data);
+export const validateNotificationInput = (data: unknown) => 
+  validateWithError(NotificationInputSchema, data, { schema: 'NotificationInput' });
+export const validateNotificationInputSafe = (data: unknown) => 
+  validateSafely(NotificationInputSchema, data);

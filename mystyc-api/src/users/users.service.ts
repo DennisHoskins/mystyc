@@ -1,17 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import Stripe from 'stripe';
 
-import { FirebaseUser } from 'mystyc-common/schemas/';
-import { User, validateUserSafe } from 'mystyc-common/schemas/user.schema';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
-import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
-import { Device } from 'mystyc-common/schemas/';
+import { z } from 'zod';
+import { FirebaseUser, User, Device, validateUserSafe } from 'mystyc-common/schemas/';
+import { UserRole, SubscriptionLevel } from 'mystyc-common/constants/';
+import { LoginRegisterRequestSchema, LogoutRequestSchema, CreateUserProfileSchema } from 'mystyc-common/schemas/requests';
+
 import { UserProfilesService } from './user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
-import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-register.dto';
-import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
-import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -31,7 +28,7 @@ export class UsersService {
    */
   async registerSession(
     firebaseUser: FirebaseUser,
-    loginRegisterDto: AuthEventLoginRegisterDto,
+    loginRegisterDto: z.infer<typeof LoginRegisterRequestSchema>,
     serverIp: string
   ): Promise<User> {
     logger.info('Registering user session', {
@@ -91,7 +88,7 @@ export class UsersService {
    */
   async logout(
     firebaseUser: FirebaseUser,
-    logoutDto: AuthEventLogoutDto,
+    logoutDto: z.infer<typeof LogoutRequestSchema>,
     serverIp: string
   ) {
     logger.info('Logging out user session', {
@@ -243,11 +240,7 @@ export class UsersService {
 
       const validation = validateUserSafe(userData);
       if (!validation.success) {
-        logger.error('User composition validation failed', {
-          firebaseUid: firebaseUser.uid,
-          errors: validation.error.errors
-        });
-        throw new Error('Invalid user data composition');
+        throw validation.error;
       }
 
       return {
@@ -261,7 +254,7 @@ export class UsersService {
       email: firebaseUser.email,
     });
 
-    const createUserDto: CreateUserProfileDto = {
+    const createUserDto: z.infer<typeof CreateUserProfileSchema> = {
       firebaseUid: firebaseUser.uid,
       email: firebaseUser.email || '',
       roles: [UserRole.USER],

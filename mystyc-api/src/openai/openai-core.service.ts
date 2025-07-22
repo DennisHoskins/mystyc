@@ -136,10 +136,7 @@ export class OpenAICoreService implements OnModuleInit {
 
       const validation = validateOpenAIUsageInputSafe(usageData);
       if (!validation.success) {
-        logger.error('OpenAI usage validation failed', {
-          month, errors: validation.error.errors
-        }, 'OpenAIService');
-        throw new Error('Invalid OpenAI usage data');
+        throw validation.error;
       }
 
       await this.usageModel.findOneAndUpdate(

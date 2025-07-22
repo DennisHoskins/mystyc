@@ -164,11 +164,7 @@ export class WebsiteContentService {
 
     const validation = validateContentInputSafe(contentData);
     if (!validation.success) {
-      logger.error('Website content validation failed', {
-        date, scheduleId, executionId,
-        errors: validation.error.errors
-      }, 'WebsiteContentService');
-      throw new Error('Invalid website content data');
+      throw validation.error;
     }
 
     const content = new this.contentModel(validation.data);

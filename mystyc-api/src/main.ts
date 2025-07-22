@@ -3,7 +3,6 @@ import { config } from 'dotenv';
 config();
 
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import helmet from 'helmet';
 import * as express from 'express';
 import { raw } from 'express';
@@ -68,42 +67,8 @@ async function bootstrap() {
   app.use(express.text({ limit: '10kb' }));
   logger.debug('Request size limits configured');
   
-  // Configure global validation pipe with transformation and detailed error handling
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true, // Transform incoming payloads to match DTO types
-    transformOptions: { enableImplicitConversion: true },
-    whitelist: true, // Strip properties that don't have decorators
-    forbidNonWhitelisted: true, // Throw error if non-whitelisted properties are present
-    exceptionFactory: (errors) => {
-      // Provide detailed validation errors in development, generic in production
-      if (process.env.NODE_ENV === 'development') {
-        const messages = errors.map(error => {
-          const constraints = error.constraints;
-          const property = error.property;
-          const value = error.value;
-          
-          logger.info(`Validation failed for property: ${property}, value: ${value}, constraints:`, constraints);
-          
-          return {
-            property,
-            value,
-            constraints: constraints ? Object.values(constraints) : ['Unknown validation error']
-          };
-        });
-        
-        logger.info('Full validation errors:', messages);
-        
-        throw new BadRequestException({
-          message: 'Validation failed',
-          details: messages
-        });
-      } else {
-        // Hide implementation details in production
-        throw new BadRequestException('Validation failed');
-      }
-    }
-  }));
-  logger.debug('Global validation pipe configured');
+  // NOTE: Exception filters are now registered globally in app.module.ts via APP_FILTER providers
+  // NOTE: Validation is now handled by Zod pipes at the controller level
   
   // Set global API prefix for all routes
   app.setGlobalPrefix('api');

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ScheduleTimeSchema } from './schedule.schema'; // Reuse from schedule schema
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const ScheduleExecutionStatus = z.enum(['running', 'completed', 'failed', 'timeout']);
 
@@ -25,7 +26,11 @@ export type ScheduleExecutionInput = z.input<typeof ScheduleExecutionInputSchema
 export type ScheduleExecution = z.infer<typeof ScheduleExecutionSchema>;
 export type ScheduleExecutionStatusValue = z.infer<typeof ScheduleExecutionStatus>;
 
-export const validateScheduleExecution = (data: unknown) => ScheduleExecutionSchema.parse(data);
-export const validateScheduleExecutionSafe = (data: unknown) => ScheduleExecutionSchema.safeParse(data);
-export const validateScheduleExecutionInput = (data: unknown) => ScheduleExecutionInputSchema.parse(data);
-export const validateScheduleExecutionInputSafe = (data: unknown) => ScheduleExecutionInputSchema.safeParse(data);
+export const validateScheduleExecution = (data: unknown) => 
+  validateWithError(ScheduleExecutionSchema, data, { schema: 'ScheduleExecution' });
+export const validateScheduleExecutionSafe = (data: unknown) => 
+  validateSafely(ScheduleExecutionSchema, data);
+export const validateScheduleExecutionInput = (data: unknown) => 
+  validateWithError(ScheduleExecutionInputSchema, data, { schema: 'ScheduleExecutionInput' });
+export const validateScheduleExecutionInputSafe = (data: unknown) => 
+  validateSafely(ScheduleExecutionInputSchema, data);

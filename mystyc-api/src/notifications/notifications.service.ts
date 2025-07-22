@@ -771,12 +771,7 @@ export class NotificationsService {
 
     const validation = validateNotificationInputSafe(notificationData);
     if (!validation.success) {
-      logger.error('Notification validation failed', {
-        firebaseUid: data.firebaseUid,
-        type: data.type,
-        errors: validation.error.errors
-      }, 'NotificationsService');
-      throw new BadRequestException(validation.error.errors);
+      throw validation.error;
     }
 
     const notification = new this.notificationModel(validation.data);

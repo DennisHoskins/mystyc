@@ -38,11 +38,7 @@ export class ScheduleExecutionsService {
 
     const validation = validateScheduleExecutionInputSafe(executionData);
     if (!validation.success) {
-      logger.error('Schedule execution validation failed', {
-        scheduleId: createDto.scheduleId,
-        errors: validation.error.errors
-      }, 'ScheduleExecutionService');
-      throw new Error(validation.error.errors.toString());
+      throw validation.error;
     }
         
     try {

@@ -254,13 +254,9 @@ export class DevicesService {
     try {
 
       const validation = validateDeviceSafe(deviceDto);
-      if (!validation.success) {
-        logger.error('Device validation failed', {
-          firebaseUid,
-          errors: validation.error.errors
-        });
-        throw new BadRequestException(validation.error.errors);
-      }
+    if (!validation.success) {
+      throw validation.error;
+    }
 
       const validDevice = validation.data;      
 

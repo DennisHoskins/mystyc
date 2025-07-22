@@ -56,11 +56,7 @@ export class SchedulesService {
 
     const validation = validateScheduleInputSafe(createScheduleDto);
     if (!validation.success) {
-      logger.error('Schedule validation failed', {
-        eventName: createScheduleDto.event_name,
-        errors: validation.error.errors
-      });
-      throw new ConflictException(validation.error.errors);
+      throw validation.error;
     }
 
     try {

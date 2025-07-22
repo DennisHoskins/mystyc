@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateWithError, validateSafely } from '../utils/validation';
 
 export const DeviceInputSchema = z.object({
   firebaseUid: z.string().min(20).max(128),
@@ -13,25 +14,20 @@ export const DeviceInputSchema = z.object({
   platform: z.string()
     .min(2)
     .max(20)
-    .optional()
     .transform(val => val?.toLowerCase()),
   fcmToken: z.string()
     .min(100)
     .max(500)
-    .optional()
-    .nullable(),
+    .optional(),
   fcmTokenUpdatedAt: z.coerce.date()
-    .optional()
-    .nullable(),
+    .optional(),
   appVersion: z.string()
     .regex(/^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$/, 'Invalid semver format')
-    .optional()
-    .nullable(),
+    .optional(),
   timezone: z.string()
     .min(1)
     .max(50)
-    .trim()
-    .optional(),
+    .trim(),
   language: z.string()
     .min(2)
     .max(10)
@@ -42,13 +38,11 @@ export const DeviceInputSchema = z.object({
         return `${parts[0].toLowerCase()}-${parts[1].toUpperCase()}`;
       }
       return val.toLowerCase();
-    })
-    .optional(),
+    }),
   userAgent: z.string()
     .min(10)
     .max(1000)
     .trim()
-    .optional()
 }).strict();
 
 export const UpdateFcmTokenSchema = z.object({
@@ -67,9 +61,6 @@ export const DeviceSchema = DeviceInputSchema
 export type DeviceInput = z.input<typeof DeviceInputSchema>;
 export type Device = z.infer<typeof DeviceSchema>;
 export type UpdateFcmToken = z.infer<typeof UpdateFcmTokenSchema>;
-
-export const validateDevice = (data: unknown) => DeviceSchema.parse(data);
-export const validateDeviceSafe = (data: unknown) => DeviceSchema.safeParse(data);
 
 export const DeviceFormSchema = DeviceInputSchema.extend({
   confirmDeviceName: z.string().optional()
@@ -94,3 +85,12 @@ export const extractPlatformFromUA = (userAgent: string): string => {
   if (ua.includes('linux')) return 'linux';
   return 'unknown';
 };
+
+export const validateDevice = (data: unknown) => 
+  validateWithError(DeviceSchema, data, { schema: 'Device' });
+export const validateDeviceSafe = (data: unknown) => 
+  validateSafely(DeviceSchema, data);
+export const validateDeviceInput = (data: unknown) => 
+  validateWithError(DeviceInputSchema, data, { schema: 'DeviceInput' });
+export const validateDeviceInputSafe = (data: unknown) => 
+  validateSafely(DeviceInputSchema, data);
