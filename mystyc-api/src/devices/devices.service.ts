@@ -3,11 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UAParser } from 'ua-parser-js';
 
-import { Device, DeviceDocument } from './schemas/device.schema';
+import { DeviceInput, UpdateFcmToken } from 'mystyc-common/schemas';
 import { Device as TDevice, validateDeviceSafe } from 'mystyc-common/schemas';
 
-import { DeviceDto } from './dto/device.dto';
-import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
+import { Device, DeviceDocument } from './schemas/device.schema';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -244,7 +243,7 @@ export class DevicesService {
    * @param deviceDto - Complete device information from client
    * @returns Promise<TDevice> - Created or updated device record
    */
-  async upsertDevice(firebaseUid: string, deviceDto: DeviceDto): Promise<TDevice> {
+  async upsertDevice(firebaseUid: string, deviceDto: DeviceInput): Promise<TDevice> {
     logger.info('Upserting device', {
       firebaseUid,
       deviceId: deviceDto.deviceId,
@@ -323,7 +322,7 @@ export class DevicesService {
    * @returns Promise<TDevice> - Updated device record with FCM token
    * @throws NotFoundException when device is not found
    */
-  async updateFcmToken(firebaseUid: string, updateFcmTokenDto: UpdateFcmTokenDto): Promise<TDevice> {
+  async updateFcmToken(firebaseUid: string, updateFcmTokenDto: UpdateFcmToken): Promise<TDevice> {
     logger.info('Updating FCM token', {
       firebaseUid,
       deviceId: updateFcmTokenDto.deviceId

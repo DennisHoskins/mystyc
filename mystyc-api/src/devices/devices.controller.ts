@@ -1,13 +1,14 @@
 import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
+import { z } from 'zod';
+import { FirebaseUser as FirebaseUserInterface, Device, UpdateFcmTokenSchema } from 'mystyc-common/schemas';
+
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
-import { DevicesService } from './devices.service';
-import { Device } from 'mystyc-common/schemas/';
-import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas/';
+import { ZodValidationPipe } from '@/common/pipes/zod-validation.pipe';
 import { logger } from '@/common/util/logger';
+import { DevicesService } from './devices.service';
 
 @Controller('devices')
 export class DevicesController {
@@ -25,7 +26,7 @@ export class DevicesController {
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async updateFcmToken(
     @FirebaseUser() firebaseUser: FirebaseUserInterface,
-    @Body() updateFcmTokenDto: UpdateFcmTokenDto
+    @Body(new ZodValidationPipe(UpdateFcmTokenSchema)) updateFcmTokenDto: z.infer<typeof UpdateFcmTokenSchema>
   ): Promise<Device> {
     logger.info('Updating FCM token via controller', {
       uid: firebaseUser.uid,

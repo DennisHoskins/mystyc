@@ -13,7 +13,6 @@ import { ContentService } from '@/content/content.service';
 import { UserPlusContentService } from '@/content/user-plus-content.service';
 import { Content } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
-import { CreateContentDto } from '@/content/dto/create-content.dto';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
@@ -76,42 +75,5 @@ export class AdminUsersPlusContentController extends AdminController<Content> {
         order: query.sortOrder || 'desc'
       } : undefined
     };
-  }
-
-  /**
-   * Creates user plus content from OpenAI
-   * @param prompt: The prompt sent to OpenAI to generate the content
-   * @returns Promise<Content> - New content object
-   */
-  @Post()
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async createContent(
-    @Body() createContentDto: CreateContentDto,
-    @FirebaseUserDecorator() user: FirebaseUser
-  ): Promise<Content> {
-    const prompt = createContentDto.prompt || "This is my default prompt";
-
-    logger.info('Admin create Content', {
-      adminUid: user.uid,
-      prompt: 'prompt: ' + prompt,
-    }, 'AdminUserContentController');
-
-    // Get userProfile
-    const userProfile = await this.userProfilesService.findByFirebaseUid(user.uid);
-    if (!userProfile) {
-      throw new NotFoundException("Unable to load User Profile");
-    }
-
-    if (userProfile.subscription.level !== SubscriptionLevel.PLUS) {
-      throw new UnauthorizedException("User is not subscribed to Plus content");
-    }
-
-    const today = new Date().toISOString().split('T')[0];
-
-    const result = await this.userPlusContentService.generatePlusContent(today, userProfile);
-
-    return result;
   }
 }

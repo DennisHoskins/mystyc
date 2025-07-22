@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { ScheduleExecution as ScheduleExecutionSchema, ScheduleExecutionDocument } from './schemas/schedule-execution.schema';
+import { ScheduleExecutionInput } from 'mystyc-common/schemas';
 import { ScheduleExecution, validateScheduleExecutionInputSafe  } from 'mystyc-common/schemas/schedule-execution.schema';
-import { CreateScheduleExecutionDto } from './dto/create-schedule-execution.dto';
+
+import { ScheduleExecution as ScheduleExecutionSchema, ScheduleExecutionDocument } from './schemas/schedule-execution.schema';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -19,7 +20,7 @@ export class ScheduleExecutionsService {
    * @param createDto - Schedule execution creation data
    * @returns Promise<ScheduleExecution> - Created execution log
    */
-  async create(createDto: CreateScheduleExecutionDto): Promise<ScheduleExecution> {
+  async create(createDto: ScheduleExecutionInput): Promise<ScheduleExecution> {
     logger.info('Creating schedule execution log', {
       scheduleId: createDto.scheduleId,
       eventName: createDto.eventName,

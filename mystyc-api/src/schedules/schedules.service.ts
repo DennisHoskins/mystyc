@@ -4,13 +4,12 @@ import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { OnEvent } from '@nestjs/event-emitter';
-
-import { CreateScheduleDto } from './dto/create-schedule.dto';
-import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { ConflictException } from '@nestjs/common';
 
-import { Schedule, ScheduleDocument } from './schemas/schedule.schema';
+import { ScheduleInput } from 'mystyc-common/schemas';
 import { Schedule as ScheduleInterface, validateScheduleInputSafe } from 'mystyc-common/schemas/schedule.schema';
+
+import { Schedule, ScheduleDocument } from './schemas/schedule.schema';
 import { ScheduleExecutionsService } from './schedule-executions.service';
 import { DevicesService } from '@/devices/devices.service';
 import { timezone } from '@/common/util/timezone';
@@ -46,7 +45,7 @@ export class SchedulesService {
 
   // CRUD methods
 
-  async create(createScheduleDto: CreateScheduleDto): Promise<ScheduleInterface> {
+  async create(createScheduleDto: ScheduleInput): Promise<ScheduleInterface> {
     logger.info('Creating new schedule', {
       eventName: createScheduleDto.event_name,
       time: createScheduleDto.time,
@@ -86,7 +85,7 @@ export class SchedulesService {
     }
   }
 
-  async update(id: string, updateScheduleDto: UpdateScheduleDto): Promise<ScheduleInterface | null> {
+  async update(id: string, updateScheduleDto: Partial<ScheduleInput>): Promise<ScheduleInterface | null> {
     logger.info('Updating schedule', {
       scheduleId: id,
       updateFields: Object.keys(updateScheduleDto)

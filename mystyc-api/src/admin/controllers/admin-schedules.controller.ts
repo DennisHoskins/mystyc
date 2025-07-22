@@ -13,8 +13,6 @@ import { ScheduleExecution } from 'mystyc-common/schemas/schedule-execution.sche
 import { Content } from 'mystyc-common/schemas';
 import { Notification } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
-import { CreateScheduleDto } from '@/schedules/dto/create-schedule.dto';
-import { UpdateScheduleDto } from '@/schedules/dto/update-schedule.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
@@ -32,89 +30,6 @@ export class AdminSchedulesController extends AdminController<Schedule> {
     super();
   }
 
-  // CREATE Operations
-
-  /**
-   * Creates a new schedule entry
-   * @param createScheduleDto - Schedule creation data
-   * @returns Promise<Schedule> - Created schedule
-   */
-  @Post()
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async create(@Body() createScheduleDto: CreateScheduleDto): Promise<Schedule> {
-    logger.info('Admin creating new schedule', {
-      eventName: createScheduleDto.event_name,
-      time: createScheduleDto.time,
-      timezoneAware: createScheduleDto.timezone_aware,
-      enabled: createScheduleDto.enabled
-    }, 'AdminScheduleController');
-
-    try {
-      const schedule = await this.service.create(createScheduleDto);
-      
-      logger.info('Schedule created successfully', {
-        scheduleId: schedule._id,
-        eventName: schedule.event_name
-      }, 'AdminScheduleController');
-
-      return schedule;
-    } catch (error) {
-      logger.error('Failed to create schedule', {
-        eventName: createScheduleDto.event_name,
-        error
-      }, 'AdminScheduleController');
-      throw error;
-    }
-  }
-
-  // UPDATE Operations
-
-  /**
-   * Updates an existing schedule
-   * @param id - Schedule ID
-   * @param updateScheduleDto - Schedule update data
-   * @returns Promise<Schedule> - Updated schedule
-   * @throws NotFoundException when schedule not found
-   */
-  @Patch(':id')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async update(
-    @Param('id') id: string,
-    @Body() updateScheduleDto: UpdateScheduleDto
-  ): Promise<Schedule> {
-    logger.info('Admin updating schedule', {
-      scheduleId: id,
-      updateFields: Object.keys(updateScheduleDto)
-    }, 'AdminScheduleController');
-
-    try {
-      const schedule = await this.service.update(id, updateScheduleDto);
-      
-      if (!schedule) {
-        logger.warn('Schedule update failed - not found', { scheduleId: id }, 'AdminScheduleController');
-        throw new NotFoundException('Schedule not found');
-      }
-
-      logger.info('Schedule updated successfully', {
-        scheduleId: id,
-        eventName: schedule.event_name
-      }, 'AdminScheduleController');
-
-      return schedule;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      
-      logger.error('Failed to update schedule', {
-        scheduleId: id,
-        error
-      }, 'AdminScheduleController');
-      throw error;
-    }
-  }
 
   /**
    * Enables a schedule

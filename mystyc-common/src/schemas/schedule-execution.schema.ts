@@ -8,7 +8,7 @@ export const ScheduleExecutionInputSchema = z.object({
   scheduleId: z.string().min(1).max(50),
   eventName: z.string().min(1).max(100).trim(),
   scheduledTime: ScheduleTimeSchema,
-  executedAt: z.date(),
+  executedAt: z.date().optional(),
   timezone: z.string().min(1).max(50).optional(),
   localTime: z.date().optional(),
   status: ScheduleExecutionStatus.default('running'),
