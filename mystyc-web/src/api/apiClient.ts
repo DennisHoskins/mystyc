@@ -1,6 +1,4 @@
-import { User } from '@/interfaces/user.interface';
-import { Device } from 'mystyc-common';
-import { Content } from '@/interfaces/content.interface';
+import { User, Device, Content } from 'mystyc-common/schemas/';
 import { logger } from '@/util/logger'
 
 const serverRoot: string = '/api';

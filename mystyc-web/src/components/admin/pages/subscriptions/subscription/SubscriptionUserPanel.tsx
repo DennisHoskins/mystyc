@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { UserProfile } from '@/interfaces';
+import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 

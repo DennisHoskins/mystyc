@@ -6,12 +6,12 @@ import { Public } from '@/common/decorators/public.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
-import { User } from '@/common/interfaces/user.interface';
-import { UserProfile } from '@/common/interfaces/user-profile.interface';
-import { Content } from '@/common/interfaces/content.interface';
+import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas';
+import { User } from 'mystyc-common/schemas/user.schema';
+import { UserProfile } from 'mystyc-common/schemas/';
+import { Content } from 'mystyc-common/schemas';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
 import { UserContentService } from '@/content/user-content.service';
@@ -20,7 +20,7 @@ import { AuthEventLoginRegisterDto } from '@/auth-events/dto/auth-event-login-re
 import { AuthEventLogoutDto } from '@/auth-events/dto/auth-event-logout.dto';
 import { createServiceLogger } from '@/common/util/logger';
 import { logger } from '@/common/util/logger';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 
 @Controller('users')
 export class UsersController {

@@ -10,8 +10,8 @@ import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationContentService, NotificationContentTimeoutError } from '@/content/notification-content.service';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
-import { Notification as NotificationInterface } from '@/common/interfaces/notification.interface';
-import { Device } from 'mystyc-common';
+import { Notification as NotificationInterface, validateNotificationInputSafe } from 'mystyc-common/schemas';
+import { Device } from 'mystyc-common/schemas/';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -761,12 +761,26 @@ export class NotificationsService {
     executionId?: string | null;
     contentId?: string | null;
   }): Promise<NotificationDocument> {
-    const notification = new this.notificationModel({
-      ...data,
-      source: 'api',
-      status: 'pending'
-    });
 
+
+  const notificationData = {
+    ...data,
+    source: 'api' as const,
+    status: 'pending' as const
+  };
+
+    const validation = validateNotificationInputSafe(notificationData);
+    if (!validation.success) {
+      logger.error('Notification validation failed', {
+        firebaseUid: data.firebaseUid,
+        type: data.type,
+        errors: validation.error.errors
+      }, 'NotificationsService');
+      throw new BadRequestException(validation.error.errors);
+    }
+
+    const notification = new this.notificationModel(validation.data);
+    
     const saved = await notification.save();
     
     logger.debug('Notification record created', {

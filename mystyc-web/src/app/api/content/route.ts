@@ -1,7 +1,7 @@
 import redis from '../redisClient';
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/util/logger';
-import { Content } from '@/interfaces/content.interface';
+import { Content } from 'mystyc-common/schemas/';
 
 export async function POST(request: NextRequest) {
   logger.log('[getContent] Get attempt started');

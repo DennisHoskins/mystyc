@@ -2,7 +2,7 @@ import { Get, Query, Param, UseGuards, NotFoundException } from '@nestjs/common'
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { STATS_REGISTRY } from './stats-registry';
 

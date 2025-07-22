@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Content, ContentDocument } from './schemas/content.schema';
-import { Content as ContentInterface } from '@/common/interfaces/content.interface';
-import { UserProfile } from '@/common/interfaces/user-profile.interface';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { Content as ContentInterface, validateContentInputSafe } from 'mystyc-common/schemas';
+import { UserProfile } from 'mystyc-common/schemas/';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { OpenAIUserPlusService } from '@/openai/openai-user-plus.service';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
@@ -69,20 +69,30 @@ export class UserPlusContentService {
     logger.info('Generating new plus content with OpenAI', { date, userId: userProfile.firebaseUid }, 'UserPlusContentService');
 
     // Create content record first to get ID
-    const content = new this.contentModel({
-      type: 'plus_content',
+    const contentData = {
+      type: 'plus_content' as const,
       date,
       userId: userProfile.firebaseUid,
-      title: 'Generating...', // Temporary
-      message: 'Generating...', // Temporary
+      title: 'Generating...',
+      message: 'Generating...',
       data: [],
       sources: [],
-      status: 'pending',
+      status: 'pending' as const,
       generatedAt: new Date(),
       generationDuration: 0
-    });
+    };
 
-    const savedContent = await content.save();
+    const validation = validateContentInputSafe(contentData);
+    if (!validation.success) {
+      logger.error('Plus content validation failed', {
+        date, userId: userProfile.firebaseUid,
+        errors: validation.error.errors
+      }, 'UserPlusContentService');
+      throw new Error('Invalid plus content data');
+    }
+
+    const content = new this.contentModel(validation.data);
+      const savedContent = await content.save();
 
     // Wait for OpenAI to generate content
     const updatedContent = await this.openAIService.generatePlusContent(userProfile, date, savedContent);

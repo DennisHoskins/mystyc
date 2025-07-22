@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 
 import { sessionManager, InvalidSessionError } from '../../../sessionManager';
 import { authTokenManager } from '../../../authTokenManager';
-import { Content } from '@/interfaces/content.interface';
+import { Content } from 'mystyc-common/schemas/';
 import { logger } from '@/util/logger';
 
 export async function POST(

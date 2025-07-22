@@ -10,7 +10,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { SubscriptionDto } from './subscription.dto';
 
 export class CreateUserProfileDto {

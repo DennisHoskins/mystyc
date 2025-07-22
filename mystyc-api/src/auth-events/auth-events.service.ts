@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { AuthEvent, AuthEventDocument } from './schemas/auth-event.schema';
-import { AuthEvent as AuthEventInterface } from '@/common/interfaces/auth-event.interface';
+import { AuthEvent as AuthEventInterface, validateAuthEventInputSafe } from 'mystyc-common/schemas/';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -160,6 +160,16 @@ export class AuthEventsService {
    * Records a new auth event
    */
   async recordAuthEvent(data: AuthEventInterface): Promise<AuthEventInterface> {
+
+    const validation = validateAuthEventInputSafe(data);
+    if (!validation.success) {
+      logger.error('Auth event validation failed', {
+        firebaseUid: data.firebaseUid,
+        errors: validation.error.errors
+      });
+      throw new BadRequestException(validation.error.errors);
+    }
+
     const event = new this.authEventModel({
       firebaseUid: data.firebaseUid,
       email: data.email,

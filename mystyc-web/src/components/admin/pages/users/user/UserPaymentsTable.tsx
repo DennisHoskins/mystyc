@@ -3,7 +3,7 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { PaymentHistory } from '@/interfaces';
+import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/admin/ui/AdminError';

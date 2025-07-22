@@ -2,7 +2,7 @@
 
 import { AlarmClockCheck, Bell, Globe, Users, UserPlus } from 'lucide-react';
 
-import { Content } from '@/interfaces';
+import { Content } from 'mystyc-common/schemas';
 import { formatDateForDisplay } from '@/util/dateTime';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';

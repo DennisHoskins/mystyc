@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { AuthEvent } from '@/interfaces';
+import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';

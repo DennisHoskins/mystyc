@@ -1,6 +1,6 @@
 'use client';
 
-import { Notification } from '@/interfaces';
+import { Notification } from 'mystyc-common/schemas';
 
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
@@ -22,13 +22,6 @@ export default function NotificationMessagePanel({ notification }: { notificatio
 
       <div className="pt-4">
         <AdminDetailGroup>
-          {notification.contentId &&
-            <AdminDetailField
-              label="Content Id"
-              value={notification.contentId}
-              href={`/admin/content/${notification.contentId}`}
-            />
-          }
           <AdminDetailField
             label="Title"
             value={notification.title}

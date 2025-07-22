@@ -1,0 +1,29 @@
+import { z } from 'zod';
+
+export const AuthEventType = z.enum(['create', 'login', 'logout', 'server-logout']);
+
+export const AuthEventInputSchema = z.object({
+  firebaseUid: z.string().min(20).max(128),
+  email: z.string().email().optional(),
+  deviceId: z.string().min(8).max(64),
+  deviceName: z.string().trim().optional(),
+  ip: z.string().min(7).max(45), // IPv4 min "1.1.1.1", IPv6 max length
+  clientTimestamp: z.string().datetime(), // ISO date string
+  type: AuthEventType
+}).strict();
+
+export const AuthEventSchema = AuthEventInputSchema.extend({
+  _id: z.string().optional(),
+  timestamp: z.date().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+});
+
+export type AuthEventInput = z.input<typeof AuthEventInputSchema>;
+export type AuthEvent = z.infer<typeof AuthEventSchema>;
+export type AuthEventTypeValue = z.infer<typeof AuthEventType>;
+
+export const validateAuthEvent = (data: unknown) => AuthEventSchema.parse(data);
+export const validateAuthEventSafe = (data: unknown) => AuthEventSchema.safeParse(data);
+export const validateAuthEventInput = (data: unknown) => AuthEventInputSchema.parse(data);
+export const validateAuthEventInputSafe = (data: unknown) => AuthEventInputSchema.safeParse(data);

@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from '@/interfaces/user.interface';
+import { User } from 'mystyc-common/schemas/';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { AppUser } from '@/interfaces/app/app-user.interface';
 
 const transformUserToAppUser = (user: User): AppUser => ({
   ...user,
-  isAdmin: user.userProfile.roles.includes("admin"),
+  isAdmin: user.userProfile.roles.includes(UserRole.ADMIN),
   isOnboard: user.userProfile.zodiacSign != null,
   isPlus: user.userProfile.subscription.level == 'plus'
 });

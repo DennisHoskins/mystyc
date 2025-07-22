@@ -1,6 +1,6 @@
 'use client';
 
-import { UserProfile } from '@/interfaces';
+import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';

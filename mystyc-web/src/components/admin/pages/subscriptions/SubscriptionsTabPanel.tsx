@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { PaymentHistory, UserProfile } from '@/interfaces';
+import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
+import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';

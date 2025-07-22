@@ -7,7 +7,7 @@ import { Reflector } from '@nestjs/core';
 
 import { SUBSCRIPTION_LEVELS_KEY } from '@/common/decorators/subscription-levels.decorator';
 import { IS_PUBLIC_KEY } from '@/common/decorators/public.decorator';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { logger } from '@/common/util/logger';
 

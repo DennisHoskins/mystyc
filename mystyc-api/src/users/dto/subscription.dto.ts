@@ -1,6 +1,6 @@
 import { IsOptional, IsEnum, IsNumber, IsDate, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 
 export class SubscriptionDto {
   @IsOptional()

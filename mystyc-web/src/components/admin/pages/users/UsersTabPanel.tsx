@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 
 import { apiClientAdmin, PaginatedResponse } from '@/api/apiClientAdmin';
-import { UserProfile } from '@/interfaces';
+import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';

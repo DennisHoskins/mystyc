@@ -7,7 +7,7 @@ import { Reflector } from '@nestjs/core';
 
 import { ROLES_KEY } from '@/common/decorators/roles.decorator';
 import { IS_PUBLIC_KEY } from '@/common/decorators/public.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { logger } from '@/common/util/logger';
 

@@ -1,18 +1,24 @@
 import { 
-  Session, 
-  SessionDevice, 
-  UserProfile, 
-  DeviceSession, 
-  AuthEvent, 
+  Device, 
+  UserProfile,
+  AuthEvent,
   Notification, 
   Content, 
   Schedule, 
   ScheduleExecution,
   PaymentHistory,
   OpenAIUsage, 
+} from 'mystyc-common/schemas/';
+
+import { 
+  Session, 
+  SessionDevice, 
+  DeviceSession, 
+
   AdminQuery, 
   AdminStatsQuery, 
   AdminStatsResponseExtended, 
+
   SessionStats, 
   TrafficStats, 
   UserStats, 
@@ -26,7 +32,6 @@ import {
   SubscriptionStats,
 } from '@/interfaces';
 
-import { Device } from 'mystyc-common';
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
 

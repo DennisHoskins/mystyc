@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Content, ContentDocument } from './schemas/content.schema';
-import { Content as ContentInterface } from '@/common/interfaces/content.interface';
-import { UserProfile } from '@/common/interfaces/user-profile.interface';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { Content as ContentInterface, validateContentInputSafe } from 'mystyc-common/schemas';
+import { UserProfile } from 'mystyc-common/schemas/';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { UserPlusContentService } from './user-plus-content.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
@@ -122,19 +122,29 @@ export class UserContentService {
     }, 'UserContentService');
 
     // Create content record (userId tracks who triggered generation)
-    const content = new this.contentModel({
-      type: 'user_content',
+    const contentData = {
+      type: 'user_content' as const,
       date,
-      userId: triggeringUserProfile.firebaseUid, // Track who triggered generation
-      title: 'Generating...', // Temporary
-      message: 'Generating...', // Temporary
+      userId: triggeringUserProfile.firebaseUid,
+      title: 'Generating...',
+      message: 'Generating...',
       data: [],
       sources: [],
-      status: 'pending',
+      status: 'pending' as const,
       generatedAt: new Date(),
       generationDuration: 0
-    });
+    };
 
+    const validation = validateContentInputSafe(contentData);
+    if (!validation.success) {
+      logger.error('User content validation failed', {
+        date, userId: triggeringUserProfile.firebaseUid,
+        errors: validation.error.errors
+      }, 'UserContentService');
+      throw new Error('Invalid user content data');
+    }
+
+    const content = new this.contentModel(validation.data);
     const savedContent = await content.save();
 
     // Wait for OpenAI to generate content

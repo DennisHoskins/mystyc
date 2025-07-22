@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": "./dist/index.js",
-    "./src/*": "./dist/*.js"
-  },
   "scripts": {
     "build": "npx tsc",
     "dev": "tsc --watch"

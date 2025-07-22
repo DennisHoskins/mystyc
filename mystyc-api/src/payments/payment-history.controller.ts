@@ -4,11 +4,11 @@ import { Throttle } from '@nestjs/throttler';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
+import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas/';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { PaymentHistoryService } from './payment-history.service';
-import { PaymentHistory } from '@/common/interfaces/payment-history.interface';
+import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 

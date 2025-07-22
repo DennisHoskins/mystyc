@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { ScheduleExecution, ScheduleExecutionStats } from '@/interfaces';
+import { ScheduleExecutionStats } from '@/interfaces';
+import { ScheduleExecution } from 'mystyc-common/schemas';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';

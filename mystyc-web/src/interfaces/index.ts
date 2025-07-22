@@ -1,23 +1,12 @@
 export * from './auth/auth-event-login-register.interface';
 export * from './auth/auth-event-logout.interface';
 
-export * from './firebase-user.interface';
 export * from './session.interface';
 export * from './session-device.interface';
-export * from './user.interface';
-export * from './user-role.interface';
-export * from './user-profile.interface';
 export * from './user-profile-update.interface';
 
 export * from './device-session.interface';
 export * from './update-fcm-token.interface';
-export * from './auth-event.interface';
-export * from './notification.interface';
-export * from './content.interface';
-export * from './schedule.interface';
-export * from './schedule-execution.interface';
-export * from './openai-usage.interface';
-export * from './payment-history.interface';
 
 export * from './admin/admin-list-response.interface';
 export * from './admin/stats/admin-stats-query.interface';

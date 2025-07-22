@@ -1,6 +1,6 @@
 'use client';
 
-import { Content } from '@/interfaces';
+import { Content } from 'mystyc-common/schemas';
 
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';

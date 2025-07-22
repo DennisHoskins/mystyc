@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { apiClient } from '@/api/apiClient';
-import { Content } from '@/interfaces/content.interface';
+import { Content } from 'mystyc-common/schemas/content.schema';
 
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';

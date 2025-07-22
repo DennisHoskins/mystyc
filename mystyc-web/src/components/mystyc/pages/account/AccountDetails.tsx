@@ -2,7 +2,7 @@
 
 import { FC } from 'react';
 import { User as FirebaseAuthUser } from 'firebase/auth';
-import { User } from '@/interfaces/user.interface';
+import { User } from 'mystyc-common/schemas/';
 import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
 

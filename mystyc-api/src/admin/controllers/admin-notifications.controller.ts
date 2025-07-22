@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 
 import { NotificationsService } from '@/notifications/notifications.service';
-import { Notification } from '@/common/interfaces/notification.interface';
+import { Notification } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
 
 @Controller('admin/notifications')

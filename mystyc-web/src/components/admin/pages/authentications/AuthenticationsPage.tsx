@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { AuthEvent, AuthEventStats } from '@/interfaces';
+import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
+import { AuthEventStats } from '@/interfaces';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';

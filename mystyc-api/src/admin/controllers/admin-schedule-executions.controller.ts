@@ -3,13 +3,13 @@ import { Controller, Get, Param, UseGuards, NotFoundException, Query } from '@ne
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { ScheduleExecution } from '@/common/interfaces/schedule-execution.interface';
-import { Content } from '@/common/interfaces/content.interface';
-import { Notification } from '@/common/interfaces/notification.interface';
+import { ScheduleExecution } from 'mystyc-common/schemas/schedule-execution.schema';
+import { Content } from 'mystyc-common/schemas';
+import { Notification } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';

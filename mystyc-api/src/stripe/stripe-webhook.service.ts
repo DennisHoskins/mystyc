@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { PaymentHistoryService } from '@/payments/payment-history.service';
 import { logger } from '@/common/util/logger';

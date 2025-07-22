@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 
 import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
 import { Content, ContentDocument } from '../content/schemas/content.schema';
-import { UserProfile } from '@/common/interfaces/user-profile.interface';
+import { UserProfile } from 'mystyc-common/schemas/';
 import { OpenAICoreService } from './openai-core.service';
 import { logger } from '@/common/util/logger';
 

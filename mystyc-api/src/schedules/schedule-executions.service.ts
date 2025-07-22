@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { ScheduleExecution as ScheduleExecutionSchema, ScheduleExecutionDocument } from './schemas/schedule-execution.schema';
-import { ScheduleExecution } from '@/common/interfaces/schedule-execution.interface';
+import { ScheduleExecution, validateScheduleExecutionInputSafe  } from 'mystyc-common/schemas/schedule-execution.schema';
 import { CreateScheduleExecutionDto } from './dto/create-schedule-execution.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
@@ -26,6 +26,25 @@ export class ScheduleExecutionsService {
       timezone: createDto.timezone || 'global'
     }, 'ScheduleExecutionService');
 
+    const executionData = {
+      scheduleId: createDto.scheduleId,
+      eventName: createDto.eventName,
+      scheduledTime: createDto.scheduledTime,
+      executedAt: new Date(),
+      timezone: createDto.timezone,
+      localTime: createDto.localTime,
+      status: 'running' as const
+    };
+
+    const validation = validateScheduleExecutionInputSafe(executionData);
+    if (!validation.success) {
+      logger.error('Schedule execution validation failed', {
+        scheduleId: createDto.scheduleId,
+        errors: validation.error.errors
+      }, 'ScheduleExecutionService');
+      throw new Error(validation.error.errors.toString());
+    }
+        
     try {
       const executionLog = new this.scheduleExecutionModel({
         scheduleId: createDto.scheduleId,

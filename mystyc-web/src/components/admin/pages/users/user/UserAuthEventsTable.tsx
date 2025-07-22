@@ -3,7 +3,7 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { AuthEvent } from '@/interfaces';
+import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/admin/ui/AdminError';

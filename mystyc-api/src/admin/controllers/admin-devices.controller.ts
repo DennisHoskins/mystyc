@@ -3,13 +3,13 @@ import { Controller, Get, UseGuards, Param, Query, NotFoundException } from '@ne
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { Device } from 'mystyc-common';
-import { UserProfile } from '@/common/interfaces/user-profile.interface';
+import { Device } from 'mystyc-common/schemas/';
+import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { AdminController } from './admin.controller';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';

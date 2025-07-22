@@ -10,7 +10,7 @@ import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { ConflictException } from '@nestjs/common';
 
 import { Schedule, ScheduleDocument } from './schemas/schedule.schema';
-import { Schedule as ScheduleInterface } from '@/common/interfaces/schedule.interface';
+import { Schedule as ScheduleInterface, validateScheduleInputSafe } from 'mystyc-common/schemas/schedule.schema';
 import { ScheduleExecutionsService } from './schedule-executions.service';
 import { DevicesService } from '@/devices/devices.service';
 import { timezone } from '@/common/util/timezone';
@@ -53,6 +53,15 @@ export class SchedulesService {
       timezoneAware: createScheduleDto.timezone_aware,
       enabled: createScheduleDto.enabled
     }, 'ScheduleService');
+
+    const validation = validateScheduleInputSafe(createScheduleDto);
+    if (!validation.success) {
+      logger.error('Schedule validation failed', {
+        eventName: createScheduleDto.event_name,
+        errors: validation.error.errors
+      });
+      throw new ConflictException(validation.error.errors);
+    }
 
     try {
       const newSchedule = new this.scheduleModel({

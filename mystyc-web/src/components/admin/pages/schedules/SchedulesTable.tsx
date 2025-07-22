@@ -1,6 +1,6 @@
 'use client';
 
-import { Schedule } from '@/interfaces';
+import { Schedule } from 'mystyc-common/schemas';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 

@@ -3,23 +3,23 @@ import { Controller, Query, Get, Post, Patch, UseGuards, Param, NotFoundExceptio
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { PaymentHistoryService } from '@/payments/payment-history.service';
 import { ContentService } from '@/content/content.service';
-import { UserProfile } from '@/common/interfaces/user-profile.interface';
-import { PaymentHistory } from '@/common/interfaces/payment-history.interface';
-import { Device } from 'mystyc-common';
-import { Content } from '@/common/interfaces/content.interface';
-import { AuthEvent } from '@/common/interfaces/auth-event.interface';
-import { Notification } from '@/common/interfaces/notification.interface';
+import { UserProfile } from 'mystyc-common/schemas/';
+import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
+import { Device } from 'mystyc-common/schemas/';
+import { Content } from 'mystyc-common/schemas';
+import { AuthEvent } from 'mystyc-common/schemas/';
+import { Notification } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { logger } from '@/common/util/logger';
 
 function isErrorWithStatus(e: unknown): e is { status: number } {

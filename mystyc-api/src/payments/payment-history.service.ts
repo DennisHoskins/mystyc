@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { PaymentHistory, PaymentHistoryDocument } from './schemas/payment-history.schema';
-import { PaymentHistory as PaymentHistoryInterface } from '@/common/interfaces/payment-history.interface';
+import { PaymentHistory as PaymentHistoryInterface, validatePaymentHistoryInputSafe } from 'mystyc-common/schemas/payment-history.schema';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
 
@@ -23,6 +23,16 @@ export class PaymentHistoryService {
       amount: paymentData.amount,
       status: paymentData.status
     }, 'PaymentHistoryService');
+
+    const validation = validatePaymentHistoryInputSafe(paymentData);
+    if (!validation.success) {
+      logger.error('Payment history validation failed', {
+        firebaseUid: paymentData.firebaseUid,
+        stripeInvoiceId: paymentData.stripeInvoiceId,
+        errors: validation.error.errors
+      }, 'PaymentHistoryService');
+      throw new Error(validation.error.errors.toString());
+    }
 
     try {
       const payment = new this.paymentModel(paymentData);

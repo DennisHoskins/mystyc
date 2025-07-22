@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { AlarmClockCheck, Globe } from 'lucide-react';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { Content } from '@/interfaces';
+import { Content } from 'mystyc-common/schemas';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';

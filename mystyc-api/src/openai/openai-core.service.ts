@@ -6,7 +6,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { OpenAIUsageDocument, OpenAIUsage } from './schemas/openai-usage.schema';
-import { OpenAIUsage as OpenAIUsageInterface } from '@/common/interfaces/openai-usage.interface';
+import { OpenAIUsage as OpenAIUsageInterface, validateOpenAIUsageInputSafe } from 'mystyc-common/schemas';
 import { logger } from '@/common/util/logger';
 
 @Injectable()
@@ -120,8 +120,28 @@ export class OpenAICoreService implements OnModuleInit {
         { $group: { _id: null, totalInput: { $sum: '$inputTokens' }, totalOutput: { $sum: '$outputTokens' } } }
       ]);
       const tokensUsed = (agg[0]?.totalInput || 0) + (agg[0]?.totalOutput || 0);
-
       const month = startIso.substring(0, 7);
+
+      const usageData = {
+        month,
+        totalRequests: 0, // You'd need to calculate this
+        tokensUsed,
+        tokenUsagePercent: Math.min(100, (tokensUsed / this.TOKEN_BUDGET) * 100),
+        costUsed,
+        tokenBudget: this.TOKEN_BUDGET,
+        costBudget: this.MONTHLY_BUDGET,
+        costUsagePercent: Math.min(100, (costUsed / this.MONTHLY_BUDGET) * 100),
+        lastSyncedAt: new Date()
+      };
+
+      const validation = validateOpenAIUsageInputSafe(usageData);
+      if (!validation.success) {
+        logger.error('OpenAI usage validation failed', {
+          month, errors: validation.error.errors
+        }, 'OpenAIService');
+        throw new Error('Invalid OpenAI usage data');
+      }
+
       await this.usageModel.findOneAndUpdate(
         { month },
         {

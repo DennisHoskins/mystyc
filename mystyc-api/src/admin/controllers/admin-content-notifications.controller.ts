@@ -3,10 +3,10 @@ import { Controller, Get, Post, UseGuards, Param, Query, Body, NotFoundException
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/';
 import { ContentService } from '@/content/content.service';
 import { NotificationContentService } from '@/content/notification-content.service';
-import { Content } from '@/common/interfaces/content.interface';
+import { Content } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
 import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
 import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';

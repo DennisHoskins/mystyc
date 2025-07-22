@@ -4,14 +4,13 @@
   "private": true,
   "scripts": {
     "swEnvBuild": "ts-node src/util/swEnvBuild.ts",
-    "dev": "npm run swEnvBuild && next lint && next dev --turbopack",
+    "dev": "npm run swEnvBuild && next lint && next dev",
     "build": "npm run swEnvBuild && next build",
     "start": "npm run swEnvBuild && next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
-    "mystyc-common": "file:../mystyc-common",    
     "clsx": "^2.1.1",
     "dotenv": "^16.3.1",
     "firebase": "^11.8.0",

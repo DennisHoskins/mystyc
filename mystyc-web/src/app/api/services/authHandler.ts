@@ -4,9 +4,10 @@ import { buildDevice } from './deviceManager';
 import { generateSessionId } from '../keyManager';
 import { authTokenManager } from '../authTokenManager';
 import { sessionManager } from '../sessionManager';
-import { User } from '@/interfaces/user.interface';
+import { User } from 'mystyc-common/schemas/';
 import { firebaseAuth } from '../firebaseAuth';
 import { logger } from '@/util/logger';
+import { UserRole } from 'mystyc-common';
 
 export interface AuthRequestBody {
   email: string;
@@ -103,7 +104,7 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
       sessionId,
       user.firebaseUser.email || "unknown user",
       device.deviceName || 'unknown device',
-      user.userProfile.roles.includes("admin")
+      user.userProfile.roles.includes(UserRole.ADMIN)
     );
     logger.log(`[authHandler] Session created in Redis`);
 

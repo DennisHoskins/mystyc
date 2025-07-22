@@ -1,6 +1,6 @@
 'use client';
 
-import { Notification } from '@/interfaces';
+import { Notification } from 'mystyc-common/schemas';
 import { formatTimestampForComponent } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

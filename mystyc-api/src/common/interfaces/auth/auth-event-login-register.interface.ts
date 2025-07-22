@@ -1,4 +1,4 @@
-import { Device } from 'mystyc-common';
+import { Device } from 'mystyc-common/schemas/';
 
 export interface AuthEventLoginRegister {
   firebaseUid: string,

@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import Stripe from 'stripe';
 
-import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
-import { User } from '@/common/interfaces/user.interface';
-import { UserRole } from '@/common/enums/roles.enum';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
-import { Device } from 'mystyc-common';
+import { FirebaseUser } from 'mystyc-common/schemas/';
+import { User, validateUserSafe } from 'mystyc-common/schemas/user.schema';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+import { Device } from 'mystyc-common/schemas/';
 import { UserProfilesService } from './user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
@@ -239,8 +239,19 @@ export class UsersService {
         profileId: userProfile.id,
       });
 
+      const userData = { firebaseUser, userProfile, device };
+
+      const validation = validateUserSafe(userData);
+      if (!validation.success) {
+        logger.error('User composition validation failed', {
+          firebaseUid: firebaseUser.uid,
+          errors: validation.error.errors
+        });
+        throw new Error('Invalid user data composition');
+      }
+
       return {
-        user: { firebaseUser, userProfile, device }, 
+        user: validation.data, 
         isNewUser: false
       };
     }

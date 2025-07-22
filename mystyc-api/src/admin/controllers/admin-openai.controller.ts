@@ -3,10 +3,10 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
 
 import { OpenAICoreService } from '@/openai/openai-core.service';
-import { OpenAIUsage } from '@/common/interfaces/openai-usage.interface';
+import { OpenAIUsage } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
 import { logger } from '@/common/util/logger';
 

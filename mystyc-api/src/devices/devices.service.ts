@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { UAParser } from 'ua-parser-js';
 
 import { Device, DeviceDocument } from './schemas/device.schema';
-import { Device as TDevice, validateDeviceSafe } from 'mystyc-common';
+import { Device as TDevice, validateDeviceSafe } from 'mystyc-common/schemas';
 
 import { DeviceDto } from './dto/device.dto';
 import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';

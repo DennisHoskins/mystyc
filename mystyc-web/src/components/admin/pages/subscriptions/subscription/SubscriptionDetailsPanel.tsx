@@ -1,6 +1,6 @@
 'use client';
 
-import { PaymentHistory } from '@/interfaces';
+import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

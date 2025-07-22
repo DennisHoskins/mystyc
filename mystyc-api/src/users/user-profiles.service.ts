@@ -4,9 +4,8 @@ import { Model } from 'mongoose';
 import Stripe from 'stripe';
 
 import { UserProfileDocument } from './schemas/user-profile.schema';
-import { UserProfile } from '@/common/interfaces/user-profile.interface';
-import { UserRole } from '@/common/enums/roles.enum';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
+import { UserProfile, ZodiacSignType, UserProfileInputSchema } from 'mystyc-common/schemas';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
@@ -210,6 +209,41 @@ export class UserProfilesService {
       firebaseUid: createUserDto.firebaseUid,
       email: createUserDto.email,
     }, 'UserProfileService');
+
+    console.log("============================");
+    console.log("");
+    console.log("");
+    console.log("");
+    console.log("");
+    console.log(createUserDto);
+    console.log("");
+    console.log("");
+    console.log("");
+    console.log("");
+
+    // ADD VALIDATION
+    const validation = UserProfileInputSchema.safeParse(createUserDto);
+
+    console.log("============================");
+
+    console.log("");
+    console.log("");
+    console.log("");
+    console.log("");
+    console.log(validation);
+    console.log("");
+    console.log("");
+    console.log("");
+    console.log("");
+
+
+    if (!validation.success) {
+      logger.error('User profile validation failed', {
+        firebaseUid: createUserDto.firebaseUid,
+        errors: validation.error.errors
+      });
+      throw new ConflictException(validation.error.errors);
+    }
 
     try {
       const newUser = new this.userModel(createUserDto);
@@ -493,7 +527,7 @@ export class UserProfilesService {
       email: doc.email,
       fullName: doc.fullName,
       dateOfBirth: doc.dateOfBirth,
-      zodiacSign: doc.zodiacSign,
+      zodiacSign: doc.zodiacSign as ZodiacSignType,
       roles: doc.roles,
       stripeCustomerId: doc.stripeCustomerId,
       subscription: doc.subscription,

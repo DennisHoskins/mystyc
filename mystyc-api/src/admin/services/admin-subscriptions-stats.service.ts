@@ -13,7 +13,7 @@ import {
 } from '@/common/interfaces/admin/stats/admin-subscription-stats.interface';
 import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { RegisterStatsModule } from '@/admin/stats/stats-registry';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { logger } from '@/common/util/logger';
 
 @RegisterStatsModule({

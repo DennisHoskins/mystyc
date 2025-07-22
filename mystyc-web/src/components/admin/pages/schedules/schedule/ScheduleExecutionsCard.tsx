@@ -4,7 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { apiClientAdmin, PaginatedResponse } from '@/api/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
-import { ScheduleExecution } from '@/interfaces';
+import { ScheduleExecution } from 'mystyc-common/schemas';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';

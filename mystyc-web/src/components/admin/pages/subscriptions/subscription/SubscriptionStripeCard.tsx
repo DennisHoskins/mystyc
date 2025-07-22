@@ -1,6 +1,6 @@
 'use client';
 
-import { PaymentHistory } from '@/interfaces';
+import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';

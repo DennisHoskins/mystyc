@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { UserRole } from '@/common/enums/roles.enum';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 
 @Schema()
 export class Subscription {

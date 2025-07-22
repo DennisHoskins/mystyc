@@ -1,6 +1,6 @@
 FROM node:18-alpine
 
-WORKDIR /web/mystyc-web
+WORKDIR /web
 
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 

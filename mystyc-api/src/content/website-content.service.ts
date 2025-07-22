@@ -5,7 +5,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { Content, ContentDocument } from './schemas/content.schema';
-import { Content as ContentInterface } from '@/common/interfaces/content.interface';
+import { Content as ContentInterface, validateContentInputSafe } from 'mystyc-common/schemas';
 import { OpenAIWebsiteService } from '@/openai/openai-website.service';
 import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
@@ -148,20 +148,30 @@ export class WebsiteContentService {
   async generateWebsiteContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
     logger.info('Generating new website content with OpenAI', { date, scheduleId, executionId }, 'WebsiteContentService');
 
-    // Create content record first to get ID
-    const content = new this.contentModel({
-      type: 'website_content',
+    const contentData = {
+      type: 'website_content' as const,
       date,
       scheduleId,
       executionId,
-      title: 'Generating...', // Temporary
-      message: 'Generating...', // Temporary
+      title: 'Generating...',
+      message: 'Generating...',
       data: [],
       sources: [],
-      status: 'pending',
+      status: 'pending' as const,
       generatedAt: new Date(),
       generationDuration: 0
-    });
+    };
+
+    const validation = validateContentInputSafe(contentData);
+    if (!validation.success) {
+      logger.error('Website content validation failed', {
+        date, scheduleId, executionId,
+        errors: validation.error.errors
+      }, 'WebsiteContentService');
+      throw new Error('Invalid website content data');
+    }
+
+    const content = new this.contentModel(validation.data);
     const savedContent = await content.save();
 
     // Fire off OpenAI generation asynchronously (no await)

@@ -4,12 +4,12 @@ import { Throttle } from '@nestjs/throttler';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { SubscriptionLevelGuard } from '@/common/guards/subscription-level.guard';
 import { RequireSubscriptionLevels } from '@/common/decorators/subscription-levels.decorator';
-import { SubscriptionLevel } from '@/common/enums/subscription-levels.enum';
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { UserPlusContentService } from './user-plus-content.service';
-import { Content } from '@/common/interfaces/content.interface';
-import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
+import { Content } from 'mystyc-common/schemas';
+import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas/';
 import { logger } from '@/common/util/logger';
 
 @Controller('plus-content')

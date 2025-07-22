@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { firebaseAdmin } from './firebase-admin.provider';
 
-import { DecodedIdToken } from '@/common/interfaces/decodedToken.interface';
-import { FirebaseUser } from '@/common/interfaces/firebase-user.interface';
+import { DecodedIdToken } from 'mystyc-common/schemas/decoded-token.schema';
+import { FirebaseUser, validateFirebaseUserSafe } from 'mystyc-common/schemas/';
 import { logger } from '@/common/util/logger';
 
 interface FirebaseAuthError extends Error {
@@ -136,13 +136,24 @@ export class FirebaseService {
         creationTime: userRecord.metadata.creationTime
       }, 'FirebaseService');
       
-      return {
+      const firebaseUserData = {
         uid: userRecord.uid,
         email: userRecord.email,
         displayName: userRecord.displayName,
         photoURL: userRecord.photoURL,
         emailVerified: userRecord.emailVerified,
       };
+
+      const validation = validateFirebaseUserSafe(firebaseUserData);
+      if (!validation.success) {
+        logger.error('Firebase user validation failed', {
+          uid,
+          errors: validation.error.errors
+        });
+        throw new UnauthorizedException('Invalid Firebase user data');
+      }
+
+      return validation.data;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
       const code = isFirebaseAuthError(err) ? err.code : undefined;

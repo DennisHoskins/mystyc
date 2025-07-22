@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { AppUser } from '@/interfaces/app/app-user.interface';
 import { apiClient } from '@/api/apiClient';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
-import { Content } from '@/interfaces/content.interface';
+import { Content } from 'mystyc-common/schemas/content.schema';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';

@@ -4,7 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { apiClientAdmin, PaginatedResponse } from '@/api/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
-import { Content } from '@/interfaces';
+import { Content } from 'mystyc-common/schemas';
 import { logger } from '@/util/logger';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';

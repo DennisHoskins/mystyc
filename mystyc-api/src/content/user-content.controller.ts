@@ -4,8 +4,8 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 
 import { FirebaseUser } from '@/common/decorators/user.decorator';
 import { UserContentService } from './user-content.service';
-import { FirebaseUser as FirebaseUserInterface } from '@/common/interfaces/firebase-user.interface';
-import { Content } from '@/common/interfaces/content.interface';
+import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas/';
+import { Content } from 'mystyc-common/schemas';
 import { logger } from '@/common/util/logger';
 
 @Controller('user-content')
