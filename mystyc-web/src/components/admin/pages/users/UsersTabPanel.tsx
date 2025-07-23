@@ -3,8 +3,9 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/';
 
-import { apiClientAdmin, PaginatedResponse } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -56,10 +57,10 @@ export default function UsersTabPanel() {
       setBusy(1000);
       setLoading(true);
 
-       let response: PaginatedResponse<UserProfile>;
+       let response: AdminListResponse<UserProfile>;
 
       if (type === 'users') {
-        response = await apiClientAdmin.getUsers({
+        response = await apiClientAdmin.users.getUsers({
           limit: LIMIT,
           offset: page * LIMIT,
           sortBy: 'createdAt',
@@ -67,7 +68,7 @@ export default function UsersTabPanel() {
         });
         setUsersUsers(response.data);
       } else if (type === 'plus') {
-        response = await apiClientAdmin.getPlusUsers({
+        response = await apiClientAdmin.users.getPlusUsers({
           limit: LIMIT,
           offset: page * LIMIT,
           sortBy: 'createdAt',
@@ -75,7 +76,7 @@ export default function UsersTabPanel() {
         });
         setUsersPlus(response.data);
       } else if (type === 'all') {
-        response = await apiClientAdmin.getAllUsers({
+        response = await apiClientAdmin.users.getAll({
           limit: LIMIT,
           offset: page * LIMIT,
           sortBy: 'createdAt',
@@ -117,7 +118,7 @@ export default function UsersTabPanel() {
   useEffect(() => {
     const loadSummary = async () => {
       try {
-        const summaryData = await apiClientAdmin.getUsersSummary();
+        const summaryData = await apiClientAdmin.users.getSummary();
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load users summary:', err);

@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { Device } from 'mystyc-common/schemas/';
 import { DeviceStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -20,7 +21,7 @@ export default function DevicesPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [devices, setDevices] = useState<Device[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<DeviceStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<DeviceStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,7 +40,7 @@ export default function DevicesPage() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getDevices({
+      const response = await apiClientAdmin.devices.getDevices({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -47,12 +48,12 @@ export default function DevicesPage() {
       });
 
       setDevices(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getDeviceStats(statsQuery);
+      const stats = await apiClientAdmin.devices.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'DevicesPage');

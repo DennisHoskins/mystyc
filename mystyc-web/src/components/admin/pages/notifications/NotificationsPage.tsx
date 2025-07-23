@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
 import { NotificationStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -20,7 +21,7 @@ export default function NotificationsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<NotificationStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<NotificationStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,7 +40,7 @@ export default function NotificationsPage() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getNotifications({
+      const response = await apiClientAdmin.notifications.getNotifications({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'sentAt',
@@ -47,12 +48,12 @@ export default function NotificationsPage() {
       });
 
       setNotifications(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getNotificationStats(statsQuery);
+      const stats = await apiClientAdmin.notifications.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'NotificationsPage');

@@ -1,12 +1,12 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import Link from '@/components/ui/Link';
 import OpenAIIcon from '@/components/admin/ui/icons/OpenAIIcon'
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import OpenAIUsageDashboard from '../openai/OpenAIUsageDashboard';
 
-export default function AdminDashboardOpenAI({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardOpenAI({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
     return;
   }

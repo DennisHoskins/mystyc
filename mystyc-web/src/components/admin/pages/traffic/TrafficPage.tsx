@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { TrafficStats } from '@/interfaces/admin/stats';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -31,7 +31,7 @@ export default function TrafficPage() {
       setLoading(true);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getTrafficStats(statsQuery);
+      const stats = await apiClientAdmin.stats.getTrafficStats(statsQuery);
       setTrafficStats(stats.data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'TrafficPage');

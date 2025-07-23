@@ -2,7 +2,8 @@ import { CalendarClock } from 'lucide-react';
 
 import { ScheduleExecutionStats } from 'mystyc-common/admin/interfaces/stats';
 
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+
 
 import StatusCard from '@/components/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
@@ -13,7 +14,7 @@ import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';
 type ChartType = 'stats' | 'events' | 'performance' | 'recent' | 'today';
 
 interface SchedulesExecutionsDashboardProps {
-  stats?: StatsResponseWithQuery<ScheduleExecutionStats> | null;
+  stats?: AdminStatsResponseWithQuery<ScheduleExecutionStats> | null;
   charts?: ChartType[];
   height?: number;
 }

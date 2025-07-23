@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { Content } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -32,7 +32,7 @@ export default function UsersContentTable({ isActive = false } : { isActive: boo
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getUserContents({
+      const response = await apiClientAdmin.content.getUserContents({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
@@ -40,7 +40,7 @@ export default function UsersContentTable({ isActive = false } : { isActive: boo
       });
 
       setContent(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);

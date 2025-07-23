@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin'; 
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -20,7 +21,7 @@ export default function AuthenticationsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<AuthEventStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<AuthEventStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,7 +40,7 @@ export default function AuthenticationsPage() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getAuthEvents({
+      const response = await apiClientAdmin.auth.getAuthEvents({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'clientTimestamp',
@@ -47,12 +48,12 @@ export default function AuthenticationsPage() {
       });
 
       setAuthEvents(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getAuthenticationStats(statsQuery);
+      const stats = await apiClientAdmin.auth.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'AuthenticationsPage');

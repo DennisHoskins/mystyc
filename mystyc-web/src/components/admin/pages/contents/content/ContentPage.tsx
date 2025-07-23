@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Content } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -30,7 +30,7 @@ export default function ContentPage({ contentId }: { contentId: string }) {
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getContent(contentId);
+      const data = await apiClientAdmin.content.getContent(contentId);
       setContent(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'ContentPage');

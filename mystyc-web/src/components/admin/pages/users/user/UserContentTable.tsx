@@ -4,7 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { Content } from 'mystyc-common/schemas/content.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/admin/ui/AdminError';
@@ -31,7 +31,7 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getUserContent(firebaseUid, {
+      const response = await apiClientAdmin.users.getUserContent(firebaseUid, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -39,7 +39,7 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
       });
 
       setContent(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);

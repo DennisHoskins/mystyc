@@ -1,12 +1,12 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import Link from '@/components/ui/Link';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import NotificationsDashboard from '../notifications/NotificationsDashboard';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 
-export default function AdminDashboardNotifications({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardNotifications({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
     return;
   }

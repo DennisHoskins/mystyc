@@ -57,7 +57,7 @@ export default function LogoutPage() {
       }).finally(() => {
         router.replace('/');
       });
-  }, [user, isReady, isBusy, setBusy, clearUser, apiClient, isLogout, showToast, router]);
+  }, [user, isReady, isBusy, setBusy, clearUser, isLogout, showToast, router]);
 
   return null;
 }

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Device } from 'mystyc-common/schemas/';
 import { Session } from '@/interfaces';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -31,7 +31,7 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getSession(sessionId);
+      const data = await apiClientAdmin.sessions.getSession(sessionId);
       setSession(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'SessionPage');

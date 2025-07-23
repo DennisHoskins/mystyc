@@ -1,17 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { BookOpen } from 'lucide-react';
 
 import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin'; 
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
-import Button from '@/components/ui/Button';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import ContentDashboard from './ContentDashboard';
@@ -20,7 +19,7 @@ import ContentsTabPanel from './ContentsTabPanel';
 export default function ContentPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [stats, setStats] = useState<StatsResponseWithQuery<ContentStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<ContentStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +35,7 @@ export default function ContentPage() {
       setLoading(true);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getContentStats(statsQuery);
+      const stats = await apiClientAdmin.content.getStats(statsQuery);
       setStats(stats);
 
     } catch (err) {
@@ -55,26 +54,6 @@ export default function ContentPage() {
     loadContentStats();
   }, [loadContentStats]);
 
-  const createContent = async () => {
-    try {
-      setBusy(true);
-      setLoading(true);
-
-      const newContent = await apiClientAdmin.createContent("This is my prompt");
-      logger.log(newContent);
-
-    } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'ContentsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to create content:', err);
-        setError('Failed to create content. Please try again.');
-      }
-    } finally {
-      setBusy(false);
-      setLoading(false);
-    }
-  }
-
   if (loading) {
     return;
   }
@@ -85,16 +64,6 @@ export default function ContentPage() {
       onRetry={() => null}
       breadcrumbs={breadcrumbs}
       icon={ContentIcon}
-      button={
-        <Button 
-          className='flex items-center'
-          onClick={createContent}
-        >
-          <BookOpen className='w-4 h-4 mt-[2px] mr-0 sm:mr-2' />
-          <span className='hidden lg:block'>Create Content</span>
-          <span className='hidden sm:block lg:hidden'>Create</span>
-        </Button>
-      }
       description="Manage content entries: view, edit, and monitor generation status, sources, and performance metrics"
       sideContent={
         <ContentDashboard 

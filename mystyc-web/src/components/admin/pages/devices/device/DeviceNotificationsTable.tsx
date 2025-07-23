@@ -4,7 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import NotificationsTable from '@/components/admin/pages/notifications/NotificationsTable';
@@ -30,7 +30,7 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getDeviceNotifications(deviceId, {
+      const response = await apiClientAdmin.devices.getDeviceNotifications(deviceId, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -38,7 +38,7 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
       });
 
       setNotifications(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);

@@ -1,5 +1,5 @@
 import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin'; 
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/admin/ui/charts/PieChartWithLegend';
@@ -8,7 +8,7 @@ import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
 type ChartType = 'stats' | 'events' | 'peak' | 'duration';
 
 interface AuthenticationDashboardProps {
-  stats?: StatsResponseWithQuery<AuthEventStats> | null;
+  stats?: AdminStatsResponseWithQuery<AuthEventStats> | null;
   charts?: ChartType[];
   height?: number;
 }

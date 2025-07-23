@@ -1,12 +1,12 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import Link from '@/components/ui/Link';
 import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon'
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import TrafficDashboard from '../traffic/TrafficDashboard';
 
-export default function AdminDashboardTraffic({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardTraffic({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
     return;
   }

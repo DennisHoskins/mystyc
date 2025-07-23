@@ -1,6 +1,6 @@
 import { NotificationStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { formatDateRangeForComponent } from '@/util/dateTime'
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
@@ -11,7 +11,7 @@ import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';
 type ChartType = 'stats' | 'delivery' | 'volume' | 'platforms';
 
 interface NotificationsDashboardProps {
-  stats?: StatsResponseWithQuery<NotificationStats> | null;
+  stats?: AdminStatsResponseWithQuery<NotificationStats> | null;
   charts?: ChartType[];
   height?: number;
 }

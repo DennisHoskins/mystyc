@@ -6,7 +6,7 @@ import { AlarmClockCheck, Globe } from 'lucide-react';
 
 import { Content } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -34,7 +34,7 @@ export default function WebsiteContentTable({ isActive = false } : { isActive: b
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getWebsiteContents({
+      const response = await apiClientAdmin.content.getWebsiteContents({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
@@ -42,7 +42,7 @@ export default function WebsiteContentTable({ isActive = false } : { isActive: b
       });
 
       setContent(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);

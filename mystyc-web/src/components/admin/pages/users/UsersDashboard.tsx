@@ -1,6 +1,6 @@
 import { UserStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { formatDateRangeForComponent } from '@/util/dateTime'
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
@@ -11,7 +11,7 @@ import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
 type ChartType = 'stats' | 'profile' | 'registrations' | 'activity';
 
 interface UsersDashboardProps {
-  stats?: StatsResponseWithQuery<UserStats> | null;
+  stats?: AdminStatsResponseWithQuery<UserStats> | null;
   charts?: ChartType[];
   height?: number;
 }

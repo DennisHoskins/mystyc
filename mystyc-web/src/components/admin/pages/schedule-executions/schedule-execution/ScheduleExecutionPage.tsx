@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { ScheduleExecution } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -27,7 +27,7 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getScheduleExecution(executionId);
+      const data = await apiClientAdmin.schedule.getExecution(executionId);
       setScheduleExecution(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'ScheduleExecutionPage');

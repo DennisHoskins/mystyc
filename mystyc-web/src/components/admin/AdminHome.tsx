@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -39,7 +41,7 @@ export default function AdminHome() {
   const { handleSessionError } = useSessionErrorHandler();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState<StatsResponseWithQuery<AdminStatsResponseExtended> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null>(null);
 
   const loadDashboard = useCallback(async () => {
     try {
@@ -48,7 +50,7 @@ export default function AdminHome() {
       setLoading(true);
 
       const defaultQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getDashboard(defaultQuery);
+      const stats = await apiClientAdmin.stats.getDashboard(defaultQuery);
       setStats(stats)
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'AdminHome');

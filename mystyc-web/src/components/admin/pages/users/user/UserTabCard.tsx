@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
@@ -32,7 +32,7 @@ export default function UserTabCard({ firebaseUid }: { firebaseUid: string | nul
 
     const loadSummary = async () => {
       try {
-        const summaryData = await apiClientAdmin.getUserSummary(firebaseUid);
+        const summaryData = await apiClientAdmin.users.getUserSummary(firebaseUid);
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load user summary:', err);

@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+
 import { Session } from '@/interfaces';
 import { SessionStats } from '@/interfaces/admin/stats';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -20,7 +22,7 @@ export default function SessionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<SessionStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<SessionStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -38,17 +40,17 @@ export default function SessionsPage() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getSessions({
+      const response = await apiClientAdmin.sessions.getSessions({
         limit: LIMIT,
         offset: page * LIMIT,
       });
 
       setSessions(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getSessionStats(statsQuery);
+      const stats = await apiClientAdmin.sessions.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'SessionsPage');

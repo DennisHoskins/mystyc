@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
@@ -25,7 +25,7 @@ export default function DeviceTabCard({ deviceId }: { deviceId: string }) {
 
     const loadSummary = async () => {
       try {
-        const summaryData = await apiClientAdmin.getDeviceSummary(deviceId);
+        const summaryData = await apiClientAdmin.devices.getSummary(deviceId);
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load device summary:', err);

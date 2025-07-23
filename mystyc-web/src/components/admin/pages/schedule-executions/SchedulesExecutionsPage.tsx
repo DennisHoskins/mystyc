@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { ScheduleExecution } from 'mystyc-common/schemas';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { ScheduleExecutionStats } from 'mystyc-common/admin/interfaces/stats';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -20,7 +21,7 @@ export default function SchedulesExecutionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [schedulesExecutions, setSchedulesExecutions] = useState<ScheduleExecution[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<ScheduleExecutionStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleExecutionStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -40,7 +41,7 @@ export default function SchedulesExecutionsPage() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getScheduleExecutions({
+      const response = await apiClientAdmin.schedule.getExecutions({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
@@ -48,12 +49,12 @@ export default function SchedulesExecutionsPage() {
       });
 
       setSchedulesExecutions(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getScheduleExecutionStats(statsQuery);
+      const stats = await apiClientAdmin.schedule.getExecutionStats(statsQuery);
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'SchedulesExecutionsPage');

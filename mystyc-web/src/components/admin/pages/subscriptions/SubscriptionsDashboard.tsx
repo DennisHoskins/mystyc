@@ -1,6 +1,5 @@
 import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
-
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';
@@ -11,7 +10,7 @@ type ChartType = 'stats' | 'revenue' | 'mrr' | 'growth' | 'tiers' | 'conversion'
 
 interface SubscriptionsDashboardProps {
   className?: string | null;
-  stats?: StatsResponseWithQuery<SubscriptionStats> | null;
+  stats?: AdminStatsResponseWithQuery<SubscriptionStats> | null;
   charts?: ChartType[];
   height?: number;
   duration?: string;

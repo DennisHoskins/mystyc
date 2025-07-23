@@ -4,7 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import AuthenticationsTable from '@/components/admin/pages/authentications/AuthenticationsTable';
@@ -30,7 +30,7 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getDeviceAuthEvents(deviceId, {
+      const response = await apiClientAdmin.devices.getDeviceAuthEvents(deviceId, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -38,7 +38,7 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
       });
 
       setAuthEvents(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);

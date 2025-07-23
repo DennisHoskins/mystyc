@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
@@ -28,7 +28,7 @@ export default function ContentsTabPanel() {
   useEffect(() => {
     const loadSummary = async () => {
       try {
-        const summaryData = await apiClientAdmin.getContentsSummary();
+        const summaryData = await apiClientAdmin.content.getSummary();
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load content summary:', err);

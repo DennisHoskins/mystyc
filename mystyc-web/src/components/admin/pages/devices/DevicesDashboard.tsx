@@ -1,6 +1,6 @@
 import { DeviceStats } from 'mystyc-common/admin/interfaces/stats';
 
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/admin/ui/charts/PieChartWithLegend';
@@ -9,7 +9,7 @@ import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
 type ChartType = 'stats' | 'platforms' | 'browsers' | 'activity';
 
 interface DevicesDashboardProps {
-  stats?: StatsResponseWithQuery<DeviceStats> | null;
+  stats?: AdminStatsResponseWithQuery<DeviceStats> | null;
   charts?: ChartType[];
   height?: number;
 }

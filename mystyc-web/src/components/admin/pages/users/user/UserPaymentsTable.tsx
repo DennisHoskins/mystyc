@@ -4,7 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/admin/ui/AdminError';
@@ -30,7 +30,7 @@ export default function UserPayments({ firebaseUid, isActive = false }: UserPaym
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getUserPayments(firebaseUid, {
+      const response = await apiClientAdmin.users.getUserPayments(firebaseUid, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -38,7 +38,7 @@ export default function UserPayments({ firebaseUid, isActive = false }: UserPaym
       });
 
       setPayments(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);

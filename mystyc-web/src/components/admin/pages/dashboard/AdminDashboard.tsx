@@ -1,5 +1,5 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import AdminDashboardTraffic from './AdminDashboardTraffic';
 import AdminDashboardSubscriptions from './AdminDashboardSubscriptions';
@@ -11,7 +11,7 @@ import AdminDashboardDevices from './AdminDashboardDevices';
 import AdminDashboardNotifications from './AdminDashboardNotifications';
 import AdminDashboardAuthentications from './AdminDashboardAuthentications';
 
-export default function AdminDashboard({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboard({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
     return;
   }

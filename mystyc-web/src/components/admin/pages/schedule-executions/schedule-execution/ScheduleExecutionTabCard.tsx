@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
@@ -25,7 +25,7 @@ export default function ScheduleExecutionTabCard({ executionId }: { executionId:
 
     const loadSummary = async () => {
       try {
-        const summaryData = await apiClientAdmin.getScheduleExecutionsSummary(executionId);
+        const summaryData = await apiClientAdmin.schedule.getExecutionsSummary(executionId);
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load device summary:', err);

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -30,7 +30,7 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getNotification(notificationId);
+      const data = await apiClientAdmin.notifications.getNotification(notificationId);
       setNotification(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'NotificationPage');

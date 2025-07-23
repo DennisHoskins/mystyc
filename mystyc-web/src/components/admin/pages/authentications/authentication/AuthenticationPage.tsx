@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -28,7 +28,7 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getAuthEvent(authId);
+      const data = await apiClientAdmin.auth.getAuthEvent(authId);
       setAuthentication(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'AuthenticationPage');

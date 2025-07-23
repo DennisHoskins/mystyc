@@ -3,8 +3,9 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { ScheduleExecution } from 'mystyc-common/schemas';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin, PaginatedResponse } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
@@ -13,7 +14,7 @@ import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 
 export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: string }) {
-  const [executions, setExecutions] = useState<PaginatedResponse<ScheduleExecution> | null>(null);
+  const [executions, setExecutions] = useState<AdminListResponse<ScheduleExecution> | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
@@ -25,7 +26,7 @@ export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: str
     try {
       setLoading(true);
 
-      const response = await apiClientAdmin.getScheduleScheduleExecutions(
+      const response = await apiClientAdmin.schedule.getScheduleExecutions(
         scheduleId, 
         {
           limit: LIMIT,
@@ -36,7 +37,7 @@ export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: str
       );
       setExecutions(response);
 
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalItems(response.pagination.totalItems);
       setTotalPages(response.pagination.totalPages);

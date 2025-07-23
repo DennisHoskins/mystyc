@@ -1,6 +1,6 @@
 import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin'; 
 
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { formatDateRangeForComponent } from '@/util/dateTime'
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
@@ -12,7 +12,7 @@ type ChartType = 'stats' | 'timeline' | 'performance' | 'coverage';
 
 interface ContentDashboardProps {
   className?: string | null;
-  stats?: StatsResponseWithQuery<ContentStats> | null;
+  stats?: AdminStatsResponseWithQuery<ContentStats> | null;
   charts?: ChartType[];
   height?: number;
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { Content } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
@@ -32,7 +32,7 @@ export default function NotificationsContentTable({ isActive = false } : { isAct
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getNotificationsContents({
+      const response = await apiClientAdmin.content.getNotificationsContents({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
@@ -40,7 +40,7 @@ export default function NotificationsContentTable({ isActive = false } : { isAct
       });
 
       setContent(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
       setTotalItems(response.pagination.totalItems);

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -28,7 +28,7 @@ export default function SubscriptionPage({ subscriptionId }: { subscriptionId: s
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getPayment(subscriptionId);
+      const data = await apiClientAdmin.payments.getPayment(subscriptionId);
       setPayment(data);
 
     } catch (err) {

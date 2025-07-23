@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -17,7 +18,7 @@ import SubscriptionsDashboard from './SubscriptionsDashboard';
 export default function SubscriptionsPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [stats, setStats] = useState<StatsResponseWithQuery<SubscriptionStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<SubscriptionStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +33,7 @@ export default function SubscriptionsPage() {
       setBusy(1000);
       setLoading(true);
 
-      const stats = await apiClientAdmin.getSubscriptionStats();
+      const stats = await apiClientAdmin.payments.getStats();
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');

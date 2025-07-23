@@ -1,5 +1,5 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import Link from '@/components/ui/Link';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon'
@@ -7,7 +7,7 @@ import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import SchedulesDashboard from '../schedules/SchedulesDashboard';
 import SchedulesExecutionsDashboard from '../schedule-executions/SchedulesExecutionsDashboard';
 
-export default function AdminDashboardSchedules({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardSchedules({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {
     return;
   }

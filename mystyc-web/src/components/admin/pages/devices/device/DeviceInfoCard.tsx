@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { Device } from 'mystyc-common/schemas/';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
@@ -23,7 +23,7 @@ export default function DeviceInfoCard({ deviceId, onLoad }: { deviceId: string,
       setLoading(true);
       setError(null);
 
-      const data = await apiClientAdmin.getDevice(deviceId);
+      const data = await apiClientAdmin.devices.getDevice(deviceId);
       setDevice(data);
       
       onLoad?.(data);

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { DeviceSession } from '@/interfaces';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -30,7 +30,7 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getDeviceSession(deviceId);
+      const data = await apiClientAdmin.devices.getDeviceSession(deviceId);
       setDeviceSession(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'DevicePage');

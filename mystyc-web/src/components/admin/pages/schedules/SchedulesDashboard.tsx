@@ -1,8 +1,7 @@
 import { Clock, CalendarClock } from 'lucide-react';
 
 import { ScheduleStats } from 'mystyc-common/admin/interfaces/stats';
-
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin';
 
 import StatusCard from '@/components/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
@@ -12,7 +11,7 @@ import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
 type ChartType = 'stats' | 'events' | 'upcoming' | 'status' | 'health' | 'today';
 
 interface SchedulesDashboardProps {
-  stats?: StatsResponseWithQuery<ScheduleStats> | null;
+  stats?: AdminStatsResponseWithQuery<ScheduleStats> | null;
   charts?: ChartType[];
   height?: number;
   className?: string | null;

@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { OpenAIUsage } from 'mystyc-common/schemas';
 import { OpenAIUsageStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -20,7 +21,7 @@ export default function OpenAIPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [usage, setUsage] = useState<OpenAIUsage[]>([]);
-  const [stats, setStats] = useState<StatsResponseWithQuery<OpenAIUsageStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<OpenAIUsageStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,7 +40,7 @@ export default function OpenAIPage() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getOpenAIUsages({
+      const response = await apiClientAdmin.openai.getOpenAIUsages({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
@@ -47,12 +48,12 @@ export default function OpenAIPage() {
       });
 
       setUsage(response.data);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getOpenAIUsageStats(statsQuery);
+      const stats = await apiClientAdmin.openai.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'OpenAIPage');

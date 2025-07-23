@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -31,7 +31,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getUser(firebaseUid);
+      const data = await apiClientAdmin.users.getUser(firebaseUid);
       setUser(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/admin/ui/AdminError';
@@ -26,7 +26,7 @@ export default function DeviceUsersPanel({ deviceId }: { deviceId: string}) {
       setLoading(true);
       setError(null);
 
-      const response = await apiClientAdmin.getDeviceUsers(deviceId, {
+      const response = await apiClientAdmin.devices.getDeviceUsers(deviceId, {
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -35,7 +35,7 @@ export default function DeviceUsersPanel({ deviceId }: { deviceId: string}) {
 
       setUsers(response.data);
       setTotalItems(response.pagination.totalItems);
-      setHasMore(response.pagination.hasMore);
+      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
     } catch (err) {

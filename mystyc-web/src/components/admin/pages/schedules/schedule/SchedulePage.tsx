@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Schedule } from 'mystyc-common/schemas';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -27,7 +27,7 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
       setBusy(1000);
       setLoading(true);
 
-      const data = await apiClientAdmin.getSchedule(scheduleId);
+      const data = await apiClientAdmin.schedule.getSchedule(scheduleId);
       setSchedule(data);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'SchedulePage');

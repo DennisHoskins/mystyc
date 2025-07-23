@@ -1,12 +1,12 @@
 import { HeartPulse } from 'lucide-react'
 
-import { SessionStats } from '@/interfaces/admin/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { SessionStats } from '@/interfaces/admin/stats';
 
 import Link from '@/components/ui/Link';
 
-export default function SessionsDashboard({ stats } : { stats?: StatsResponseWithQuery<SessionStats> | null }) {
+export default function SessionsDashboard({ stats } : { stats?: AdminStatsResponseWithQuery<SessionStats> | null }) {
   if (!stats) {
     return null;
   }

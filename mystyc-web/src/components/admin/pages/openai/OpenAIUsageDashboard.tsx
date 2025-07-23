@@ -1,6 +1,6 @@
 import { OpenAIUsageStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { formatDateRangeForComponent } from '@/util/dateTime';
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
@@ -14,7 +14,7 @@ type ChartType = 'stats' | 'budget' | 'trends' | 'content-types' | 'performance'
 
 interface OpenAIDashboardProps {
   className?: string | null;
-  stats?: StatsResponseWithQuery<OpenAIUsageStats> | null;
+  stats?: AdminStatsResponseWithQuery<OpenAIUsageStats> | null;
   charts?: ChartType[];
   height?: number;
 }

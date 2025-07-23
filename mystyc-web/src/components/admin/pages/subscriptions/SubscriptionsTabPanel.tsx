@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
@@ -61,7 +61,7 @@ export default function SubscriptionsTabPanel() {
         setLoading(true);
         setBusy(true);
 
-        const summaryData = await apiClientAdmin.getSubscriptionsSummary();
+        const summaryData = await apiClientAdmin.payments.getSummary();
         setSummary(summaryData);
       } catch (err) {
         const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
@@ -84,7 +84,7 @@ export default function SubscriptionsTabPanel() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getPayments({
+      const response = await apiClientAdmin.payments.getPayments({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'paidAt',
@@ -95,7 +95,7 @@ export default function SubscriptionsTabPanel() {
       setPaymentsPagination({
         currentPage: page,
         totalPages: response.pagination.totalPages,
-        hasMore: response.pagination.hasMore,
+        hasMore: response.pagination.hasMore == true,
         loaded: true
       });
     } catch (err) {
@@ -116,7 +116,7 @@ export default function SubscriptionsTabPanel() {
       setBusy(1000);
       setLoading(true);
 
-      const response = await apiClientAdmin.getPlusUsers({
+      const response = await apiClientAdmin.users.getPlusUsers({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'createdAt',
@@ -127,7 +127,7 @@ export default function SubscriptionsTabPanel() {
       setUsersPagination({
         currentPage: page,
         totalPages: response.pagination.totalPages,
-        hasMore: response.pagination.hasMore,
+        hasMore: response.pagination.hasMore == true,
         loaded: true
       });
     } catch (err) {

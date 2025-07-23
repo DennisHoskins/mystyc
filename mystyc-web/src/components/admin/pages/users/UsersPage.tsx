@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { UserStats } from 'mystyc-common/admin/interfaces/stats';
+import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
@@ -18,7 +19,7 @@ import UsersTabPanel from './UsersTabPanel';
 export default function UsersPage() {
   const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
-  const [stats, setStats] = useState<StatsResponseWithQuery<UserStats> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseWithQuery<UserStats> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +35,7 @@ export default function UsersPage() {
       setLoading(true);
 
       const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.getUserStats(statsQuery);
+      const stats = await apiClientAdmin.users.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
       const wasSessionError = await handleSessionError(err, 'UsersPage');
