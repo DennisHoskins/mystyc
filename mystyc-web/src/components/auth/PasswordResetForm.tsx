@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/api/apiClient';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 
@@ -19,7 +19,6 @@ export default function PasswordResetPage() {
   const user = useUser();
   const initialized = useInitialized();
   const { setBusy } = useBusy();
-  const { resetPassword } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
   const [isWorking, setIsWorking] = useState(false);
@@ -49,7 +48,7 @@ export default function PasswordResetPage() {
     setIsWorking(true);
 
     try {
-      await resetPassword(email);
+      await apiClient.resetPassword(email);
       setMessage('Check your email for a password reset link.');
       setBusy(false);
     } catch (err: any) {

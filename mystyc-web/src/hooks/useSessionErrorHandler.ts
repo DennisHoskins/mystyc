@@ -1,14 +1,11 @@
 import { useRef } from 'react';
 
 import { apiClient } from '@/api/apiClient';
-import { useAuth } from '@/hooks/useAuth';
 import { useAppStore } from '@/store/appStore';
 import { useUserStore } from '@/store/userStore';
 import { logger } from '@/util/logger';
 
 export function useSessionErrorHandler() {
-  const { signOut } = useAuth();
-  
   // Create a stable reference to the handler
   const handlerRef = useRef<((error: any, context?: string) => Promise<boolean>) | null>(null);
   
@@ -23,7 +20,7 @@ export function useSessionErrorHandler() {
         
         try {
           await apiClient.serverLogout();
-          await signOut();
+          await apiClient.signOut();
           useAppStore.getState().setLoggedOutByServer(true);
           useAppStore.getState().clearBusy();
           useUserStore.getState().clearUser();

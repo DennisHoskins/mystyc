@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/api/apiClient';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 
@@ -20,7 +20,6 @@ export default function LoginForm() {
   const initialized = useInitialized();
   const router = useTransitionRouter();
   const { setBusy } = useBusy();
-  const { signIn } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
   const [isWorking, setIsWorking] = useState(false);
@@ -57,7 +56,7 @@ export default function LoginForm() {
     logger.log("LOGIN");
 
     try {
-      const u = await signIn(email, password);
+      const u = await apiClient.signIn(email, password);
       if (!u) throw new Error('no user returned');
 
       setUser(u);

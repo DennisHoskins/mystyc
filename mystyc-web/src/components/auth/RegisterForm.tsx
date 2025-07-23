@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/api/apiClient';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 
@@ -20,7 +20,6 @@ export default function RegisterForm() {
   const setUser = useSetUser();
   const initialized = useInitialized();
   const { setBusy } = useBusy();
-  const { register } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
   const [isWorking, setIsWorking] = useState(false);
@@ -57,7 +56,7 @@ export default function RegisterForm() {
     logger.log("REGISTER");
 
     try {
-      const user = await register(email, password);
+      const user = await apiClient.register(email, password);
       if (!user) {
         throw new Error('Register failed: no user returned');
       }

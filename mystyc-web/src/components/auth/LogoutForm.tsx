@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/api/apiClient';
 import { useToast } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useInitialized, useUser, useClearUser, useBusy } from '@/components/ui/layout/context/AppContext';
@@ -15,7 +15,6 @@ export default function LogoutPage() {
   const user = useUser();
   const clearUser = useClearUser();
   const { setBusy } = useBusy();
-  const { signOut } = useAuth();
 
   const [isReady, setIsReady] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
@@ -48,7 +47,7 @@ export default function LogoutPage() {
 
     logger.log("LOGOUT");
 
-    signOut()
+    apiClient.signOut()
       .then(() => {
         clearUser();
         showToast("You have been Logged Out", "success");
@@ -58,7 +57,7 @@ export default function LogoutPage() {
       }).finally(() => {
         router.replace('/');
       });
-  }, [user, isReady, isBusy, setBusy, clearUser, signOut, isLogout, showToast, router]);
+  }, [user, isReady, isBusy, setBusy, clearUser, apiClient, isLogout, showToast, router]);
 
   return null;
 }
