@@ -1,5 +1,3 @@
-'use client';
-
 import { CircleDollarSign } from 'lucide-react'
 
 export default function SubscriptionsIcon({ size = 6 }: { size?: number }) {

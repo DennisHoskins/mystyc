@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 
 import { apiClient } from '@/api/apiClient';
 import { useAppStore } from '@/store/appStore';
+import { logger } from '@/util/logger'
+
 import { useUser } from '@/components/ui/layout/context/AppContext';
 import { TransitionProvider } from '@/components/ui/layout/context/TransitionContext';
-
 import AppTransition from '@/components/ui/layout/transition/AppTransition';
 import Header from '@/components/ui/layout/Header';
 import WebsiteHeader from '@/components/website/ui/WebsiteHeader';
@@ -23,7 +24,6 @@ import AppFooter from '@/components/mystyc/ui/MystycFooter';
 import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
 import GlobalError from '@/components/ui/layout/GlobalError';
 import Offline from '@/components/ui/layout/Offline';
-import { logger } from '@/util/logger'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

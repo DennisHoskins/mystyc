@@ -1,19 +1,19 @@
 import { Controller, Get, UseGuards, Param, Query, NotFoundException } from '@nestjs/common';
 
+import { Device, UserProfile } from 'mystyc-common/schemas/';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
+
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { logger } from '@/common/util/logger';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { Device } from 'mystyc-common/schemas/';
-import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { AdminController } from './admin.controller';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
-import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { logger } from '@/common/util/logger';
 
 @Controller('admin/devices')
 export class AdminDevicesController extends AdminController<Device> {
@@ -80,7 +80,7 @@ export class AdminDevicesController extends AdminController<Device> {
   @Roles(UserRole.ADMIN)
   async getDeviceUsers(
   @Param('deviceId') deviceId: string,
-  @Query() query: BaseAdminQueryDto
+  @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<UserProfile>> {
   logger.info('Admin fetching device users', { 
     deviceId,
@@ -133,7 +133,7 @@ export class AdminDevicesController extends AdminController<Device> {
   @Roles(UserRole.ADMIN)
   async getDeviceAuthEvents(
     @Param('deviceId') deviceId: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ) {
     logger.info('Admin fetching device auth events', { 
       deviceId,
@@ -184,7 +184,7 @@ export class AdminDevicesController extends AdminController<Device> {
   @Roles(UserRole.ADMIN)
   async getDeviceNotifications(
     @Param('deviceId') deviceId: string,
-     @Query() query: BaseAdminQueryDto
+     @Query() query: BaseAdminQuery
  ) {
     logger.info('Admin fetching device notifications', { 
       deviceId,

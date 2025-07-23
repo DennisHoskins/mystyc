@@ -1,5 +1,3 @@
-'use client';
-
 import { User as UserLucide, ShieldUser, UserPlus } from 'lucide-react';
 
 import { UserRole } from 'mystyc-common/constants/roles.enum';

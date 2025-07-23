@@ -3,13 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BookOpen } from 'lucide-react';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { ContentStats } from '@/interfaces';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
-import { logger } from '@/util/logger';
+import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
 
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { logger } from '@/util/logger';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
+
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import Button from '@/components/ui/Button';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';

@@ -3,12 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UAParser } from 'ua-parser-js';
 
-import { DeviceInput, UpdateFcmToken } from 'mystyc-common/schemas';
-import { Device as TDevice, validateDeviceSafe } from 'mystyc-common/schemas';
+import { Device as TDevice, DeviceInput, validateDeviceSafe, UpdateFcmToken } from 'mystyc-common/schemas';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
-import { Device, DeviceDocument } from './schemas/device.schema';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
+import { Device, DeviceDocument } from './schemas/device.schema';
 
 @Injectable()
 export class DevicesService {
@@ -94,7 +93,7 @@ export class DevicesService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<TDevice[]> - Array of device records with applied query params
    */
-  async findAll(query: BaseAdminQueryDto): Promise<TDevice[]> {
+  async findAll(query: Partial<BaseAdminQuery> = {}): Promise<TDevice[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding devices with query', { 
@@ -155,8 +154,11 @@ export class DevicesService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<TDevice[]> - Array of device records with applied query params
    */
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto = {}): Promise<TDevice[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByFirebaseUid(
+    firebaseUid: string, 
+    query: BaseAdminQuery = { limit: 100, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' }
+  ): Promise<TDevice[]> {
+    const { limit, offset, sortBy, sortOrder } = query;
     
     logger.debug('Finding user devices with query', { 
       firebaseUid,

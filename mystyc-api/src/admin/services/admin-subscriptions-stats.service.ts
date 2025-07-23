@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { PaymentHistoryService } from '@/payments/payment-history.service';
-import { UserProfilesService } from '@/users/user-profiles.service';
-import { PaymentHistoryDocument } from '@/payments/schemas/payment-history.schema';
-import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
+
+import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { 
   SubscriptionSummaryStats,
   SubscriptionRevenueStats,
   SubscriptionLifecycleStats,
   SubscriptionPaymentHealthStats
-} from '@/common/interfaces/admin/stats/admin-subscription-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
-import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+} from 'mystyc-common/admin/interfaces/stats/admin-subscription-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { PaymentHistoryService } from '@/payments/payment-history.service';
+import { UserProfilesService } from '@/users/user-profiles.service';
+import { PaymentHistoryDocument } from '@/payments/schemas/payment-history.schema';
+import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'Subscriptions',
@@ -35,7 +37,7 @@ export class AdminSubscriptionsStatsService {
     private readonly usersService: UserProfilesService,
   ) {}
 
-  async getSummaryStats(query?: AdminStatsQueryDto): Promise<SubscriptionSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQuery): Promise<SubscriptionSummaryStats> {
     logger.info('Generating subscription summary stats', { query }, 'AdminSubscriptionsStatsService');
     
     try {
@@ -99,7 +101,7 @@ export class AdminSubscriptionsStatsService {
     }
   }
 
-  async getRevenueStats(query?: AdminStatsQueryDto): Promise<SubscriptionRevenueStats> {
+  async getRevenueStats(query?: AdminStatsQuery): Promise<SubscriptionRevenueStats> {
     logger.info('Generating subscription revenue stats', { query }, 'AdminSubscriptionsStatsService');
     
     try {
@@ -206,7 +208,7 @@ export class AdminSubscriptionsStatsService {
     }
   }
 
-  async getLifecycleStats(query?: AdminStatsQueryDto): Promise<SubscriptionLifecycleStats> {
+  async getLifecycleStats(query?: AdminStatsQuery): Promise<SubscriptionLifecycleStats> {
     logger.info('Generating subscription lifecycle stats', { query }, 'AdminSubscriptionsStatsService');
     
     try {
@@ -305,7 +307,7 @@ export class AdminSubscriptionsStatsService {
     }
   }
 
-  async getPaymentHealthStats(query?: AdminStatsQueryDto): Promise<SubscriptionPaymentHealthStats> {
+  async getPaymentHealthStats(query?: AdminStatsQuery): Promise<SubscriptionPaymentHealthStats> {
     logger.info('Generating subscription payment health stats', { query }, 'AdminSubscriptionsStatsService');
     
     try {
@@ -496,7 +498,7 @@ export class AdminSubscriptionsStatsService {
     };
   }
 
-  private buildDateFilter(query?: AdminStatsQueryDto): any {
+  private buildDateFilter(query?: AdminStatsQuery): any {
     if (!query?.startDate && !query?.endDate) return null;
     
     const filter: any = {};

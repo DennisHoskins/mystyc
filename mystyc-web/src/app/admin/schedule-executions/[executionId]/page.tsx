@@ -1,5 +1,3 @@
-'use client';
-
 import { use } from 'react';
 import ScheduleExecutionPage from '@/components/admin/pages/schedule-executions/schedule-execution/ScheduleExecutionPage';
 

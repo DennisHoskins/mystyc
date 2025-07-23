@@ -1,6 +1,5 @@
-'use client';
-
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
+
 import { formatTimestampForComponent } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

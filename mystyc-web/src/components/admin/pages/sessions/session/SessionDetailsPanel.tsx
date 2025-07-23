@@ -1,6 +1,5 @@
-'use client';
-
 import { Session } from '@/interfaces';
+
 import { formatTimestampForComponent } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

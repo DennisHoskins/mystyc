@@ -1,5 +1,3 @@
-'use client';
-
 import { Content } from 'mystyc-common';
 
 import Card from '@/components/ui/Card';

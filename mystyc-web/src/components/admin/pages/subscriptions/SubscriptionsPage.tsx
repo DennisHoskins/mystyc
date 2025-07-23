@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
+
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { SubscriptionStats } from '@/interfaces';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
 import SubscriptionsTabPanel from './SubscriptionsTabPanel';

@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { ScheduleExecutionInput } from 'mystyc-common/schemas';
-import { ScheduleExecution, validateScheduleExecutionInputSafe  } from 'mystyc-common/schemas/schedule-execution.schema';
+import { ScheduleExecution, ScheduleExecutionInput, validateScheduleExecutionInputSafe  } from 'mystyc-common/schemas/schedule-execution.schema';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
-import { ScheduleExecution as ScheduleExecutionSchema, ScheduleExecutionDocument } from './schemas/schedule-execution.schema';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
+import { ScheduleExecution as ScheduleExecutionSchema, ScheduleExecutionDocument } from './schemas/schedule-execution.schema';
 
 @Injectable()
 export class ScheduleExecutionsService {
@@ -131,7 +130,7 @@ export class ScheduleExecutionsService {
   /**
    * Find all executions with pagination (admin)
    */
-  async findAll(query: BaseAdminQueryDto): Promise<ScheduleExecution[]> {
+  async findAll(query: BaseAdminQuery): Promise<ScheduleExecution[]> {
     const { limit = 100, offset = 0, sortBy = 'executedAt', sortOrder = 'desc' } = query;
 
     const sortObj: any = {};
@@ -168,7 +167,7 @@ export class ScheduleExecutionsService {
    * @param query - Query parameters for pagination and sorting
    * @returns Promise<ScheduleExecution[]> - Array of execution logs
    */
-  async findByScheduleId(scheduleId: string, query: BaseAdminQueryDto): Promise<ScheduleExecution[]> {
+  async findByScheduleId(scheduleId: string, query: BaseAdminQuery): Promise<ScheduleExecution[]> {
     const { limit = 50, offset = 0, sortBy = 'executedAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding schedule executions', {

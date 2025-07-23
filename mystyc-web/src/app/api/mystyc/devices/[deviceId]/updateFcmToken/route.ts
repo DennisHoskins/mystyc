@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+import { Device } from 'mystyc-common/schemas/';
+
+import { logger } from '@/util/logger';
+
 import { sessionManager } from '../../../../sessionManager';
 import { authTokenManager } from '../../../../authTokenManager';
-import { Device } from 'mystyc-common/schemas/';
-import { logger } from '@/util/logger';
 
 export async function POST(
   request: NextRequest,

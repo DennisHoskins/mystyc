@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { sessionManager } from '../../sessionManager';
-import { buildTrafficStats } from '../../services/trafficStats.service';
+
 import { logger } from '@/util/logger';
+
+import { buildTrafficStats } from '../../services/trafficStats.service';
+import { sessionManager } from '../../sessionManager';
 
 export async function handleRedisRoute(
   request: NextRequest, 

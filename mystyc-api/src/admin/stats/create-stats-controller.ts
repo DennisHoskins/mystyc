@@ -1,9 +1,11 @@
 import { Get, Query, Param, UseGuards, NotFoundException } from '@nestjs/common';
+
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
 import { STATS_REGISTRY } from './stats-registry';
 
 export function createStatsController<T>(moduleName: string) {
@@ -22,7 +24,7 @@ export function createStatsController<T>(moduleName: string) {
     @Get()
     @UseGuards(FirebaseAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
-    async getStats(@Query() query: AdminStatsQueryDto) {
+    async getStats(@Query() query: AdminStatsQuery) {
       const promises = config!.stats.map(stat => 
         this.service[stat.method](query)
       );
@@ -40,7 +42,7 @@ export function createStatsController<T>(moduleName: string) {
     @Roles(UserRole.ADMIN)
     async getStatByType(
       @Param('statType') statType: string, 
-      @Query() query: AdminStatsQueryDto
+      @Query() query: AdminStatsQuery
     ) {
       const stat = config!.stats.find(s => s.key === statType);
       if (!stat) {

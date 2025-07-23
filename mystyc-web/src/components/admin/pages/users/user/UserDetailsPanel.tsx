@@ -1,11 +1,10 @@
-'use client';
-
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
+
 import { formatDateForDisplay } from '@/util/dateTime';
 
+import Text from '@/components/ui/Text';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
-import Text from '@/components/ui/Text';
 
 export default function UserDetailsPanel({ user }: { user: UserProfile }) {
   const formatUserRoles = (roles: string[]) => {

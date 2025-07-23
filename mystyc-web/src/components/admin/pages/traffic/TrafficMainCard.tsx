@@ -1,6 +1,4 @@
-'use client';
-
-import { TrafficStats } from '@/interfaces';
+import { TrafficStats } from '@/interfaces/admin/stats';
 
 import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';

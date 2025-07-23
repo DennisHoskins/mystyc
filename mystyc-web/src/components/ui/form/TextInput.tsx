@@ -1,5 +1,3 @@
-'use client';
-
 import { InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
 

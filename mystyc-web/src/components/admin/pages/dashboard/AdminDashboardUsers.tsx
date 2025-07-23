@@ -1,12 +1,10 @@
-'use client';
-
-import { AdminStatsResponseExtended } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
-import AdminDashboardItemLayout from './AdminDashboardItemLayout';
-import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
-import UsersDashboard from '../users/UsersDashboard';
 import Link from '@/components/ui/Link';
+import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
+import AdminDashboardItemLayout from './AdminDashboardItemLayout';
+import UsersDashboard from '../users/UsersDashboard';
 
 export default function AdminDashboardUsers({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {

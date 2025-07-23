@@ -7,17 +7,17 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 
 import { ValidationExceptionFilter } from '@/common/filters/validation-exception.filter';
-
-import { AppServicesModule } from '@/app-services.module';
-import { AdminModule } from '@/admin/admin.module';
-import { PaymentsModule } from '@/payments/payments.module';
-import { StripeModule } from '@/stripe/stripe.module';
-
-import { AppController } from '@/app.controller';
-import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
 import { ThrottlerExceptionFilter } from '@/common/filters/throttler-exception.filter';
 import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter';
+import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
+
+import { AppServicesModule } from '@/app-services.module';
+import { PaymentsModule } from '@/payments/payments.module';
+import { StripeModule } from '@/stripe/stripe.module';
+import { AdminModule } from '@/admin/admin.module';
+
+import { AppController } from '@/app.controller';
 
 @Module({
   imports: [

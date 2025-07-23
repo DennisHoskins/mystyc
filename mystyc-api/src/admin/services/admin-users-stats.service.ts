@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserProfilesService } from '@/users/user-profiles.service';
-import { AuthEventsService } from '@/auth-events/auth-events.service';
-import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
-import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
+
 import { 
   RegistrationStatsResponse,
   ProfileCompletionStats,
   UserActivityStats
-} from '@/common/interfaces/admin/stats/admin-user-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+} from 'mystyc-common/admin/interfaces/stats/admin-user-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
+import { logger } from '@/common/util/logger';
+import { UserProfilesService } from '@/users/user-profiles.service';
+import { AuthEventsService } from '@/auth-events/auth-events.service';
+import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
+import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
 import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 import { StatsAggregationBuilder } from '@/admin/stats/pipeline-builder';
-import { logger } from '@/common/util/logger';
 
 @RegisterStatsModule({
   serviceName: 'Users',
@@ -33,7 +35,7 @@ export class AdminUsersStatsService {
     private readonly authEventsService: AuthEventsService,
   ) {}
 
-  async getRegistrationStats(query?: AdminStatsQueryDto): Promise<RegistrationStatsResponse> {
+  async getRegistrationStats(query?: AdminStatsQuery): Promise<RegistrationStatsResponse> {
     logger.info('Generating registration stats', { query }, 'AdminUsersStatsService');
 
     const { period = 'daily', limit = 30 } = query || {};
@@ -95,7 +97,7 @@ export class AdminUsersStatsService {
     };
   }
 
-  async getProfileCompletionStats(query?: AdminStatsQueryDto): Promise<ProfileCompletionStats> {
+  async getProfileCompletionStats(query?: AdminStatsQuery): Promise<ProfileCompletionStats> {
     logger.info('Generating profile completion stats', { query }, 'AdminUsersStatsService');
 
     const { maxRecords = 10000 } = query || {};
@@ -135,7 +137,7 @@ export class AdminUsersStatsService {
     return stats;
   }
 
-  async getActivityStats(query?: AdminStatsQueryDto): Promise<UserActivityStats> {
+  async getActivityStats(query?: AdminStatsQuery): Promise<UserActivityStats> {
     logger.info('Generating user activity stats', { query }, 'AdminUsersStatsService');
 
     const now = new Date();

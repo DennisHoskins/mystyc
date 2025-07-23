@@ -1,6 +1,4 @@
-'use client';
-
-import { TrafficStats } from '@/interfaces';
+import { TrafficStats } from '@/interfaces/admin/stats';
 
 import TrafficDashboard from './TrafficDashboard';
 

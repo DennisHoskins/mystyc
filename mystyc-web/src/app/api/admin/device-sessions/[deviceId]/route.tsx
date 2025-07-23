@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
+
+import { DeviceSession } from '@/interfaces/device-session.interface';
+
 import { handleAdmin } from '@/app/api/admin/handlers/adminHandler';
 import { sessionManager } from '@/app/api/sessionManager';
-import { DeviceSession } from '@/interfaces/device-session.interface';
 
 export async function POST(
   request: NextRequest,

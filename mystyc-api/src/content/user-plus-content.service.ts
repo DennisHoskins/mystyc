@@ -2,14 +2,14 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Content, ContentDocument } from './schemas/content.schema';
-import { Content as ContentInterface, validateContentInputSafe } from 'mystyc-common/schemas';
-import { UserProfile } from 'mystyc-common/schemas/';
+import { Content as ContentInterface, validateContentInputSafe, UserProfile } from 'mystyc-common/schemas';
 import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
+import { logger } from '@/common/util/logger';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { OpenAIUserPlusService } from '@/openai/openai-user-plus.service';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
-import { logger } from '@/common/util/logger';
+import { Content, ContentDocument } from './schemas/content.schema';
 
 @Injectable()
 export class UserPlusContentService {
@@ -152,7 +152,7 @@ export class UserPlusContentService {
     return await this.contentModel.countDocuments({ type: 'plus_content' });
   }
 
-  async findAll(query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     const sortObj: any = {};
@@ -176,7 +176,7 @@ export class UserPlusContentService {
     });
   }
 
-  async findByUserId(userId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findByUserId(userId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     const sortObj: any = {};

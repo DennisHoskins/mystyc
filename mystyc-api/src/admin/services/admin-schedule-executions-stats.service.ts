@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SchedulesService } from '@/schedules/schedules.service';
-import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
-import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
-import { ScheduleExecutionDocument } from '@/schedules/schemas/schedule-execution.schema';
-import { ContentDocument } from '@/content/schemas/content.schema';
-import { NotificationDocument } from '@/notifications/schemas/notification.schema';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+
 import { 
   ScheduleExecutionStats,
   ScheduleExecutionPerformanceStats,
@@ -16,9 +10,17 @@ import {
   ScheduleEventTypeStats,
   ScheduleRecentExecutionStats,
   ScheduleExecutionSummaryStats
-} from '@/common/interfaces/admin/stats/admin-schedule-execution-stats.interface';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+} from 'mystyc-common/admin/interfaces/stats/admin-schedule-execution-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { SchedulesService } from '@/schedules/schedules.service';
+import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
+import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
+import { ScheduleExecutionDocument } from '@/schedules/schemas/schedule-execution.schema';
+import { ContentDocument } from '@/content/schemas/content.schema';
+import { NotificationDocument } from '@/notifications/schemas/notification.schema';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'ScheduleExecutions',
@@ -46,7 +48,7 @@ export class AdminScheduleExecutionsStatsService {
    * @param query - Optional query parameters for date filtering
    * @returns Promise<ScheduleExecutionPerformanceStats> - Detailed execution performance data
    */
-  async getScheduleStats(scheduleId: string, query?: AdminStatsQueryDto): Promise<ScheduleExecutionPerformanceStats> {
+  async getScheduleStats(scheduleId: string, query?: AdminStatsQuery): Promise<ScheduleExecutionPerformanceStats> {
     logger.info('Generating schedule execution stats', { scheduleId, query }, 'AdminScheduleExecutionStatsService');
 
     try {
@@ -103,7 +105,7 @@ export class AdminScheduleExecutionsStatsService {
    * @param query - Query parameters including date range and period
    * @returns Promise<ScheduleHistoryStats> - Time-series performance data
    */
-  async getScheduleHistory(scheduleId: string, query: AdminStatsQueryDto): Promise<ScheduleHistoryStats> {
+  async getScheduleHistory(scheduleId: string, query: AdminStatsQuery): Promise<ScheduleHistoryStats> {
     logger.info('Generating schedule history stats', { scheduleId, query }, 'AdminScheduleExecutionStatsService');
 
     try {
@@ -151,7 +153,7 @@ export class AdminScheduleExecutionsStatsService {
    * @param query - Optional query parameters for filtering
    * @returns Promise<ScheduleExecutionStats> - System-wide schedule performance
    */
-  async getOverallScheduleStats(query?: AdminStatsQueryDto): Promise<ScheduleExecutionStats> {
+  async getOverallScheduleStats(query?: AdminStatsQuery): Promise<ScheduleExecutionStats> {
     logger.info('Generating overall schedule stats', { query }, 'AdminScheduleExecutionStatsService');
 
     try {
@@ -446,7 +448,7 @@ export class AdminScheduleExecutionsStatsService {
     return { executionTrend, eventDeliveryTrend };
   }
 
-  private async getOverallStatistics(query?: AdminStatsQueryDto): Promise<ScheduleSystemOverviewStats> {
+  private async getOverallStatistics(query?: AdminStatsQuery): Promise<ScheduleSystemOverviewStats> {
     const matchCondition: any = {};
 
     const dateFilter = this.buildDateFilter(query);
@@ -528,7 +530,7 @@ export class AdminScheduleExecutionsStatsService {
     return result && result.total > 0 ? Math.round((result.sent / result.total) * 100) : 0;
   }
 
-  private async getEventTypeStatistics(query?: AdminStatsQueryDto): Promise<ScheduleEventTypeStats[]> {
+  private async getEventTypeStatistics(query?: AdminStatsQuery): Promise<ScheduleEventTypeStats[]> {
     const dateFilter = this.buildDateFilter(query);
 
     const matchCondition: any = {};
@@ -566,7 +568,7 @@ export class AdminScheduleExecutionsStatsService {
     }));
   }
 
-  private async getRecentExecutions(query?: AdminStatsQueryDto): Promise<ScheduleRecentExecutionStats[]> {
+  private async getRecentExecutions(query?: AdminStatsQuery): Promise<ScheduleRecentExecutionStats[]> {
     const dateFilter = this.buildDateFilter(query);
     const matchCondition: any = {};
     if (dateFilter) {
@@ -592,7 +594,7 @@ export class AdminScheduleExecutionsStatsService {
     return eventName.includes('content') ? 'content' : 'notification';
   }
 
-  private buildDateFilter(query?: AdminStatsQueryDto): any {
+  private buildDateFilter(query?: AdminStatsQuery): any {
     if (!query?.startDate && !query?.endDate) return null;
     
     const filter: any = {};
@@ -608,7 +610,7 @@ export class AdminScheduleExecutionsStatsService {
     return Object.keys(filter).length > 0 ? filter : null;
   }
 
-  private getDateRange(query: AdminStatsQueryDto): { startDate: Date; endDate: Date } {
+  private getDateRange(query: AdminStatsQuery): { startDate: Date; endDate: Date } {
     const endDate = query.endDate ? new Date(query.endDate) : new Date();
     const startDate = query.startDate ? new Date(query.startDate) : 
       new Date(endDate.getTime() - (query.limit || 30) * 24 * 60 * 60 * 1000);

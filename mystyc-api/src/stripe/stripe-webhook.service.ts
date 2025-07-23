@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 
 import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+
+import { logger } from '@/common/util/logger';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { PaymentHistoryService } from '@/payments/payment-history.service';
-import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class StripeWebhookService {

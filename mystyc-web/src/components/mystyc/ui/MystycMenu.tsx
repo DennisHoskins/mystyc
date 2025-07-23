@@ -1,5 +1,3 @@
-'use client'
-
 import MenuItems from '@/components/ui/layout/menu/MenuItems';
 import MenuItem from '@/components/ui/layout/menu/MenuItem';
 

@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { NotificationStats } from '@/interfaces';
 import { Notification } from 'mystyc-common/schemas';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
-import { logger } from '@/util/logger';
+import { NotificationStats } from 'mystyc-common/admin/interfaces/stats';
 
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { logger } from '@/util/logger';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
+
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import NotificationsTable from './NotificationsTable';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';

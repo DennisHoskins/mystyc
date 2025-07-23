@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 
 import '@/styles/globals.css';
 
+import { logger } from '@/util/logger';
 import AppContext from '@/components/ui/layout/context/AppContext';
 import ErrorBoundary from '@/components/ui/layout/ErrorBoundary';
-import { logger } from '@/util/logger';
  
 export async function generateMetadata(): Promise<Metadata> {
   const title = process.env.NODE_ENV === 'production' ? 'mystyc' : 'mystyc // dev';

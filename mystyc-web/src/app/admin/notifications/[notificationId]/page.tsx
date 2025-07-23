@@ -1,5 +1,3 @@
-'use client';
-
 import { use } from 'react';
 import NotificationPage from '@/components/admin/pages/notifications/notification/NotificationPage';
 

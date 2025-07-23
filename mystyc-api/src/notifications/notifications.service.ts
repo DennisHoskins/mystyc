@@ -4,16 +4,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as admin from 'firebase-admin';
 
+import { Device } from 'mystyc-common/schemas/';
+import { Notification as NotificationInterface, validateNotificationInputSafe } from 'mystyc-common/schemas';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
+import { logger } from '@/common/util/logger';
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { NotificationContentService, NotificationContentTimeoutError } from '@/content/notification-content.service';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
-import { Notification as NotificationInterface, validateNotificationInputSafe } from 'mystyc-common/schemas';
-import { Device } from 'mystyc-common/schemas/';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
-import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class NotificationsService {
@@ -503,7 +504,7 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments();
   }  
 
-  async findAll(query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+  async findAll(query: BaseAdminQuery): Promise<NotificationInterface[]> {
     const { limit = 50, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding notifications with query', { 
@@ -539,7 +540,7 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ deviceId });
   }
 
-  async findByDeviceId(deviceId: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+  async findByDeviceId(deviceId: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding device notifications with query', { 
@@ -581,7 +582,7 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ firebaseUid });
   }
 
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user notifications with query', { 
@@ -623,7 +624,7 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ scheduleId });
   }
 
-  async findByScheduleId(scheduleId: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+  async findByScheduleId(scheduleId: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding schedule notifications with query', {
@@ -665,7 +666,7 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ executionId });
   }
 
-  async findByExecutionId(executionId: string, query: BaseAdminQueryDto): Promise<NotificationInterface[]> {
+  async findByExecutionId(executionId: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding schedule execution notifications with query', {

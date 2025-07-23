@@ -1,5 +1,3 @@
-'use client';
-
 import Breadcrumbs, { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
 
 interface AdminBreadcrumbsProps {

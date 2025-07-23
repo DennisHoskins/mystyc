@@ -2,11 +2,11 @@ import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 
+import { FirebaseUser as FirebaseUserInterface, Content } from 'mystyc-common/schemas/';
+
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { UserContentService } from './user-content.service';
-import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas/';
-import { Content } from 'mystyc-common/schemas';
 import { logger } from '@/common/util/logger';
+import { UserContentService } from './user-content.service';
 
 @Controller('user-content')
 export class UserContentController {

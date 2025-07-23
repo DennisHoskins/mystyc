@@ -2,8 +2,9 @@
 
 import { useEffect, useCallback, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
+
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import AuthenticationsTable from '@/components/admin/pages/authentications/AuthenticationsTable';

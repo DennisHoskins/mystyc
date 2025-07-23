@@ -1,14 +1,14 @@
-import { Controller, UseGuards, Get, Query } from '@nestjs/common';
-import { RolesGuard } from '@/common/guards/roles.guard';
+import { Controller, UseGuards, Get } from '@nestjs/common';
 
-import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-import { Roles } from '@/common/decorators/roles.decorator';
+import { OpenAIUsage } from 'mystyc-common/schemas';
 import { UserRole } from 'mystyc-common/constants/roles.enum';
 
-import { OpenAICoreService } from '@/openai/openai-core.service';
-import { OpenAIUsage } from 'mystyc-common/schemas';
-import { AdminController } from './admin.controller';
+import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { Roles } from '@/common/decorators/roles.decorator';
 import { logger } from '@/common/util/logger';
+import { OpenAICoreService } from '@/openai/openai-core.service';
+import { AdminController } from './admin.controller';
 
 @Controller('admin/openai')
 export class AdminOpenAIController extends AdminController<OpenAIUsage> {

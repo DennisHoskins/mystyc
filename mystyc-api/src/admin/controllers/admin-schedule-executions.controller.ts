@@ -1,19 +1,18 @@
 import { Controller, Get, Param, UseGuards, NotFoundException, Query } from '@nestjs/common';
 
+import { Content, Notification, ScheduleExecution } from 'mystyc-common/schemas';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
+
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { logger } from '@/common/util/logger';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { ScheduleExecution } from 'mystyc-common/schemas/schedule-execution.schema';
-import { Content } from 'mystyc-common/schemas';
-import { Notification } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
-import { logger } from '@/common/util/logger';
 
 @Controller('admin/schedule-executions')
 export class AdminScheduleExecutionsController extends AdminController<ScheduleExecution> {
@@ -53,7 +52,7 @@ export class AdminScheduleExecutionsController extends AdminController<ScheduleE
   @Roles(UserRole.ADMIN)
   async getScheduleExecutionContent(
     @Param('id') id: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Content>> {
     logger.info('Admin fetching schedule content', {
       executionId: id,
@@ -117,7 +116,7 @@ export class AdminScheduleExecutionsController extends AdminController<ScheduleE
   @Roles(UserRole.ADMIN)
   async getScheduleExecutionNotifications(
     @Param('id') id: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Notification>> {
     logger.info('Admin fetching schedule notifications', {
       executionId: id,

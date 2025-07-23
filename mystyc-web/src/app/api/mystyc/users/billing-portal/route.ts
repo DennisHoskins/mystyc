@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+import { logger } from '@/util/logger';
+
 import { sessionManager, InvalidSessionError } from '../../../sessionManager';
 import { authTokenManager } from '../../../authTokenManager';
-import { logger } from '@/util/logger';
 
 export async function POST(
   request: NextRequest,

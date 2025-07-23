@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+
 import { useAppStore } from '@/store/appStore';
+
+import Modal from '@/components/ui/modal/Modal';
 import AppLogo from '@/components/ui/AppLogo';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/modal/Modal';
 
 export default function ServerLogoutForm() {
   const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();

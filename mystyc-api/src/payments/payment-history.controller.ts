@@ -1,16 +1,16 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
+import { FirebaseUser as FirebaseUserInterface, PaymentHistory } from 'mystyc-common/schemas/';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { FirebaseUser as FirebaseUserInterface } from 'mystyc-common/schemas/';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
-import { PaymentHistoryService } from './payment-history.service';
-import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
+import { PaymentHistoryService } from './payment-history.service';
 
 @Controller('payments')
 export class PaymentHistoryController {
@@ -26,7 +26,7 @@ export class PaymentHistoryController {
   @Throttle({ default: { limit: 50, ttl: 60000 } })
   async getUserPaymentHistory(
     @FirebaseUser() firebaseUser: FirebaseUserInterface,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<{ payments: PaymentHistory[]; total: number }> {
     logger.info('Fetching user payment history', {
       uid: firebaseUser.uid,
@@ -64,7 +64,7 @@ export class PaymentHistoryController {
   @Roles(UserRole.ADMIN)
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   async getAllPayments(
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<{ payments: PaymentHistory[]; total: number }> {
     logger.info('Admin fetching all payment history', {
       limit: query.limit,
@@ -101,7 +101,7 @@ export class PaymentHistoryController {
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   async getPaymentsByTier(
     @Query('tier') tier: 'plus' | 'pro',
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<{ payments: PaymentHistory[] }> {
     logger.info('Admin fetching payments by tier', {
       tier,
@@ -140,7 +140,7 @@ export class PaymentHistoryController {
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   async getPaymentsByStatus(
     @Query('status') status: 'paid' | 'failed' | 'refunded' | 'disputed',
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<{ payments: PaymentHistory[] }> {
     logger.info('Admin fetching payments by status', {
       status,

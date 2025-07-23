@@ -1,6 +1,4 @@
-'use client';
-
-import { ContentStats } from '@/interfaces';
+import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
 
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { formatDateRangeForComponent } from '@/util/dateTime'

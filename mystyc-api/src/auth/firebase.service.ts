@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { firebaseAdmin } from './firebase-admin.provider';
 
-import { DecodedIdToken } from 'mystyc-common/schemas/decoded-token.schema';
-import { FirebaseUser, validateFirebaseUserSafe } from 'mystyc-common/schemas/';
+import { FirebaseUser, validateFirebaseUserSafe, DecodedIdToken } from 'mystyc-common/schemas/';
+
 import { logger } from '@/common/util/logger';
+import { firebaseAdmin } from './firebase-admin.provider';
 
 interface FirebaseAuthError extends Error {
   code: string;

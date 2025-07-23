@@ -1,6 +1,4 @@
-'use client';
-
-import { TrafficStats } from '@/interfaces';
+import { TrafficStats } from '@/interfaces/admin/stats';
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/admin/ui/charts/PieChartWithLegend';

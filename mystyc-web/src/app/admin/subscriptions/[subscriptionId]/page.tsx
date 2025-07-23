@@ -1,5 +1,3 @@
-'use client';
-
 import { use } from 'react';
 
 import SubscriptionPage from '@/components/admin/pages/subscriptions/subscription/SubscriptionPage';

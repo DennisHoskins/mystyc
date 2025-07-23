@@ -1,6 +1,5 @@
-'use client';
-
 import { ReactNode } from 'react';
+
 import Text from '@/components/ui/Text';
 import Link from '@/components/ui/Link';
 

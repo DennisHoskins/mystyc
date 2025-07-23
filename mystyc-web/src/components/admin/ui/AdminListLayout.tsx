@@ -1,15 +1,13 @@
-'use client';
-
 import { ReactNode } from 'react';
 
 import Card from '@/components/ui/Card';
-import { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
-import AdminBreadcrumbs from './AdminBreadcrumbs';
-import AdminError from '@/components/admin/ui/AdminError';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Avatar from '@/components/ui/Avatar';
 import { IconComponent } from '@/components/ui/icons/Icon';
+import { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
+import AdminBreadcrumbs from './AdminBreadcrumbs';
+import AdminError from '@/components/admin/ui/AdminError';
 
 interface AdminListLayoutProps {
   error?: string | null;

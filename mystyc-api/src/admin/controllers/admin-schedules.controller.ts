@@ -1,21 +1,19 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, NotFoundException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete,  Param, UseGuards, NotFoundException, Query } from '@nestjs/common';
+
+import { Content, Notification, Schedule, ScheduleExecution } from 'mystyc-common/schemas';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { SchedulesService } from '@/schedules/schedules.service';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { Schedule } from 'mystyc-common/schemas/schedule.schema';
-import { ScheduleExecution } from 'mystyc-common/schemas/schedule-execution.schema';
-import { Content } from 'mystyc-common/schemas';
-import { Notification } from 'mystyc-common/schemas';
-import { AdminController } from './admin.controller';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
+import { AdminController } from './admin.controller';
 
 @Controller('admin/schedules')
 export class AdminSchedulesController extends AdminController<Schedule> {
@@ -202,7 +200,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
   @Roles(UserRole.ADMIN)
   async getScheduleExecutions(
     @Param('id') id: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<ScheduleExecution>> {
     logger.info('Admin fetching schedule executions', {
       scheduleId: id,
@@ -266,7 +264,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
   @Roles(UserRole.ADMIN)
   async getScheduleContent(
     @Param('id') id: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Content>> {
     logger.info('Admin fetching schedule content', {
       scheduleId: id,
@@ -330,7 +328,7 @@ export class AdminSchedulesController extends AdminController<Schedule> {
   @Roles(UserRole.ADMIN)
   async getScheduleNotifications(
     @Param('id') id: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Notification>> {
     logger.info('Admin fetching schedule notifications', {
       scheduleId: id,

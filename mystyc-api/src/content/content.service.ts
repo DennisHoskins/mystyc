@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from 'mystyc-common/schemas';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { Content, ContentDocument } from './schemas/content.schema';
 
 @Injectable()
 export class ContentService {
@@ -38,7 +39,7 @@ export class ContentService {
   /**
    * Find all content with pagination (admin)
    */
-  async findAll(query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'date', sortOrder = 'desc' } = query;
 
     const sortObj: any = {};
@@ -57,7 +58,7 @@ export class ContentService {
   /**
    * Find content by notification ID (admin)
    */
-  async findByNotificationId(notificationId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findByNotificationId(notificationId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding notification content with query', {
@@ -105,7 +106,7 @@ export class ContentService {
   /**
    * Find content by user (for future user-content)
    */
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user content with query', {
@@ -169,7 +170,7 @@ export class ContentService {
     return await this.contentModel.countDocuments({ scheduleId });
   }
 
-  async findByScheduleId(scheduleId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findByScheduleId(scheduleId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding schedule content with query', {
@@ -211,7 +212,7 @@ export class ContentService {
     return await this.contentModel.countDocuments({ executionId });
   }
 
-  async findByExecutionId(executionId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findByExecutionId(executionId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding schedule content with query', {

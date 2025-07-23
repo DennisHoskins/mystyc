@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ContentDocument } from '@/content/schemas/content.schema';
-import { ContentService } from '@/content/content.service';
+
 import { 
   ContentSummaryStats,
   ContentGenerationStats,
   ContentSourceStats,
   ContentTimelineStats
-} from '@/common/interfaces/admin/stats/admin-content-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+} from 'mystyc-common/admin/interfaces/stats/admin-content-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { ContentDocument } from '@/content/schemas/content.schema';
+import { ContentService } from '@/content/content.service';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'Content',
@@ -30,7 +32,7 @@ export class AdminContentStatsService {
     private readonly contentService: ContentService,
   ) {}
 
-  async getSummaryStats(query?: AdminStatsQueryDto): Promise<ContentSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQuery): Promise<ContentSummaryStats> {
     logger.info('Generating content summary stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -124,7 +126,7 @@ export class AdminContentStatsService {
     }
   }
 
-  async getGenerationStats(query?: AdminStatsQueryDto): Promise<ContentGenerationStats> {
+  async getGenerationStats(query?: AdminStatsQuery): Promise<ContentGenerationStats> {
     logger.info('Generating content generation stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -237,7 +239,7 @@ export class AdminContentStatsService {
     }
   }
 
-  async getSourceStats(query?: AdminStatsQueryDto): Promise<ContentSourceStats> {
+  async getSourceStats(query?: AdminStatsQuery): Promise<ContentSourceStats> {
     logger.info('Generating content source stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -306,7 +308,7 @@ export class AdminContentStatsService {
     }
   }
 
-  async getTimelineStats(query?: AdminStatsQueryDto): Promise<ContentTimelineStats> {
+  async getTimelineStats(query?: AdminStatsQuery): Promise<ContentTimelineStats> {
     logger.info('Generating content timeline stats', { query }, 'AdminContentStatsService');
     
     try {
@@ -376,7 +378,7 @@ export class AdminContentStatsService {
     }
   }
 
-  private buildDateFilter(query?: AdminStatsQueryDto): any {
+  private buildDateFilter(query?: AdminStatsQuery): any {
     if (!query?.startDate && !query?.endDate) return null;
     
     const filter: any = {};

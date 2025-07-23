@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
-import { sessionManager } from '@/app/api/sessionManager';
 import { logger } from '@/util/logger';
+
+import { sessionManager } from '@/app/api/sessionManager';
 
 export async function POST(request: NextRequest) {
   logger.log('');

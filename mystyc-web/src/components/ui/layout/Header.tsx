@@ -1,5 +1,3 @@
-'use client';
-
 import AppLogo from '@/components/ui/AppLogo';
 import Link from '@/components/ui/Link';
 

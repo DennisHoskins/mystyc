@@ -1,12 +1,10 @@
-'use client';
-
-import { AdminStatsResponseExtended } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
-import AdminDashboardItemLayout from './AdminDashboardItemLayout';
-import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon'
-import TrafficDashboard from '../traffic/TrafficDashboard';
 import Link from '@/components/ui/Link';
+import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon'
+import AdminDashboardItemLayout from './AdminDashboardItemLayout';
+import TrafficDashboard from '../traffic/TrafficDashboard';
 
 export default function AdminDashboardTraffic({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {

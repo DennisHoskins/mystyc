@@ -1,5 +1,3 @@
-'use client';
-
 import { use } from 'react';
 import SchedulePage from '@/components/admin/pages/schedules/schedule/SchedulePage';
 

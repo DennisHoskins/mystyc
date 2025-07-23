@@ -1,10 +1,11 @@
 'use client';
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+
+import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
 
 interface PricingCardProps {
   title: string;

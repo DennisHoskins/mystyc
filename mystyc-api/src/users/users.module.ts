@@ -17,9 +17,9 @@ import { UserPlusContentService } from '@/content/user-plus-content.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
 import { OpenAIUserPlusService } from '@/openai/openai-user-plus.service';
 
-import { UserProfileSchema } from './schemas/user-profile.schema';
 import { Content, ContentSchema } from '@/content/schemas/content.schema';
 import { OpenAIUsage, OpenAIUsageSchema } from '@/openai/schemas/openai-usage.schema';
+import { UserProfileSchema } from './schemas/user-profile.schema';
 
 @Module({
   imports: [

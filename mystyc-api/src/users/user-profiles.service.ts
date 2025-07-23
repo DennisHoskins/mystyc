@@ -7,10 +7,10 @@ import { z } from 'zod';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
 import { UserProfile, ZodiacSignType, UserProfileInputSchema } from 'mystyc-common/schemas';
 import { CreateUserProfileSchema, UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
-import { UserProfileDocument } from './schemas/user-profile.schema';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
+import { UserProfileDocument } from './schemas/user-profile.schema';
 
 @Injectable()
 export class UserProfilesService {
@@ -85,7 +85,7 @@ export class UserProfilesService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<UserProfile[]> - Array of user profiles with applied query params
    */
-  async findAll(query: BaseAdminQueryDto): Promise<UserProfile[]> {
+  async findAll(query: BaseAdminQuery): Promise<UserProfile[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user profiles with query', { 
@@ -123,7 +123,7 @@ export class UserProfilesService {
    * @param query - Query parameters for pagination and sorting
    * @returns Promise<UserProfile[]> - Array of user profiles
    */
-  async findByFirebaseUids(firebaseUids: string[], query: BaseAdminQueryDto): Promise<UserProfile[]> {
+  async findByFirebaseUids(firebaseUids: string[], query: BaseAdminQuery): Promise<UserProfile[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     const sortObj: any = {};
@@ -155,7 +155,7 @@ export class UserProfilesService {
    * @param query - Query parameters for pagination and sorting
    * @returns Promise<UserProfile[]> - Array of user profiles with specified tier
    */
-  async findBySubscriptionTier(tier: SubscriptionLevel, query: BaseAdminQueryDto): Promise<UserProfile[]> {
+  async findBySubscriptionTier(tier: SubscriptionLevel, query: BaseAdminQuery): Promise<UserProfile[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user profiles by subscription tier', { 

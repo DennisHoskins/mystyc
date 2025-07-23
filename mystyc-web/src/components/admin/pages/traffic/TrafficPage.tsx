@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { TrafficStats } from '@/interfaces';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
-import { logger } from '@/util/logger';
+import { TrafficStats } from '@/interfaces/admin/stats';
 
+import { apiClientAdmin } from '@/api/apiClientAdmin';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { logger } from '@/util/logger';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
+
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon';
 import TrafficDetailsPanel from './TrafficDetailsPanel';

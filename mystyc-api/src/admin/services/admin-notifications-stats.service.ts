@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { NotificationsService } from '@/notifications/notifications.service';
-import { DevicesService } from '@/devices/devices.service';
-import { NotificationDocument } from '@/notifications/schemas/notification.schema';
-import { DeviceDocument } from '@/devices/schemas/device.schema';
+
 import { 
   NotificationDeliveryStats,
   NotificationTypeStats,
   NotificationEngagementStats,
   NotificationPatternsStats
-} from '@/common/interfaces/admin/stats/admin-notification-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+} from 'mystyc-common/admin/interfaces/stats/admin-notification-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { NotificationsService } from '@/notifications/notifications.service';
+import { DevicesService } from '@/devices/devices.service';
+import { NotificationDocument } from '@/notifications/schemas/notification.schema';
+import { DeviceDocument } from '@/devices/schemas/device.schema';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'Notifications',
@@ -34,7 +36,7 @@ export class AdminNotificationsStatsService {
     private readonly devicesService: DevicesService,
   ) {}
 
-  async getDeliveryStats(query?: AdminStatsQueryDto): Promise<NotificationDeliveryStats> {
+  async getDeliveryStats(query?: AdminStatsQuery): Promise<NotificationDeliveryStats> {
     logger.info('Generating notification delivery stats', { query }, 'AdminNotificationsStatsService');
     
     try {
@@ -165,7 +167,7 @@ export class AdminNotificationsStatsService {
     }
   }
 
-  async getTypeStats(query?: AdminStatsQueryDto): Promise<NotificationTypeStats> {
+  async getTypeStats(query?: AdminStatsQuery): Promise<NotificationTypeStats> {
     logger.info('Generating notification type stats', { query }, 'AdminNotificationsStatsService');
     
     try {
@@ -280,7 +282,7 @@ export class AdminNotificationsStatsService {
     }
   }
 
-  async getEngagementStats(query?: AdminStatsQueryDto): Promise<NotificationEngagementStats> {
+  async getEngagementStats(query?: AdminStatsQuery): Promise<NotificationEngagementStats> {
     logger.info('Generating notification engagement stats', { query }, 'AdminNotificationsStatsService');
     
     try {
@@ -456,7 +458,7 @@ export class AdminNotificationsStatsService {
     }
   }
 
-  async getPatternStats(query?: AdminStatsQueryDto): Promise<NotificationPatternsStats> {
+  async getPatternStats(query?: AdminStatsQuery): Promise<NotificationPatternsStats> {
     logger.info('Generating notification pattern stats', { query }, 'AdminNotificationsStatsService');
     
     try {

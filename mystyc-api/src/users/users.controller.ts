@@ -3,23 +3,21 @@ import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 
 import { z } from 'zod';
-import { FirebaseUser as FirebaseUserInterface, UserProfile, Content } from 'mystyc-common/schemas';
-import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+import { FirebaseUser as FirebaseUserInterface, User, UserProfile, Content } from 'mystyc-common/schemas';
+import { UserRole, SubscriptionLevel } from 'mystyc-common/constants/';
 import { LoginRegisterRequestSchema, LogoutRequestSchema, UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
 
 import { Public } from '@/common/decorators/public.decorator';
-import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { FirebaseUser } from '@/common/decorators/user.decorator';
-import { User } from 'mystyc-common/schemas/user.schema';
+import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { ZodValidationPipe } from '@/common/pipes/zod-validation.pipe';
+import { logger, createServiceLogger } from '@/common/util/logger';
+
+import { UserContentService } from '@/content/user-content.service';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
-import { UserContentService } from '@/content/user-content.service';
-import { ZodValidationPipe } from '@/common/pipes/zod-validation.pipe';
-import { createServiceLogger } from '@/common/util/logger';
-import { logger } from '@/common/util/logger';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
 
 @Controller('users')
 export class UsersController {

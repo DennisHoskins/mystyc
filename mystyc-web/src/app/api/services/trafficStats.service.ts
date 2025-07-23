@@ -1,7 +1,9 @@
-import redis from '@/app/api/redisClient';
+import { AdminStatsQuerySchema, AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { TrafficStats } from '@/interfaces/admin/stats/admin-traffic-stats.interface';
+
 import { logger } from '@/util/logger';
-import { TrafficStats } from '@/interfaces';
-import { AdminStatsQuery } from '@/interfaces/admin/stats/admin-stats-query.interface';
+
+import redis from '@/app/api/redisClient';
 
 type DateRange = {
   startDate: Date;
@@ -15,10 +17,18 @@ type AggregatedData<T = string> = Array<{ name: T; count: number; percentage?: n
  * Builds comprehensive traffic analytics from Redis based on the provided query.
  */
 export async function buildTrafficStats(
-  query: AdminStatsQuery = {}
+  query: Partial<AdminStatsQuery> = {}
 ): Promise<TrafficStats> {
-  const dateRange = calculateDateRange(query);
-  const maxRecords = query.maxRecords ?? 50;
+
+  const validatedQuery = AdminStatsQuerySchema.parse({
+    period: 'daily',
+    limit: 30,
+    maxRecords: 10000,
+    ...query
+  });  
+
+  const dateRange = calculateDateRange(validatedQuery);
+  const maxRecords = validatedQuery.maxRecords ?? 50;
 
   try {
     // Fetch all data in parallel for better performance

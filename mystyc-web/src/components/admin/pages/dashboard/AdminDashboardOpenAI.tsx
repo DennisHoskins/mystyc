@@ -1,12 +1,10 @@
-'use client';
-
-import { AdminStatsResponseExtended } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
+import Link from '@/components/ui/Link';
+import OpenAIIcon from '@/components/admin/ui/icons/OpenAIIcon'
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import OpenAIUsageDashboard from '../openai/OpenAIUsageDashboard';
-import OpenAIIcon from '@/components/admin/ui/icons/OpenAIIcon'
-import Link from '@/components/ui/Link';
 
 export default function AdminDashboardOpenAI({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {

@@ -1,10 +1,10 @@
-import redis from '../redisClient';
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { UAParser } from 'ua-parser-js';
 
-import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { logger } from '@/util/logger';
+import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
+import redis from '../redisClient';
 
 type VisitSession = {
   sessionId: string | null;

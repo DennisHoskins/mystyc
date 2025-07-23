@@ -1,5 +1,3 @@
-'use client';
-
 import { Notification } from 'mystyc-common/schemas';
 
 import Card from '@/components/ui/Card';

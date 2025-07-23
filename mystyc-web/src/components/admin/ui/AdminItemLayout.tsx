@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
 
-import AdminBreadcrumbs from '@/components/admin/ui/AdminBreadcrumbs';
-import AdminError from '@/components/admin/ui/AdminError';
-import Heading from '@/components/ui/Heading';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
+import Heading from '@/components/ui/Heading';
+import AdminBreadcrumbs from '@/components/admin/ui/AdminBreadcrumbs';
+import AdminError from '@/components/admin/ui/AdminError';
 
 interface Breadcrumb {
   label: string;

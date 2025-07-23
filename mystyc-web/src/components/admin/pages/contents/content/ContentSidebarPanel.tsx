@@ -1,5 +1,3 @@
-'use client';
-
 import { Content } from 'mystyc-common/schemas';
 
 import Avatar from '@/components/ui/Avatar';

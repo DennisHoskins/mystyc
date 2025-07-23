@@ -1,13 +1,11 @@
-'use client';
-
-import { AdminStatsResponseExtended } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
-import AdminDashboardItemLayout from './AdminDashboardItemLayout';
+import Link from '@/components/ui/Link';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon'
+import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import SchedulesDashboard from '../schedules/SchedulesDashboard';
 import SchedulesExecutionsDashboard from '../schedule-executions/SchedulesExecutionsDashboard';
-import Link from '@/components/ui/Link';
 
 export default function AdminDashboardSchedules({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {

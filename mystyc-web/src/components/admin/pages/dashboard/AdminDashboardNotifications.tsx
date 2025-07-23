@@ -1,12 +1,10 @@
-'use client';
-
-import { AdminStatsResponseExtended } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
-import AdminDashboardItemLayout from './AdminDashboardItemLayout';
+import Link from '@/components/ui/Link';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import NotificationsDashboard from '../notifications/NotificationsDashboard';
-import Link from '@/components/ui/Link';
+import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 
 export default function AdminDashboardNotifications({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {

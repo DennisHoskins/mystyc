@@ -2,8 +2,9 @@
 
 import { useEffect, useCallback, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Notification } from 'mystyc-common/schemas';
+
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import NotificationsTable from '@/components/admin/pages/notifications/NotificationsTable';

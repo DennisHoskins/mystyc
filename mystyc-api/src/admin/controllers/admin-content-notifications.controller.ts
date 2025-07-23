@@ -1,16 +1,17 @@
-import { Controller, Get, Post, UseGuards, Param, Query, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query } from '@nestjs/common';
+
+import { Content } from 'mystyc-common/schemas';
+import { UserRole } from 'mystyc-common/constants/';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/';
+import { logger } from '@/common/util/logger';
 import { ContentService } from '@/content/content.service';
 import { NotificationContentService } from '@/content/notification-content.service';
-import { Content } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
-import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
-import { logger } from '@/common/util/logger';
 
 @Controller('admin/content-notifications')
 export class AdminNotificationsContentController extends AdminController<Content> {
@@ -32,7 +33,7 @@ export class AdminNotificationsContentController extends AdminController<Content
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getNotificationsContent(
-    @Query() query: BaseAdminQueryDto
+    @Query() query:  BaseAdminQuery
   ): Promise<AdminListResponse<Content>> {
     logger.info('Admin fetching notification content', { 
       limit: query.limit,

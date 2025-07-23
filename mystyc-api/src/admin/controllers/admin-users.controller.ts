@@ -1,26 +1,21 @@
-import { Controller, Query, Get, Post, Patch, UseGuards, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Query, Get, UseGuards, Param, NotFoundException } from '@nestjs/common';
+
+import { AuthEvent, Content, Device, Notification, PaymentHistory, UserProfile } from 'mystyc-common/schemas/';
+import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { PaymentHistoryService } from '@/payments/payment-history.service';
 import { ContentService } from '@/content/content.service';
-import { UserProfile } from 'mystyc-common/schemas/';
-import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
-import { Device } from 'mystyc-common/schemas/';
-import { Content } from 'mystyc-common/schemas';
-import { AuthEvent } from 'mystyc-common/schemas/';
-import { Notification } from 'mystyc-common/schemas';
-import { AdminController } from './admin.controller';
-import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
-import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
 import { logger } from '@/common/util/logger';
+import { AdminController } from './admin.controller';
 
 function isErrorWithStatus(e: unknown): e is { status: number } {
   return (
@@ -56,7 +51,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async findAll(@Query() query: BaseAdminQueryDto): Promise<AdminListResponse<UserProfile>> {
+  async findAll(@Query() query: BaseAdminQuery): Promise<AdminListResponse<UserProfile>> {
     return super.findAll(query);
   }
 
@@ -91,7 +86,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getUsers(
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<UserProfile>> {
     logger.info('Admin fetching user content', { 
       limit: query.limit,
@@ -139,7 +134,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getPlusUsers(
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<UserProfile>> {
     logger.info('Admin fetching user plus content', { 
       limit: query.limit,
@@ -253,7 +248,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @Roles(UserRole.ADMIN)
   async getUserDevices(
     @Param('firebaseUid') firebaseUid: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Device>> {
     logger.info('Admin fetching user devices', { 
       firebaseUid,
@@ -303,7 +298,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @Roles(UserRole.ADMIN)
   async getUserContent(
     @Param('firebaseUid') firebaseUid: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Content>> {
     logger.info('Admin fetching user content', { 
       firebaseUid,
@@ -353,7 +348,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @Roles(UserRole.ADMIN)
   async getUserAuthEvents(
     @Param('firebaseUid') firebaseUid: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<AuthEvent>> {
     logger.info('Admin fetching user auth events', { 
       firebaseUid,
@@ -403,7 +398,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @Roles(UserRole.ADMIN)
   async getUserNotifications(
     @Param('firebaseUid') firebaseUid: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Notification>> {
     logger.info('Admin fetching user notifications', { 
       firebaseUid,
@@ -453,7 +448,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @Roles(UserRole.ADMIN)
   async getUserPayments(
     @Param('firebaseUid') firebaseUid: string,
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<PaymentHistory>> {
     logger.info('Admin fetching user payments', { 
       firebaseUid,

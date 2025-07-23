@@ -1,5 +1,3 @@
-'use client';
-
 import { Mail } from 'lucide-react'
 
 export default function MessageIcon({ size = 6 }: { size?: number }) {

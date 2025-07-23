@@ -6,10 +6,10 @@ import { FirebaseUser, User, Device, validateUserSafe } from 'mystyc-common/sche
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants/';
 import { LoginRegisterRequestSchema, LogoutRequestSchema, CreateUserProfileSchema } from 'mystyc-common/schemas/requests';
 
-import { UserProfilesService } from './user-profiles.service';
+import { logger } from '@/common/util/logger';
 import { DevicesService } from '@/devices/devices.service';
 import { AuthEventsService } from '@/auth-events/auth-events.service';
-import { logger } from '@/common/util/logger';
+import { UserProfilesService } from './user-profiles.service';
 
 @Injectable()
 export class UsersService {

@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { UserRole } from 'mystyc-common/constants/roles.enum';
-import { UserProfilesService } from './user-profiles.service';
+
 import { logger } from '@/common/util/logger';
+import { UserProfilesService } from './user-profiles.service';
 
 @Injectable()
 export class UserRolesService {

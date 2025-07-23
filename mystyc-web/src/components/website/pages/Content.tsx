@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 
-import { apiClient } from '@/api/apiClient';
 import { Content } from 'mystyc-common/schemas/content.schema';
 
+import { apiClient } from '@/api/apiClient';
+
+import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
-import Card from '@/components/ui/Card';
 
 export default function WebsiteContent() {
   const [data, setData] = useState<Content | null>(null);

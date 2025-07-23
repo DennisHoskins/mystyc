@@ -1,17 +1,18 @@
-import { Controller, Get, Post, UseGuards, Param, Query, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Query } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+
+import { Content } from 'mystyc-common/schemas';
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { logger } from '@/common/util/logger';
 import { ContentService } from '@/content/content.service';
 import { WebsiteContentService } from '@/content/website-content.service';
-import { Content } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
-import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
-import { logger } from '@/common/util/logger';
 
 @Controller('admin/content-website')
 export class AdminWebsiteContentController extends AdminController<Content> {
@@ -33,7 +34,7 @@ export class AdminWebsiteContentController extends AdminController<Content> {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getWebsiteContent(
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Content>> {
     logger.info('Admin fetching website content', { 
       limit: query.limit,

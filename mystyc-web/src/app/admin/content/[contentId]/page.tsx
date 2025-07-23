@@ -1,5 +1,3 @@
-'use client';
-
 import { use } from 'react';
 import ContentPage from '@/components/admin/pages/contents/content/ContentPage';
 

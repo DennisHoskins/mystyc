@@ -1,5 +1,3 @@
-'use client';
-
 import { FormHTMLAttributes } from 'react';
 import clsx from 'clsx';
 

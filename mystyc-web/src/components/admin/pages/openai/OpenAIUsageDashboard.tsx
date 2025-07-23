@@ -1,8 +1,7 @@
-'use client';
+import { OpenAIUsageStats } from 'mystyc-common/admin/interfaces/stats';
 
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { formatDateRangeForComponent } from '@/util/dateTime';
-import { OpenAIUsageStats } from '@/interfaces';
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';

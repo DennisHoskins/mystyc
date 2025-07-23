@@ -1,6 +1,5 @@
-'use client';
-
 import { ScheduleExecution } from 'mystyc-common/schemas';
+
 import { formatTimestampForComponent } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

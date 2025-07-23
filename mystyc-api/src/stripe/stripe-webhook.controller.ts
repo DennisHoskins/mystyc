@@ -3,8 +3,9 @@ import { Request } from 'express';
 import Stripe from 'stripe';
 
 import { Public } from '@/common/decorators/public.decorator';
-import { StripeWebhookService } from './stripe-webhook.service';
 import { logger } from '@/common/util/logger';
+
+import { StripeWebhookService } from './stripe-webhook.service';
 
 @Controller('stripe')
 export class StripeWebhookController {

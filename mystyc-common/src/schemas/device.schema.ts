@@ -14,6 +14,7 @@ export const DeviceInputSchema = z.object({
   platform: z.string()
     .min(2)
     .max(20)
+    .optional()
     .transform(val => val?.toLowerCase()),
   fcmToken: z.string()
     .min(100)
@@ -27,7 +28,8 @@ export const DeviceInputSchema = z.object({
   timezone: z.string()
     .min(1)
     .max(50)
-    .trim(),
+    .trim()
+    .optional(),
   language: z.string()
     .min(2)
     .max(10)
@@ -38,11 +40,13 @@ export const DeviceInputSchema = z.object({
         return `${parts[0].toLowerCase()}-${parts[1].toUpperCase()}`;
       }
       return val.toLowerCase();
-    }),
+    })
+    .optional(),
   userAgent: z.string()
     .min(10)
     .max(1000)
     .trim()
+    .optional()
 }).strict();
 
 export const UpdateFcmTokenSchema = z.object({

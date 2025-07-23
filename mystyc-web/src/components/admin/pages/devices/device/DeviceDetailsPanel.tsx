@@ -1,5 +1,3 @@
-'use client';
-
 import { Device } from 'mystyc-common/schemas/';
 
 import Text from '@/components/ui/Text';

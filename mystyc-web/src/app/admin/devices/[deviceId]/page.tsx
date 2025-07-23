@@ -1,5 +1,3 @@
-'use client';
-
 import { use } from 'react';
 import DevicePage from '@/components/admin/pages/devices/device/DevicePage';
 

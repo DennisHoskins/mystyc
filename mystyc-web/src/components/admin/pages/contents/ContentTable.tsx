@@ -1,12 +1,11 @@
-'use client';
-
 import { AlarmClockCheck, Bell, Globe, Users, UserPlus } from 'lucide-react';
 
 import { Content } from 'mystyc-common/schemas';
+
 import { formatDateForDisplay } from '@/util/dateTime';
 
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 import { IconComponent } from '@/components/ui/icons/Icon';
+import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 
 interface ContentTableProps {
   icon?: IconComponent,

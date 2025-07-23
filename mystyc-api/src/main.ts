@@ -8,8 +8,8 @@ import * as express from 'express';
 import { raw } from 'express';
 import mongoose from 'mongoose';
 
-import { AppModule } from '@/app.module';
 import { logger } from '@/common/util/logger';
+import { AppModule } from '@/app.module';
 
 /**
  * Bootstrap function to initialize and configure the NestJS application

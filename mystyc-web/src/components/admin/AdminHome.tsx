@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
 import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { logger } from '@/util/logger';
-import { AdminStatsResponseExtended } from '@/interfaces';
+
+import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';

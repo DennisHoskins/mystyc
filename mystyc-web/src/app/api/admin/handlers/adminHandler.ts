@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+import { logger } from '@/util/logger';
+
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { authTokenManager } from '@/app/api/authTokenManager';
-import { logger } from '@/util/logger';
 
 interface AdminHandlerOptions {
   endpoint: string;

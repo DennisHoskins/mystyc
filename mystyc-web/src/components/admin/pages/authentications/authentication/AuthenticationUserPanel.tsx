@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
+
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import Avatar from '@/components/ui/Avatar';

@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ContentDocument } from '@/content/schemas/content.schema';
-import { OpenAIUsageDocument } from '@/openai/schemas/openai-usage.schema';
-import { OpenAICoreService } from '@/openai/openai-core.service';
+
 import { 
   OpenAIUsageSummaryStats,
   OpenAIMonthlyUsageStats,
   OpenAIContentTypeUsageStats
-} from '@/common/interfaces/admin/stats/admin-openai-usage-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+} from 'mystyc-common/admin/interfaces/stats/admin-openai-usage-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { ContentDocument } from '@/content/schemas/content.schema';
+import { OpenAIUsageDocument } from '@/openai/schemas/openai-usage.schema';
+import { OpenAICoreService } from '@/openai/openai-core.service';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'OpenAI',
@@ -35,7 +37,7 @@ export class AdminOpenAIStatsService {
     return await this.openAIService.getUsageStats();
   }
 
-  async getSummaryStats(query?: AdminStatsQueryDto): Promise<OpenAIUsageSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQuery): Promise<OpenAIUsageSummaryStats> {
     logger.info('Generating OpenAI summary stats', { query }, 'AdminOpenAIStatsService');
     
     try {
@@ -128,7 +130,7 @@ export class AdminOpenAIStatsService {
     }
   }
 
-  async getMonthlyUsageStats(query?: AdminStatsQueryDto): Promise<OpenAIMonthlyUsageStats> {
+  async getMonthlyUsageStats(query?: AdminStatsQuery): Promise<OpenAIMonthlyUsageStats> {
     logger.info('Generating OpenAI monthly usage stats', { query }, 'AdminOpenAIStatsService');
     
     try {
@@ -232,7 +234,7 @@ export class AdminOpenAIStatsService {
     }
   }
 
-  async getContentTypeUsageStats(query?: AdminStatsQueryDto): Promise<OpenAIContentTypeUsageStats> {
+  async getContentTypeUsageStats(query?: AdminStatsQuery): Promise<OpenAIContentTypeUsageStats> {
     logger.info('Generating OpenAI content type usage stats', { query }, 'AdminOpenAIStatsService');
     
     try {
@@ -306,7 +308,7 @@ export class AdminOpenAIStatsService {
     }
   }
 
-  private buildDateFilter(query?: AdminStatsQueryDto): any {
+  private buildDateFilter(query?: AdminStatsQuery): any {
     if (!query?.startDate && !query?.endDate) return null;
     
     const filter: any = {};

@@ -1,10 +1,9 @@
-'use client';
+import { DeviceSession } from '@/interfaces';
 
 import { apiClientAdmin } from '@/api/apiClientAdmin';
-import { DeviceSession } from '@/interfaces';
-import { useBusy, useToast } from '@/components/ui/layout/context/AppContext';
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 
+import { useBusy, useToast } from '@/components/ui/layout/context/AppContext';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';

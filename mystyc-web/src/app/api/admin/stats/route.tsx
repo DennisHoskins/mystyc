@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+import { logger } from '@/util/logger';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats/admin-stats-response-extended.interface';
+
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { authTokenManager } from '@/app/api/authTokenManager';
 import { buildTrafficStats } from '../../services/trafficStats.service';
-import { AdminStatsResponseExtended } from '@/interfaces/admin/stats/admin-stats-response-extended.interface';
-import { logger } from '@/util/logger';
 
 export async function POST(request: NextRequest): Promise<Response> {
   logger.log('[getStats] Admin stats request started');

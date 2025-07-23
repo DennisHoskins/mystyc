@@ -15,7 +15,6 @@ import {
   AdminSchedulesController,
   AdminScheduleExecutionsController,
   AdminNotificationsController,
-  AdminNotificationsSendController,
   
   AdminStatsController,
   AdminUsersStatsController,
@@ -79,7 +78,6 @@ controllers: [
     AdminSchedulesController,
     AdminScheduleExecutionsController,
     AdminNotificationsController,
-    AdminNotificationsSendController,
     
     AdminStatsController,
     AdminUsersStatsController,

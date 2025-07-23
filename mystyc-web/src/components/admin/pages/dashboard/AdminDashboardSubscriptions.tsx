@@ -1,12 +1,10 @@
-'use client';
-
-import { AdminStatsResponseExtended } from '@/interfaces';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
+import Link from '@/components/ui/Link';
+import SubscriberIcon from '@/components/admin/ui/icons/SubscriberIcon'
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import SubscriptionsDashboard  from '../subscriptions/SubscriptionsDashboard';
-import SubscriberIcon from '@/components/admin/ui/icons/SubscriberIcon'
-import Link from '@/components/ui/Link';
 
 export default function AdminDashboardSubscriptions({ stats } : { stats?: StatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
   if (!stats) {

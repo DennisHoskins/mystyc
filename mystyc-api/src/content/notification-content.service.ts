@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Content, ContentDocument } from './schemas/content.schema';
 import { Content as ContentInterface } from 'mystyc-common/schemas';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { Content, ContentDocument } from './schemas/content.schema';
 
 export class NotificationContentTimeoutError extends Error {
   constructor(timeoutMs: number) {
@@ -169,7 +170,7 @@ export class NotificationContentService {
     return await this.contentModel.countDocuments({ type: 'notification_content' });
   }
 
-  async findAll(query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     const sortObj: any = {};

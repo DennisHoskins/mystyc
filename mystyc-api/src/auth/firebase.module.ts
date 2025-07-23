@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common'; // forwardRef removed as it's not used
+import { Module } from '@nestjs/common';
+
 import { FirebaseService } from './firebase.service';
 
 @Module({

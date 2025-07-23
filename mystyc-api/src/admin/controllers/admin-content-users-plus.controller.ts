@@ -1,21 +1,18 @@
-import { Controller, Get, Post, UseGuards, Param, Query, Body, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
+import { Controller, Get, UseGuards, Query } from '@nestjs/common';
+
+import { Content } from 'mystyc-common/schemas';
+import { UserRole } from 'mystyc-common/constants/';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
 
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
-import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
-import { FirebaseUser } from 'mystyc-common/schemas/';
-import { FirebaseUser as FirebaseUserDecorator } from '@/common/decorators/user.decorator';
+import { logger } from '@/common/util/logger';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { ContentService } from '@/content/content.service';
 import { UserPlusContentService } from '@/content/user-plus-content.service';
-import { Content } from 'mystyc-common/schemas';
 import { AdminController } from './admin.controller';
-import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
-import { logger } from '@/common/util/logger';
 
 @Controller('admin/content-users-plus')
 export class AdminUsersPlusContentController extends AdminController<Content> {
@@ -38,7 +35,7 @@ export class AdminUsersPlusContentController extends AdminController<Content> {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getUserContent(
-    @Query() query: BaseAdminQueryDto
+    @Query() query: BaseAdminQuery
   ): Promise<AdminListResponse<Content>> {
     logger.info('Admin fetching user plus content', { 
       limit: query.limit,

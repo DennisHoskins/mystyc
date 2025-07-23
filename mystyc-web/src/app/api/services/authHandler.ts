@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { buildDevice } from './deviceManager';
+import { User } from 'mystyc-common/schemas/';
+import { UserRole } from 'mystyc-common/constants';
+
+import { logger } from '@/util/logger';
+
 import { generateSessionId } from '../keyManager';
 import { authTokenManager } from '../authTokenManager';
 import { sessionManager } from '../sessionManager';
-import { User } from 'mystyc-common/schemas/';
 import { firebaseAuth } from '../firebaseAuth';
-import { logger } from '@/util/logger';
-import { UserRole } from 'mystyc-common';
+import { buildDevice } from './deviceManager';
 
 export interface AuthRequestBody {
   email: string;

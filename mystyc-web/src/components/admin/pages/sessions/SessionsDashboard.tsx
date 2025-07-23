@@ -1,8 +1,7 @@
-'use client';
-
 import { HeartPulse } from 'lucide-react'
 
-import { SessionStats } from '@/interfaces';
+import { SessionStats } from '@/interfaces/admin/stats';
+
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import Link from '@/components/ui/Link';

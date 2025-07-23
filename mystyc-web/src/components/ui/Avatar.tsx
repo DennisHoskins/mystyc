@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { IconComponent } from '@/components/ui/icons/Icon';
 
 type AvatarSize = 'small' | 'medium' | 'large';

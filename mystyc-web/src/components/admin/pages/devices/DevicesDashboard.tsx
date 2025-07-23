@@ -1,6 +1,5 @@
-'use client';
+import { DeviceStats } from 'mystyc-common/admin/interfaces/stats';
 
-import { DeviceStats } from '@/interfaces';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';

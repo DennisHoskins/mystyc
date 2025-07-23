@@ -1,5 +1,3 @@
-'use client';
-
 import { AppUser } from '@/interfaces/app/app-user.interface';
 import { formatDateForDisplay } from '@/util/dateTime';
 

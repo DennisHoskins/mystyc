@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
-import { Session, SessionStats } from '@/interfaces';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
-import { logger } from '@/util/logger';
+import { Session } from '@/interfaces';
+import { SessionStats } from '@/interfaces/admin/stats';
 
+import { apiClientAdmin, StatsResponseWithQuery } from '@/api/apiClientAdmin';
+import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
+import { logger } from '@/util/logger';
+import { getDefaultDashboardStatsQuery } from '../../AdminHome';
+
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import SessionsTable from './SessionsTable';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';

@@ -2,15 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Content, ContentDocument } from './schemas/content.schema';
-import { Content as ContentInterface, validateContentInputSafe } from 'mystyc-common/schemas';
-import { UserProfile } from 'mystyc-common/schemas/';
+import { Content as ContentInterface, validateContentInputSafe, UserProfile } from 'mystyc-common/schemas';
 import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { UserProfilesService } from '@/users/user-profiles.service';
-import { UserPlusContentService } from './user-plus-content.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
 import { logger } from '@/common/util/logger';
+import { Content, ContentDocument } from './schemas/content.schema';
+import { UserPlusContentService } from './user-plus-content.service';
 
 @Injectable()
 export class UserContentService {
@@ -178,7 +178,7 @@ export class UserContentService {
     return await this.contentModel.countDocuments({ type: 'user_content' });
   }
 
-  async findAll(query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     const sortObj: any = {};
@@ -209,7 +209,7 @@ export class UserContentService {
    * - user_content they triggered (shared with all free users)
    * - plus_content they own (personal)
    */
-  async findByUserId(userId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findByUserId(userId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     const sortObj: any = {};
@@ -229,7 +229,7 @@ export class UserContentService {
   /**
    * Find shared user content triggered by a specific user (admin analytics)
    */
-  async findTriggeredUserContent(userId: string, query: BaseAdminQueryDto): Promise<ContentInterface[]> {
+  async findTriggeredUserContent(userId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     const sortObj: any = {};

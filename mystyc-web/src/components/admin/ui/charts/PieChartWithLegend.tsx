@@ -1,5 +1,3 @@
-'use client';
-
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 interface PieDataItem {

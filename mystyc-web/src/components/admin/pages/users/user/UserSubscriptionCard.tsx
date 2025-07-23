@@ -1,14 +1,13 @@
-'use client';
-
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
+
 import { formatDateForDisplay } from '@/util/dateTime';
 
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
-import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
+import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function UserSubscriptionCard({ user }: { user: UserProfile }) {
 

@@ -1,8 +1,7 @@
-'use client';
-
 import { AlarmClockCheck, Megaphone, User } from 'lucide-react';
 
 import { Notification } from 'mystyc-common/schemas';
+
 import { formatDateForDisplay } from '@/util/dateTime';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';

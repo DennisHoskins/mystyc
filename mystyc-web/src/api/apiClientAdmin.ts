@@ -14,13 +14,20 @@ import {
   Session, 
   SessionDevice, 
   DeviceSession, 
+} from '@/interfaces';
 
-  AdminQuery, 
-  AdminStatsQuery, 
-  AdminStatsResponseExtended, 
-
+import { 
   SessionStats, 
   TrafficStats, 
+  AdminStatsResponseExtended, 
+} from '@/interfaces/admin/stats';
+
+import { 
+  BaseAdminQuery, 
+  AdminStatsQuery, 
+} from 'mystyc-common/admin/schemas';
+
+import { 
   UserStats, 
   DeviceStats, 
   AuthEventStats, 
@@ -30,7 +37,8 @@ import {
   ScheduleExecutionStats,
   OpenAIUsageStats,
   SubscriptionStats,
-} from '@/interfaces';
+} from 'mystyc-common/admin/interfaces/stats';
+
 
 import { getDeviceInfo } from './apiClient';
 import { logger } from '@/util/logger';
@@ -54,7 +62,7 @@ export interface PaginatedResponse<T> {
 
 export interface StatsResponseWithQuery<T> {
   data: T;
-  query?: AdminStatsQuery;
+  query?: Partial<AdminStatsQuery>;
   queryString?: string;
 }
 
@@ -98,7 +106,7 @@ class AdminApiClient {
     }
   }
 
-  private buildQueryString(query?: AdminQuery): string {
+  private buildQueryString(query?: Partial<BaseAdminQuery>): string {
     if (!query) return '';
     
     const params = new URLSearchParams();
@@ -149,7 +157,7 @@ class AdminApiClient {
   /**
    * Builds a query string from any query object structure
    */
-  private buildStatsQueryString(query?: AdminStatsQuery): string {
+  private buildStatsQueryString(query?: Partial<AdminStatsQuery>): string {
     if (!query) return '';
     
     const params = this.buildQueryParams(query);
@@ -161,7 +169,7 @@ class AdminApiClient {
   // dashboard/stats
   //
  
-  getDashboard = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<AdminStatsResponseExtended>> => {
+  getDashboard = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<AdminStatsResponseExtended>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats${queryString}`);
@@ -176,7 +184,7 @@ class AdminApiClient {
     }
   };
 
-  getSessionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SessionStats>> => {
+  getSessionStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<SessionStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/sessions${queryString}`);
@@ -191,7 +199,7 @@ class AdminApiClient {
     }
   };
 
-  getTrafficStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<TrafficStats>> => {
+  getTrafficStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<TrafficStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/traffic${queryString}`);
@@ -206,7 +214,7 @@ class AdminApiClient {
     }
   };
 
-  getOpenAIUsageStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<OpenAIUsageStats>> => {
+  getOpenAIUsageStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<OpenAIUsageStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/openai${queryString}`);
@@ -221,7 +229,7 @@ class AdminApiClient {
     }
   };
 
-  // getSubscriptionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
+  // getSubscriptionStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
   //   try {
   //     const queryString = this.buildStatsQueryString(query);
   //     const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions${queryString}`);
@@ -236,7 +244,7 @@ class AdminApiClient {
   //   }
   // };
 
-  getContentStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ContentStats>> => {
+  getContentStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<ContentStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/content${queryString}`);
@@ -251,7 +259,7 @@ class AdminApiClient {
     }
   };
 
-  getScheduleStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ScheduleStats>> => {
+  getScheduleStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<ScheduleStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/schedules${queryString}`);
@@ -266,7 +274,7 @@ class AdminApiClient {
     }
   };
 
-  getScheduleExecutionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<ScheduleExecutionStats>> => {
+  getScheduleExecutionStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<ScheduleExecutionStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/schedule-executions${queryString}`);
@@ -281,7 +289,7 @@ class AdminApiClient {
     }
   };
 
-  getUserStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<UserStats>> => {
+  getUserStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<UserStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/users${queryString}`);
@@ -296,7 +304,7 @@ class AdminApiClient {
     }
   };
 
-  getDeviceStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<DeviceStats>> => {
+  getDeviceStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<DeviceStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/devices${queryString}`);
@@ -311,7 +319,7 @@ class AdminApiClient {
     }
   };
 
-  getAuthenticationStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<AuthEventStats>> => {
+  getAuthenticationStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<AuthEventStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/auth-events${queryString}`);
@@ -326,7 +334,7 @@ class AdminApiClient {
     }
   };
 
-  getNotificationStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<NotificationStats>> => {
+  getNotificationStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<NotificationStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/notifications${queryString}`);
@@ -341,7 +349,7 @@ class AdminApiClient {
     }
   };
 
-  getSubscriptionStats = async (query?: AdminStatsQuery): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
+  getSubscriptionStats = async (query?: Partial<AdminStatsQuery>): Promise<StatsResponseWithQuery<SubscriptionStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/stats/subscriptions${queryString}`);
@@ -360,7 +368,7 @@ class AdminApiClient {
   // Session Management
   //
 
-  getSessions = async (query?: AdminQuery): Promise<PaginatedResponse<Session>> => {
+  getSessions = async (query?: Partial<BaseAdminQuery>): Promise<PaginatedResponse<Session>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions${queryString}`);
@@ -379,7 +387,7 @@ class AdminApiClient {
     }
   };
 
-  getSessionsDevices = async (query?: AdminQuery): Promise<PaginatedResponse<SessionDevice>> => {
+  getSessionsDevices = async (query?: BaseAdminQuery): Promise<PaginatedResponse<SessionDevice>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/sessions/devices${queryString}`);
@@ -417,7 +425,7 @@ class AdminApiClient {
     }
   };
 
-  getContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+  getContents = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content${queryString}`);
@@ -427,7 +435,7 @@ class AdminApiClient {
     }
   };
 
-  getNotificationsContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+  getNotificationsContents = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-notifications${queryString}`);
@@ -437,7 +445,7 @@ class AdminApiClient {
     }
   };
 
-  getWebsiteContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+  getWebsiteContents = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-website${queryString}`);
@@ -447,7 +455,7 @@ class AdminApiClient {
     }
   };
 
-  getUserContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+  getUserContents = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-users${queryString}`);
@@ -457,7 +465,7 @@ class AdminApiClient {
     }
   };
 
-  getUserPlusContents = async (query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+  getUserPlusContents = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/content-users-plus${queryString}`);
@@ -496,7 +504,7 @@ class AdminApiClient {
   //  OpenAI Management
   //
 
-  getOpenAIUsages = async (query?: AdminQuery): Promise<PaginatedResponse<OpenAIUsage>> => {
+  getOpenAIUsages = async (query?: BaseAdminQuery): Promise<PaginatedResponse<OpenAIUsage>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/openai${queryString}`);
@@ -531,7 +539,7 @@ class AdminApiClient {
     }
   };
 
-  getPayments = async (query?: AdminQuery): Promise<PaginatedResponse<PaymentHistory>> => {
+  getPayments = async (query?: BaseAdminQuery): Promise<PaginatedResponse<PaymentHistory>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/payments${queryString}`);
@@ -554,7 +562,7 @@ class AdminApiClient {
   //  Schedule Management
   //
 
-  getSchedules = async (query?: AdminQuery): Promise<PaginatedResponse<Schedule>> => {
+  getSchedules = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Schedule>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedules${queryString}`);
@@ -582,7 +590,7 @@ class AdminApiClient {
     }
   };
 
-  getScheduleScheduleExecutions = async (scheduleId: string, query?: AdminQuery): Promise<PaginatedResponse<ScheduleExecution>> => {
+  getScheduleScheduleExecutions = async (scheduleId: string, query?: BaseAdminQuery): Promise<PaginatedResponse<ScheduleExecution>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedules/${scheduleId}/executions${queryString}`);
@@ -604,7 +612,7 @@ class AdminApiClient {
     }
   };
 
-  getScheduleExecutions = async (query?: AdminQuery): Promise<PaginatedResponse<ScheduleExecution>> => {
+  getScheduleExecutions = async (query?: BaseAdminQuery): Promise<PaginatedResponse<ScheduleExecution>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions${queryString}`);
@@ -623,7 +631,7 @@ class AdminApiClient {
     }
   };
 
-  getScheduleExecutionContent = async (scheduleExecutionId: string, query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+  getScheduleExecutionContent = async (scheduleExecutionId: string, query?: BaseAdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions/${scheduleExecutionId}/content${queryString}`);
@@ -633,7 +641,7 @@ class AdminApiClient {
     }
   };
 
-  getScheduleExecutionNotifications = async (scheduleExecutionId: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
+  getScheduleExecutionNotifications = async (scheduleExecutionId: string, query?: BaseAdminQuery): Promise<PaginatedResponse<Notification>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/schedule-executions/${scheduleExecutionId}/notifications${queryString}`);
@@ -675,7 +683,7 @@ class AdminApiClient {
     }
   };
 
-  getAllUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
+  getAllUsers = async (query?: BaseAdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users${queryString}`);
@@ -685,7 +693,7 @@ class AdminApiClient {
     }
   };
 
-  getUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
+  getUsers = async (query?: BaseAdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/user${queryString}`);
@@ -695,7 +703,7 @@ class AdminApiClient {
     }
   };
 
-  getPlusUsers = async (query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
+  getPlusUsers = async (query?: BaseAdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/plus${queryString}`);
@@ -714,7 +722,7 @@ class AdminApiClient {
     }
   };
 
-  getUserDevices = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Device>> => {
+  getUserDevices = async (firebaseUid: string, query?: BaseAdminQuery): Promise<PaginatedResponse<Device>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/devices${queryString}`);
@@ -724,7 +732,7 @@ class AdminApiClient {
     }
   };
 
-  getUserContent = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Content>> => {
+  getUserContent = async (firebaseUid: string, query?: BaseAdminQuery): Promise<PaginatedResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/content${queryString}`);
@@ -734,7 +742,7 @@ class AdminApiClient {
     }
   };
 
-  getUserAuthEvents = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
+  getUserAuthEvents = async (firebaseUid: string, query?: BaseAdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/auth-events${queryString}`);
@@ -744,7 +752,7 @@ class AdminApiClient {
     }
   };
 
-  getUserNotifications = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
+  getUserNotifications = async (firebaseUid: string, query?: BaseAdminQuery): Promise<PaginatedResponse<Notification>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/notifications${queryString}`);
@@ -754,7 +762,7 @@ class AdminApiClient {
     }
   };
 
-  getUserPayments = async (firebaseUid: string, query?: AdminQuery): Promise<PaginatedResponse<PaymentHistory>> => {
+  getUserPayments = async (firebaseUid: string, query?: BaseAdminQuery): Promise<PaginatedResponse<PaymentHistory>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/users/${firebaseUid}/payments${queryString}`);
@@ -780,7 +788,7 @@ class AdminApiClient {
     }
   };
 
-  getDevices = async (query?: AdminQuery): Promise<PaginatedResponse<Device>> => {
+  getDevices = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Device>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices${queryString}`);
@@ -808,7 +816,7 @@ class AdminApiClient {
     }
   };
 
-  getDeviceUsers = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<UserProfile>> => {
+  getDeviceUsers = async (deviceId: string, query?: BaseAdminQuery): Promise<PaginatedResponse<UserProfile>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/users${queryString}`);
@@ -818,7 +826,7 @@ class AdminApiClient {
     }
   };
 
-  getDeviceAuthEvents = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
+  getDeviceAuthEvents = async (deviceId: string, query?: BaseAdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/auth-events${queryString}`
@@ -829,7 +837,7 @@ class AdminApiClient {
     }
   };
 
-  getDeviceNotifications = async (deviceId: string, query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
+  getDeviceNotifications = async (deviceId: string, query?: BaseAdminQuery): Promise<PaginatedResponse<Notification>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/devices/${deviceId}/notifications${queryString}`);
@@ -843,7 +851,7 @@ class AdminApiClient {
   // Auth Events Management
   //
   
-  getAuthEvents = async (query?: AdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
+  getAuthEvents = async (query?: BaseAdminQuery): Promise<PaginatedResponse<AuthEvent>> => {
     try {
       const queryString = this.buildQueryString(query);
       return await this.fetchWithAuth(`${API_BASE_URL}/admin/auth-events${queryString}`);
@@ -865,7 +873,7 @@ class AdminApiClient {
   //
   // Notifications Management
   //
-  getNotifications = async (query?: AdminQuery): Promise<PaginatedResponse<Notification>> => {
+  getNotifications = async (query?: BaseAdminQuery): Promise<PaginatedResponse<Notification>> => {
     try {
       const queryString = this.buildQueryString(query);
       const response = await this.fetchWithAuth(`${API_BASE_URL}/admin/notifications${queryString}`);

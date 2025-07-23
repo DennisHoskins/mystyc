@@ -1,4 +1,4 @@
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 export class StatsAggregationBuilder {
   private pipeline: any[] = [];
@@ -7,17 +7,17 @@ export class StatsAggregationBuilder {
     return new StatsAggregationBuilder();
   }
 
-  dateFilter(query: AdminStatsQueryDto, field = 'createdAt') {
-    if (query?.startDate || query?.endDate) {
+  dateFilter(dates: { startDate?: string; endDate?: string }, field = 'createdAt') {
+    if (dates?.startDate || dates?.endDate) {
       const dateMatch: any = {};
-      if (query.startDate) dateMatch.$gte = new Date(query.startDate);
-      if (query.endDate) dateMatch.$lte = new Date(query.endDate);
+      if (dates.startDate) dateMatch.$gte = new Date(dates.startDate);
+      if (dates.endDate) dateMatch.$lte = new Date(dates.endDate);
       this.pipeline.push({ $match: { [field]: dateMatch } });
     }
     return this;
   }
 
-  performanceLimit(query: AdminStatsQueryDto) {
+  performanceLimit(query: AdminStatsQuery) {
     const maxRecords = Math.min(query?.maxRecords || 50000, 100000);
     this.pipeline.push({ $sort: { createdAt: -1 } }, { $limit: maxRecords });
     return this;

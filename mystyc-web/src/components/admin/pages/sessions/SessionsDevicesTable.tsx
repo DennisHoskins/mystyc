@@ -1,5 +1,3 @@
-'use client';
-
 import { SessionDevice } from '@/interfaces';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';

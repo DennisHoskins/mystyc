@@ -1,5 +1,3 @@
-'use client';
-
 interface BudgetProgressPanelProps {
   costUsed: number;
   costBudget: number;

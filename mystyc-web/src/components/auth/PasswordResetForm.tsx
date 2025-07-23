@@ -3,15 +3,16 @@
 import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useUser, useInitialized, useBusy } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { logger } from '@/util/logger';
 
+import { useUser, useInitialized, useBusy } from '@/components/ui/layout/context/AppContext';
+import Card from "@/components/ui/Card";
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
-import { logger } from '@/util/logger';
 
 export default function PasswordResetPage() {
   const router = useTransitionRouter();
@@ -73,41 +74,43 @@ export default function PasswordResetPage() {
   }
 
   return (
-    <FormLayout
-      subtitle="Reset your password"
-      error={error}
-      success={message}
-    >
-      <Form onSubmit={handleSubmit}>
-        <TextInput
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+    <Card className='w-full md:max-w-lg text-center p-4 m-4'>
+      <FormLayout
+        subtitle="Reset your password"
+        error={error}
+        success={message}
+      >
+        <Form onSubmit={handleSubmit}>
+          <TextInput
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        <Button
-          type="submit"
-          loading={isWorking}
-          loadingContent="Sending Reset Email..."
-          className="w-full"
-        >
-          Send Reset Email
-        </Button>
+          <Button
+            type="submit"
+            loading={isWorking}
+            loadingContent="Sending Reset Email..."
+            className="w-full"
+          >
+            Send Reset Email
+          </Button>
 
-        <p className="text-center text-sm mt-2 text-gray-600">
-          <span className="block">
-            Remember your password? <Link href="/login">Sign In</Link>
-          </span>
-          <span className="block mt-1">
-            Don&apos;t have an account? <Link href="/register">Register</Link>
-          </span>
-        </p>
-      </Form>
-    </FormLayout>
+          <p className="text-center text-sm mt-2 text-gray-600">
+            <span className="block">
+              Remember your password? <Link href="/login">Sign In</Link>
+            </span>
+            <span className="block mt-1">
+              Don&apos;t have an account? <Link href="/register">Register</Link>
+            </span>
+          </p>
+        </Form>
+      </FormLayout>
+    </Card>
   );
 }

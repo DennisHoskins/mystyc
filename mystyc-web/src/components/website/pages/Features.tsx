@@ -1,7 +1,5 @@
-'use client';
-
-import Heading from '@/components/ui/Heading';
 import Panel from '@/components/ui/Panel';
+import Heading from '@/components/ui/Heading';
 
 export default function Features() {
   return (

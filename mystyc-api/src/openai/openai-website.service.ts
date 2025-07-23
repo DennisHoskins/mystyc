@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
-import { Content, ContentDocument } from '../content/schemas/content.schema';
-import { OpenAICoreService } from './openai-core.service';
 import { logger } from '@/common/util/logger';
+import { Content, ContentDocument } from '@/content/schemas/content.schema';
+import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
+import { OpenAICoreService } from './openai-core.service';
 
 @Injectable()
 export class OpenAIWebsiteService extends OpenAICoreService {

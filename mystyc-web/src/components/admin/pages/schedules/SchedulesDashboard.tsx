@@ -1,9 +1,8 @@
-'use client';
-
 import { Clock, CalendarClock } from 'lucide-react';
 
+import { ScheduleStats } from 'mystyc-common/admin/interfaces/stats';
+
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
-import { ScheduleStats } from '@/interfaces';
 
 import StatusCard from '@/components/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';

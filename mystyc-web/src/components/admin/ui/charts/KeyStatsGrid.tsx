@@ -1,5 +1,3 @@
-'use client';
-
 interface StatItem {
   value: string | number;
   label: string;

@@ -1,11 +1,12 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { AuthEvent, AuthEventDocument } from './schemas/auth-event.schema';
 import { AuthEvent as AuthEventInterface, validateAuthEventInputSafe } from 'mystyc-common/schemas/';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { AuthEvent, AuthEventDocument } from './schemas/auth-event.schema';
 
 @Injectable()
 export class AuthEventsService {
@@ -37,7 +38,7 @@ export class AuthEventsService {
   /**
    * Retrieves auth events (admin) with pagination and sorting
    */
-  async findAll(query: BaseAdminQueryDto): Promise<AuthEventInterface[]> {
+  async findAll(query: BaseAdminQuery): Promise<AuthEventInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'timestamp', sortOrder = 'desc' } = query;
     const sortObj: Record<string, 1 | -1> = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
 
@@ -65,7 +66,7 @@ export class AuthEventsService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<DeviceInterface[]> - Array of auth event records with applied query params
    */
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQueryDto): Promise<AuthEventInterface[]> {
+  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQuery): Promise<AuthEventInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding user auth events with query', { 
@@ -117,7 +118,7 @@ export class AuthEventsService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<AuthEventInterface[]> - Array of auth event records with applied query params
    */
-  async findByDeviceId(deviceId: string, query: BaseAdminQueryDto): Promise<AuthEventInterface[]> {
+  async findByDeviceId(deviceId: string, query: BaseAdminQuery): Promise<AuthEventInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     
     logger.debug('Finding device auth events with query', { 

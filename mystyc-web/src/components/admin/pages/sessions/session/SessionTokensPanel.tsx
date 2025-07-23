@@ -1,7 +1,6 @@
-'use client';
-
 import { Device } from 'mystyc-common/schemas/';
 import { Session } from '@/interfaces';
+
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 
 import Avatar from '@/components/ui/Avatar';

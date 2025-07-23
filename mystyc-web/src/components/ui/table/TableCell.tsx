@@ -1,5 +1,3 @@
-'use client';
-
 import { forwardRef, TdHTMLAttributes } from 'react';
 import clsx from 'clsx';
 

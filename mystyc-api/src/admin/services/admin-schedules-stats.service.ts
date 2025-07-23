@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SchedulesService } from '@/schedules/schedules.service';
-import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
+
 import { 
   ScheduleSummaryStats,
   SchedulePerformanceStats,
   ScheduleFailureStats
-} from '@/common/interfaces/admin/stats/admin-schedule-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+} from 'mystyc-common/admin/interfaces/stats/admin-schedule-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { SchedulesService } from '@/schedules/schedules.service';
+import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'Schedules',
@@ -28,7 +30,7 @@ export class AdminSchedulesStatsService {
     private readonly scheduleService: SchedulesService,
   ) {}
 
-  async getSummaryStats(query?: AdminStatsQueryDto): Promise<ScheduleSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQuery): Promise<ScheduleSummaryStats> {
     logger.info('Generating schedule summary stats', { query }, 'AdminScheduleStatsService');
     
     try {
@@ -116,7 +118,7 @@ export class AdminSchedulesStatsService {
     }
   }
 
-  async getPerformanceStats(query?: AdminStatsQueryDto): Promise<SchedulePerformanceStats> {
+  async getPerformanceStats(query?: AdminStatsQuery): Promise<SchedulePerformanceStats> {
     logger.info('Generating schedule performance stats', { query }, 'AdminScheduleStatsService');
     
     try {
@@ -167,7 +169,7 @@ export class AdminSchedulesStatsService {
     }
   }
 
-  async getFailureStats(query?: AdminStatsQueryDto): Promise<ScheduleFailureStats> {
+  async getFailureStats(query?: AdminStatsQuery): Promise<ScheduleFailureStats> {
     logger.info('Generating schedule failure stats', { query }, 'AdminScheduleStatsService');
     
     try {

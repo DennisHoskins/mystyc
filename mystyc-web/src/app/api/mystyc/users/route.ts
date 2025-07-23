@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
-import { sessionManager, InvalidSessionError } from '../../sessionManager';
-import { authTokenManager } from '../../authTokenManager';
 import { User } from 'mystyc-common/schemas/';
 import { logger } from '@/util/logger';
+
+import { sessionManager, InvalidSessionError } from '../../sessionManager';
+import { authTokenManager } from '../../authTokenManager';
 
 export async function POST(
   request: NextRequest,

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+import { logger } from '@/util/logger';
+
 import { buildDevice } from '../../services/deviceManager';
 import { sessionManager } from '../../sessionManager';
 import { authTokenManager } from '../../authTokenManager';
 import { firebaseAuth } from '../../firebaseAuth';
-import { logger } from '@/util/logger';
 
 // Auth handler from services
 import { handleAuth } from '../../services/authHandler';

@@ -1,5 +1,3 @@
-'use client';
-
 import { Clock, AlarmClockCheck } from 'lucide-react'
 
 interface ScheduleIconProps {

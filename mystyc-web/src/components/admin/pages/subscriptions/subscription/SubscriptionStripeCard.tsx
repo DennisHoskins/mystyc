@@ -1,5 +1,3 @@
-'use client';
-
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 
 import Card from '@/components/ui/Card';

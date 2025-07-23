@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { DevicesService } from '@/devices/devices.service';
-import { AuthEventsService } from '@/auth-events/auth-events.service';
-import { DeviceDocument } from '@/devices/schemas/device.schema';
-import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
+
 import { 
   PlatformStatsResponse,
   FcmTokenStats,
   DeviceActivityStats,
   DeviceUserAgentStats
-} from '@/common/interfaces/admin/stats/admin-device-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+} from 'mystyc-common/admin/interfaces/stats/admin-device-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { DevicesService } from '@/devices/devices.service';
+import { AuthEventsService } from '@/auth-events/auth-events.service';
+import { DeviceDocument } from '@/devices/schemas/device.schema';
+import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'Devices',
@@ -34,7 +36,7 @@ export class AdminDevicesStatsService {
     private readonly authEventsService: AuthEventsService,
   ) {}
 
-  async getPlatformStats(query?: AdminStatsQueryDto): Promise<PlatformStatsResponse> {
+  async getPlatformStats(query?: AdminStatsQuery): Promise<PlatformStatsResponse> {
     logger.info('Generating platform stats', { query }, 'AdminDevicesStatsService');
     
     const pipeline: any[] = [
@@ -88,7 +90,7 @@ export class AdminDevicesStatsService {
     };
   }
 
-  async getFcmTokenStats(query?: AdminStatsQueryDto): Promise<FcmTokenStats> {
+  async getFcmTokenStats(query?: AdminStatsQuery): Promise<FcmTokenStats> {
     logger.info('Generating FCM token stats', { query }, 'AdminDevicesStatsService');
     
     const pipeline: any[] = [
@@ -172,7 +174,7 @@ export class AdminDevicesStatsService {
     };
   }
 
-  async getDeviceActivityStats(query?: AdminStatsQueryDto): Promise<DeviceActivityStats> {
+  async getDeviceActivityStats(query?: AdminStatsQuery): Promise<DeviceActivityStats> {
     logger.info('Generating device activity stats', { query }, 'AdminDevicesStatsService');
     
     const now = new Date();
@@ -275,7 +277,7 @@ export class AdminDevicesStatsService {
     };
   }
 
-  async getUserAgentStats(query?: AdminStatsQueryDto): Promise<DeviceUserAgentStats> {
+  async getUserAgentStats(query?: AdminStatsQuery): Promise<DeviceUserAgentStats> {
     logger.info('Generating user agent stats', { query }, 'AdminDevicesStatsService');
     
     const pipeline: any[] = [

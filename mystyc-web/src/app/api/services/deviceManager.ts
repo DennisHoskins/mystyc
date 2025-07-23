@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createHash } from 'crypto';
+
 import { Device } from 'mystyc-common/schemas/';
 import { generateDeviceId } from '../keyManager';
 

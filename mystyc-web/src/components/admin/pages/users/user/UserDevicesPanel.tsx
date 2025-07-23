@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { Device } from 'mystyc-common/schemas/';
+
+import { apiClientAdmin } from '@/api/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/admin/ui/AdminError';

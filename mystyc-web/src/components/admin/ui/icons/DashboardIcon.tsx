@@ -1,5 +1,3 @@
-'use client';
-
 import { LayoutDashboard } from 'lucide-react'
 
 export default function DashboardIcon({ size = 6 }: { size?: number }) {

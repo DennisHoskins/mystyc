@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AuthEventsService } from '@/auth-events/auth-events.service';
-import { UserProfilesService } from '@/users/user-profiles.service';
-import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
-import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
+
 import { 
   AuthEventSummaryStats,
   AuthenticationPatternsStats,
   SessionDurationStats,
   GeographicDistributionStats
-} from '@/common/interfaces/admin/stats/admin-auth-event-stats.interface';
-import { AdminStatsQueryDto } from '@/admin/dto/admin-stats-query.dto';
-import { RegisterStatsModule } from '@/admin/stats/stats-registry';
+} from 'mystyc-common/admin/interfaces/stats/admin-auth-event-stats.interface';
+import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+
 import { logger } from '@/common/util/logger';
+import { AuthEventsService } from '@/auth-events/auth-events.service';
+import { UserProfilesService } from '@/users/user-profiles.service';
+import { AuthEventDocument } from '@/auth-events/schemas/auth-event.schema';
+import { UserProfileDocument } from '@/users/schemas/user-profile.schema';
+import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 @RegisterStatsModule({
   serviceName: 'AuthEvents',
@@ -34,7 +36,7 @@ export class AdminAuthEventsStatsService {
     private readonly userProfilesService: UserProfilesService,
   ) {}
 
-  async getSummaryStats(query?: AdminStatsQueryDto): Promise<AuthEventSummaryStats> {
+  async getSummaryStats(query?: AdminStatsQuery): Promise<AuthEventSummaryStats> {
     logger.info('Generating auth event summary stats', { query }, 'AdminAuthEventsStatsService');
     
     try {
@@ -122,7 +124,7 @@ export class AdminAuthEventsStatsService {
     }
   }
 
-  async getPatternStats(query?: AdminStatsQueryDto): Promise<AuthenticationPatternsStats> {
+  async getPatternStats(query?: AdminStatsQuery): Promise<AuthenticationPatternsStats> {
     logger.info('Generating auth event pattern stats', { query }, 'AdminAuthEventsStatsService');
     
     try {
@@ -260,7 +262,7 @@ export class AdminAuthEventsStatsService {
     }
   }
 
-  async getSessionDurationStats(query?: AdminStatsQueryDto): Promise<SessionDurationStats> {
+  async getSessionDurationStats(query?: AdminStatsQuery): Promise<SessionDurationStats> {
     logger.info('Generating session duration stats', { query }, 'AdminAuthEventsStatsService');
     
     try {
@@ -471,7 +473,7 @@ export class AdminAuthEventsStatsService {
     }
   }
 
-  async getGeographicStats(query?: AdminStatsQueryDto): Promise<GeographicDistributionStats> {
+  async getGeographicStats(query?: AdminStatsQuery): Promise<GeographicDistributionStats> {
     logger.info('Generating geographic distribution stats', { query }, 'AdminAuthEventsStatsService');
     
     try {

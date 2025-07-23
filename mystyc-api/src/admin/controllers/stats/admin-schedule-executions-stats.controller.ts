@@ -1,4 +1,5 @@
 import { Controller } from '@nestjs/common';
+
 import { AdminScheduleExecutionsStatsService } from '@/admin/services/admin-schedule-executions-stats.service';
 import { createStatsController } from '@/admin/stats/create-stats-controller';
 

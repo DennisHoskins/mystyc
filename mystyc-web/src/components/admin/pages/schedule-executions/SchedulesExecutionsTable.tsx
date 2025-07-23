@@ -1,5 +1,3 @@
-'use client';
-
 import { ScheduleExecution } from 'mystyc-common/schemas';
 import { formatDateForDisplay } from '@/util/dateTime';
 

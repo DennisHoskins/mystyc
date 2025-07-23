@@ -1,6 +1,4 @@
-'use client';
-
-import { AuthEventStats } from '@/interfaces';
+import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
 import { StatsResponseWithQuery } from '@/api/apiClientAdmin';
 
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';

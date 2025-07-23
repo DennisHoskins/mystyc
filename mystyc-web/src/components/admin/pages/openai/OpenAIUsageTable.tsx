@@ -1,5 +1,3 @@
-'use client';
-
 import { OpenAIUsage } from 'mystyc-common/schemas';
 
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';

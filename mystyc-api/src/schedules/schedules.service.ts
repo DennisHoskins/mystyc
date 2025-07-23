@@ -6,15 +6,14 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ConflictException } from '@nestjs/common';
 
-import { ScheduleInput } from 'mystyc-common/schemas';
-import { Schedule as ScheduleInterface, validateScheduleInputSafe } from 'mystyc-common/schemas/schedule.schema';
+import { Schedule as ScheduleInterface, ScheduleInput, validateScheduleInputSafe } from 'mystyc-common/schemas/schedule.schema';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
+import { timezone } from '@/common/util/timezone';
+import { logger } from '@/common/util/logger';
+import { DevicesService } from '@/devices/devices.service';
 import { Schedule, ScheduleDocument } from './schemas/schedule.schema';
 import { ScheduleExecutionsService } from './schedule-executions.service';
-import { DevicesService } from '@/devices/devices.service';
-import { timezone } from '@/common/util/timezone';
-import { BaseAdminQueryDto } from '@/admin/dto/base-admin-query.dto';
-import { logger } from '@/common/util/logger';
 
 @Injectable()
 export class SchedulesService {
@@ -409,7 +408,7 @@ export class SchedulesService {
     return await this.scheduleModel.countDocuments();
   }
 
-  async findAll(query: BaseAdminQueryDto): Promise<ScheduleInterface[]> {
+  async findAll(query: BaseAdminQuery): Promise<ScheduleInterface[]> {
     const { limit = 100, offset = 0, sortBy = 'time.hour', sortOrder = 'asc' } = query;
 
     const sortObj: any = {};

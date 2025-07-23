@@ -1,11 +1,12 @@
 import { Get, Query, Param, UseGuards, NotFoundException } from '@nestjs/common';
 
+import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { AdminListResponse } from 'mystyc-common/admin/';
+
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from 'mystyc-common/constants/roles.enum';
-import { BaseAdminQueryDto } from '../dto/base-admin-query.dto';
-import { AdminListResponse } from '@/common/interfaces/admin/admin-list-response.interface';
 import { logger } from '@/common/util/logger';
 
 export abstract class AdminController<T> {
@@ -20,7 +21,7 @@ export abstract class AdminController<T> {
   @Get()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async findAll(@Query() query: BaseAdminQueryDto): Promise<AdminListResponse<T>> {
+  async findAll(@Query() query: BaseAdminQuery): Promise<AdminListResponse<T>> {
     logger.info(`Admin fetching ${this.serviceName} list`, { 
       limit: query.limit,
       offset: query.offset,

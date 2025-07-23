@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
-import { handleAdmin } from '../handlers/adminHandler';
+
 import { logger } from '@/util/logger';
+
+import { handleAdmin } from '../handlers/adminHandler';
 
 // Routes that only read from Redis cache
 const REDIS_ONLY_ROUTES = new Set([

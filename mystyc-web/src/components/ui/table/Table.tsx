@@ -1,7 +1,6 @@
-'use client';
-
 import { forwardRef, HTMLAttributes } from 'react';
 import clsx from 'clsx';
+
 import styles from './Table.module.css';
 
 const Table = forwardRef<

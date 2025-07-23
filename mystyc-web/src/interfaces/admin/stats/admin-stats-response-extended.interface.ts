@@ -1,4 +1,4 @@
-import { AdminStatsResponse } from './admin-stats-response.interface'
+import { AdminStatsResponse } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
 import { SessionStats } from './admin-session-stats.interface'
 import { TrafficStats } from './admin-traffic-stats.interface'
 
