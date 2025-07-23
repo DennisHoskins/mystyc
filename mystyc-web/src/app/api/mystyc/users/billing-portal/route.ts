@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+import { BillingPortalRequest } from '@/interfaces/user-requests.interface';
 import { logger } from '@/util/logger';
-
 import { sessionManager, InvalidSessionError } from '../../../sessionManager';
 import { authTokenManager } from '../../../authTokenManager';
 
@@ -12,7 +12,7 @@ export async function POST(
   try {
     logger.log(`[mystyc] Customer billing portal attempt started`);
 
-    const body = await request.json();
+    const body: BillingPortalRequest = await request.json();
     const { deviceInfo } = body;
 
     logger.log("[mystyc] DeviceInfo destructured:", deviceInfo);

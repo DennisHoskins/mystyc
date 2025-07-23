@@ -8,7 +8,6 @@ import { Content } from 'mystyc-common/schemas';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -16,7 +15,6 @@ import AdminError from '@/components/admin/ui/AdminError';
 import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
 
 export default function WebsiteContentTable({ isActive = false } : { isActive: boolean }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [content, setContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,16 +46,13 @@ export default function WebsiteContentTable({ isActive = false } : { isActive: b
       setTotalItems(response.pagination.totalItems);
       setHasLoaded(true);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'ContentsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load website content:', err);
-        setError('Failed to load website content. Please try again.');
-      }
+      logger.error('Failed to load website content:', err);
+      setError('Failed to load website content. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   // Only load when tab becomes active for the first time
   useEffect(() => {

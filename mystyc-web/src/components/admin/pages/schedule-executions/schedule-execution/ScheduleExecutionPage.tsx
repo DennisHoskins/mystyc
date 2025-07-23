@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ScheduleExecution } from 'mystyc-common/schemas';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -15,7 +14,6 @@ import ScheduleExecutionDetailsPanel from './ScheduleExecutionDetailsPanel';
 import ScheduleExecutionTabCard from './ScheduleExecutionTabCard';
 
 export default function ScheduleExecutionPage({ executionId }: { executionId: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [execution, setScheduleExecution] = useState<ScheduleExecution | null>(null);
   const [loading, setLoading] = useState(false);
@@ -30,16 +28,13 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
       const data = await apiClientAdmin.schedule.getExecution(executionId);
       setScheduleExecution(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'ScheduleExecutionPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load schedule execution:', err);
-        setError('Failed to load schedule execution. Please try again.');
-      }
+      logger.error('Failed to load schedule execution:', err);
+      setError('Failed to load schedule execution. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [executionId, setBusy, handleSessionError]);
+  }, [executionId, setBusy]);
 
   useEffect(() => {
     loadScheduleExecution();

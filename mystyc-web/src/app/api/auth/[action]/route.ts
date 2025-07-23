@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
+
+import { AuthLogoutRequest, AuthResetPasswordRequest } from '@/interfaces/auth-requests.interface';
 
 import { logger } from '@/util/logger';
-
-import { buildDevice } from '../../services/deviceManager';
+import { extractDeviceFingerprint, buildDevice } from '../../services/deviceManager';
+import { generateDeviceId, getSessionCookieName } from '../../keyManager';
 import { sessionManager } from '../../sessionManager';
 import { authTokenManager } from '../../authTokenManager';
 import { firebaseAuth } from '../../firebaseAuth';
@@ -11,27 +13,13 @@ import { firebaseAuth } from '../../firebaseAuth';
 // Auth handler from services
 import { handleAuth } from '../../services/authHandler';
 
-interface AuthLogoutBody {
-  deviceInfo: {
-    cores: string,
-    renderer: string,
-    timezone: string,
-    language: string
-  };
-  clientTimestamp: string;
-}
-
-interface ResetPasswordRequestBody {
-  email: string;
-}
-
 // Logout handler
 async function handleLogout(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || 'unknown';
   const source = request.headers.get('x-source') || 'unknown';
   logger.log('Logout initiated', { source, userAgent });
 
-  const body: AuthLogoutBody = await request.json();
+  const body: AuthLogoutRequest = await request.json();
   const { deviceInfo, clientTimestamp } = body;
 
   const headersList = await headers();
@@ -46,6 +34,8 @@ async function handleLogout(request: NextRequest) {
 
   logger.log('Clearing Session and Firebase Auth');
   await sessionManager.clearSession();
+
+  // sign out of firebase
   await firebaseAuth.signOut();
 
   logger.log(`[handleLogout] Calling Nest API for Logout`);
@@ -76,13 +66,10 @@ async function handleServerLogout(request: NextRequest) {
   try {
     logger.log('[server-logout] Called - clearing session cookie');
     
-    const body = await request.json();
+    const body: AuthLogoutRequest = await request.json();
     const { deviceInfo } = body;
     
     // Calculate deviceId to send to Nest
-    const { extractDeviceFingerprint } = await import('../../services/deviceManager');
-    const { generateDeviceId, getSessionCookieName } = await import('../../keyManager');
-    const { cookies } = await import('next/headers');
 
     const fingerprint = extractDeviceFingerprint(request);
     const deviceId = generateDeviceId(fingerprint, deviceInfo);
@@ -90,6 +77,9 @@ async function handleServerLogout(request: NextRequest) {
     // Clear the session cookie
     const cookieStore = await cookies();
     cookieStore.delete(getSessionCookieName());
+
+    // sign out of firebase 
+    await firebaseAuth.signOut();
 
     // get firebase uid from device
     const firebaseUid = await sessionManager.getDeviceUid(deviceId);
@@ -126,7 +116,7 @@ async function handleServerLogout(request: NextRequest) {
 // Password reset handler
 async function handlePasswordReset(request: NextRequest) {
   try {
-    const body: ResetPasswordRequestBody = await request.json();
+    const body: AuthResetPasswordRequest = await request.json();
     const { email } = body;
 
     await firebaseAuth.resetPassword(email);

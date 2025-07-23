@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -16,7 +15,6 @@ import SubscriptionUserPanel from './SubscriptionUserPanel';
 import SubscriptionStripeCard from './SubscriptionStripeCard';
 
 export default function SubscriptionPage({ subscriptionId }: { subscriptionId: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [payment, setPayment] = useState<PaymentHistory | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,16 +30,13 @@ export default function SubscriptionPage({ subscriptionId }: { subscriptionId: s
       setPayment(data);
 
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SubscriptionPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load subscription:', err);
-        setError('Failed to load subscription. Please try again.');
-      }
+      logger.error('Failed to load subscription:', err);
+      setError('Failed to load subscription. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [subscriptionId, setBusy, handleSessionError]);
+  }, [subscriptionId, setBusy]);
 
   useEffect(() => {
     loadPayment();

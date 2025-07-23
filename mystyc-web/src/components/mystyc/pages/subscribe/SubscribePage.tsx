@@ -27,7 +27,7 @@ export default function SubscribePage({ error } : { error?: string }) {
     try {
       setUpgradeError("");
       setBusy(true);
-      const response = await apiClient.startSubscription(MYSTYC_PLUS_PRICE_ID);
+      const response = await apiClient.user.startSubscription(MYSTYC_PLUS_PRICE_ID);
       window.location.href = response.sessionUrl;
     } catch(err) {
       logger.log(err);

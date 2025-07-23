@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateWithError, validateSafely } from '../utils/validation';
+import { validateWithError, validateSafely } from '../util/validation';
 
 export const ScheduleTimeSchema = z.object({
   hour: z.number().int().min(0).max(23),

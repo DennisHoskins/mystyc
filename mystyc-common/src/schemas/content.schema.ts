@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateWithError, validateSafely } from '../utils/validation';
+import { validateWithError, validateSafely } from '../util/validation';
 
 export const DataItemSchema = z.object({
   key: z.string().min(1).trim(),

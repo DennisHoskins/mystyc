@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TrafficStats } from '@/interfaces/admin/stats';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -18,7 +17,6 @@ import TrafficSidebarPanel from './TrafficSidebarPanel';
 import TrafficMainCard from './TrafficMainCard';
 
 export default function TrafficPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,16 +32,13 @@ export default function TrafficPage() {
       const stats = await apiClientAdmin.stats.getTrafficStats(statsQuery);
       setTrafficStats(stats.data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'TrafficPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load traffic stats:', err);
-        setError('Failed to load traffic stats. Please try again.');
-      }
+      logger.error('Failed to load traffic stats:', err);
+      setError('Failed to load traffic stats. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadTrafficStats();

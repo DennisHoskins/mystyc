@@ -1,9 +1,24 @@
-import { User, Device, Content } from 'mystyc-common/schemas/';
-import { logger } from '@/util/logger'
+import { Content } from 'mystyc-common/schemas/';
 
-const serverRoot: string = '/api';
+import { ContentRequest, RegisterVisitRequest } from '@/interfaces/website-requests.interface';
+import { DeviceInfo } from '@/interfaces/device-info.interface';
+import { AuthClient } from './AuthClient';
+import { UserClient } from './UserClient';
+import { logger } from '@/util/logger';
 
-export const getDeviceInfo = () => {
+export const serverRoot: string = '/api';
+export class ApiError extends Error {
+  code: number;
+  type: string;
+  
+  constructor(message: string, code: number, type: string = 'unknown') {
+    super(message);
+    this.code = code;
+    this.type = type;
+  }
+}
+
+export const getDeviceInfo = (): DeviceInfo => {
   const getTimezone = (): string => {
     if (typeof window === 'undefined') return 'UTC';
     
@@ -60,37 +75,33 @@ export const getDeviceInfo = () => {
   };
 };
 
-class ApiError extends Error {
-  code: number;
-  type: string;
-  
-  constructor(message: string, code: number, type: string = 'unknown') {
-    super(message);
-    this.code = code;
-    this.type = type;
-  }
-}
-
 export const apiClient = {
-  registerVisit(pathname: string) {
+  auth: new AuthClient(),  
+  user: new UserClient(),  
+
+  registerVisit(pathname: string): void {
+    const requestBody: RegisterVisitRequest = {
+      deviceInfo: getDeviceInfo(),
+      pathname,
+      clientTimestamp: new Date().toISOString() 
+    };
+
     fetch(`${serverRoot}/register-visit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        deviceInfo: getDeviceInfo(),
-        pathname,
-        clientTimestamp: new Date().toISOString() 
-      })
+      body: JSON.stringify(requestBody)
     });
   },
 
   async getContent(): Promise<Content> {
+    const requestBody: ContentRequest = {
+      deviceInfo: getDeviceInfo()
+    };
+
     const response = await fetch(`${serverRoot}/content`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        deviceInfo: getDeviceInfo(),
-      })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
@@ -100,230 +111,4 @@ export const apiClient = {
 
     return response.json();
   },
-
-  async register(email: string, password: string): Promise<User> {
-    const response = await fetch(`${serverRoot}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        email, 
-        password, 
-        deviceInfo: getDeviceInfo(),
-        clientTimestamp: new Date().toISOString() 
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(errorData.message || 'Registration failed', response.status, errorData.type);
-    }
-
-    return response.json();
-  },
-
-  async signIn(email: string, password: string): Promise<User> {
-    const response = await fetch(`${serverRoot}/auth/login`, {
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        email, 
-        password, 
-        deviceInfo: getDeviceInfo(),
-        clientTimestamp: new Date().toISOString() 
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(errorData.message || 'Sign In failed', response.status, errorData.type);
-    }
-
-    return response.json();
-  },
-
-  async resetPassword(email: string): Promise<void> {
-    const response = await fetch(`${serverRoot}/auth/reset-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        email,
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(errorData.message || 'Password Reset failed', response.status, errorData.type);
-    }
-  },
-
-  async signOut(): Promise<void> {
-    const response = await fetch(`${serverRoot}/auth/logout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        deviceInfo: getDeviceInfo(),
-        clientTimestamp: new Date().toISOString() 
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(errorData.message || 'Logout failed', response.status, errorData.type);
-    }
-  },
-
-  async serverLogout(): Promise<void> {
-    const response = await fetch(`${serverRoot}/auth/server-logout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        deviceInfo: getDeviceInfo(),
-        clientTimestamp: new Date().toISOString() 
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(errorData.message || 'Server Logout failed', response.status, errorData.type);
-    }
-  },
-
-  async getUser(): Promise<User | null> {
-    try {
-      const response = await fetch(`${serverRoot}/mystyc/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceInfo: getDeviceInfo() })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data?.error === 'InvalidSession') {
-        throw new Error('InvalidSession');
-      }
-      
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  async getUserContent(): Promise<Content | null> {
-    try {
-      const response = await fetch(`${serverRoot}/mystyc/users/content`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceInfo: getDeviceInfo() })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data?.error === 'InvalidSession') {
-        throw new Error('InvalidSession');
-      }
-      
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  async updateFcmToken(deviceId: string, fcmToken: string): Promise<Device> {
-    try {
-      const response = await fetch(`${serverRoot}/mystyc/devices/[${deviceId}]/updateFcmToken`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          deviceInfo: getDeviceInfo(),
-          fcmToken
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data?.error === 'InvalidSession') {
-        throw new Error('InvalidSession');
-      }
-      
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  async startSubscription(priceId: string): Promise<{sessionUrl: string}> {
-    try {
-      const response = await fetch(`${serverRoot}/mystyc/users/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          deviceInfo: getDeviceInfo(),
-          priceId
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  async getCustomerBillingPortal(): Promise<{ portalUrl: string }> {
-    try {
-      const response = await fetch(`${serverRoot}/mystyc/users/billing-portal`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          deviceInfo: getDeviceInfo(),
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  async cancelSubscription(): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await fetch(`${serverRoot}/mystyc/users/cancel-subscription`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          deviceInfo: getDeviceInfo(),
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  }
 };

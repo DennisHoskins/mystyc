@@ -6,7 +6,6 @@ import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin'; 
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -17,7 +16,6 @@ import ContentDashboard from './ContentDashboard';
 import ContentsTabPanel from './ContentsTabPanel';
 
 export default function ContentPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ContentStats> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,16 +37,13 @@ export default function ContentPage() {
       setStats(stats);
 
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'ContentsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load content:', err);
-        setError('Failed to load content. Please try again.');
-      }
+      logger.error('Failed to load content:', err);
+      setError('Failed to load content. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadContentStats();

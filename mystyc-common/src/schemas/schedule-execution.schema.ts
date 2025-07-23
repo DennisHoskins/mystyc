@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ScheduleTimeSchema } from './schedule.schema'; // Reuse from schedule schema
-import { validateWithError, validateSafely } from '../utils/validation';
+import { validateWithError, validateSafely } from '../util/validation';
 
 export const ScheduleExecutionStatus = z.enum(['running', 'completed', 'failed', 'timeout']);
 

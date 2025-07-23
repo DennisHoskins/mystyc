@@ -29,7 +29,7 @@ export default function Link({ href, children, className, useTransition = true }
     <a
       href={href}
       onClick={handleClick}
-      className={`text-indigo-600 font-bold hover:underline ${className || ''}`}
+      className={`text-indigo-600 hover:underline ${className || ''}`}
     >
       {children}
     </a>

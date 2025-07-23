@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateWithError, validateSafely } from '../utils/validation';
+import { validateWithError, validateSafely } from '../util/validation';
 
 export const DeviceInputSchema = z.object({
   firebaseUid: z.string().min(20).max(128),
@@ -19,9 +19,11 @@ export const DeviceInputSchema = z.object({
   fcmToken: z.string()
     .min(100)
     .max(500)
-    .optional(),
+    .optional()
+    .nullable(),
   fcmTokenUpdatedAt: z.coerce.date()
-    .optional(),
+    .optional()
+    .nullable(),
   appVersion: z.string()
     .regex(/^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$/, 'Invalid semver format')
     .optional(),

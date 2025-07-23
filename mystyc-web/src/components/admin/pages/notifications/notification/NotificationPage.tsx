@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Notification } from 'mystyc-common/schemas';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -18,7 +17,6 @@ import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
 import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [notification, setNotification] = useState<Notification | null>(null);
   const [loading, setLoading] = useState(false);
@@ -33,16 +31,13 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       const data = await apiClientAdmin.notifications.getNotification(notificationId);
       setNotification(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'NotificationPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load notification:', err);
-        setError('Failed to load notification. Please try again.');
-      }
+      logger.error('Failed to load notification:', err);
+      setError('Failed to load notification. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [notificationId, setBusy, handleSessionError]);
+  }, [notificationId, setBusy]);
 
   useEffect(() => {
     loadNotification();

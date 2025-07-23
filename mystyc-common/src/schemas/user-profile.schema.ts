@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { UserRole } from '../constants/roles.enum';
 import { SubscriptionLevel } from '../constants/subscription-levels.enum';
-import { validateWithError, validateSafely } from '../utils/validation';
+import { validateWithError, validateSafely } from '../util/validation';
 
 export const ZodiacSign = z.enum([
   'Aries',

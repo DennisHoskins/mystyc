@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
 import { User } from 'mystyc-common/schemas/';
-import { logger } from '@/util/logger';
 
+import { UserRequest } from '@/interfaces/user-requests.interface';
+import { logger } from '@/util/logger';
 import { sessionManager, InvalidSessionError } from '../../sessionManager';
 import { authTokenManager } from '../../authTokenManager';
 
@@ -13,7 +14,7 @@ export async function POST(
   try {
     logger.log(`[mystyc] Get user attempt started`);
 
-    const body = await request.json();
+    const body: UserRequest = await request.json();
     const { deviceInfo } = body;
 
     logger.log("[mystyc] DeviceInfo destructured:", deviceInfo);

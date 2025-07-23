@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateWithError, validateSafely } from '../utils/validation';
+import { validateWithError, validateSafely } from '../util/validation';
 
 export const AuthEventType = z.enum(['create', 'login', 'logout', 'server-logout']);
 

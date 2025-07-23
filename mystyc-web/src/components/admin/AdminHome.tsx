@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -38,7 +37,6 @@ export function getDefaultDashboardStatsQuery() {
 
 export default function AdminHome() {
   const { setBusy } = useBusy();
-  const { handleSessionError } = useSessionErrorHandler();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null>(null);
@@ -53,15 +51,12 @@ export default function AdminHome() {
       const stats = await apiClientAdmin.stats.getDashboard(defaultQuery);
       setStats(stats)
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'AdminHome');
-      if (!wasSessionError) {
-        logger.error('Failed to load dashboard:', err);
-      }
+      logger.error('Failed to load dashboard:', err);
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadDashboard();

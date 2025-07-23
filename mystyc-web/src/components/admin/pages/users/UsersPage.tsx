@@ -6,7 +6,6 @@ import { UserStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -17,7 +16,6 @@ import UsersDashboard from './UsersDashboard';
 import UsersTabPanel from './UsersTabPanel';
 
 export default function UsersPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<UserStats> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -38,16 +36,13 @@ export default function UsersPage() {
       const stats = await apiClientAdmin.users.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load users:', err);
-        setError('Failed to load users. Please try again.');
-      }
+      logger.error('Failed to load users:', err);
+      setError('Failed to load users. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadStats();

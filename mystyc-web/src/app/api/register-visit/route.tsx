@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { UAParser } from 'ua-parser-js';
 
-import { logger } from '@/util/logger';
+import { RegisterVisitRequest } from '@/interfaces/website-requests.interface';
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
+import { logger } from '@/util/logger';
 import redis from '../redisClient';
 
 type VisitSession = {
@@ -50,7 +51,8 @@ function createDedupeKey(
 export async function POST(request: NextRequest) {
   logger.log('[registerVisit] begin register visit');
 
-  const { deviceInfo, clientTimestamp, pathname } = await request.json();
+  const body: RegisterVisitRequest = await request.json();
+  const { deviceInfo, clientTimestamp, pathname } = body;
   logger.log('[registerVisit] DeviceInfo:', deviceInfo);
 
   const headersList = await headers();

@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 
 import { apiClient } from "@/api/apiClient";
-import { useUser, useSetUser, useInitialized, useBusy, useToast } from "@/components/ui/layout/context/AppContext";
 import { useTransitionRouter } from "@/hooks/useTransitionRouter";
 import { logger } from "@/util/logger";
 
+import { useUser, useSetUser, useInitialized, useBusy, useToast } from "@/components/ui/layout/context/AppContext";
 import Card from "@/components/ui/Card";
 import Heading from "@/components/ui/Heading";
 //import Text from "@/components/ui/Text";
@@ -44,7 +44,7 @@ export default function AccountPage() {
 
     const loadBillingPortal = async () => {
       try {
-        const response = await apiClient.getCustomerBillingPortal();
+        const response = await apiClient.user.getCustomerBillingPortal();
         if (response) {
           setUrl(response.portalUrl);
         } else {
@@ -69,7 +69,7 @@ export default function AccountPage() {
     try {
       setError("");
       setBusy(true);
-      const response = await apiClient.startSubscription(MYSTYC_PLUS_PRICE_ID);
+      const response = await apiClient.user.startSubscription(MYSTYC_PLUS_PRICE_ID);
       window.location.href = response.sessionUrl;
     } catch(err) {
       logger.log(err);
@@ -90,11 +90,11 @@ export default function AccountPage() {
     try {
       setError("");
       setBusy(true);
-      const response = await apiClient.cancelSubscription();
+      const response = await apiClient.user.cancelSubscription();
       if (response.success) {
         logger.log("Subscription cancelled successfully");
 
-        const updatedUser = await apiClient.getUser();
+        const updatedUser = await apiClient.user.getUser();
         setUser(updatedUser);
 
         showToast("Subscription cancelled successfully", "success");

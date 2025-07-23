@@ -56,7 +56,7 @@ export default function LoginForm() {
     logger.log("LOGIN");
 
     try {
-      const u = await apiClient.signIn(email, password);
+      const u = await apiClient.auth.signIn(email, password);
       if (!u) throw new Error('no user returned');
 
       setUser(u);

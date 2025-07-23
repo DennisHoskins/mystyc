@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DeviceSession } from '@/interfaces';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -18,7 +17,6 @@ import DeviceSessionPanel from './DeviceSessionPanel';
 import DeviceTabCard from './DeviceTabCard';
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [deviceSession, setDeviceSession] = useState<DeviceSession | null>(null);
   const [loading, setLoading] = useState(false);
@@ -33,16 +31,13 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       const data = await apiClientAdmin.devices.getDeviceSession(deviceId);
       setDeviceSession(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'DevicePage');
-      if (!wasSessionError) {
-        logger.error('Failed to load device:', err);
-        setError('Failed to load device. Please try again.');
-      }
+      logger.error('Failed to load device:', err);
+      setError('Failed to load device. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [deviceId, setBusy, handleSessionError]);
+  }, [deviceId, setBusy]);
 
   useEffect(() => {
     loadDevice();

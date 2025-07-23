@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Content } from 'mystyc-common/schemas';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -18,7 +17,6 @@ import ContentDataCard from './ContentDataCard';
 import UserInfoCard from '../../users/user/UserInfoCard';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [content, setContent] = useState<Content | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,16 +31,13 @@ export default function ContentPage({ contentId }: { contentId: string }) {
       const data = await apiClientAdmin.content.getContent(contentId);
       setContent(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'ContentPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load content:', err);
-        setError('Failed to load content. Please try again.');
-      }
+      logger.error('Failed to load content:', err);
+      setError('Failed to load content. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [contentId, setBusy, handleSessionError]);
+  }, [contentId, setBusy]);
 
   useEffect(() => {
     loadContent();

@@ -6,7 +6,6 @@ import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -16,7 +15,6 @@ import SubscriptionsTabPanel from './SubscriptionsTabPanel';
 import SubscriptionsDashboard from './SubscriptionsDashboard';
 
 export default function SubscriptionsPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<SubscriptionStats> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,16 +34,13 @@ export default function SubscriptionsPage() {
       const stats = await apiClientAdmin.payments.getStats();
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load subscription stats:', err);
-        setError('Failed to load subscription stats. Please try again.');
-      }
+      logger.error('Failed to load subscription stats:', err);
+      setError('Failed to load subscription stats. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadStats();

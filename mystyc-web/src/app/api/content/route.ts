@@ -2,15 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { Content } from 'mystyc-common/schemas/';
 
+import { ContentRequest } from '@/interfaces/website-requests.interface';
 import { logger } from '@/util/logger';
-
 import redis from '../redisClient';
 
 export async function POST(request: NextRequest) {
   logger.log('[getContent] Get attempt started');
 
   // Parse client timezone from request body
-  const { deviceInfo } = await request.json();
+  const body: ContentRequest = await request.json();
+  const { deviceInfo } = body;
   const timezone = deviceInfo?.timezone || 'UTC';
   logger.log(`[getContent] Client timezone: ${timezone}`);
 

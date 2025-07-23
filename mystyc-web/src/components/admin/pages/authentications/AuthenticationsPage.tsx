@@ -7,7 +7,6 @@ import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin'; 
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -18,7 +17,6 @@ import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDashboard from './AuthenticationDashboard';
 
 export default function AuthenticationsPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<AuthEventStats> | null>(null);
@@ -56,16 +54,13 @@ export default function AuthenticationsPage() {
       const stats = await apiClientAdmin.auth.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'AuthenticationsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load Auth Events:', err);
-        setError('Failed to load Auth Events. Please try again.');
-      }
+      logger.error('Failed to load Auth Events:', err);
+      setError('Failed to load Auth Events. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadAuthEvents(0);

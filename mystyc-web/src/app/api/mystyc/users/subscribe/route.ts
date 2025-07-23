@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+import { StartSubscriptionRequest } from '@/interfaces/user-requests.interface';
 import { logger } from '@/util/logger';
-
 import { sessionManager, InvalidSessionError } from '../../../sessionManager';
 import { authTokenManager } from '../../../authTokenManager';
 
@@ -12,7 +12,7 @@ export async function POST(
   try {
     logger.log(`[mystyc] Subscribe attempt started`);
 
-    const body = await request.json();
+    const body: StartSubscriptionRequest = await request.json();
     const { deviceInfo, priceId } = body;
 
     logger.log("[mystyc] DeviceInfo destructured:", deviceInfo);

@@ -7,7 +7,6 @@ import { OpenAIUsageStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -18,7 +17,6 @@ import OpenAIUsageTable from './OpenAIUsageTable';
 import OpenAIDashboard from './OpenAIUsageDashboard';
 
 export default function OpenAIPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [usage, setUsage] = useState<OpenAIUsage[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<OpenAIUsageStats> | null>(null);
@@ -56,16 +54,13 @@ export default function OpenAIPage() {
       const stats = await apiClientAdmin.openai.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'OpenAIPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load open ai usage:', err);
-        setError('Failed to load open ai usage. Please try again.');
-      }
+      logger.error('Failed to load open ai usage:', err);
+      setError('Failed to load open ai usage. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadUsage(0);

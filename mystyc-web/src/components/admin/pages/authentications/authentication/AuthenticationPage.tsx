@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -16,7 +15,6 @@ import AuthenticationUserPanel from './AuthenticationUserPanel';
 import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [authentication, setAuthentication] = useState<AuthEvent | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,16 +29,13 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       const data = await apiClientAdmin.auth.getAuthEvent(authId);
       setAuthentication(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'AuthenticationPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load authentication:', err);
-        setError('Failed to load authentication. Please try again.');
-      }
+      logger.error('Failed to load authentication:', err);
+      setError('Failed to load authentication. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [authId, setBusy, handleSessionError]);
+  }, [authId, setBusy]);
 
   useEffect(() => {
     loadAuthentication();

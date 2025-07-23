@@ -1,5 +1,7 @@
 import 'server-only';
 import { randomBytes, createHash, createCipheriv, createDecipheriv } from 'crypto'
+
+import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { logger } from '@/util/logger';
 
 const DEVICE_SESSION_SALT = process.env.DEVICE_SESSION_SALT;
@@ -22,13 +24,6 @@ const isDev = process.env.NODE_ENV === 'development';
 
 // Create a 32-byte key from the environment variable
 const ENCRYPTION_KEY = createHash('sha256').update(COOKIE_ENCRYPTION_KEY!).digest();
-
-type DeviceInfo = {
-  cores: string,
-  renderer: string,
-  timezone: string,
-  language: string
-};
 
 /**
  * Generate a deterministic device ID from a device fingerprint

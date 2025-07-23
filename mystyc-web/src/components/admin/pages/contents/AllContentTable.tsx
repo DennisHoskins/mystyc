@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { Content } from 'mystyc-common/schemas/';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -13,7 +12,6 @@ import AdminError from '@/components/admin/ui/AdminError';
 import ContentTable from './ContentTable';
 
 export default function AllContentTable({ isActive = false } : { isActive: boolean }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [content, setContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,16 +43,13 @@ export default function AllContentTable({ isActive = false } : { isActive: boole
       setTotalItems(response.pagination.totalItems);
       setHasLoaded(true);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'ContentsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load content:', err);
-        setError('Failed to load content. Please try again.');
-      }
+      logger.error('Failed to load content:', err);
+      setError('Failed to load content. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   // Only load when tab becomes active for the first time
   useEffect(() => {

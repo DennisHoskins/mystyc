@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { createHash } from 'crypto';
 
 import { Device } from 'mystyc-common/schemas/';
+import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { generateDeviceId } from '../keyManager';
 
 /**
@@ -59,12 +60,7 @@ function normalizeUserAgent(userAgent: string): string {
  */
 export function buildDevice(
   firebaseUid: string,
-  deviceInfo: { 
-    cores: string,
-    renderer: string,
-    timezone: string,
-    language: string 
-  },
+  deviceInfo: DeviceInfo,
   request: NextRequest
 ): Device {
   

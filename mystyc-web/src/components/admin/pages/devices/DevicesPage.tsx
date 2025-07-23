@@ -7,7 +7,6 @@ import { DeviceStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -18,7 +17,6 @@ import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
 import DevicesDashboard from './DevicesDashboard';
 
 export default function DevicesPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [devices, setDevices] = useState<Device[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<DeviceStats> | null>(null);
@@ -56,16 +54,13 @@ export default function DevicesPage() {
       const stats = await apiClientAdmin.devices.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'DevicesPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load devices:', err);
-        setError('Failed to load devices. Please try again.');
-      }
+      logger.error('Failed to load devices:', err);
+      setError('Failed to load devices. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadDevices(0);

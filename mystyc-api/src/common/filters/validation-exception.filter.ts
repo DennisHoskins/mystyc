@@ -5,7 +5,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ValidationError } from 'mystyc-common/utils/validation';
+
+import { ValidationError } from 'mystyc-common/util/validation';
+
 import { logger } from '@/common/util/logger';
 
 @Catch(ValidationError)

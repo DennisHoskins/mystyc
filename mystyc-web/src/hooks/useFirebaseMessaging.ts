@@ -69,7 +69,7 @@ export function useFirebaseMessaging() {
      });
      logger.log('[useFirebaseMessaging] FCM Token received:', newToken);
 
-     const updatedDevice = await apiClient.updateFcmToken(user.device.deviceId, newToken);
+     const updatedDevice = await apiClient.user.updateFcmToken(user.device.deviceId, newToken);
 
      user.device = updatedDevice;
      setUser(user);

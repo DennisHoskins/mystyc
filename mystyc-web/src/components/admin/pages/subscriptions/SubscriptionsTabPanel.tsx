@@ -6,7 +6,6 @@ import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -29,7 +28,6 @@ interface PaginationState {
 
 export default function SubscriptionsTabPanel() {
   const [activeTab, setActiveTab] = useState('payments');
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [summary, setSummary] = useState<SubscriptionSummary | null>(null);
   const [payments, setPayments] = useState<PaymentHistory[]>([]);
@@ -64,11 +62,8 @@ export default function SubscriptionsTabPanel() {
         const summaryData = await apiClientAdmin.payments.getSummary();
         setSummary(summaryData);
       } catch (err) {
-        const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
-        if (!wasSessionError) {
-          logger.error('Failed to load subscriptions:', err);
-          setError('Failed to load subscriptions. Please try again.');
-        }
+        logger.error('Failed to load subscriptions:', err);
+        setError('Failed to load subscriptions. Please try again.');
       } finally {
         setLoading(false);
         setBusy(false);
@@ -76,7 +71,7 @@ export default function SubscriptionsTabPanel() {
     };
 
     loadSummary();
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   const loadPayments = useCallback(async (page: number) => {
     try {
@@ -99,16 +94,13 @@ export default function SubscriptionsTabPanel() {
         loaded: true
       });
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load subscriptions payments:', err);
-        setError('Failed to load subscriptions payments. Please try again.');
-      }
+      logger.error('Failed to load subscriptions payments:', err);
+      setError('Failed to load subscriptions payments. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   const loadUsers = useCallback(async (page: number) => {
     try {
@@ -131,16 +123,13 @@ export default function SubscriptionsTabPanel() {
         loaded: true
       });
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SubscriptionsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load subscription users:', err);
-        setError('Failed to load subscription users. Please try again.');
-      }
+      logger.error('Failed to load subscription users:', err);
+      setError('Failed to load subscription users. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   // Load default data for active tab on mount
   useEffect(() => {

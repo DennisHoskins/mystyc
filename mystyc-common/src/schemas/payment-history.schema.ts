@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateWithError, validateSafely } from '../utils/validation';
+import { validateWithError, validateSafely } from '../util/validation';
 
 export const PaymentStatus = z.enum(['paid', 'failed', 'refunded', 'disputed']);
 export const SubscriptionTier = z.enum(['plus', 'pro']);

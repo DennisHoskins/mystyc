@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateWithError, validateSafely } from '../../utils/validation';
+import { validateWithError, validateSafely } from '../../util/validation';
 
 export const BaseAdminQuerySchema = z.object({
   limit: z.number().int().min(1).max(100).optional().default(20),

@@ -47,7 +47,7 @@ export default function LogoutPage() {
 
     logger.log("LOGOUT");
 
-    apiClient.signOut()
+    apiClient.auth.signOut()
       .then(() => {
         clearUser();
         showToast("You have been Logged Out", "success");

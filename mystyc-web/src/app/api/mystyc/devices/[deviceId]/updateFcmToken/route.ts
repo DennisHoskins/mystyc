@@ -3,8 +3,8 @@ import { headers } from 'next/headers';
 
 import { Device } from 'mystyc-common/schemas/';
 
+import { UpdateFcmTokenRequest } from '@/interfaces/user-requests.interface';
 import { logger } from '@/util/logger';
-
 import { sessionManager } from '../../../../sessionManager';
 import { authTokenManager } from '../../../../authTokenManager';
 
@@ -15,7 +15,7 @@ export async function POST(
   logger.log("[mystyc]", params);
 
   try {
-    const body = await request.json();
+    const body: UpdateFcmTokenRequest = await request.json();
     const { deviceInfo, fcmToken } = body;
 
     const headersList = await headers();

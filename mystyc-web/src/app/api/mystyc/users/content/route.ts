@@ -3,8 +3,8 @@ import { headers } from 'next/headers';
 
 import { Content } from 'mystyc-common/schemas/';
 
+import { UserContentRequest } from '@/interfaces/user-requests.interface';
 import { logger } from '@/util/logger';
-
 import { sessionManager, InvalidSessionError } from '../../../sessionManager';
 import { authTokenManager } from '../../../authTokenManager';
 
@@ -15,7 +15,7 @@ export async function POST(
   try {
     logger.log(`[mystyc] Get user content attempt started`, params);
 
-    const body = await request.json();
+    const body: UserContentRequest = await request.json();
     const { deviceInfo } = body;
 
     logger.log("[mystyc] DeviceInfo destructured:", deviceInfo);

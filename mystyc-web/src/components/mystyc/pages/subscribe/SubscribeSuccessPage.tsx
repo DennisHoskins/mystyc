@@ -53,7 +53,7 @@ export default function SubscribeSuccessPage() {
 
       try {
         setBusy(true);
-        const updatedUser = await apiClient.getUser();
+        const updatedUser = await apiClient.user.getUser();
         setUser(updatedUser);
         showToast("Upgraded to Mystyc Plus!", "success");
       } catch (error) {

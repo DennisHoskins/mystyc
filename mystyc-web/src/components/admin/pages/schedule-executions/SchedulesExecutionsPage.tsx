@@ -7,7 +7,6 @@ import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/resp
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { ScheduleExecutionStats } from 'mystyc-common/admin/interfaces/stats';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -18,7 +17,6 @@ import SchedulesExecutionsTable from './SchedulesExecutionsTable';
 import SchedulesExecutionsDashboard from './SchedulesExecutionsDashboard';
 
 export default function SchedulesExecutionsPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [schedulesExecutions, setSchedulesExecutions] = useState<ScheduleExecution[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleExecutionStats> | null>(null);
@@ -57,16 +55,13 @@ export default function SchedulesExecutionsPage() {
       const stats = await apiClientAdmin.schedule.getExecutionStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SchedulesExecutionsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load schedule:', err);
-        setError('Failed to load schedule. Please try again.');
-      }
+      logger.error('Failed to load schedule:', err);
+      setError('Failed to load schedule. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadSchedulesExecutions(0);

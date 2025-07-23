@@ -48,7 +48,7 @@ export default function PasswordResetPage() {
     setIsWorking(true);
 
     try {
-      await apiClient.resetPassword(email);
+      await apiClient.auth.resetPassword(email);
       setMessage('Check your email for a password reset link.');
       setBusy(false);
     } catch (err: any) {

@@ -20,10 +20,10 @@ export default function Insights({ user } : { user: AppUser }) {
     setBusy(1000);
 
     try {
-      const reply = await apiClient.getUserContent();
+      const reply = await apiClient.user.getUserContent();
       setData(reply);
     } catch (err) {
-      logger.log(err);
+      logger.error('Failed to load users:', err);
     } finally {
       setBusy(false); 
     }

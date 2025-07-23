@@ -6,7 +6,6 @@ import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -31,7 +30,6 @@ interface PaginationState {
 }
 
 export default function UsersTabPanel() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [activeTab, setActiveTab] = useState<UserType>('all');
   const [summary, setSummary] = useState<UsersSummary | null>(null);
@@ -98,16 +96,13 @@ export default function UsersTabPanel() {
       }));
 
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load users:', err);
-        setError('Failed to load users. Please try again.');
-      }
+      logger.error('Failed to load users:', err);
+      setError('Failed to load users. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   // Load default tab on mount
   useEffect(() => {

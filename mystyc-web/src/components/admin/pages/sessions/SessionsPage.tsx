@@ -8,7 +8,6 @@ import { Session } from '@/interfaces';
 import { SessionStats } from '@/interfaces/admin/stats';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -19,7 +18,6 @@ import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionsDashboard from './SessionsDashboard';
 
 export default function SessionsPage() {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<SessionStats> | null>(null);
@@ -53,16 +51,13 @@ export default function SessionsPage() {
       const stats = await apiClientAdmin.sessions.getStats(statsQuery);
       setStats(stats);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SessionsPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load Sessions:', err);
-        setError('Failed to load Sessions. Please try again.');
-      }
+      logger.error('Failed to load Sessions:', err);
+      setError('Failed to load Sessions. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [setBusy, handleSessionError]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadSessions(0);

@@ -1,3 +1,5 @@
+import { AdminStatsQuery } from '../../schemas/admin-queries.schema'
+
 import { UserStats } from '../stats/admin-user-stats.interface'
 import { DeviceStats } from '../stats/admin-device-stats.interface'
 import { AuthEventStats } from '../stats/admin-auth-event-stats.interface'
@@ -19,4 +21,10 @@ export interface AdminStatsResponse {
     executions: ScheduleExecutionStats;
   },
   subscriptions: SubscriptionStats
+}
+
+export interface AdminStatsResponseWithQuery<T> {
+  data: T;
+  query?: Partial<AdminStatsQuery>;
+  queryString?: string;
 }

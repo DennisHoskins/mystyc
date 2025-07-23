@@ -4,24 +4,13 @@ import { User } from 'mystyc-common/schemas/';
 import { UserRole } from 'mystyc-common/constants';
 
 import { logger } from '@/util/logger';
+import { AuthLoginRequest, AuthRegisterRequest } from '@/interfaces/auth-requests.interface';
 
 import { generateSessionId } from '../keyManager';
 import { authTokenManager } from '../authTokenManager';
 import { sessionManager } from '../sessionManager';
 import { firebaseAuth } from '../firebaseAuth';
 import { buildDevice } from './deviceManager';
-
-export interface AuthRequestBody {
-  email: string;
-  password: string;
-  deviceInfo: {
-    cores: string,
-    renderer: string,
-    timezone: string,
-    language: string
-  };
-  clientTimestamp: string;
-}
 
 export async function handleAuth(request: NextRequest, isRegister: boolean): Promise<NextResponse> {
   const operation = isRegister ? 'Registration' : 'Login';
@@ -36,8 +25,8 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
     // Clear any existing session cookies and Redis data
     await sessionManager.clearSession();
 
-    // Parse and validate request body
-    const body: AuthRequestBody = await request.json();
+    // Parse and validate request body - both login and register have same structure
+    const body: AuthLoginRequest | AuthRegisterRequest = await request.json();
     const { email, password, deviceInfo, clientTimestamp } = body;
     logger.log(`[authHandler] ${operation} for email:`, email);
 
@@ -46,7 +35,6 @@ export async function handleAuth(request: NextRequest, isRegister: boolean): Pro
     logger.log(`[authHandler] Firebase ${operation} successful for uid:`, idTokens.uid);
 
     // Build device object with deterministic ID based on request fingerprint
-
     const device = buildDevice(idTokens.uid, deviceInfo, request);
     
     logger.log(`[authHandler] Device ID generated:`, device.deviceId);

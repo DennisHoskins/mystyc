@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -19,7 +18,6 @@ import UserTabCard from './UserTabCard';
 import UserSubscriptionCard from './UserSubscriptionCard';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,16 +32,13 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       const data = await apiClientAdmin.users.getUser(firebaseUid);
       setUser(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'UsersPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load user:', err);
-        setError('Failed to load user. Please try again.');
-      }
+      logger.error('Failed to load user:', err);
+      setError('Failed to load user. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [firebaseUid, setBusy, handleSessionError]);
+  }, [firebaseUid, setBusy]);
 
   useEffect(() => {
     loadUser();

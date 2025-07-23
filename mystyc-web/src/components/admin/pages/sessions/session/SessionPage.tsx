@@ -6,7 +6,6 @@ import { Device } from 'mystyc-common/schemas/';
 import { Session } from '@/interfaces';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-import { useSessionErrorHandler } from '@/hooks/useSessionErrorHandler';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -18,7 +17,6 @@ import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
 import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
-  const { handleSessionError } = useSessionErrorHandler();
   const { setBusy } = useBusy();
   const [session, setSession] = useState<Session | null>(null);
   const [device, setDevice] = useState<Device | null>(null);
@@ -34,16 +32,13 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       const data = await apiClientAdmin.sessions.getSession(sessionId);
       setSession(data);
     } catch (err) {
-      const wasSessionError = await handleSessionError(err, 'SessionPage');
-      if (!wasSessionError) {
-        logger.error('Failed to load session:', err);
-        setError('Failed to load session. Please try again.');
-      }
+      logger.error('Failed to load session:', err);
+      setError('Failed to load session. Please try again.');
     } finally {
       setBusy(false);
       setLoading(false);
     }
-  }, [sessionId, setBusy, handleSessionError]);
+  }, [sessionId, setBusy]);
 
   useEffect(() => {
     loadSession();

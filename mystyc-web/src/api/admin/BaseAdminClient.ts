@@ -2,6 +2,7 @@ import { getDeviceInfo } from '../apiClient';
 import { logger } from '@/util/logger';
 
 import { BaseAdminQuery, AdminStatsQuery } from 'mystyc-common/admin';
+import { handleSessionError } from '@/util/sessionErrorHandler'; 
 
 export class BaseAdminClient {
   protected readonly API_BASE_URL = '/api';
@@ -27,13 +28,12 @@ export class BaseAdminClient {
         credentials: 'include',
       });
 
+      const errorData = await response.json().catch(() => null);
+      if (errorData) {
+        await handleSessionError(errorData.error, 'admin/fetchWithAuth');
+      }
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-
-        if (errorData?.error === 'InvalidSession') {
-          throw new Error('InvalidSession');
-        }
-
         throw new Error(errorData?.message || `HTTP ${response.status}`);
       }
 
