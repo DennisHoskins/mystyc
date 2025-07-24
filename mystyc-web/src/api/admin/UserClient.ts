@@ -8,6 +8,7 @@ import {
   PaymentHistory 
 } from 'mystyc-common/schemas/';
 import { UserStats } from 'mystyc-common/admin/interfaces/stats';
+import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
 
 import { logger } from '@/util/logger';
 import { BaseAdminClient } from './BaseAdminClient';
@@ -31,11 +32,7 @@ export class UserClient extends BaseAdminClient {
   };
 
   // User Management
-  getSummary = async (): Promise<{
-    users: number;
-    plus: number;
-    total: number;
-  }> => {
+  getSummary = async (): Promise<UsersSummary> => {
     try {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/users/summary`);
     } catch (error) {

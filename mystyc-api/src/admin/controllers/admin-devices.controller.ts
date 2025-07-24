@@ -31,6 +31,113 @@ export class AdminDevicesController extends AdminController<Device> {
   // GET Methods (Read Operations)
 
   /**
+   * Gets summary statistics for devices
+   * @returns Promise<{}> - Devices stats
+   */
+  @Get('/summary')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getDevicesSummary(@Param('firebaseUid') firebaseUid: string) {
+    const [totalCount, onlineCount, offlineCount] = await Promise.all([
+      this.service.getTotal(),
+      this.service.getTotalOnline(),
+      this.service.getTotalOffline(),
+    ]);
+
+    return {
+      total: totalCount,
+      online: onlineCount,
+      offline: offlineCount
+    };
+  }
+
+  /**
+   * Gets summary statistics for devices
+   * @returns Promise<{}> - Devices stats
+   */
+  @Get('/online')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async findOnline(@Query() query: BaseAdminQuery): Promise<AdminListResponse<Device>> {
+    logger.info(`Admin fetching ${this.serviceName} list`, { 
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, `Admin${this.serviceName}Controller`);
+
+    const [data, totalItems] = await Promise.all([
+      this.service.findByOnline(query),
+      this.service.getTotalOnline()
+    ])
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info(`Admin ${this.serviceName} list retrieved`, { 
+      count: data.length 
+    }, `Admin${this.serviceName}Controller`);
+
+    logger.info("[AdminQuery]", query);
+
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+        sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
+  }
+
+  /**
+   * Gets summary statistics for devices
+   * @returns Promise<{}> - Devices stats
+   */
+  @Get('/offline')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async findOffline(@Query() query: BaseAdminQuery): Promise<AdminListResponse<Device>> {
+    logger.info(`Admin fetching ${this.serviceName} list`, { 
+      limit: query.limit,
+      offset: query.offset,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder
+    }, `Admin${this.serviceName}Controller`);
+
+    const [data, totalItems] = await Promise.all([
+      this.service.findByOffline(query),
+      this.service.getTotalOffline()
+    ])
+    const totalPages = Math.ceil(totalItems / (query.limit || 100));
+    
+    logger.info(`Admin ${this.serviceName} list retrieved`, { 
+      count: data.length 
+    }, `Admin${this.serviceName}Controller`);
+
+    logger.info("[AdminQuery]", query);
+
+    return {
+      data,
+      pagination: {
+        limit: query.limit || 100,
+        offset: query.offset || 0,
+        hasMore: data.length === (query.limit || 100),
+        totalItems,
+        totalPages
+      },
+        sort: query.sortBy ? {
+        field: query.sortBy,
+        order: query.sortOrder || 'desc'
+      } : undefined
+    };
+  }
+
+  /**
    * Get device by deviceId
    * @param id - Item identifier
    * @returns Promise<T> - Single item

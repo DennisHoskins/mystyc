@@ -56,9 +56,8 @@ export class AdminUsersController extends AdminController<UserProfile> {
   }
 
   /**
-   * Gets summary statistics for a user
-   * @param id - firebaseUid
-   * @returns Promise<{}> - User stats
+   * Gets summary statistics for users
+   * @returns Promise<{}> - Users stats
    */
   @Get('/summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)

@@ -1,39 +1,54 @@
+'use client';
+
 import { Device } from 'mystyc-common/schemas/';
+
+import { formatDateForDisplay } from '@/util/dateTime';
 
 import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface DevicesTableProps {
-  icon?: IconComponent;
-  label?: string;
+  icon?: IconComponent,
+  label?: string,
   data: Device[];
-  loading: boolean;
+  loading?: boolean;
   currentPage: number;
   totalPages: number;
   totalItems?: number;
   hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
+  hideStatusColumn?: boolean;
 }
 
 export default function DevicesTable({
   icon,
   label,
   data,
-  loading,
+  loading = false,
   currentPage,
   totalPages,
   totalItems,
   hasMore,
   onPageChange,
-  onRefresh
+  onRefresh,
+  hideStatusColumn = false
 }: DevicesTableProps) {
-  const columns: Column<Device>[] = [
-    { key: 'deviceName', header: 'Name', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceName ? d.deviceName.split(" (")[0]  : 'Unnamed Device' },
+  const baseColumns: Column<Device>[] = [
+    { key: 'deviceName', header: 'Name', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceName ? d.deviceName.split(" (")[0] : 'Unnamed Device' },
     { key: 'deviceId', header: 'Id', link: (d) => `/admin/devices/${d.deviceId}`, render: (d) => d.deviceId.substring(0, 15) + '...' },
     { key: 'timezone', header: 'Timezone', render: (d) => d.timezone || 'Unknown' },
-    { key: 'fcmToken', header: 'Fcm Token', align: 'right', render: (d) => d.fcmToken ? 'Ready' : 'Not Ready' },
   ];
+
+  const statusColumn: Column<Device> = { key: 'fcmToken', header: 'Status', align: 'center', render: (d) => d.fcmToken ? 'Online' : 'Offline' };
+
+  const columns = hideStatusColumn == true
+    ? baseColumns 
+    : [
+        ...baseColumns.slice(0, -1),
+        statusColumn,
+        baseColumns[baseColumns.length - 1]
+      ];
 
   return (
     <AdminTable<Device>

@@ -25,7 +25,7 @@ export default function DeviceTabCard({ deviceId }: { deviceId: string }) {
 
     const loadSummary = async () => {
       try {
-        const summaryData = await apiClientAdmin.devices.getSummary(deviceId);
+        const summaryData = await apiClientAdmin.devices.getDeviceSummary(deviceId);
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load device summary:', err);

@@ -89,6 +89,40 @@ export class DevicesService {
   }  
 
   /**
+   * @returns number - Retrieves device records with fcmToken total
+   */
+  async getTotalOnline(): Promise<number> {
+    const pipeline = [
+      { $match: { fcmToken: { $ne: null } } },
+      { $group: { _id: '$deviceId' } },
+      { $count: 'totalDevices' }
+    ];
+    
+    const result = await this.deviceModel
+      .aggregate(pipeline)
+      .exec();
+      
+    return result[0]?.totalDevices || 0;
+  }  
+
+  /**
+   * @returns number - Retrieves device records with no fcmToken total
+   */
+  async getTotalOffline(): Promise<number> {
+    const pipeline = [
+      { $match: { fcmToken: { $eq: null } } },
+      { $group: { _id: '$deviceId' } },
+      { $count: 'totalDevices' }
+    ];
+    
+    const result = await this.deviceModel
+      .aggregate(pipeline)
+      .exec();
+      
+    return result[0]?.totalDevices || 0;
+  }  
+
+  /**
    * Retrieves device records with pagination and sorting (admin use)
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<TDevice[]> - Array of device records with applied query params
@@ -111,6 +145,96 @@ export class DevicesService {
 
     const pipeline = [
       { $sort: sortObj },
+      { $group: { _id: '$deviceId', doc: { $first: '$$ROOT' } } }, 
+      { $replaceRoot: { newRoot: '$doc' } },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const devices = await this.deviceModel.
+      aggregate(pipeline)
+      .exec();
+
+    logger.debug('Devices found', { 
+      count: devices.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'DeviceService');
+
+    return devices.map(device => this.transformToDevice(device));
+  }
+
+  /**
+   * Retrieves device records with pagination and sorting (admin use)
+   * @param query - Query parameters including limit, offset, sortBy, sortOrder
+   * @returns Promise<TDevice[]> - Array of device records with applied query params
+   */
+  async findByOnline(queryRaw: Partial<BaseAdminQuery> = {}): Promise<TDevice[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
+    
+    logger.debug('Finding devices with query', { 
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'DeviceService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $sort: sortObj },
+      { $match: { fcmToken: { $ne: null } } },
+      { $group: { _id: '$deviceId', doc: { $first: '$$ROOT' } } }, 
+      { $replaceRoot: { newRoot: '$doc' } },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const devices = await this.deviceModel.
+      aggregate(pipeline)
+      .exec();
+
+    logger.debug('Devices found', { 
+      count: devices.length, 
+      limit, 
+      offset,
+      sortBy,
+      sortOrder
+    }, 'DeviceService');
+
+    return devices.map(device => this.transformToDevice(device));
+  }
+
+  /**
+   * Retrieves device records with pagination and sorting (admin use)
+   * @param query - Query parameters including limit, offset, sortBy, sortOrder
+   * @returns Promise<TDevice[]> - Array of device records with applied query params
+   */
+  async findByOffline(queryRaw: Partial<BaseAdminQuery> = {}): Promise<TDevice[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
+    
+    logger.debug('Finding devices with query', { 
+      limit, 
+      offset, 
+      sortBy, 
+      sortOrder 
+    }, 'DeviceService');
+
+    // Build sort object
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $sort: sortObj },
+      { $match: { fcmToken: { $eq: null } } },
       { $group: { _id: '$deviceId', doc: { $first: '$$ROOT' } } }, 
       { $replaceRoot: { newRoot: '$doc' } },
       { $skip: offset },

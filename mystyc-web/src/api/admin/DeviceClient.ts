@@ -6,6 +6,7 @@ import {
   Notification 
 } from 'mystyc-common/schemas/';
 import { DeviceStats } from 'mystyc-common/admin/interfaces/stats';
+import { DevicesSummary } from 'mystyc-common/admin/interfaces/summary';
 
 import { DeviceSession } from '@/interfaces';
 
@@ -31,7 +32,16 @@ export class DeviceClient extends BaseAdminClient {
   };
 
   // Device Management
-  getSummary = async (deviceId: string): Promise<{
+  getSummary = async (): Promise<DevicesSummary> => {
+    try {
+      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/summary`);
+    } catch (error) {
+      logger.error('getDeviceSummary failed:', error);
+      throw error;
+    }
+  };
+
+  getDeviceSummary = async (deviceId: string): Promise<{
     authEvents: { total: number };
     notifications: { total: number };
   }> => {
@@ -49,6 +59,26 @@ export class DeviceClient extends BaseAdminClient {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices${queryString}`);
     } catch (error) {
       logger.error('getDevices failed:', error);
+      throw error;
+    }
+  };
+
+  getOnlineDevices = async (query?: BaseAdminQuery): Promise<AdminListResponse<Device>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/online${queryString}`);
+    } catch (error) {
+      logger.error('getOnlineDevices failed:', error);
+      throw error;
+    }
+  };
+
+  getOfflineDevices = async (query?: BaseAdminQuery): Promise<AdminListResponse<Device>> => {
+    try {
+      const queryString = this.buildQueryString(query);
+      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/offline${queryString}`);
+    } catch (error) {
+      logger.error('getOfflineDevices failed:', error);
       throw error;
     }
   };
