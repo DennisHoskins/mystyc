@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
 
 import { Content as ContentInterface, validateContentInputSafe } from 'mystyc-common/schemas';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { OpenAIWebsiteService } from '@/openai/openai-website.service';
@@ -190,8 +190,10 @@ export class WebsiteContentService {
     return await this.contentModel.countDocuments({ type: 'website_content' });
   }
 
-  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
@@ -211,8 +213,10 @@ export class WebsiteContentService {
     return await this.contentModel.countDocuments({ scheduleId });
   }
 
-  async findByScheduleId(scheduleId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByScheduleId(scheduleId: string, queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
@@ -232,8 +236,10 @@ export class WebsiteContentService {
     return await this.contentModel.countDocuments({ executionId });
   }
 
-  async findByExecutionId(executionId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByExecutionId(executionId: string, queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;

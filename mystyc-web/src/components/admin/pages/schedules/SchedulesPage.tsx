@@ -81,7 +81,7 @@ export default function SchedulesPage() {
          />
        }
       itemContent={[
-        <div key='info' className='space-y-4'>
+        <div key='info' className='space-y-4 grow flex flex-col'>
           <SchedulesDashboard 
             key={'health'}
             stats={stats} 

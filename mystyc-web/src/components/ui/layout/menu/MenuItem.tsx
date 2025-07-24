@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode, MouseEventHandler } from 'react';
 
 interface MenuItemProps {

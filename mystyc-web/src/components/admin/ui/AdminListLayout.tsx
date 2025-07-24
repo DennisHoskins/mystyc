@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode } from 'react';
 
 import Card from '@/components/ui/Card';
@@ -17,9 +19,10 @@ interface AdminListLayoutProps {
   button?: ReactNode | null,
   title?: string;
   description?: string;
+  headerContent?: ReactNode;
   sideContent?: ReactNode;
-  itemContent?: ReactNode[];
-  tableContent?: ReactNode | ReactNode[]; // ⚡️ Updated: allow array or single node
+  itemContent?: ReactNode | ReactNode[];
+  tableContent?: ReactNode | ReactNode[];
 }
 
 export default function AdminListLayout({ 
@@ -30,10 +33,14 @@ export default function AdminListLayout({
   button, 
   title, 
   description, 
+  headerContent,
   sideContent, 
   itemContent, 
   tableContent 
 }: AdminListLayoutProps) {
+
+  const gridCols = Array.isArray(itemContent) && itemContent && itemContent.length > 0 ? itemContent.length : 1;
+
   if (error) {
     return (
       <>
@@ -69,7 +76,7 @@ export default function AdminListLayout({
           <div className='flex space-x-3 items-center mb-4'>
             {icon && (
               <div className='mt-1'>
-                <Avatar size={'medium'} icon={icon} />
+                <Avatar size={'small'} icon={icon} />
               </div>
             )}
             {breadcrumbs ? (
@@ -84,8 +91,13 @@ export default function AdminListLayout({
 
           <hr />
 
-          <div className='flex items-center mt-4'>
-            {description && <Text>{description}</Text>}
+          <div className='w-full flex mt-4'>
+            {headerContent ? (
+              <>{headerContent}</>
+            ) : (
+              <>{description && <Text>{description}</Text>}</>
+            )}
+            
           </div>
         </Card>
 
@@ -95,11 +107,15 @@ export default function AdminListLayout({
       </div>
 
       {itemContent && (
-        <div className={`grid grid-cols-1 md:grid-cols-${itemContent.length} gap-4 mb-4`}>
-          {itemContent.map((item, index) => (
-            <Card key={index}>{item}</Card>
-          ))}
-        </div>
+        Array.isArray(itemContent) ? (
+          <div className={`grid grid-cols-1 md:grid-cols-${gridCols} gap-4 mb-4 h-[12em]`}>
+            {itemContent.map((item, index) => (
+              <Card key={index}>{item}</Card>
+            ))}
+          </div>
+        ) : (
+          <>{itemContent}</>
+        )
       )}
 
       {tableContent && (
@@ -112,7 +128,7 @@ export default function AdminListLayout({
             ))}
           </div>
         ) : (
-          <Card>{tableContent}</Card>
+          <Card className='flex-1'>{tableContent}</Card>
         )
       )}
     </>

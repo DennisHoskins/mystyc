@@ -1,3 +1,5 @@
+'use client';
+
 import { LayoutDashboard, Clock, BookOpenText, CircleDollarSign, Globe, Sparkle, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
 import Sidebar from '@/components/ui/layout/sidebar/Sidebar';

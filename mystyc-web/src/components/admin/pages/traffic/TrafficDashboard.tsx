@@ -20,7 +20,7 @@ export default function TrafficDashboard({
   className,
   data, 
   charts = ['stats', 'visitors', 'pages', 'types', 'browsers', 'hourly', 'dayofweek', 'usertype'],
-  height = '100%',
+  height,
   layout = 'horizontal',
   label = true
 }: TrafficDashboardProps) {

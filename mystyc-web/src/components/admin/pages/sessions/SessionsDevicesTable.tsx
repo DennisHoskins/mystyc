@@ -1,6 +1,6 @@
 import { SessionDevice } from '@/interfaces';
 
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SessionsDevicesTableProps {
   label?: string;

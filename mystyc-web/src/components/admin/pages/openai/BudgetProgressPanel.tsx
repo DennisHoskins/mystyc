@@ -38,7 +38,6 @@ export default function BudgetProgressPanel({
 
   return (
     <div className='flex flex-col flex-1 bg-gray-50 p-4 rounded-md'>
-      <h4 className="text-sm font-medium text-gray-700 mb-4">Budget Usage</h4>
       
       {/* Cost Budget */}
       <div className="mb-4">

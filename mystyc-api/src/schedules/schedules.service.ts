@@ -7,7 +7,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { ConflictException } from '@nestjs/common';
 
 import { Schedule as ScheduleInterface, ScheduleInput, validateScheduleInputSafe } from 'mystyc-common/schemas/schedule.schema';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { timezone } from '@/common/util/timezone';
 import { logger } from '@/common/util/logger';
@@ -408,9 +408,11 @@ export class SchedulesService {
     return await this.scheduleModel.countDocuments();
   }
 
-  async findAll(query: BaseAdminQuery): Promise<ScheduleInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'time.hour', sortOrder = 'asc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<ScheduleInterface[]> {
 
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
+    
     const sortObj: any = {};
     if (sortBy.includes('.')) {
       // Handle nested fields like 'time.hour'

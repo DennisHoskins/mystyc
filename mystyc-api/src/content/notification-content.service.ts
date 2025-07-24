@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Content as ContentInterface } from 'mystyc-common/schemas';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
 import { Content, ContentDocument } from './schemas/content.schema';
@@ -170,8 +170,10 @@ export class NotificationContentService {
     return await this.contentModel.countDocuments({ type: 'notification_content' });
   }
 
-  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
@@ -210,33 +212,6 @@ export class NotificationContentService {
     }
 
     return this.transformToNotificationContent(content);
-  }
-
-  /**
-   * Legacy method - kept for backward compatibility
-   * @deprecated Use generateNotificationContent() instead
-   */
-  async getTodaysNotificationContent(): Promise<ContentInterface> {
-    const today = new Date().toISOString().split('T')[0];
-    
-    // For legacy calls without notification ID, we'll generate content without linking
-    logger.warn('Using deprecated getTodaysNotificationContent - should use generateNotificationContent with notificationId', {
-      date: today
-    }, 'NotificationContentService');
-
-    return this.generateUnlinkedContent(today);
-  }
-
-  /**
-   * Legacy method - kept for backward compatibility  
-   * @deprecated Use generateNotificationContent() instead
-   */
-  async getOrGenerateNotificationContent(date: string, scheduleId?: string, executionId?: string): Promise<ContentInterface> {
-    logger.warn('Using deprecated getOrGenerateNotificationContent - should use generateNotificationContent with notificationId', {
-      date, scheduleId, executionId
-    }, 'NotificationContentService');
-
-    return this.generateUnlinkedContent(date);
   }
 
   /**

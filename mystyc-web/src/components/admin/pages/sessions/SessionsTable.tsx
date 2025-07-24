@@ -2,7 +2,7 @@ import { Session } from '@/interfaces';
 
 import { formatTimestampForComponent } from '@/util/dateTime';
 
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SessionsTableProps {
   label?: string;

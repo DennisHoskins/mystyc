@@ -22,7 +22,7 @@ interface SchedulesExecutionsDashboardProps {
 export default function SchedulesExecutionsDashboard({ 
   stats, 
   charts = ['stats', 'events', 'performance', 'recent', 'today'],
-  height = 100
+  height
 }: SchedulesExecutionsDashboardProps) {
   
   if (!stats) {

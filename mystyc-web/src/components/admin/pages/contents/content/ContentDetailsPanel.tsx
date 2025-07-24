@@ -49,19 +49,17 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
 
         <AdminDetailGroup>
           <AdminDetailField
-            label="Source"
-            value={content.sources && content.sources.length ? content.sources.join(', ') : "-"}
+            label="Sources"
+            value={"[" + content.sources && content.sources.length ? content.sources.join(', ') : "-" + "]"}
           />
           <AdminDetailField
             label="Title"
             value={content.title}
           />
-          {content.sources && content.sources.length > 0 && (
-            <AdminDetailField
-              label="Message"
-              value={content.message.substring(0, 25) + "..."}
-            />
-          )}
+          <AdminDetailField
+            label="Message"
+            value={content.message.substring(0, 25) + "..."}
+          />
         </AdminDetailGroup>
 
         {content.linkUrl && (

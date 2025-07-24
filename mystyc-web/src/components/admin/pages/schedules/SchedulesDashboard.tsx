@@ -20,7 +20,7 @@ interface SchedulesDashboardProps {
 export default function SchedulesDashboard({ 
   stats, 
   charts = ['stats', 'events', 'upcoming', 'health', 'status', 'today'], 
-  height = 100,
+  height,
   className
 }: SchedulesDashboardProps) {
   if (!stats) {

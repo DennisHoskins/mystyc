@@ -20,7 +20,7 @@ export default function SubscriptionsDashboard({
   className,
   stats,
   charts = ['stats'],
-  height = 100,
+  height,
   duration
 }: SubscriptionsDashboardProps) {
   if (!stats) {

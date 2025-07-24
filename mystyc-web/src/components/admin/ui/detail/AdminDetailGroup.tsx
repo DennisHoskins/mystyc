@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode } from 'react';
 
 interface AdminDetailGroupProps {
@@ -7,7 +9,7 @@ interface AdminDetailGroupProps {
 
 export default function AdminDetailGroup({ children, className }: AdminDetailGroupProps) {
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${className}`}>
       {children}
     </div>
   );

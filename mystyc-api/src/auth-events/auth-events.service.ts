@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { AuthEvent as AuthEventInterface, validateAuthEventInputSafe } from 'mystyc-common/schemas/';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
 import { AuthEvent, AuthEventDocument } from './schemas/auth-event.schema';
@@ -38,8 +38,11 @@ export class AuthEventsService {
   /**
    * Retrieves auth events (admin) with pagination and sorting
    */
-  async findAll(query: BaseAdminQuery): Promise<AuthEventInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'timestamp', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<AuthEventInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
+
     const sortObj: Record<string, 1 | -1> = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
 
     const events = await this.authEventModel
@@ -66,8 +69,10 @@ export class AuthEventsService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<DeviceInterface[]> - Array of auth event records with applied query params
    */
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQuery): Promise<AuthEventInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByFirebaseUid(firebaseUid: string, queryRaw: BaseAdminQuery): Promise<AuthEventInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding user auth events with query', { 
       firebaseUid,
@@ -118,8 +123,10 @@ export class AuthEventsService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<AuthEventInterface[]> - Array of auth event records with applied query params
    */
-  async findByDeviceId(deviceId: string, query: BaseAdminQuery): Promise<AuthEventInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByDeviceId(deviceId: string, queryRaw: BaseAdminQuery): Promise<AuthEventInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding device auth events with query', { 
       deviceId,

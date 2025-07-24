@@ -11,7 +11,7 @@ const Text = forwardRef<HTMLParagraphElement, TextProps>(
     const variants = {
       body: 'text-base text-gray-900',
       small: 'text-xs text-gray-600', 
-      muted: 'text-sm text-gray-500',
+      muted: 'text-small text-gray-500',
     };
 
     return (

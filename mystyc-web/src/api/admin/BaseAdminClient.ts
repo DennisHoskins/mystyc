@@ -28,12 +28,11 @@ export class BaseAdminClient {
         credentials: 'include',
       });
 
-      const errorData = await response.json().catch(() => null);
-      if (errorData) {
-        await handleSessionError(errorData.error, 'admin/fetchWithAuth');
-      }
-
       if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        if (errorData) {
+          await handleSessionError(errorData.error, 'admin/fetchWithAuth');
+        }
         throw new Error(errorData?.message || `HTTP ${response.status}`);
       }
 

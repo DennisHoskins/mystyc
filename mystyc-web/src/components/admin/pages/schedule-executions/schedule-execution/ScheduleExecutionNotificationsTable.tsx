@@ -9,7 +9,7 @@ import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 export default function ScheduleExecutionsNotificationsTable({ executionId, isActive }: { executionId: string | null | undefined, isActive?: boolean }) {
   const [notifications, setNotifications] = useState<AdminListResponse<Notification> | null>(null);

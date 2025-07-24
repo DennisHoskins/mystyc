@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
 
 import { OpenAIUsage as OpenAIUsageInterface, validateOpenAIUsageInputSafe } from 'mystyc-common/schemas';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
 import { OpenAIUsageDocument, OpenAIUsage } from './schemas/openai-usage.schema';
@@ -224,8 +224,11 @@ export class OpenAICoreService implements OnModuleInit {
     return await this.usageModel.countDocuments();
   }  
 
-  async findAll(query: BaseAdminQuery): Promise<OpenAIUsageInterface[]> {
-    const { limit = 50, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<OpenAIUsageInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
+
     
     logger.debug('Finding openai usage with query', { 
       limit, 

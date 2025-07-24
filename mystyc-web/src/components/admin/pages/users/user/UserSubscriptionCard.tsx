@@ -1,3 +1,5 @@
+'use client';
+
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 
 import { formatDateForDisplay } from '@/util/dateTime';
@@ -32,8 +34,8 @@ export default function UserSubscriptionCard({ user }: { user: UserProfile }) {
           value={user.stripeCustomerId || "-"}
         />
         <AdminDetailField
-          label="Credit Balance"
-          value={formatDateForDisplay(user.subscription.startDate)}
+          label="Start Date"
+          value={user.subscription.startDate ? formatDateForDisplay(user.subscription.startDate) : "-"}
         />
         <AdminDetailField
           label="Credit Balance"

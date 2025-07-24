@@ -1,3 +1,5 @@
+'use client';
+
 import Breadcrumbs, { BreadcrumbItem } from '@/components/ui/Breadcrumbs';
 
 interface AdminBreadcrumbsProps {
@@ -7,7 +9,7 @@ interface AdminBreadcrumbsProps {
 export default function AdminBreadcrumbs({ breadcrumbs }: AdminBreadcrumbsProps) {
   return (
     <div className='w-fit overflow-hidden'>
-      <Breadcrumbs level={2} items={breadcrumbs} />
+      <Breadcrumbs level={3} items={breadcrumbs} />
     </div>
   );
 }

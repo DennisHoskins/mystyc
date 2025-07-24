@@ -1,3 +1,5 @@
+'use client';
+
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface LineDataItem {
@@ -35,7 +37,7 @@ export default function SimpleLineChart({
     <div className='flex flex-col flex-1 bg-gray-50 rounded-md pb-4'>
       {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mt-2 mb-2">{title}</h4>}
       {data && (
-        <ResponsiveContainer width="100%" height={height} className="pt-4 flex flex-1 grow">
+        <ResponsiveContainer width="100%" height={height} className="grow">
           <LineChart 
             margin={{ left: 20, right: 20 }}
             data={data}

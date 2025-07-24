@@ -7,7 +7,6 @@ import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
-import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import TokensIcon from '@/components/admin/ui/icons/TokensIcon';
 
 export default function DeviceTokensPanel({ session, device }: { session: Session, device?: Device | null }) {
@@ -23,29 +22,23 @@ export default function DeviceTokensPanel({ session, device }: { session: Sessio
       <hr />
 
       <div className="pt-4">
-        <AdminDetailGrid>
-          <AdminDetailGroup>
+        <AdminDetailGroup className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 overflow-hidden'>
+          <AdminDetailField
+            label="Auth Token"
+            value={session.authToken}
+            text={formatTimestampForComponent(session.authTokenTimestamp)}
+          />
+          <AdminDetailField
+            label="Refresh Token"
+            value={session.refreshToken}
+            text={formatTimestampForComponent(session.refreshTokenTimestamp)}
+          />
             <AdminDetailField
-              label="Auth Token"
-              value={session.authToken}
-              text={formatTimestampForComponent(session.authTokenTimestamp)}
+              label="FcmToken"
+              value={device && device.fcmToken ? device.fcmToken : ''}
+              text={device && device.fcmToken && device.fcmTokenUpdatedAt ? formatDateForComponent(device.fcmTokenUpdatedAt) : ''}
             />
-          </AdminDetailGroup>
-          <AdminDetailGroup>
-            <AdminDetailField
-              label="Refresh Token"
-              value={session.refreshToken}
-              text={formatTimestampForComponent(session.refreshTokenTimestamp)}
-            />
-          </AdminDetailGroup>
-          <AdminDetailGroup>
-              <AdminDetailField
-                label="FcmToken"
-                value={device && device.fcmToken ? device.fcmToken : ''}
-                text={device && device.fcmToken && device.fcmTokenUpdatedAt ? formatDateForComponent(device.fcmTokenUpdatedAt) : ''}
-              />
-            </AdminDetailGroup>
-        </AdminDetailGrid>
+        </AdminDetailGroup>
       </div>
     </div>
   );

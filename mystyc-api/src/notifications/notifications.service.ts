@@ -6,7 +6,7 @@ import * as admin from 'firebase-admin';
 
 import { Device } from 'mystyc-common/schemas/';
 import { Notification as NotificationInterface, validateNotificationInputSafe } from 'mystyc-common/schemas';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
@@ -504,8 +504,10 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments();
   }  
 
-  async findAll(query: BaseAdminQuery): Promise<NotificationInterface[]> {
-    const { limit = 50, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<NotificationInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding notifications with query', { 
       limit, 
@@ -540,8 +542,10 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ deviceId });
   }
 
-  async findByDeviceId(deviceId: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByDeviceId(deviceId: string, queryRaw: BaseAdminQuery): Promise<NotificationInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding device notifications with query', { 
       deviceId,
@@ -582,8 +586,10 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ firebaseUid });
   }
 
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByFirebaseUid(firebaseUid: string, queryRaw: BaseAdminQuery): Promise<NotificationInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding user notifications with query', { 
       firebaseUid,
@@ -624,8 +630,10 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ scheduleId });
   }
 
-  async findByScheduleId(scheduleId: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByScheduleId(scheduleId: string, queryRaw: BaseAdminQuery): Promise<NotificationInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding schedule notifications with query', {
       scheduleId,
@@ -666,8 +674,10 @@ export class NotificationsService {
     return await this.notificationModel.countDocuments({ executionId });
   }
 
-  async findByExecutionId(executionId: string, query: BaseAdminQuery): Promise<NotificationInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByExecutionId(executionId: string, queryRaw: BaseAdminQuery): Promise<NotificationInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding schedule execution notifications with query', {
       executionId,

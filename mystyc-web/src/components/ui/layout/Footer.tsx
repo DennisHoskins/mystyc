@@ -1,3 +1,5 @@
+'use client';
+
 import Text from '@/components/ui/Text';
 
 export default function AppFooter({ children } : { children: React.ReactNode | null }) {

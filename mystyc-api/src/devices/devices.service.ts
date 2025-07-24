@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { UAParser } from 'ua-parser-js';
 
 import { Device as TDevice, DeviceInput, validateDeviceSafe, UpdateFcmToken } from 'mystyc-common/schemas';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, BaseAdminQuerySchema, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
 import { Device, DeviceDocument } from './schemas/device.schema';
@@ -93,8 +93,10 @@ export class DevicesService {
    * @param query - Query parameters including limit, offset, sortBy, sortOrder
    * @returns Promise<TDevice[]> - Array of device records with applied query params
    */
-  async findAll(query: Partial<BaseAdminQuery> = {}): Promise<TDevice[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: Partial<BaseAdminQuery> = {}): Promise<TDevice[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding devices with query', { 
       limit, 
@@ -156,10 +158,12 @@ export class DevicesService {
    */
   async findByFirebaseUid(
     firebaseUid: string, 
-    query: BaseAdminQuery = { limit: 100, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' }
+    queryRaw: BaseAdminQuery = { limit: 100, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' }
   ): Promise<TDevice[]> {
-    const { limit, offset, sortBy, sortOrder } = query;
     
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
+
     logger.debug('Finding user devices with query', { 
       firebaseUid,
       limit, 

@@ -10,7 +10,7 @@ import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminError from '@/components/admin/ui/AdminError';
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 export default function UsersContentTable({ isActive = false } : { isActive: boolean }) {
   const { setBusy } = useBusy();

@@ -16,9 +16,11 @@ export default function TablePagination({
   loading = false,
   onPageChange,
 }: TablePaginationProps) {
-  const displayText = totalPages 
-    ? `Page ${currentPage + 1} of ${totalPages}`
-    : `Page ${currentPage + 1}`;
+  const displayText = loading 
+    ? "" 
+    : totalPages 
+      ? `Page ${currentPage + 1} of ${totalPages}`
+      : `Page ${currentPage + 1}`;
 
   return (
     <div className="flex items-center gap-2">
@@ -31,7 +33,7 @@ export default function TablePagination({
         Previous
       </Button>
       
-      <Text variant="small" className="px-2">
+      <Text variant="small" className="px-2 min-w-28 text-center">
         {displayText}
       </Text>
       

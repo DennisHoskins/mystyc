@@ -1,3 +1,5 @@
+'use client';
+
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';

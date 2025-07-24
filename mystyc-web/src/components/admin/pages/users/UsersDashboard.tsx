@@ -1,3 +1,5 @@
+'use client';
+
 import { UserStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
@@ -19,35 +21,31 @@ interface UsersDashboardProps {
 export default function UsersDashboard({ 
   stats, 
   charts = ['stats', 'profile', 'registrations', 'activity'],
-  height = 100
+  height
 }: UsersDashboardProps) {
-  if (!stats) {
-    return null;
-  }
 
-
-  const duration = formatDateRangeForComponent(stats.query?.startDate, stats.query?.endDate);
+  const duration = stats ? formatDateRangeForComponent(stats.query?.startDate, stats.query?.endDate) : "";
 
   // Transform profile completion data for pie chart
   const profileData = [
-    { name: 'Full Name', value: stats.data.profiles.completionPercentageRates.fullName },
-    { name: 'Date of Birth', value: stats.data.profiles.completionPercentageRates.dateOfBirth },
-    { name: 'Zodiac Sign', value: stats.data.profiles.completionPercentageRates.zodiacSign },
+    { name: 'Full Name', value: stats?.data.profiles.completionPercentageRates.fullName || 0 },
+    { name: 'Date of Birth', value: stats?.data.profiles.completionPercentageRates.dateOfBirth || 0 },
+    { name: 'Zodiac Sign', value: stats?.data.profiles.completionPercentageRates.zodiacSign || 0 },
   ];
 
   // Transform activity data for bar chart
   const activityData = [
-    { period: '24h', users: stats.data.activity.activeUsers.last24Hours },
-    { period: '7d', users: stats.data.activity.activeUsers.last7Days },
-    { period: '30d', users: stats.data.activity.activeUsers.last30Days },
+    { period: '24h', users: stats?.data.activity.activeUsers.last24Hours || 0 },
+    { period: '7d', users: stats?.data.activity.activeUsers.last7Days || 0 },
+    { period: '30d', users: stats?.data.activity.activeUsers.last30Days || 0 },
   ];
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats.data.profiles.totalUsers, label: 'Total Users', color: 'text-blue-600' },
-          { value: `${stats.data.profiles.completionPercentageRates.totalComplete}%`, label: 'Complete Profiles', color: 'text-green-600' }
+          { value: stats?.data.profiles.totalUsers || "", label: 'Total Users', color: 'text-blue-600' },
+          { value: `${stats ? stats?.data.profiles.completionPercentageRates.totalComplete + "%" : " %"}`, label: 'Complete', color: 'text-green-600' }
         ]} 
       />
     ),
@@ -62,7 +60,7 @@ export default function UsersDashboard({
     registrations: (
       <SimpleLineChart 
         title={`Registration Trend (${duration})`}
-        data={stats.data.registrations.data}
+        data={stats?.data.registrations.data}
         height={height}
         dataKey="count"
         xAxisKey="date"

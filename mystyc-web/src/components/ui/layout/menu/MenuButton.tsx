@@ -1,3 +1,5 @@
+'use client';
+
 import { Menu as MenuIcon, X } from 'lucide-react';
 
 interface MenuButtonProps {

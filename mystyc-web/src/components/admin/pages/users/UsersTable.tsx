@@ -1,15 +1,17 @@
+'use client';
+
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 
 import { formatDateForDisplay } from '@/util/dateTime';
 
 import { IconComponent } from '@/components/ui/icons/Icon';
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface UsersTableProps {
   icon?: IconComponent,
   label?: string,
   data: UserProfile[];
-  loading: boolean;
+  loading?: boolean;
   currentPage: number;
   totalPages: number;
   totalItems?: number;
@@ -23,7 +25,7 @@ export default function UsersTable({
   icon,
   label,
   data,
-  loading,
+  loading = false,
   currentPage,
   totalPages,
   totalItems,

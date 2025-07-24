@@ -16,7 +16,7 @@ interface AuthenticationDashboardProps {
 export default function AuthenticationDashboard({ 
   stats, 
   charts = ['stats', 'events', 'peak', 'duration'],
-  height = 100
+  height
 }: AuthenticationDashboardProps) {
   if (!stats) {
     return null;

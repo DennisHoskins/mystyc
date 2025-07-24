@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 
 import { Content as ContentInterface, validateContentInputSafe, UserProfile } from 'mystyc-common/schemas';
 import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
@@ -178,8 +178,10 @@ export class UserContentService {
     return await this.contentModel.countDocuments({ type: 'user_content' });
   }
 
-  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
@@ -209,34 +211,16 @@ export class UserContentService {
    * - user_content they triggered (shared with all free users)
    * - plus_content they own (personal)
    */
-  async findByUserId(userId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByUserId(userId: string, queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
     const pipeline = [
       { $match: { userId } },
-      { $sort: sortObj },
-      { $skip: offset },
-      { $limit: limit },
-    ];
-
-    const content = await this.contentModel.aggregate(pipeline).exec();
-    return content.map(content => this.transformToUserContent(content));
-  }
-
-  /**
-   * Find shared user content triggered by a specific user (admin analytics)
-   */
-  async findTriggeredUserContent(userId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
-    
-    const sortObj: any = {};
-    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
-
-    const pipeline = [
-      { $match: { userId, type: 'user_content' } },
       { $sort: sortObj },
       { $skip: offset },
       { $limit: limit },

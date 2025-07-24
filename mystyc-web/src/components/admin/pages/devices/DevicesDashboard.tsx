@@ -17,7 +17,7 @@ interface DevicesDashboardProps {
 export default function DevicesDashboard({ 
   stats, 
   charts = ['stats', 'platforms', 'browsers', 'activity'],
-  height = 100
+  height
 }: DevicesDashboardProps) {
   if (!stats) {
     return null;

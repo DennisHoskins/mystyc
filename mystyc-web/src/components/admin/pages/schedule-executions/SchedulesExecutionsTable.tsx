@@ -1,7 +1,7 @@
 import { ScheduleExecution } from 'mystyc-common/schemas';
 import { formatDateForDisplay } from '@/util/dateTime';
 
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface ScheduleExecutionsTableProps {
   label?: string;

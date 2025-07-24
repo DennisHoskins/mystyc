@@ -1,3 +1,5 @@
+'use client';
+
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LabelList } from 'recharts';
 
 interface BarDataItem {

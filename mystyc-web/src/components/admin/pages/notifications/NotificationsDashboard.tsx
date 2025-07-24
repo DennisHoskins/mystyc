@@ -19,7 +19,7 @@ interface NotificationsDashboardProps {
 export default function NotificationsDashboard({ 
   stats, 
   charts = ['stats', 'delivery', 'volume', 'platforms'],
-  height = 100
+  height
 }: NotificationsDashboardProps) {
   if (!stats) {
     return null;

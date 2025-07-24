@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { PaymentHistory as PaymentHistoryInterface, validatePaymentHistoryInputSafe } from 'mystyc-common/schemas/payment-history.schema';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
 import { PaymentHistory, PaymentHistoryDocument } from './schemas/payment-history.schema';
@@ -108,8 +108,10 @@ export class PaymentHistoryService {
   /**
    * Find user's payment history with pagination
    */
-  async findByFirebaseUid(firebaseUid: string, query: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
-    const { limit = 50, offset = 0, sortBy = 'paidAt', sortOrder = 'desc' } = query;
+  async findByFirebaseUid(firebaseUid: string, queryRaw: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding payment history for user', {
       firebaseUid,
@@ -199,8 +201,10 @@ export class PaymentHistoryService {
     return await this.paymentModel.countDocuments();
   }
 
-  async findAll(query: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
-    const { limit = 50, offset = 0, sortBy = 'paidAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     logger.debug('Finding all payments with pagination', {
       limit,
@@ -232,8 +236,10 @@ export class PaymentHistoryService {
   /**
    * Get payments by subscription tier (admin analytics)
    */
-  async findBySubscriptionTier(tier: 'plus' | 'pro', query: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
-    const { limit = 50, offset = 0, sortBy = 'paidAt', sortOrder = 'desc' } = query;
+  async findBySubscriptionTier(tier: 'plus' | 'pro', queryRaw: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
@@ -251,8 +257,10 @@ export class PaymentHistoryService {
   /**
    * Get payments by status (admin analytics)
    */
-  async findByStatus(status: 'paid' | 'failed' | 'refunded' | 'disputed', query: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
-    const { limit = 50, offset = 0, sortBy = 'paidAt', sortOrder = 'desc' } = query;
+  async findByStatus(status: 'paid' | 'failed' | 'refunded' | 'disputed', queryRaw: BaseAdminQuery): Promise<PaymentHistoryInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;

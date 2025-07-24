@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode } from 'react';
 
 import Card from '@/components/ui/Card';
@@ -42,7 +44,7 @@ export default function AdminItemLayout({
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
               <div className='mt-1'>
-                <Avatar size={'medium'} icon={icon} />
+                <Avatar size={'small'} icon={icon} />
               </div>
             )}
             {breadcrumbs ? (
@@ -68,7 +70,7 @@ export default function AdminItemLayout({
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
               <div className='mt-1'>
-                <Avatar size={'medium'} icon={icon} />
+                <Avatar size={'small'} icon={icon} />
               </div>
             )}
             {breadcrumbs ? (
@@ -105,7 +107,7 @@ export default function AdminItemLayout({
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
               <div className='mt-1'>
-                <Avatar size={'medium'} icon={icon} />
+                <Avatar size={'small'} icon={icon} />
               </div>
             )}
             {breadcrumbs ? (

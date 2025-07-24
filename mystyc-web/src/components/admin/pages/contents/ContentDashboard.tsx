@@ -107,7 +107,7 @@ export default function ContentDashboard({
   };
 
   return (
-    <div className={`@container grow flex flex-col ${className}`}>
+    <div className={`@container grow flex flex-col`}>
       <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
         {charts.map((chartType) => (
           <div key={chartType} className='flex h-full'>

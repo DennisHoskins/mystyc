@@ -10,14 +10,19 @@ type LinkProps = {
   children: ReactNode;
   className?: string;
   useTransition?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 };
 
-export default function Link({ href, children, className, useTransition = true }: LinkProps) {
+export default function Link({ href, children, className, useTransition = true, onClick }: LinkProps) {
   const router = useTransitionRouter();
   const routerNext = useRouter();
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (onClick) {
+      onClick(e);
+      return;
+    }
     if (useTransition) {
       router.push(href);
     } else {

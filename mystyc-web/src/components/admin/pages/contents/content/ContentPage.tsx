@@ -11,10 +11,11 @@ import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import ContentDetailsPanel from './ContentDetailsPanel';
-import ContentPreviewCard from './ContentPreviewCard';
 import ContentSidebarPanel from './ContentSidebarPanel';
 import ContentDataCard from './ContentDataCard';
 import UserInfoCard from '../../users/user/UserInfoCard';
+import ContentPreviewCard from './ContentPreviewCard';
+import ContentDataPreviewCard from './ContentDataPreviewCard';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
   const { setBusy } = useBusy();
@@ -74,12 +75,13 @@ export default function ContentPage({ contentId }: { contentId: string }) {
       title={content.title}
       headerContent={<ContentDetailsPanel content={content} />}
       sectionsContent={[
+        <ContentDataCard key='data' content={content} />,
         <span key="user">{content.type == "plus_content" && content.userId && <UserInfoCard firebaseUid={content.userId} />}</span>,
       ]}
       sidebarContent={<ContentSidebarPanel content={content} />}
       mainContent={[
         <ContentPreviewCard key='preview' content={content} />,
-        <ContentDataCard key='content' content={content} />
+        <ContentDataPreviewCard key='content' content={content} />
     ]}
     />
   );    

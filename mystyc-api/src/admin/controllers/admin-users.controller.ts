@@ -257,6 +257,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
       sortBy: query.sortBy,
       sortOrder: query.sortOrder
     }, 'AdminUserController');
+
     
     const [data, totalItems] = await Promise.all([
       this.deviceService.findByFirebaseUid(firebaseUid, query),

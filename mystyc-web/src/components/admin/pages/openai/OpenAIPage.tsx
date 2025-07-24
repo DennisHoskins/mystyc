@@ -66,9 +66,6 @@ export default function OpenAIPage() {
     loadUsage(0);
   }, [loadUsage])
 
-// dashboard
-// table
-
   return (
    <AdminListLayout
       error={error}

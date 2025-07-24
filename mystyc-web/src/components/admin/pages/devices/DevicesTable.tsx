@@ -1,7 +1,7 @@
 import { Device } from 'mystyc-common/schemas/';
 
 import { IconComponent } from '@/components/ui/icons/Icon';
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface DevicesTableProps {
   icon?: IconComponent;

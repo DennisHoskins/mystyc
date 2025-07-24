@@ -23,7 +23,7 @@ export default function OpenAIDashboard({
   className,
   stats,
   charts = ['stats', 'budget', 'trends', 'content-types', 'performance'],
-  height = 100
+  height
 }: OpenAIDashboardProps) {
   if (!stats) {
     return null;
@@ -51,10 +51,6 @@ export default function OpenAIDashboard({
     avgTime: item.averageGenerationTime,
     retries: item.retries
   }));
-
-  // Calculate budget usage percentage for both cost and tokens
-  // const costUsagePercent = Math.round((stats.data.currentMonthlyUsage.costUsed / stats.data.currentMonthlyUsage.costBudget) * 100);
-  // const tokenUsagePercent = Math.round((stats.data.currentMonthlyUsage.tokensUsed / stats.data.currentMonthlyUsage.tokenBudget) * 100);
 
   const chartComponents = {
     stats: (

@@ -10,7 +10,7 @@ import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 
 export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: string }) {

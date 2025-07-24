@@ -20,7 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className='px-4 md:pl-0 py-4'>
+    <div className='px-4 md:pl-0 md:pr-2 py-4 flex flex-col flex-1'>
       {children}
     </div>
   );

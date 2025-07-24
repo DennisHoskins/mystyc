@@ -11,7 +11,7 @@ import { logger } from '@/util/logger';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
-import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
+import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function SubscriptionUserPanel({ firebaseUid }: { firebaseUid: string }) {
@@ -42,7 +42,7 @@ export default function SubscriptionUserPanel({ firebaseUid }: { firebaseUid: st
       <hr />
 
       <div className="pt-4">
-        <AdminDetailGrid>
+        <AdminDetailGroup>
           <AdminDetailField
             label="Full Name"
             value={user?.fullName}
@@ -70,7 +70,7 @@ export default function SubscriptionUserPanel({ firebaseUid }: { firebaseUid: st
             label="Start Date"
             value={formatDateForDisplay(user?.subscription.startDate)}
           />
-        </AdminDetailGrid>
+        </AdminDetailGroup>
       </div>
     </>      
   );

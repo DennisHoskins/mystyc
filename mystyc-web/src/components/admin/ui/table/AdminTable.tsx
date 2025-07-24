@@ -4,12 +4,7 @@ import React from 'react';
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
-import Avatar from '@/components/ui/Avatar';
-import Badge from '@/components/ui/Badge';
-import Button from '@/components/ui/Button';
-import TablePagination from '@/components/ui/table/TablePagination';
 import {
   Table,
   TableHeader,
@@ -19,6 +14,9 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { IconComponent } from '@/components/ui/icons/Icon';
+
+import AdminTableHeader from './AdminTableHeader';
+import AdminTableFooter from './AdminTableFooter';
 
 export interface Column<T> {
   key: keyof T | string;
@@ -146,69 +144,14 @@ export default function AdminTable<T>({
     return displayValue;
   };
 
-  if (loading && currentPage === 0) {
-    return null;
-  }
-
-  if (data.length === 0) {
-    return (
-      <>
-        {label && (
-          <div className='flex justify-between items-center mb-2'>
-            <div className='flex space-x-2 items-center'>
-              {icon && <Avatar size={'small'} icon={icon} />}
-              <Heading level={5}>{label}</Heading>
-            </div>
-            {totalItems && <Badge total={totalItems} />}
-          </div>
-        )}        
-        <Text className='mt-4'>{emptyMessage}</Text>
-        {(onRefresh || onPageChange) && (
-          <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
-            <div>
-              {onRefresh && (
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  onClick={onRefresh}
-                  disabled={loading}
-                >
-                  Refresh
-                </Button>
-              )}
-            </div>
-            <div>
-              {onPageChange && (
-                <TablePagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  hasMore={hasMore}
-                  loading={loading}
-                  onPageChange={onPageChange}
-                />
-              )}
-            </div>
-          </div>
-        )}
-      </>
-    );
-  }
-
   return (
     <>
-      {label && (
-        <div className='flex justify-between items-center mb-2'>
-          <div className='flex space-x-2 items-center'>
-            {icon && <Avatar size={'small'} icon={icon} />}
-            <Heading level={5}>{label}</Heading>
-          </div>
-          {totalItems && <Badge total={totalItems} />}
-        </div>
-      )}        
+      {label && <AdminTableHeader icon={icon} label={label} totalItems={totalItems} />}        
+
       <Table>
         <TableHeader>
           <TableRow>
-            {columns.map((column) => (
+            {loading == false && columns.map((column) => (
               <TableHead 
                 key={column.key.toString()} 
                 style={{ width: column.width }}
@@ -219,8 +162,9 @@ export default function AdminTable<T>({
             ))}
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          {data.map((item, index) => (
+          {loading == false && data.length > 0 && data.map((item, index) => (
             <TableRow key={getItemKey(item, index)}>
               {columns.map((column) => (
                 <TableCell 
@@ -232,36 +176,26 @@ export default function AdminTable<T>({
               ))}
             </TableRow>
           ))}
+          
+          {loading == false && data.length == 0 && (
+            <TableRow>
+              <TableCell colSpan={columns.length}>
+                No data found
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       
-      {(onRefresh || onPageChange) && (
-        <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-          <div>
-            {onRefresh && (
-              <Button 
-                variant="secondary" 
-                size="sm" 
-                onClick={onRefresh}
-                disabled={loading}
-              >
-                Refresh
-              </Button>
-            )}
-          </div>
-          <div>
-            {onPageChange && (
-              <TablePagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                hasMore={hasMore}
-                loading={loading}
-                onPageChange={onPageChange}
-              />
-            )}
-          </div>
-        </div>
-      )}
+      {(onRefresh || onPageChange) && 
+        <AdminTableFooter 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasMore={hasMore}
+          loading={loading}
+          onPageChange={onPageChange}
+        />
+      }
     </>
   );
 }

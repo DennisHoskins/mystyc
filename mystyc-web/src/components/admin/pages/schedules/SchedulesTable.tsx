@@ -1,6 +1,6 @@
 import { Schedule } from 'mystyc-common/schemas';
 
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SchedulesTableProps {
   label?: string;

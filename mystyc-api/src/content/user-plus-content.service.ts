@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 
 import { Content as ContentInterface, validateContentInputSafe, UserProfile } from 'mystyc-common/schemas';
 import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
-import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
 import { UserProfilesService } from '@/users/user-profiles.service';
@@ -152,8 +152,10 @@ export class UserPlusContentService {
     return await this.contentModel.countDocuments({ type: 'plus_content' });
   }
 
-  async findAll(query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findAll(queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
@@ -176,8 +178,10 @@ export class UserPlusContentService {
     });
   }
 
-  async findByUserId(userId: string, query: BaseAdminQuery): Promise<ContentInterface[]> {
-    const { limit = 100, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  async findByUserId(userId: string, queryRaw: BaseAdminQuery): Promise<ContentInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
     
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;

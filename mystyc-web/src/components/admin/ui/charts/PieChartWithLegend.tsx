@@ -1,3 +1,5 @@
+'use client';
+
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 interface PieDataItem {
@@ -10,7 +12,7 @@ interface PieDataItem {
 interface PieChartWithLegendProps {
   title: string;
   label?: boolean;
-  data: PieDataItem[];
+  data?: PieDataItem[];
   colors?: string[];
   showPercentage?: boolean;
   height?: number | string;
@@ -21,7 +23,7 @@ const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
 export default function PieChartWithLegend({ 
   title, 
   label = true,
-  data, 
+  data = [], 
   colors = DEFAULT_COLORS, 
   showPercentage = true,
   height = '100%'

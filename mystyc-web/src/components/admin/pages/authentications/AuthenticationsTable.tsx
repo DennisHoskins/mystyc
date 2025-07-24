@@ -1,8 +1,10 @@
+'use client';
+
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 
 import { formatDateForDisplay } from '@/util/dateTime';
 
-import AdminTable, { Column } from '@/components/admin/ui/AdminTable';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface AuthenticationsTableProps {
   label?: string;
