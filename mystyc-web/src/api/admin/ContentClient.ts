@@ -1,13 +1,13 @@
 import { AdminStatsQuery, AdminStatsResponseWithQuery, BaseAdminQuery, AdminListResponse } from 'mystyc-common/admin';
 import { Content } from 'mystyc-common/schemas/';
 import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
+import { ContentsSummary } from 'mystyc-common/admin/interfaces/summary'; 
 
 import { logger } from '@/util/logger';
 import { BaseAdminClient } from './BaseAdminClient';
 
 export class ContentClient extends BaseAdminClient {
   
-  // Content Stats
   getStats = async (query?: Partial<AdminStatsQuery>): Promise<AdminStatsResponseWithQuery<ContentStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
@@ -23,14 +23,7 @@ export class ContentClient extends BaseAdminClient {
     }
   };
 
-  // Content Management
-  getSummary = async (): Promise<{
-    content: { total: number };
-    notifications: { total: number };
-    website: { total: number };
-    users: { total: number };
-    plus: { total: number };
-  }> => {
+  getSummary = async (): Promise<ContentsSummary> => {
     try {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/content/summary`);
     } catch (error) {

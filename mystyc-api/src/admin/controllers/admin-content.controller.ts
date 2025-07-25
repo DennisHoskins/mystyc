@@ -49,11 +49,11 @@ export class AdminContentController extends AdminController<Content> {
     ]);
 
     return {
-      content: { total: contentCount },
-      website: { total: websiteCount },
-      notifications: { total: notificationsCount },
-      users: { total: usersCount },
-      plus: { total: plusCount },
+      total: contentCount,
+      website: websiteCount,
+      notifications: notificationsCount,
+      users: usersCount,
+      plus: plusCount,
     };
   }
 
