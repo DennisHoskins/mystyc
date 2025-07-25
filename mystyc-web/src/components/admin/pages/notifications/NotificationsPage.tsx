@@ -8,7 +8,6 @@ import { NotificationStats, AdminListResponse, AdminStatsResponseWithQuery } fro
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -25,11 +24,10 @@ export default function NotificationsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<NotificationStats> | null>(null);
   const [data, setData] = useState<AdminListResponse<Notification> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const getCurrentView = (): NotificationView => {
@@ -39,7 +37,6 @@ export default function NotificationsPage() {
     if (searchParams.has('broadcast')) return 'broadcast';
     return 'summary';
   };
-
   const currentView = getCurrentView();
   const breadcrumbs = NotificationsBreadcrumbs({ currentView, onClick: () => { router.push("notifications"); }});
   const showNotificationTable = currentView !== 'summary';
@@ -49,7 +46,6 @@ export default function NotificationsPage() {
       router.push(pathname);
       return;
     }
-    
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -57,7 +53,6 @@ export default function NotificationsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -68,7 +63,6 @@ export default function NotificationsPage() {
       logger.error('Failed to load notification data:', err);
       setError('Failed to load notification data. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -80,7 +74,6 @@ export default function NotificationsPage() {
       }
 
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -98,7 +91,6 @@ export default function NotificationsPage() {
       logger.error('Failed to load notifications:', err);
       setError('Failed to load notifications. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [showNotificationTable, setBusy, currentView]);
@@ -138,7 +130,7 @@ export default function NotificationsPage() {
           {showNotificationTable ?
             (
               <NotificationsTable
-                loading = {loading}
+                loading = {isBusy}
                 data={data?.data}
                 currentPage={currentPage}
                 pagination={data?.pagination}

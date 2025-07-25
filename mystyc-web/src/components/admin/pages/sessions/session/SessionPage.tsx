@@ -7,7 +7,6 @@ import { Session } from '@/interfaces';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
@@ -47,9 +46,7 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Sessions', href: '/admin/sessions' },
-    { 
-      label: session ? `${sessionId}` : ``
-    },
+    { label: session ? `${sessionId}` : `` },
   ], [session, sessionId]);
 
   const handleDeviceLoad = useCallback((device: Device) => {

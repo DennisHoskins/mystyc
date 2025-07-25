@@ -7,7 +7,6 @@ import { OpenAIUsageStats, AdminListResponse, AdminStatsResponseWithQuery } from
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
@@ -15,11 +14,10 @@ import OpenAIUsageTable from './OpenAIUsageTable';
 import OpenAIDashboard from './OpenAIUsageDashboard';
 
 export default function OpenAIPage() {
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<OpenAIUsageStats> | null>(null);
   const [data, setData] = useState<AdminListResponse<OpenAIUsage> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const breadcrumbs = [
@@ -30,7 +28,6 @@ export default function OpenAIPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -41,7 +38,6 @@ export default function OpenAIPage() {
       logger.error('Failed to load OpenAI stats:', err);
       setError('Failed to load OpenAI stats. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -49,7 +45,6 @@ export default function OpenAIPage() {
   const loadUsage = useCallback(async (page: number) => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -61,7 +56,6 @@ export default function OpenAIPage() {
       logger.error('Failed to load OpenAI usage:', err);
       setError('Failed to load OpenAI usage. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -108,7 +102,7 @@ export default function OpenAIPage() {
         <OpenAIUsageTable 
           data={data?.data}
           pagination={data?.pagination}
-          loading={loading}
+          loading={isBusy}
           currentPage={currentPage}
           onPageChange={loadUsage}
           onRefresh={() => loadUsage(0)}

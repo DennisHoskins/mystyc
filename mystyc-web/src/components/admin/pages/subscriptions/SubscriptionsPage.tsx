@@ -9,7 +9,6 @@ import { SubscriptionStats, SubscriptionsSummary, AdminListResponse, AdminStatsR
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -27,8 +26,7 @@ export default function SubscriptionsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy } = useBusy();
-  const [loading, setLoading] = useState(false);
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<SubscriptionStats> | null>(null);
   const [summary, setSummary] = useState<SubscriptionsSummary | null>(null);
   const [payments, setPayments] = useState<AdminListResponse<PaymentHistory> | null>(null);
@@ -42,7 +40,6 @@ export default function SubscriptionsPage() {
     if (searchParams.has('subscribers')) return 'subscribers';
     return 'summary';
   };
-
   const currentView = getCurrentView();
   const breadcrumbs = SubscriptionsBreadcrumbs({ currentView, onClick: () => { router.push("subscriptions"); }});
   const showSubscriptionTable = currentView !== 'summary';
@@ -52,7 +49,6 @@ export default function SubscriptionsPage() {
       router.push(pathname);
       return;
     }
-    
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -60,7 +56,6 @@ export default function SubscriptionsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -72,7 +67,6 @@ export default function SubscriptionsPage() {
       logger.error('Failed to load subscription data:', err);
       setError('Failed to load subscription data. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -80,7 +74,6 @@ export default function SubscriptionsPage() {
   const loadPayments = useCallback(async (page: number) => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -92,7 +85,6 @@ export default function SubscriptionsPage() {
       logger.error('Failed to load payments:', err);
       setError('Failed to load payments. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -100,7 +92,6 @@ export default function SubscriptionsPage() {
   const loadSubscribers = useCallback(async (page: number) => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -112,7 +103,6 @@ export default function SubscriptionsPage() {
       logger.error('Failed to load subscribers:', err);
       setError('Failed to load subscribers. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -135,7 +125,7 @@ export default function SubscriptionsPage() {
     if (currentView === 'payments') {
       return (
         <PaymentsTable
-          loading={loading}
+          loading={isBusy}
           data={payments?.data}
           pagination={payments?.pagination}
           currentPage={currentPagePayments}
@@ -146,7 +136,7 @@ export default function SubscriptionsPage() {
     } else if (currentView === 'subscribers') {
       return (
         <UsersTable
-          loading={loading}
+          loading={isBusy}
           data={subscribers?.data}
           pagination={subscribers?.pagination}
           currentPage={currentPageSubscribers}

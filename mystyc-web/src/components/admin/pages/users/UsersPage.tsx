@@ -8,7 +8,6 @@ import { UserStats, UsersSummary, AdminListResponse, AdminStatsResponseWithQuery
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -25,8 +24,7 @@ export default function UsersPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy } = useBusy();
-  const [loading, setLoading] = useState(false);
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<UserStats> | null>(null);
   const [summary, setSummary] = useState<UsersSummary | null>(null);
   const [data, setData] = useState<AdminListResponse<UserProfile> | null>(null);
@@ -39,7 +37,6 @@ export default function UsersPage() {
     if (searchParams.has('plus')) return 'plus';
     return 'summary';
   };
-
   const currentView = getCurrentView();
   const breadcrumbs = UsersBreadcrumbs({ currentView, onClick: () => { router.push("users"); }});
   const showUserTable = currentView !== 'summary';
@@ -49,7 +46,6 @@ export default function UsersPage() {
       router.push(pathname);
       return;
     }
-    
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -57,7 +53,6 @@ export default function UsersPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -70,7 +65,6 @@ export default function UsersPage() {
       setError('Failed to load users. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [setBusy]);
 
@@ -81,7 +75,6 @@ export default function UsersPage() {
       }
 
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -107,7 +100,6 @@ export default function UsersPage() {
       setError('Failed to load users. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [showUserTable, setBusy, currentView]);
 
@@ -145,7 +137,7 @@ export default function UsersPage() {
           {showUserTable ?
             (
               <UsersTable
-                loading = {loading}
+                loading = {isBusy}
                 data={data?.data}
                 pagination={data?.pagination}
                 currentPage={currentPage}

@@ -8,7 +8,6 @@ import { AuthEventStats, AuthEventsSummary, AdminListResponse, AdminStatsRespons
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -25,14 +24,12 @@ export default function AuthenticationsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<AuthEventStats> | null>(null);
   const [summary, setSummary] = useState<AuthEventsSummary | null>(null);
   const [data, setData] = useState<AdminListResponse<AuthEvent> | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-
 
   const getCurrentView = (): AuthenticationView => {
     if (searchParams.has('all')) return 'all';
@@ -42,7 +39,6 @@ export default function AuthenticationsPage() {
     if (searchParams.has('server-logout')) return 'server-logout';
     return 'summary';
   };
-
   const currentView = getCurrentView();
   const breadcrumbs = AuthenticationsBreadcrumbs({ currentView, onClick: () => { router.push("authentication"); }});
   const showAuthTable = currentView !== 'summary';
@@ -52,7 +48,6 @@ export default function AuthenticationsPage() {
       router.push(pathname);
       return;
     }
-    
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -60,7 +55,6 @@ export default function AuthenticationsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -72,7 +66,6 @@ export default function AuthenticationsPage() {
       logger.error('Failed to load authentication data:', err);
       setError('Failed to load authentication data. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -84,7 +77,6 @@ export default function AuthenticationsPage() {
       }
 
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -115,7 +107,6 @@ export default function AuthenticationsPage() {
       logger.error('Failed to load auth events:', err);
       setError('Failed to load auth events. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [showAuthTable, setBusy, currentView]);
@@ -155,7 +146,7 @@ export default function AuthenticationsPage() {
           {showAuthTable ?
             (
               <AuthenticationsTable
-                loading = {loading}
+                loading = {isBusy}
                 data={data?.data}
                 pagination={data?.pagination}
                 currentPage={currentPage}

@@ -6,7 +6,6 @@ import { TrafficStats } from '@/interfaces/admin/stats';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon';

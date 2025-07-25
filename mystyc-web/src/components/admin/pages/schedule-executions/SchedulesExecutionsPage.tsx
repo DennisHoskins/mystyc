@@ -7,7 +7,6 @@ import { ScheduleExecutionStats, AdminListResponse, AdminStatsResponseWithQuery 
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
@@ -15,11 +14,10 @@ import SchedulesExecutionsTable from './SchedulesExecutionsTable';
 import SchedulesExecutionsDashboard from './SchedulesExecutionsDashboard';
 
 export default function SchedulesExecutionsPage() {
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleExecutionStats> | null>(null);
   const [data, setData] = useState<AdminListResponse<ScheduleExecution> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const breadcrumbs = [
@@ -31,7 +29,6 @@ export default function SchedulesExecutionsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -42,7 +39,6 @@ export default function SchedulesExecutionsPage() {
       logger.error('Failed to load schedule execution stats:', err);
       setError('Failed to load schedule execution stats. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -50,7 +46,6 @@ export default function SchedulesExecutionsPage() {
   const loadSchedulesExecutions = useCallback(async (page: number) => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -62,7 +57,6 @@ export default function SchedulesExecutionsPage() {
       logger.error('Failed to load schedule executions:', err);
       setError('Failed to load schedule executions. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -109,7 +103,7 @@ export default function SchedulesExecutionsPage() {
          <SchedulesExecutionsTable 
            data={data?.data}
            pagination={data?.pagination}
-           loading={loading}
+           loading={isBusy}
            currentPage={currentPage}
            onPageChange={loadSchedulesExecutions}
            onRefresh={() => loadSchedulesExecutions(0)}

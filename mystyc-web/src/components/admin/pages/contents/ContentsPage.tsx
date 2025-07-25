@@ -8,7 +8,6 @@ import { ContentStats, ContentsSummary, AdminListResponse, AdminStatsResponseWit
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -25,12 +24,11 @@ export default function ContentsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ContentStats> | null>(null);
   const [summary, setSummary] = useState<ContentsSummary | null>(null);
   const [data, setData] = useState<AdminListResponse<Content> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const getCurrentView = (): ContentView => {
@@ -41,7 +39,6 @@ export default function ContentsPage() {
     if (searchParams.has('users-plus')) return 'users-plus';
     return 'summary';
   };
-
   const currentView = getCurrentView();
   const breadcrumbs = ContentsBreadcrumbs({ currentView, onClick: () => { router.push("content"); }});
   const showContentTable = currentView !== 'summary';
@@ -51,7 +48,6 @@ export default function ContentsPage() {
       router.push(pathname);
       return;
     }
-    
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -59,7 +55,6 @@ export default function ContentsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -71,7 +66,6 @@ export default function ContentsPage() {
       logger.error('Failed to load content data:', err);
       setError('Failed to load content data. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -83,7 +77,6 @@ export default function ContentsPage() {
       }
 
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -115,7 +108,6 @@ export default function ContentsPage() {
       logger.error('Failed to load content:', err);
       setError('Failed to load content. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [showContentTable, setBusy, currentView]);
@@ -156,7 +148,7 @@ export default function ContentsPage() {
           {showContentTable ?
             (
               <ContentsTable
-                loading = {loading}
+                loading = {isBusy}
                 data={data?.data}
                 pagination={data?.pagination}
                 currentPage={currentPage}

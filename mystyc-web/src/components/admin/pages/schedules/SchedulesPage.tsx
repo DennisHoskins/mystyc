@@ -7,7 +7,6 @@ import { ScheduleStats, AdminListResponse, AdminStatsResponseWithQuery } from 'm
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
@@ -16,11 +15,10 @@ import SchedulesTable from './SchedulesTable';
 import SchedulesDashboard from './SchedulesDashboard';
 
 export default function SchedulesPage() {
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleStats> | null>(null);
   const [data, setData] = useState<AdminListResponse<Schedule> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const breadcrumbs = [
@@ -31,7 +29,6 @@ export default function SchedulesPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -42,7 +39,6 @@ export default function SchedulesPage() {
       logger.error('Failed to load schedule stats:', err);
       setError('Failed to load schedule stats. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -50,7 +46,6 @@ export default function SchedulesPage() {
   const loadSchedules = useCallback(async (page: number) => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -62,7 +57,6 @@ export default function SchedulesPage() {
       logger.error('Failed to load schedules:', err);
       setError('Failed to load schedules. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -119,7 +113,7 @@ export default function SchedulesPage() {
           label="Schedules"
           data={data?.data}
           pagination={data?.pagination}
-          loading={loading}
+          loading={isBusy}
           currentPage={currentPage}
           onPageChange={loadSchedules}
           onRefresh={() => loadSchedules(0)}

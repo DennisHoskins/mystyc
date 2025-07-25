@@ -9,7 +9,6 @@ import { SessionStats } from '@/interfaces/admin/stats';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import SessionsTable from './SessionsTable';
@@ -17,11 +16,10 @@ import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionsDashboard from './SessionsDashboard';
 
 export default function SessionsPage() {
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<SessionStats> | null>(null);
   const [data, setData] = useState<AdminListResponse<Session> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const breadcrumbs = [
@@ -32,7 +30,6 @@ export default function SessionsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -43,7 +40,6 @@ export default function SessionsPage() {
       logger.error('Failed to load session stats:', err);
       setError('Failed to load session stats. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -51,7 +47,6 @@ export default function SessionsPage() {
   const loadSessions = useCallback(async (page: number) => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -63,7 +58,6 @@ export default function SessionsPage() {
       logger.error('Failed to load sessions:', err);
       setError('Failed to load sessions. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy, ]);
@@ -92,7 +86,7 @@ export default function SessionsPage() {
         <SessionsTable 
           data={data?.data}
           pagination={data?.pagination}
-          loading={loading}
+          loading={isBusy}
           currentPage={currentPage}
           onPageChange={loadSessions}
           onRefresh={() => loadSessions(0)}

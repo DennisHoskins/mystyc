@@ -8,7 +8,6 @@ import { DeviceStats, DevicesSummary, AdminListResponse, AdminStatsResponseWithQ
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -25,12 +24,11 @@ export default function DevicesPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<DeviceStats> | null>(null);
   const [summary, setSummary] = useState<DevicesSummary | null>(null);
   const [data, setData] = useState<AdminListResponse<Device> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const getCurrentView = (): DeviceView => {
@@ -39,7 +37,6 @@ export default function DevicesPage() {
     if (searchParams.has('offline')) return 'offline';
     return 'summary';
   };
-
   const currentView = getCurrentView();
   const breadcrumbs = DevicesBreadcrumbs({ currentView, onClick: () => { router.push("devices"); }});
   const showDeviceTable = currentView !== 'summary';
@@ -49,7 +46,6 @@ export default function DevicesPage() {
       router.push(pathname);
       return;
     }
-    
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -57,7 +53,6 @@ export default function DevicesPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
@@ -69,7 +64,6 @@ export default function DevicesPage() {
       logger.error('Failed to load devices:', err);
       setError('Failed to load devices. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [setBusy]);
@@ -81,7 +75,6 @@ export default function DevicesPage() {
       }
 
       setError(null);
-      setLoading(true);
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
@@ -106,7 +99,6 @@ export default function DevicesPage() {
       logger.error('Failed to load devices:', err);
       setError('Failed to load devices. Please try again.');
     } finally {
-      setLoading(false);
       setBusy(false);
     }
   }, [showDeviceTable, setBusy, currentView]);
@@ -145,7 +137,7 @@ export default function DevicesPage() {
           {showDeviceTable ?
             (
               <DevicesTable
-                loading = {loading}
+                loading = {isBusy}
                 data={data?.data}
                 currentPage={currentPage}
                 pagination={data?.pagination}
