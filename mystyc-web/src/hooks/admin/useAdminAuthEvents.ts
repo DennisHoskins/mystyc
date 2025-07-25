@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
-export function useAdminUsers() {
+export function useAdminAuthEvents() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +13,7 @@ export function useAdminUsers() {
     setLoading(true);
     setError(null);
     try {
-      return await apiClientAdmin.users.getStats(query);
+      return await apiClientAdmin.auth.getStats(query);
     } catch (err) {
       logger.error('getStats failed:', err);
       setError('Failed to load stats');
@@ -27,7 +27,7 @@ export function useAdminUsers() {
     setLoading(true);
     setError(null);
     try {
-      return await apiClientAdmin.users.getSummary();
+      return await apiClientAdmin.auth.getSummary();
     } catch (err) {
       logger.error('getSummary failed:', err);
       setError('Failed to load summary');
@@ -42,8 +42,8 @@ export function useAdminUsers() {
     setError(null);
     try {
       const [stats, summary] = await Promise.all([
-        apiClientAdmin.users.getStats(query),
-        apiClientAdmin.users.getSummary()
+        apiClientAdmin.auth.getStats(query),
+        apiClientAdmin.auth.getSummary()
       ]);
       return { stats, summary };
     } catch (err) {
@@ -55,35 +55,15 @@ export function useAdminUsers() {
     }
   }, []);
 
-  const getUsers = useCallback(async (type: 'all' | 'users' | 'plus', query?: any) => {
+  const getAuthEvents = useCallback(async (type: 'all' | 'create' | 'login' | 'logout' | 'server-logout', query?: any) => {
     setLoading(true);
     setError(null);
     try {
-      switch (type) {
-        case 'all':
-          return await apiClientAdmin.users.getAll(query);
-        case 'users':
-          return await apiClientAdmin.users.getUsers(query);
-        case 'plus':
-          return await apiClientAdmin.users.getPlusUsers(query);
-      }
+      if (type == 'all') return await apiClientAdmin.auth.getAuthEvents(query);
+      else return await apiClientAdmin.auth.getAuthEventsByType(type, query);
     } catch (err) {
-      logger.error('getUsers failed:', err);
-      setError('Failed to load users');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const getUserSummary = useCallback(async (firebaseUid: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      return await apiClientAdmin.users.getUserSummary(firebaseUid);
-    } catch (err) {
-      logger.error('getUserSummary failed:', err);
-      setError('Failed to load user summary');
+      logger.error('getDevices failed:', err);
+      setError('Failed to load devices');
       throw err;
     } finally {
       setLoading(false);
@@ -95,7 +75,6 @@ export function useAdminUsers() {
     getStats,
     getSummary,
     getSummaryStats,
-    getUsers,
-    getUserSummary,
+    getAuthEvents,
   };
 }

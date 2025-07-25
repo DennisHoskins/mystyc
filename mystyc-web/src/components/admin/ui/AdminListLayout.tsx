@@ -128,7 +128,7 @@ export default function AdminListLayout({
             ))}
           </div>
         ) : (
-          <Card className='flex-1'>{tableContent}</Card>
+          <Card>{tableContent}</Card>
         )
       )}
     </>

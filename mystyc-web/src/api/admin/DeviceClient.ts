@@ -15,7 +15,6 @@ import { BaseAdminClient } from './BaseAdminClient';
 
 export class DeviceClient extends BaseAdminClient {
   
-  // Device Stats
   getStats = async (query?: Partial<AdminStatsQuery>): Promise<AdminStatsResponseWithQuery<DeviceStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
@@ -31,7 +30,6 @@ export class DeviceClient extends BaseAdminClient {
     }
   };
 
-  // Device Management
   getSummary = async (): Promise<DevicesSummary> => {
     try {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/summary`);

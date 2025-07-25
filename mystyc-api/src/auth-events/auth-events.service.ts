@@ -36,6 +36,47 @@ export class AuthEventsService {
   }  
 
   /**
+   * @returns number - Retrieves auth events records total
+   */
+  async getTotalByEvent(event: string): Promise<number> {
+    const pipeline = [
+      { $match: { type: { $eq: event } } },
+      { $count: 'totalEvents' }
+    ];
+    
+    const result = await this.authEventModel
+      .aggregate(pipeline)
+      .exec();
+      
+    return result[0]?.totalEvents || 0;
+  }  
+
+  /**
+   * @returns Promise<AuthEvents[]> - Retrieves list of matching auth events by type
+   */
+  async findByEvent(type: 'create' | 'login' | 'logout' | 'server-logout', queryRaw: BaseAdminQuery): Promise<AuthEventInterface[]> {
+
+    const query = validateBaseAdminQuery(queryRaw);
+    const { limit, offset, sortBy, sortOrder } = query as Required<BaseAdminQuery>;
+
+    const sortObj: any = {};
+    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const pipeline = [
+      { $match: { type: { $eq: type } } },
+      { $sort: sortObj },
+      { $skip: offset },
+      { $limit: limit },
+    ];    
+
+    const events = await this.authEventModel.
+      aggregate(pipeline)
+      .exec();
+
+    return events.map(evt => this.transformToAuthEvent(evt as AuthEventDocument));
+  }
+
+  /**
    * Retrieves auth events (admin) with pagination and sorting
    */
   async findAll(queryRaw: BaseAdminQuery): Promise<AuthEventInterface[]> {

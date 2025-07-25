@@ -37,6 +37,24 @@ export function useAdminDevices() {
     }
   }, []);
 
+  const getSummaryStats = useCallback(async (query?: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [stats, summary] = await Promise.all([
+        apiClientAdmin.devices.getStats(query),
+        apiClientAdmin.devices.getSummary()
+      ]);
+      return { stats, summary };
+    } catch (err) {
+      logger.error('getSummaryStats failed:', err);
+      setError('Failed to load summary stats');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const getDevices = useCallback(async (type: 'all' | 'online' | 'offline', query?: any) => {
     setLoading(true);
     setError(null);
@@ -72,30 +90,12 @@ export function useAdminDevices() {
     }
   }, []);
 
-  const getSummaryStats = useCallback(async (query?: any) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [stats, summary] = await Promise.all([
-        apiClientAdmin.devices.getStats(query),
-        apiClientAdmin.devices.getSummary()
-      ]);
-      return { stats, summary };
-    } catch (err) {
-      logger.error('getSummaryStats failed:', err);
-      setError('Failed to load summary stats');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   return {
     state,
     getStats,
     getSummary,
-    getDeviceSummary,
     getSummaryStats,
     getDevices,
+    getDeviceSummary,
   };
 }

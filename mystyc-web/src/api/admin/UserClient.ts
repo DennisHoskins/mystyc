@@ -15,7 +15,6 @@ import { BaseAdminClient } from './BaseAdminClient';
 
 export class UserClient extends BaseAdminClient {
   
-  // User Stats
   getStats = async (query?: Partial<AdminStatsQuery>): Promise<AdminStatsResponseWithQuery<UserStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
@@ -31,7 +30,6 @@ export class UserClient extends BaseAdminClient {
     }
   };
 
-  // User Management
   getSummary = async (): Promise<UsersSummary> => {
     try {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/users/summary`);

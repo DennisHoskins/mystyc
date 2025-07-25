@@ -2,6 +2,7 @@ import { Controller, Get, UseGuards, Param, Query, NotFoundException } from '@ne
 
 import { Device, UserProfile } from 'mystyc-common/schemas/';
 import { UserRole } from 'mystyc-common/constants/roles.enum';
+import { DevicesSummary } from 'mystyc-common/admin/interfaces/summary';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
 
@@ -37,7 +38,7 @@ export class AdminDevicesController extends AdminController<Device> {
   @Get('/summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getDevicesSummary(@Param('firebaseUid') firebaseUid: string) {
+  async getDevicesSummary(@Param('firebaseUid') firebaseUid: string): Promise<DevicesSummary> {
     const [totalCount, onlineCount, offlineCount] = await Promise.all([
       this.service.getTotal(),
       this.service.getTotalOnline(),

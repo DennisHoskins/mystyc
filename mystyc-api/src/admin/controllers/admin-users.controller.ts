@@ -2,6 +2,7 @@ import { Controller, Query, Get, UseGuards, Param, NotFoundException } from '@ne
 
 import { AuthEvent, Content, Device, Notification, PaymentHistory, UserProfile } from 'mystyc-common/schemas/';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
+import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 import { AdminListResponse } from 'mystyc-common/admin/';
 
@@ -62,7 +63,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @Get('/summary')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getUsersSummary(@Param('firebaseUid') firebaseUid: string) {
+  async getUsersSummary(@Param('firebaseUid') firebaseUid: string): Promise<UsersSummary> {
     const [totalCount, usersCount, plusCount] = await Promise.all([
       this.service.getTotal(),
       this.service.getTotalBySubscriptionTier(SubscriptionLevel.USER),
