@@ -86,7 +86,7 @@ export default function DevicesPage() {
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
       let response: AdminListResponse<Device>;
-      
+
       switch (currentView) {
         case 'online':
           response = await apiClientAdmin.devices.getOnlineDevices(listQuery);
@@ -95,10 +95,9 @@ export default function DevicesPage() {
           response = await apiClientAdmin.devices.getOfflineDevices(listQuery);
           break;
         case 'all':
+        default:
           response = await apiClientAdmin.devices.getDevices(listQuery);
           break;
-        default:
-          return;
       }
 
       setData(response);
@@ -107,6 +106,7 @@ export default function DevicesPage() {
       logger.error('Failed to load devices:', err);
       setError('Failed to load devices. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
   }, [showDeviceTable, setBusy, currentView]);

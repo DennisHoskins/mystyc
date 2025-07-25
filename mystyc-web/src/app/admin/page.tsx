@@ -1,16 +1,13 @@
-'use client';
-
-import { useUser } from '@/components/ui/layout/context/AppContext';
+import type { Metadata } from 'next';
+export async function generateMetadata(): Promise<Metadata> {
+  const title = "mystyc.admin" + (process.env.NODE_ENV === 'production' ? '' : ' // dev');
+  return {
+    title,
+  };
+}
 
 import AdminHome from '@/components/admin/AdminHome';
 
 export default function AdminPage() {
-  const user = useUser();
-  const isAdmin = user && user.isAdmin;
-
-  if (!isAdmin) {
-    return null;
-  }
-
   return <AdminHome />
 }

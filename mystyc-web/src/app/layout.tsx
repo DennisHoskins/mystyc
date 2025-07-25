@@ -1,14 +1,6 @@
 import type { Metadata } from 'next';
-
-import '@/styles/globals.css';
-
-import { logger } from '@/util/logger';
-import AppContext from '@/components/ui/layout/context/AppContext';
-import ErrorBoundary from '@/components/ui/layout/ErrorBoundary';
- 
 export async function generateMetadata(): Promise<Metadata> {
-  const title = process.env.NODE_ENV === 'production' ? 'mystyc' : 'mystyc // dev';
-  
+  const title = 'mystyc' + (process.env.NODE_ENV === 'production' ? '' : ' // dev');
   return {
     title,
     description: 'Get to know yourself better',
@@ -20,6 +12,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+import '@/styles/globals.css';
+
+import { logger } from '@/util/logger';
+import AppContext from '@/components/ui/layout/context/AppContext';
+import ErrorBoundary from '@/components/ui/layout/ErrorBoundary';
+ 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   logger.log("RootLayout Rendered");
 
