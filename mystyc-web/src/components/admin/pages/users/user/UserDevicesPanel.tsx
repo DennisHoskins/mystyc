@@ -15,10 +15,7 @@ export default function UserDevicesPanel({ firebaseUid }: { firebaseUid: string 
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const LIMIT = 20;
 
   const loadUserDevices = useCallback(async (page: number) => {
@@ -34,10 +31,7 @@ export default function UserDevicesPanel({ firebaseUid }: { firebaseUid: string 
       });
 
       setDevices(response.data);
-      setTotalItems(response.pagination.totalItems);
-      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load devices:', err);
       setError('Failed to load devices. Please try again.');
@@ -67,9 +61,6 @@ export default function UserDevicesPanel({ firebaseUid }: { firebaseUid: string 
         data={devices}
         loading={loading}
         currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        hasMore={hasMore}
         onPageChange={loadUserDevices}
         onRefresh={() => loadUserDevices(currentPage)}
       />

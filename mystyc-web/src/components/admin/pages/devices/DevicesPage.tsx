@@ -4,14 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { Device } from 'mystyc-common/schemas/';
-import { DeviceStats } from 'mystyc-common/admin/interfaces/stats';
-import { DevicesSummary } from 'mystyc-common/admin/interfaces/summary';
-import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
+import { DeviceStats, DevicesSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
@@ -28,20 +24,15 @@ export default function DevicesPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { admin }  = useAdmin();
   
   const { setBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<DeviceStats> | null>(null);
   const [summary, setSummary] = useState<DevicesSummary | null>(null);
-  const [devices, setDevices] = useState<Device[]>([]);
+  const [data, setData] = useState<AdminListResponse<Device> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
 
-  const LIMIT = 20;
-
-  // Determine current view from URL
   const getCurrentView = (): DeviceView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('online')) return 'online';
@@ -53,14 +44,12 @@ export default function DevicesPage() {
   const breadcrumbs = DevicesBreadcrumbs({ currentView, onClick: () => { router.push("devices"); }});
   const showDeviceTable = currentView !== 'summary';
 
-  // Change URL without page reload
   const handleClick = (view: DeviceView) => {
     if (view === 'summary') {
       router.push(pathname);
       return;
     }
     
-    // For query params without values, manually construct
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -68,10 +57,11 @@ export default function DevicesPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const summaryStats = await admin.devices.getSummaryStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const summaryStats = await apiClientAdmin.devices.getSummaryStats(statsQuery);
 
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
@@ -79,9 +69,10 @@ export default function DevicesPage() {
       logger.error('Failed to load devices:', err);
       setError('Failed to load devices. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.devices]);
+  }, [setBusy]);
 
   const loadDevices = useCallback(async (page: number) => {
     try {
@@ -90,50 +81,41 @@ export default function DevicesPage() {
       }
 
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const query = {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'asc',
-      } as const;
-
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
       let response: AdminListResponse<Device>;
       
       switch (currentView) {
         case 'online':
-          response = await admin.devices.getDevices("online", query);
+          response = await apiClientAdmin.devices.getOnlineDevices(listQuery);
           break;
         case 'offline':
-          response = await admin.devices.getDevices("offline", query);
+          response = await apiClientAdmin.devices.getOfflineDevices(listQuery);
           break;
         case 'all':
-          response = await admin.devices.getDevices("all", query);
+          response = await apiClientAdmin.devices.getDevices(listQuery);
           break;
         default:
           return;
       }
 
-      setDevices(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load devices:', err);
       setError('Failed to load devices. Please try again.');
     } finally {
       setBusy(false);
     }
-  }, [showDeviceTable, setBusy, currentView, admin.devices]);
+  }, [showDeviceTable, setBusy, currentView]);
 
-  // Reload data when view changes
   useEffect(() => {
     if (currentView == 'online' || currentView == 'offline' || currentView == 'all') loadDevices(0);
     else loadData();
-  }, [loadData, loadDevices, currentView, admin.devices]);
+  }, [loadData, loadDevices, currentView]);
 
-  // Load stats and summary on mount
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -163,11 +145,10 @@ export default function DevicesPage() {
           {showDeviceTable ?
             (
               <DevicesTable
-                loading = {admin.devices.state.loading}
-                data={devices}
+                loading = {loading}
+                data={data?.data}
                 currentPage={currentPage}
-                totalPages={totalPages}
-                hasMore={hasMore}
+                pagination={data?.pagination}
                 onPageChange={() => loadDevices(currentPage)}
                 onRefresh={() => loadDevices(0)}
               />

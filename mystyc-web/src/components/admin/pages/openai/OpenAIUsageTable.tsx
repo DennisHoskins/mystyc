@@ -1,14 +1,14 @@
 import { OpenAIUsage } from 'mystyc-common/schemas';
+import { Pagination } from 'mystyc-common/admin';
 
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface OpenAIUsageTableProps {
   label?: string;
-  data: OpenAIUsage[];
+  data?: OpenAIUsage[];
+  pagination?: Pagination;
   loading: boolean;
   currentPage: number;
-  totalPages: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
 }
@@ -16,10 +16,9 @@ interface OpenAIUsageTableProps {
 export default function OpenAIUsageTable({
   label,
   data,
+  pagination,
   loading,
   currentPage,
-  totalPages,
-  hasMore,
   onPageChange,
   onRefresh,
 }: OpenAIUsageTableProps) {
@@ -40,8 +39,8 @@ export default function OpenAIUsageTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No OpenAI Usage found."

@@ -1,15 +1,16 @@
 import { ScheduleExecution } from 'mystyc-common/schemas';
+import { Pagination } from 'mystyc-common/admin';
+
 import { formatDateForDisplay } from '@/util/dateTime';
 
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface ScheduleExecutionsTableProps {
   label?: string;
-  data: ScheduleExecution[];
+  data?: ScheduleExecution[];
+  pagination?: Pagination;
   loading: boolean;
   currentPage: number;
-  totalPages: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
 }
@@ -17,10 +18,9 @@ interface ScheduleExecutionsTableProps {
 export default function ScheduleExecutionsTable({
   label,
   data,
+  pagination,
   loading,
   currentPage,
-  totalPages,
-  hasMore,
   onPageChange,
   onRefresh,
 }: ScheduleExecutionsTableProps) {
@@ -39,8 +39,8 @@ export default function ScheduleExecutionsTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Schedule Executions found."

@@ -9,6 +9,10 @@ import { AuthEventClient } from './AuthEventClient';
 import { NotificationClient } from './NotificationClient';
 import { OpenAIClient } from './OpenAIClient';
 
+import { AdminStatsQuery, BaseAdminQuery } from 'mystyc-common/admin';
+
+const LIMIT = 20;
+
 export class AdminApiClient {
   public readonly stats: StatsClient;
   public readonly users: UserClient;
@@ -32,6 +36,31 @@ export class AdminApiClient {
     this.auth = new AuthEventClient();
     this.notifications = new NotificationClient();
     this.openai = new OpenAIClient();
+  }
+
+  getDefaultStatsQuery(): Partial<AdminStatsQuery> {
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 29); // 30 days total including today
+
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+    
+    return {
+      startDate: startDateStr,
+      endDate: endDateStr,
+      maxRecords: 10000
+    }
+  };
+
+  getDefaultListQuery(page: number): BaseAdminQuery  {
+      const query = {
+        limit: LIMIT,
+        offset: page * LIMIT,
+        sortBy: 'createdAt',
+        sortOrder: 'asc',
+      } as const;
+      return query;
   }
 }
 

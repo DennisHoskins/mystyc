@@ -5,15 +5,17 @@ export interface AdminQuery {
   sortOrder?: 'asc' | 'desc';
 }
 
+export interface Pagination {
+  limit: number;
+  offset: number;
+  totalItems: number;
+  totalPages: number;
+  hasMore?: boolean;
+}
+
 export interface AdminListResponse<T> {
   data: T[];
-  pagination: {
-    limit: number;
-    offset: number;
-    totalItems: number;
-    totalPages: number;
-    hasMore?: boolean;
-  };
+  pagination: Pagination;
   sort?: {
     field: string;
     order: 'asc' | 'desc';

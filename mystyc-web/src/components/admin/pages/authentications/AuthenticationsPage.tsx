@@ -4,14 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { AuthEvent } from 'mystyc-common/schemas/';
-import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
-import { AuthEventsSummary } from 'mystyc-common/admin/interfaces/summary';
-import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
+import { AuthEventStats, AuthEventsSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
@@ -28,20 +24,16 @@ export default function AuthenticationsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { admin }  = useAdmin();
   
   const { setBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<AuthEventStats> | null>(null);
   const [summary, setSummary] = useState<AuthEventsSummary | null>(null);
-  const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
+  const [data, setData] = useState<AdminListResponse<AuthEvent> | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
 
-  const LIMIT = 20;
 
-  // Determine current view from URL
   const getCurrentView = (): AuthenticationView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('create')) return 'create';
@@ -55,14 +47,12 @@ export default function AuthenticationsPage() {
   const breadcrumbs = AuthenticationsBreadcrumbs({ currentView, onClick: () => { router.push("authentication"); }});
   const showAuthTable = currentView !== 'summary';
 
-  // Change URL without page reload
   const handleClick = (view: AuthenticationView) => {
     if (view === 'summary') {
       router.push(pathname);
       return;
     }
     
-    // For query params without values, manually construct
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -70,10 +60,11 @@ export default function AuthenticationsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const summaryStats = await admin.auth.getSummaryStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const summaryStats = await apiClientAdmin.auth.getSummaryStats(statsQuery);
 
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
@@ -81,9 +72,10 @@ export default function AuthenticationsPage() {
       logger.error('Failed to load authentication data:', err);
       setError('Failed to load authentication data. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.auth]);
+  }, [setBusy]);
 
   const loadAuthEvents = useCallback(async (page: number) => {
     try {
@@ -92,56 +84,47 @@ export default function AuthenticationsPage() {
       }
 
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const query = {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'clientTimestamp',
-        sortOrder: 'desc',
-      } as const;
-
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
       let response: AdminListResponse<AuthEvent>;
       
       switch (currentView) {
         case 'create':
-          response = await admin.auth.getAuthEvents("create", query);
+          response = await apiClientAdmin.auth.getAuthEventsByType("create", listQuery);
           break;
         case 'login':
-          response = await admin.auth.getAuthEvents("login", query);
+          response = await apiClientAdmin.auth.getAuthEventsByType("login", listQuery);
           break;
         case 'logout':
-          response = await admin.auth.getAuthEvents("logout", query);
+          response = await apiClientAdmin.auth.getAuthEventsByType("logout", listQuery);
           break;
         case 'server-logout':
-          response = await admin.auth.getAuthEvents("server-logout", query);
+          response = await apiClientAdmin.auth.getAuthEventsByType("server-logout", listQuery);
           break;
         case 'all':
         default:
-          // For 'all' view, we need a method that gets all events regardless of type
-          response = await admin.auth.getAuthEvents("all", query);
+          response = await apiClientAdmin.auth.getAuthEvents(listQuery);
           break;
       }
 
-      setAuthEvents(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load auth events:', err);
       setError('Failed to load auth events. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [showAuthTable, setBusy, currentView, admin.auth]);
+  }, [showAuthTable, setBusy, currentView]);
 
-  // Reload data when view changes
   useEffect(() => {
     if (currentView == 'create' || currentView == 'login' || currentView == 'logout' || currentView == 'server-logout' || currentView == 'all') loadAuthEvents(0);
     else loadData();
   }, [loadData, loadAuthEvents, currentView]);
 
-  // Load stats and summary on mount
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -172,11 +155,10 @@ export default function AuthenticationsPage() {
           {showAuthTable ?
             (
               <AuthenticationsTable
-                loading = {admin.auth.state.loading}
-                data={authEvents}
+                loading = {loading}
+                data={data?.data}
+                pagination={data?.pagination}
                 currentPage={currentPage}
-                totalPages={totalPages}
-                hasMore={hasMore}
                 onPageChange={() => loadAuthEvents(currentPage)}
                 onRefresh={() => loadAuthEvents(0)}
               />

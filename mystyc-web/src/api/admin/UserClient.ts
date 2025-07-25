@@ -7,8 +7,7 @@ import {
   Notification, 
   PaymentHistory 
 } from 'mystyc-common/schemas/';
-import { UserStats } from 'mystyc-common/admin/interfaces/stats';
-import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
+import { UserStats, UsersSummary } from 'mystyc-common/admin/interfaces';
 
 import { logger } from '@/util/logger';
 import { BaseAdminClient } from './BaseAdminClient';
@@ -39,17 +38,19 @@ export class UserClient extends BaseAdminClient {
     }
   };
 
-  getUserSummary = async (firebaseUid: string): Promise<{
-    content: { total: number };
-    requests: { total: number };
-    authEvents: { total: number };
-    notifications: { total: number };
-    payments: { total: number };
+  getSummaryStats = async (query?: Partial<AdminStatsQuery>): Promise<{
+    stats: AdminStatsResponseWithQuery<UserStats>,
+    summary: UsersSummary
   }> => {
     try {
-      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/users/${firebaseUid}/summary`);
+      const stats = await this.getStats(query);
+      const summary = await this.getSummary();
+      return {
+        stats: stats,
+        summary: summary
+      }
     } catch (error) {
-      logger.error('getUserSummary failed:', error);
+      logger.error('getUsersSummary failed:', error);
       throw error;
     }
   };
@@ -89,6 +90,21 @@ export class UserClient extends BaseAdminClient {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/users/${firebaseUid}`);
     } catch (error) {
       logger.error('getUser failed:', error);
+      throw error;
+    }
+  };
+
+  getUserSummary = async (firebaseUid: string): Promise<{
+    content: { total: number };
+    requests: { total: number };
+    authEvents: { total: number };
+    notifications: { total: number };
+    payments: { total: number };
+  }> => {
+    try {
+      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/users/${firebaseUid}/summary`);
+    } catch (error) {
+      logger.error('getUserSummary failed:', error);
       throw error;
     }
   };

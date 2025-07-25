@@ -1,6 +1,7 @@
 import { AlarmClockCheck, Megaphone, User } from 'lucide-react';
 
 import { Notification } from 'mystyc-common/schemas';
+import { Pagination } from 'mystyc-common/admin';
 
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -8,11 +9,10 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface NotificationsTableProps {
   label?: string;
-  data: Notification[];
+  data?: Notification[];
+  pagination?: Pagination;
   loading: boolean;
   currentPage: number;
-  totalPages: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
   hideUserColumn?: boolean;
@@ -21,10 +21,9 @@ interface NotificationsTableProps {
 export default function NotificationsTable({
   label,
   data,
+  pagination,
   loading,
   currentPage,
-  totalPages,
-  hasMore,
   onPageChange,
   onRefresh,
   hideUserColumn = false
@@ -73,8 +72,8 @@ export default function NotificationsTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Notifications found."

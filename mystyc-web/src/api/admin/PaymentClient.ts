@@ -1,13 +1,12 @@
 import { AdminStatsQuery, AdminStatsResponseWithQuery, BaseAdminQuery, AdminListResponse } from 'mystyc-common/admin';
 import { PaymentHistory } from 'mystyc-common/schemas/';
-import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
+import { SubscriptionStats, SubscriptionsSummary } from 'mystyc-common/admin/interfaces';
 
 import { logger } from '@/util/logger';
 import { BaseAdminClient } from './BaseAdminClient';
 
 export class PaymentClient extends BaseAdminClient {
   
-  // Payment/Subscription Stats
   getStats = async (query?: Partial<AdminStatsQuery>): Promise<AdminStatsResponseWithQuery<SubscriptionStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
@@ -23,14 +22,27 @@ export class PaymentClient extends BaseAdminClient {
     }
   };
 
-  // Payment/Subscription Management
-  getSummary = async (): Promise<{
-    totalPayments: number;
-    totalSubscriptions: number;
-  }> => {
+  getSummary = async (): Promise<SubscriptionsSummary> => {
     try {
       const results = await this.fetchWithAuth(`${this.API_BASE_URL}/admin/payments/summary`);
       return results;
+    } catch (error) {
+      logger.error('getSubscriptionsSummary failed:', error);
+      throw error;
+    }
+  };
+
+  getSummaryStats = async (query?: Partial<AdminStatsQuery>): Promise<{
+    stats: AdminStatsResponseWithQuery<SubscriptionStats>;
+    summary: SubscriptionsSummary
+  }> => {
+    try {
+      const stats = await this.getStats(query)
+      const summary = await this.getSummary();
+      return {
+        stats,
+        summary
+      }
     } catch (error) {
       logger.error('getSubscriptionsSummary failed:', error);
       throw error;

@@ -3,13 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
-import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
@@ -19,24 +18,7 @@ import AdminError from '@/components/admin/ui/AdminError';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import SessionsDashboard from './pages/sessions/SessionsDashboard';
 
-// Default query parameters for comprehensive dashboard view
-export function getDefaultDashboardStatsQuery() {
-  const endDate = new Date();
-  const startDate = new Date(endDate);
-  startDate.setDate(endDate.getDate() - 29); // 30 days total including today
-
-  const startDateStr = startDate.toISOString().split('T')[0];
-  const endDateStr = endDate.toISOString().split('T')[0];
-  
-  return {
-    startDate: startDateStr,
-    endDate: endDateStr,
-    maxRecords: 10000
-  }
-};
-
 export default function AdminHome() {
-  const { admin } = useAdmin();
   const { setBusy } = useBusy();
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null>(null);
@@ -46,8 +28,8 @@ export default function AdminHome() {
       setError(null);
       setBusy(1000);
 
-      const defaultQuery = getDefaultDashboardStatsQuery();
-      const stats = await admin.stats.getDashboard(defaultQuery);
+      const defaultQuery = apiClientAdmin.getDefaultStatsQuery();
+      const stats = await apiClientAdmin.stats.getDashboard(defaultQuery);
       setStats(stats)
     } catch (err) {
       logger.error('Failed to load dashboard:', err);
@@ -55,7 +37,7 @@ export default function AdminHome() {
     } finally {
       setBusy(false);
     }
-  }, [setBusy, admin.stats]);
+  }, []);
 
   useEffect(() => {
     loadDashboard();

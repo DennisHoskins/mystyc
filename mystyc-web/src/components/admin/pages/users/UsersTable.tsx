@@ -1,6 +1,7 @@
 'use client';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
+import { Pagination } from 'mystyc-common/admin';
 
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -10,12 +11,10 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 interface UsersTableProps {
   icon?: IconComponent,
   label?: string,
-  data: UserProfile[];
+  data?: UserProfile[];
+  pagination?: Pagination;
   loading?: boolean;
   currentPage: number;
-  totalPages: number;
-  totalItems?: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
   hideSubscriptionColumn?: boolean;
@@ -25,11 +24,9 @@ export default function UsersTable({
   icon,
   label,
   data,
+  pagination,
   loading = false,
   currentPage,
-  totalPages,
-  totalItems,
-  hasMore,
   onPageChange,
   onRefresh,
   hideSubscriptionColumn = false
@@ -59,9 +56,9 @@ export default function UsersTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      totalItems={totalItems}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages || 0}
+      totalItems={pagination?.totalItems || 0}
+      hasMore={pagination?.hasMore || false}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Users found."

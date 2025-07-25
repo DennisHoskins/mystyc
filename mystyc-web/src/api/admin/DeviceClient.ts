@@ -5,8 +5,7 @@ import {
   AuthEvent, 
   Notification 
 } from 'mystyc-common/schemas/';
-import { DeviceStats } from 'mystyc-common/admin/interfaces/stats';
-import { DevicesSummary } from 'mystyc-common/admin/interfaces/summary';
+import { DeviceStats, DevicesSummary } from 'mystyc-common/admin/interfaces';
 
 import { DeviceSession } from '@/interfaces';
 
@@ -39,14 +38,19 @@ export class DeviceClient extends BaseAdminClient {
     }
   };
 
-  getDeviceSummary = async (deviceId: string): Promise<{
-    authEvents: { total: number };
-    notifications: { total: number };
+  getSummaryStats = async (query?: Partial<AdminStatsQuery>): Promise<{
+    stats: AdminStatsResponseWithQuery<DeviceStats>,
+    summary: DevicesSummary
   }> => {
     try {
-      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/${deviceId}/summary`);
+      const stats = await this.getStats(query);
+      const summary = await this.getSummary();
+      return {
+        stats: stats,
+        summary: summary
+      }
     } catch (error) {
-      logger.error('getDeviceSummary failed:', error);
+      logger.error('getDevicesSummary failed:', error);
       throw error;
     }
   };
@@ -81,20 +85,32 @@ export class DeviceClient extends BaseAdminClient {
     }
   };
 
-  getDeviceSession = async (deviceId: string): Promise<DeviceSession> => {
-    try {
-      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/device-sessions/${deviceId}`);
-    } catch (error) {
-      logger.error('getDeviceSession failed:', error);
-      throw error;
-    }
-  };
-
   getDevice = async (deviceId: string): Promise<Device> => {
     try {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/${deviceId}`);
     } catch (error) {
       logger.error('getDevice failed:', error);
+      throw error;
+    }
+  };
+
+  getDeviceSummary = async (deviceId: string): Promise<{
+    authEvents: { total: number };
+    notifications: { total: number };
+  }> => {
+    try {
+      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/${deviceId}/summary`);
+    } catch (error) {
+      logger.error('getDeviceSummary failed:', error);
+      throw error;
+    }
+  };
+
+  getDeviceSession = async (deviceId: string): Promise<DeviceSession> => {
+    try {
+      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/device-sessions/${deviceId}`);
+    } catch (error) {
+      logger.error('getDeviceSession failed:', error);
       throw error;
     }
   };

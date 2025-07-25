@@ -1,14 +1,14 @@
 import { Schedule } from 'mystyc-common/schemas';
+import { Pagination } from 'mystyc-common/admin';
 
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SchedulesTableProps {
   label?: string;
-  data: Schedule[];
+  data?: Schedule[];
+  pagination?: Pagination;
   loading: boolean;
   currentPage: number;
-  totalPages: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
 }
@@ -16,10 +16,9 @@ interface SchedulesTableProps {
 export default function SchedulesTable({
   label,
   data,
+  pagination,
   loading,
   currentPage,
-  totalPages,
-  hasMore,
   onPageChange,
   onRefresh,
 }: SchedulesTableProps) {
@@ -37,8 +36,8 @@ export default function SchedulesTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Schedules found."

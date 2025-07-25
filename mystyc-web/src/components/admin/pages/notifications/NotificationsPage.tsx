@@ -4,13 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { Notification } from 'mystyc-common/schemas/';
-import { NotificationStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
+import { NotificationStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
@@ -27,19 +24,14 @@ export default function NotificationsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { admin }  = useAdmin();
   
   const { setBusy } = useBusy();
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<NotificationStats> | null>(null);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [data, setData] = useState<AdminListResponse<Notification> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
 
-  const LIMIT = 20;
-
-  // Determine current view from URL
   const getCurrentView = (): NotificationView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('scheduled')) return 'scheduled';
@@ -52,14 +44,12 @@ export default function NotificationsPage() {
   const breadcrumbs = NotificationsBreadcrumbs({ currentView, onClick: () => { router.push("notifications"); }});
   const showNotificationTable = currentView !== 'summary';
 
-  // Change URL without page reload
   const handleClick = (view: NotificationView) => {
     if (view === 'summary') {
       router.push(pathname);
       return;
     }
     
-    // For query params without values, manually construct
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -67,19 +57,21 @@ export default function NotificationsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await admin.notifications.getStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const stats = await apiClientAdmin.notifications.getStats(statsQuery);
 
       setStats(stats);
     } catch (err) {
       logger.error('Failed to load notification data:', err);
       setError('Failed to load notification data. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.notifications]);
+  }, [setBusy]);
 
   const loadNotifications = useCallback(async (page: number) => {
     try {
@@ -88,53 +80,34 @@ export default function NotificationsPage() {
       }
 
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const query = {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'sentAt',
-        sortOrder: 'desc',
-      } as const;
-
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
       let response: AdminListResponse<Notification>;
       
       switch (currentView) {
-        case 'scheduled':
-          response = await admin.notifications.getNotifications("scheduled", query);
-          break;
-        case 'user':
-          response = await admin.notifications.getNotifications("user", query);
-          break;
-        case 'broadcast':
-          response = await admin.notifications.getNotifications("broadcast", query);
-          break;
-        case 'all':
-          response = await admin.notifications.getNotifications("all", query);
-          break;
         default:
-          return;
+          response = await apiClientAdmin.notifications.getNotifications(listQuery);
+          break;
       }
 
-      setNotifications(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load notifications:', err);
       setError('Failed to load notifications. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [showNotificationTable, setBusy, currentView, admin.notifications]);
+  }, [showNotificationTable, setBusy, currentView]);
 
-  // Reload data when view changes
   useEffect(() => {
     if (currentView == 'scheduled' || currentView == 'user' || currentView == 'broadcast' || currentView == 'all') loadNotifications(0);
     else loadData();
-  }, [loadData, loadNotifications, currentView, admin.notifications]);
+  }, [loadData, loadNotifications, currentView]);
 
-  // Load stats on mount
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -165,11 +138,10 @@ export default function NotificationsPage() {
           {showNotificationTable ?
             (
               <NotificationsTable
-                loading = {admin.notifications.state.loading}
-                data={notifications}
+                loading = {loading}
+                data={data?.data}
                 currentPage={currentPage}
-                totalPages={totalPages}
-                hasMore={hasMore}
+                pagination={data?.pagination}
                 onPageChange={() => loadNotifications(currentPage)}
                 onRefresh={() => loadNotifications(0)}
                 hideUserColumn={currentView === 'user'}

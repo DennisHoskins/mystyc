@@ -1,4 +1,5 @@
 import { Session } from '@/interfaces';
+import { Pagination } from 'mystyc-common/admin';
 
 import { formatTimestampForComponent } from '@/util/dateTime';
 
@@ -6,10 +7,10 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SessionsTableProps {
   label?: string;
-  data: Session[];
+  data?: Session[];
+  pagination?: Pagination;
   loading: boolean;
   currentPage: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
 }
@@ -17,9 +18,9 @@ interface SessionsTableProps {
 export default function SessionsTable({
   label,
   data,
+  pagination,
   loading,
   currentPage,
-  hasMore,
   onPageChange,
   onRefresh
 }: SessionsTableProps) {
@@ -37,7 +38,7 @@ export default function SessionsTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      hasMore={hasMore}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Sessions found."

@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+import { AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import { Session } from '@/interfaces';
 import { SessionStats } from '@/interfaces/admin/stats';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -18,14 +17,12 @@ import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionsDashboard from './SessionsDashboard';
 
 export default function SessionsPage() {
-  const { admin } = useAdmin();
   const { setBusy } = useBusy();
-  const [sessions, setSessions] = useState<Session[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<SessionStats> | null>(null);
+  const [data, setData] = useState<AdminListResponse<Session> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 20;
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
@@ -35,41 +32,42 @@ export default function SessionsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await admin.sessions.getStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const stats = await apiClientAdmin.sessions.getStats(statsQuery);
+
       setStats(stats);
     } catch (err) {
       logger.error('Failed to load session stats:', err);
       setError('Failed to load session stats. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.sessions]);
+  }, [setBusy]);
 
   const loadSessions = useCallback(async (page: number) => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const response = await admin.sessions.getSessions({
-        limit: LIMIT,
-        offset: page * LIMIT,
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.sessions.getSessions(listQuery);
 
-      setSessions(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
     } catch (err) {
       logger.error('Failed to load sessions:', err);
       setError('Failed to load sessions. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, , admin.sessions]);
+  }, [setBusy, ]);
 
-  // Load stats and initial sessions data
   useEffect(() => {
     loadData();
     loadSessions(0);
@@ -92,10 +90,10 @@ export default function SessionsPage() {
        }
       tableContent={
         <SessionsTable 
-          data={sessions}
-          loading={admin.sessions.state.loading}
+          data={data?.data}
+          pagination={data?.pagination}
+          loading={loading}
           currentPage={currentPage}
-          hasMore={hasMore}
           onPageChange={loadSessions}
           onRefresh={() => loadSessions(0)}
         />

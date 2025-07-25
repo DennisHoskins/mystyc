@@ -1,4 +1,5 @@
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
+import { Pagination } from 'mystyc-common/admin';
 
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -6,11 +7,10 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface PaymentsTableProps {
   label?: string;
-  data: PaymentHistory[];
+  data?: PaymentHistory[];
+  pagination?: Pagination;
   loading: boolean;
   currentPage: number;
-  totalPages: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
   hideUserColumn?: false;
@@ -19,10 +19,9 @@ interface PaymentsTableProps {
 export default function PaymentsTable({
   label,
   data,
+  pagination,
   loading,
   currentPage,
-  totalPages,
-  hasMore,
   onPageChange,
   onRefresh,
   hideUserColumn = false
@@ -54,8 +53,8 @@ export default function PaymentsTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Payments found."

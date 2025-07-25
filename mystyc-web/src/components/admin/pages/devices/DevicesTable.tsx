@@ -1,6 +1,7 @@
 'use client';
 
 import { Device } from 'mystyc-common/schemas/';
+import { Pagination } from 'mystyc-common/admin';
 
 import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
@@ -8,12 +9,10 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 interface DevicesTableProps {
   icon?: IconComponent,
   label?: string,
-  data: Device[];
+  data?: Device[];
+  pagination?: Pagination;
   loading?: boolean;
   currentPage: number;
-  totalPages: number;
-  totalItems?: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
   hideStatusColumn?: boolean;
@@ -23,11 +22,9 @@ export default function DevicesTable({
   icon,
   label,
   data,
+  pagination,
   loading = false,
   currentPage,
-  totalPages,
-  totalItems,
-  hasMore,
   onPageChange,
   onRefresh,
   hideStatusColumn = false
@@ -56,9 +53,9 @@ export default function DevicesTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      totalItems={totalItems}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages}
+      totalItems={pagination?.totalItems}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Devices found."

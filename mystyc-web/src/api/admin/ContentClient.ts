@@ -32,6 +32,23 @@ export class ContentClient extends BaseAdminClient {
     }
   };
 
+  getSummaryStats = async (query?: Partial<AdminStatsQuery>): Promise<{
+    stats: AdminStatsResponseWithQuery<ContentStats>,
+    summary: ContentsSummary
+  }> => {
+    try {
+      const stats = await this.getStats(query);
+      const summary = await this.getSummary();
+      return {
+        stats: stats,
+        summary: summary
+      }
+    } catch (error) {
+      logger.error('getContentsSummary failed:', error);
+      throw error;
+    }
+  };
+
   getContents = async (query?: BaseAdminQuery): Promise<AdminListResponse<Content>> => {
     try {
       const queryString = this.buildQueryString(query);

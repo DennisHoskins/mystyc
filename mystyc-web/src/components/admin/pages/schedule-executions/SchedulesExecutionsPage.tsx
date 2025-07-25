@@ -3,12 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { ScheduleExecution } from 'mystyc-common/schemas';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+import { ScheduleExecutionStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
-import { ScheduleExecutionStats } from 'mystyc-common/admin/interfaces/stats';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -17,15 +15,12 @@ import SchedulesExecutionsTable from './SchedulesExecutionsTable';
 import SchedulesExecutionsDashboard from './SchedulesExecutionsDashboard';
 
 export default function SchedulesExecutionsPage() {
-  const { admin } = useAdmin();
   const { setBusy } = useBusy();
-  const [schedulesExecutions, setSchedulesExecutions] = useState<ScheduleExecution[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleExecutionStats> | null>(null);
+  const [data, setData] = useState<AdminListResponse<ScheduleExecution> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 20;
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
@@ -36,44 +31,42 @@ export default function SchedulesExecutionsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await admin.executions.getExecutionStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const stats = await apiClientAdmin.schedule.getExecutionStats(statsQuery);
+
       setStats(stats);
     } catch (err) {
       logger.error('Failed to load schedule execution stats:', err);
       setError('Failed to load schedule execution stats. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.executions]);
+  }, [setBusy]);
 
   const loadSchedulesExecutions = useCallback(async (page: number) => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const response = await admin.executions.getExecutions({
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'date',
-        sortOrder: 'desc',
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.schedule.getExecutions(listQuery);
 
-      setSchedulesExecutions(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load schedule executions:', err);
       setError('Failed to load schedule executions. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.executions]);
+  }, [setBusy]);
 
-  // Load stats and initial executions data
   useEffect(() => {
     loadData();
     loadSchedulesExecutions(0);
@@ -114,11 +107,10 @@ export default function SchedulesExecutionsPage() {
       ]}
        tableContent={
          <SchedulesExecutionsTable 
-           data={schedulesExecutions}
-           loading={admin.executions.state.loading}
+           data={data?.data}
+           pagination={data?.pagination}
+           loading={loading}
            currentPage={currentPage}
-           totalPages={totalPages}
-           hasMore={hasMore}
            onPageChange={loadSchedulesExecutions}
            onRefresh={() => loadSchedulesExecutions(0)}
          />

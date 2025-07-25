@@ -3,12 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { OpenAIUsage } from 'mystyc-common/schemas';
-import { OpenAIUsageStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+import { OpenAIUsageStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -17,15 +15,12 @@ import OpenAIUsageTable from './OpenAIUsageTable';
 import OpenAIDashboard from './OpenAIUsageDashboard';
 
 export default function OpenAIPage() {
-  const { admin } = useAdmin();
   const { setBusy } = useBusy();
-  const [usage, setUsage] = useState<OpenAIUsage[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<OpenAIUsageStats> | null>(null);
+  const [data, setData] = useState<AdminListResponse<OpenAIUsage> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 20;
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
@@ -35,48 +30,46 @@ export default function OpenAIPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await admin.openai.getStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const stats = await apiClientAdmin.openai.getStats(statsQuery);
+
       setStats(stats);
     } catch (err) {
       logger.error('Failed to load OpenAI stats:', err);
       setError('Failed to load OpenAI stats. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.openai]);
+  }, [setBusy]);
 
   const loadUsage = useCallback(async (page: number) => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const response = await admin.openai.getUsages({
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'date',
-        sortOrder: 'desc',
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.openai.getOpenAIUsages(listQuery);
 
-      setUsage(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load OpenAI usage:', err);
       setError('Failed to load OpenAI usage. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.openai]);
+  }, [setBusy]);
 
-  // Load stats and initial usage data
   useEffect(() => {
     loadData();
     loadUsage(0);
-  }, [loadData, loadUsage, admin.openai]);
+  }, [loadData, loadUsage]);
 
   return (
    <AdminListLayout
@@ -113,11 +106,10 @@ export default function OpenAIPage() {
       ]}
       tableContent={
         <OpenAIUsageTable 
-          data={usage}
-          loading={admin.openai.state.loading}
+          data={data?.data}
+          pagination={data?.pagination}
+          loading={loading}
           currentPage={currentPage}
-          totalPages={totalPages}
-          hasMore={hasMore}
           onPageChange={loadUsage}
           onRefresh={() => loadUsage(0)}
         />

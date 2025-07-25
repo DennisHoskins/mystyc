@@ -5,14 +5,10 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
-import { SubscriptionsSummary } from 'mystyc-common/admin/interfaces/summary';
-import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
+import { SubscriptionStats, SubscriptionsSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
@@ -30,21 +26,17 @@ export default function SubscriptionsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { admin }  = useAdmin();
   
   const { setBusy } = useBusy();
+  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<SubscriptionStats> | null>(null);
   const [summary, setSummary] = useState<SubscriptionsSummary | null>(null);
-  const [payments, setPayments] = useState<PaymentHistory[]>([]);
-  const [subscribers, setSubscribers] = useState<UserProfile[]>([]);
+  const [payments, setPayments] = useState<AdminListResponse<PaymentHistory> | null>(null);
+  const [subscribers, setSubscribers] = useState<AdminListResponse<UserProfile> | null>(null);
+  const [currentPagePayments, setCurrentPagePayments] = useState(0);
+  const [currentPageSubscribers, setCurrentPageSubscribers] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
 
-  const LIMIT = 20;
-
-  // Determine current view from URL
   const getCurrentView = (): SubscriptionView => {
     if (searchParams.has('payments')) return 'payments';
     if (searchParams.has('subscribers')) return 'subscribers';
@@ -55,14 +47,12 @@ export default function SubscriptionsPage() {
   const breadcrumbs = SubscriptionsBreadcrumbs({ currentView, onClick: () => { router.push("subscriptions"); }});
   const showSubscriptionTable = currentView !== 'summary';
 
-  // Change URL without page reload
   const handleClick = (view: SubscriptionView) => {
     if (view === 'summary') {
       router.push(pathname);
       return;
     }
     
-    // For query params without values, manually construct
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -70,10 +60,11 @@ export default function SubscriptionsPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const summaryStats = await admin.subscriptions.getSummaryStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const summaryStats = await apiClientAdmin.payments.getSummaryStats(statsQuery);
 
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
@@ -81,63 +72,51 @@ export default function SubscriptionsPage() {
       logger.error('Failed to load subscription data:', err);
       setError('Failed to load subscription data. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.subscriptions]);
+  }, [setBusy]);
 
   const loadPayments = useCallback(async (page: number) => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const query = {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'paidAt',
-        sortOrder: 'desc',
-      } as const;
-
-      const response = await admin.subscriptions.getSubscriptions("payments", query) as AdminListResponse<PaymentHistory>;
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.payments.getPayments(listQuery);
       
-      setPayments(response.data);
-      setHasMore(response.pagination.hasMore === true);
-      setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
+      setPayments(response);
+      setCurrentPagePayments(page);
     } catch (err) {
       logger.error('Failed to load payments:', err);
       setError('Failed to load payments. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.subscriptions]);
+  }, [setBusy]);
 
   const loadSubscribers = useCallback(async (page: number) => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const query = {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'desc',
-      } as const;
-
-      const response = await admin.subscriptions.getSubscriptions("subscribers", query) as AdminListResponse<UserProfile>;
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.users.getPlusUsers(listQuery);
       
-      setSubscribers(response.data);
-      setHasMore(response.pagination.hasMore === true);
-      setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
+      setSubscribers(response);
+      setCurrentPageSubscribers(page);
     } catch (err) {
       logger.error('Failed to load subscribers:', err);
       setError('Failed to load subscribers. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.subscriptions]);
+  }, [setBusy]);
 
-  // Reload data when view changes
   useEffect(() => {
     if (currentView === 'payments') {
       loadPayments(0);
@@ -148,7 +127,6 @@ export default function SubscriptionsPage() {
     }
   }, [loadData, loadPayments, loadSubscribers, currentView]);
 
-  // Load stats and summary on mount
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -157,11 +135,10 @@ export default function SubscriptionsPage() {
     if (currentView === 'payments') {
       return (
         <PaymentsTable
-          loading={admin.subscriptions.state.loading}
-          data={payments}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          hasMore={hasMore}
+          loading={loading}
+          data={payments?.data}
+          pagination={payments?.pagination}
+          currentPage={currentPagePayments}
           onPageChange={loadPayments}
           onRefresh={() => loadPayments(0)}
         />
@@ -169,11 +146,10 @@ export default function SubscriptionsPage() {
     } else if (currentView === 'subscribers') {
       return (
         <UsersTable
-          loading={admin.subscriptions.state.loading}
-          data={subscribers}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          hasMore={hasMore}
+          loading={loading}
+          data={subscribers?.data}
+          pagination={subscribers?.pagination}
+          currentPage={currentPageSubscribers}
           onPageChange={loadSubscribers}
           onRefresh={() => loadSubscribers(0)}
           hideSubscriptionColumn={false}

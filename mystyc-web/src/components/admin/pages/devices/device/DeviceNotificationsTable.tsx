@@ -20,8 +20,6 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
@@ -38,9 +36,7 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
       });
 
       setNotifications(response.data);
-      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load notifications:', err);
@@ -77,8 +73,6 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
       data={notifications}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
       onPageChange={loadDeviceNotifications}
       onRefresh={() => loadDeviceNotifications(currentPage)}
     />

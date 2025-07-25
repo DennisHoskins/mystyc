@@ -1,8 +1,6 @@
 import { AdminStatsQuery, AdminStatsResponseWithQuery, BaseAdminQuery, AdminListResponse } from 'mystyc-common/admin';
 import { AuthEvent } from 'mystyc-common/schemas/';
-
-import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
-import { AuthEventsSummary } from 'mystyc-common/admin/interfaces/summary';
+import { AuthEventStats, AuthEventsSummary } from 'mystyc-common/admin/interfaces';
 
 import { logger } from '@/util/logger';
 import { BaseAdminClient } from './BaseAdminClient';
@@ -33,9 +31,17 @@ export class AuthEventClient extends BaseAdminClient {
     }
   };
 
-  getSummaryStats = async (): Promise<AuthEventsSummary> => {
+  getSummaryStats = async (query?: Partial<AdminStatsQuery>): Promise<{
+    stats: AdminStatsResponseWithQuery<AuthEventStats>,
+    summary: AuthEventsSummary
+  }> => {
     try {
-      return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/auth-events/summary`);
+      const stats = await this.getStats(query);
+      const summary = await this.getSummary();
+      return {
+        stats: stats,
+        summary: summary
+      }
     } catch (error) {
       logger.error('getAuthEventsSummary failed:', error);
       throw error;

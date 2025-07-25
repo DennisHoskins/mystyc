@@ -1,6 +1,7 @@
 'use client';
 
 import { AuthEvent } from 'mystyc-common/schemas/';
+import { Pagination } from 'mystyc-common/admin';
 
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -10,12 +11,10 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 interface AuthenticationsTableProps {
   icon?: IconComponent,
   label?: string,
-  data: AuthEvent[];
+  data?: AuthEvent[];
+  pagination?: Pagination;
   loading?: boolean;
   currentPage: number;
-  totalPages: number;
-  totalItems?: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
   hideUserColumn?: boolean;
@@ -26,11 +25,9 @@ export default function AuthenticationsTable({
   icon,
   label,
   data,
+  pagination,
   loading = false,
   currentPage,
-  totalPages,
-  totalItems,
-  hasMore,
   onPageChange,
   onRefresh,
   hideUserColumn = false,
@@ -76,9 +73,9 @@ export default function AuthenticationsTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      totalItems={totalItems}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages || 0}
+      totalItems={pagination?.totalItems || 0}
+      hasMore={pagination?.hasMore || false}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Authentication Events found."

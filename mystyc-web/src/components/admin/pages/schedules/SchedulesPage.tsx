@@ -3,12 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { Schedule } from 'mystyc-common/schemas';
-import { ScheduleStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+import { ScheduleStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -18,15 +16,12 @@ import SchedulesTable from './SchedulesTable';
 import SchedulesDashboard from './SchedulesDashboard';
 
 export default function SchedulesPage() {
-  const { admin } = useAdmin();
   const { setBusy } = useBusy();
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleStats> | null>(null);
+  const [data, setData] = useState<AdminListResponse<Schedule> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const LIMIT = 20;
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
@@ -36,44 +31,42 @@ export default function SchedulesPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await admin.schedules.getStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const stats = await apiClientAdmin.schedule.getStats(statsQuery);
+
       setStats(stats);
     } catch (err) {
       logger.error('Failed to load schedule stats:', err);
       setError('Failed to load schedule stats. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.schedules]);
+  }, [setBusy]);
 
   const loadSchedules = useCallback(async (page: number) => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const response = await admin.schedules.getSchedules({
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'date',
-        sortOrder: 'desc',
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.schedule.getSchedules(listQuery);
 
-      setSchedules(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load schedules:', err);
       setError('Failed to load schedules. Please try again.');
     } finally {
+      setLoading(false);
       setBusy(false);
     }
-  }, [setBusy, admin.schedules]);
+  }, [setBusy]);
 
-  // Load stats and initial schedules data
   useEffect(() => {
     loadData();
     loadSchedules(0);
@@ -124,11 +117,10 @@ export default function SchedulesPage() {
         <SchedulesTable
           key='schedules'
           label="Schedules"
-          data={schedules}
-          loading={admin.schedules.state.loading}
+          data={data?.data}
+          pagination={data?.pagination}
+          loading={loading}
           currentPage={currentPage}
-          totalPages={totalPages}
-          hasMore={hasMore}
           onPageChange={loadSchedules}
           onRefresh={() => loadSchedules(0)}
         />

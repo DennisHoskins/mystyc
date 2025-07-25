@@ -16,7 +16,6 @@ import { BaseAdminClient } from './BaseAdminClient';
 
 export class ScheduleClient extends BaseAdminClient {
   
-  // Schedule Stats
   getStats = async (query?: Partial<AdminStatsQuery>): Promise<AdminStatsResponseWithQuery<ScheduleStats>> => {
     try {
       const queryString = this.buildStatsQueryString(query);
@@ -47,7 +46,6 @@ export class ScheduleClient extends BaseAdminClient {
     }
   };
 
-  // Schedule Management
   getSchedules = async (query?: BaseAdminQuery): Promise<AdminListResponse<Schedule>> => {
     try {
       const queryString = this.buildQueryString(query);
@@ -86,7 +84,6 @@ export class ScheduleClient extends BaseAdminClient {
     }
   };
 
-  // Schedule Execution Management
   getExecutionsSummary = async (executionId: string): Promise<{
     contents: { total: number };
     notifications: { total: number };

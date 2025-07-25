@@ -20,8 +20,6 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
@@ -38,9 +36,7 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
       });
 
       setAuthEvents(response.data);
-      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load authEvents:', err);
@@ -83,8 +79,6 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
       data={authEvents}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      hasMore={hasMore}
       onPageChange={loadUserAuthEvents}
       onRefresh={() => loadUserAuthEvents(currentPage)}
     />

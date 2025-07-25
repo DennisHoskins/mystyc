@@ -4,9 +4,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { TrafficStats } from '@/interfaces/admin/stats';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
@@ -17,7 +16,6 @@ import TrafficSidebarPanel from './TrafficSidebarPanel';
 import TrafficMainCard from './TrafficMainCard';
 
 export default function TrafficPage() {
-  const { admin } = useAdmin();
   const { setBusy } = useBusy();
   const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +25,8 @@ export default function TrafficPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await admin.traffic.getTrafficStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const stats = await apiClientAdmin.stats.getTrafficStats(statsQuery);
       setTrafficStats(stats.data);
     } catch (err) {
       logger.error('Failed to load traffic stats:', err);
@@ -36,7 +34,7 @@ export default function TrafficPage() {
     } finally {
       setBusy(false);
     }
-  }, [setBusy, admin.traffic]);
+  }, [setBusy]);
 
   useEffect(() => {
     loadTrafficStats();

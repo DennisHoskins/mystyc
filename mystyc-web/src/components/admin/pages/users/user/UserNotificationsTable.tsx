@@ -20,8 +20,6 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const LIMIT = 20;
 
@@ -38,9 +36,7 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
       });
 
       setNotifications(response.data);
-      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load notifications:', err);
@@ -79,8 +75,6 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
         data={notifications}
         loading={loading}
         currentPage={currentPage}
-        totalPages={totalPages}
-        hasMore={hasMore}
         onPageChange={loadUserNotifications}
         onRefresh={() => loadUserNotifications(currentPage)}
       />

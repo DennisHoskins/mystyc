@@ -1,17 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-import { UserStats } from 'mystyc-common/admin/interfaces/stats';
-import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
-import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
+import { UserStats, UsersSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/';
 
-import { useAdmin } from '@/hooks/admin/useAdmin';
+import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
@@ -28,20 +24,15 @@ export default function UsersPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { admin }  = useAdmin();
   
   const { setBusy } = useBusy();
+  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<UserStats> | null>(null);
   const [summary, setSummary] = useState<UsersSummary | null>(null);
-  const [users, setUsers] = useState<UserProfile[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<AdminListResponse<UserProfile> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const LIMIT = 20;
-
-  // Determine current view from URL
   const getCurrentView = (): UserView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('users')) return 'users';
@@ -53,14 +44,12 @@ export default function UsersPage() {
   const breadcrumbs = UsersBreadcrumbs({ currentView, onClick: () => { router.push("users"); }});
   const showUserTable = currentView !== 'summary';
 
-  // Change URL without page reload
   const handleClick = (view: UserView) => {
     if (view === 'summary') {
       router.push(pathname);
       return;
     }
     
-    // For query params without values, manually construct
     const newUrl = `${pathname}?${view}`;
     router.push(newUrl);
   };
@@ -68,10 +57,11 @@ export default function UsersPage() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const summaryStats = await admin.users.getSummaryStats(statsQuery);
+      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
+      const summaryStats = await apiClientAdmin.users.getSummaryStats(statsQuery);
 
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
@@ -80,8 +70,9 @@ export default function UsersPage() {
       setError('Failed to load users. Please try again.');
     } finally {
       setBusy(false);
+      setLoading(false);
     }
-  }, [setBusy, admin.users]);
+  }, [setBusy]);
 
   const loadUsers = useCallback(async (page: number) => {
     try {
@@ -90,50 +81,41 @@ export default function UsersPage() {
       }
 
       setError(null);
+      setLoading(true);
       setBusy(1000);
 
-      const query = {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'asc',
-      } as const;
-
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
       let response: AdminListResponse<UserProfile>;
       
       switch (currentView) {
         case 'plus':
-          response = await admin.users.getUsers("plus", query);
+          response = await apiClientAdmin.users.getPlusUsers(listQuery);
           break;
         case 'users':
-          response = await admin.users.getUsers("users", query);
+          response = await apiClientAdmin.users.getUsers(listQuery);
           break;
         case 'all':
-          response = await admin.users.getUsers("all", query);
-          break;
         default:
-          return;
+          response = await apiClientAdmin.users.getAll(listQuery);
+          break;
       }
 
-      setUsers(response.data);
-      setHasMore(response.pagination.hasMore === true);
+      setData(response);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load users:', err);
       setError('Failed to load users. Please try again.');
     } finally {
       setBusy(false);
+      setLoading(false);
     }
-  }, [showUserTable, setBusy, currentView, admin.users]);
+  }, [showUserTable, setBusy, currentView]);
 
-  // Reload data when view changes
   useEffect(() => {
     if (currentView == 'users' || currentView == 'plus' || currentView == 'all') loadUsers(0);
     else loadData();
   }, [loadData, loadUsers, currentView]);
 
-  // Load stats and summary on mount
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -163,11 +145,10 @@ export default function UsersPage() {
           {showUserTable ?
             (
               <UsersTable
-                loading = {admin.users.state.loading}
-                data={users}
+                loading = {loading}
+                data={data?.data}
+                pagination={data?.pagination}
                 currentPage={currentPage}
-                totalPages={totalPages}
-                hasMore={hasMore}
                 onPageChange={() => loadUsers(currentPage)}
                 onRefresh={() => loadUsers(0)}
               />
