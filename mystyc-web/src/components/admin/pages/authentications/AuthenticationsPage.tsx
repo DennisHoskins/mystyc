@@ -83,7 +83,7 @@ export default function AuthenticationsPage() {
     } finally {
       setBusy(false);
     }
-  }, [setBusy]);
+  }, [setBusy, admin.auth]);
 
   const loadAuthEvents = useCallback(async (page: number) => {
     try {
@@ -133,7 +133,7 @@ export default function AuthenticationsPage() {
     } finally {
       setBusy(false);
     }
-  }, [showAuthTable, setBusy, currentView]);
+  }, [showAuthTable, setBusy, currentView, admin.auth]);
 
   // Reload data when view changes
   useEffect(() => {

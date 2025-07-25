@@ -6,7 +6,7 @@ import { Schedule } from 'mystyc-common/schemas';
 import { ScheduleStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { useAdmin } from '@/hooks/admin/useAdmin';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -18,10 +18,10 @@ import SchedulesTable from './SchedulesTable';
 import SchedulesDashboard from './SchedulesDashboard';
 
 export default function SchedulesPage() {
+  const { admin } = useAdmin();
   const { setBusy } = useBusy();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleStats> | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -33,13 +33,28 @@ export default function SchedulesPage() {
     { label: 'Schedules' },
   ];
 
+  const loadData = useCallback(async () => {
+    try {
+      setError(null);
+      setBusy(1000);
+
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await admin.schedules.getStats(statsQuery);
+      setStats(stats);
+    } catch (err) {
+      logger.error('Failed to load schedule stats:', err);
+      setError('Failed to load schedule stats. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }, [setBusy, admin.schedules]);
+
   const loadSchedules = useCallback(async (page: number) => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
-      const response = await apiClientAdmin.schedule.getSchedules({
+      const response = await admin.schedules.getSchedules({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
@@ -47,33 +62,33 @@ export default function SchedulesPage() {
       });
 
       setSchedules(response.data);
-      setHasMore(response.pagination.hasMore == true);
+      setHasMore(response.pagination.hasMore === true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
-
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.schedule.getStats(statsQuery);
-      setStats(stats);
     } catch (err) {
-      logger.error('Failed to load schedule:', err);
-      setError('Failed to load schedule. Please try again.');
+      logger.error('Failed to load schedules:', err);
+      setError('Failed to load schedules. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
-  }, [setBusy]);
+  }, [setBusy, admin.schedules]);
 
+  // Load stats and initial schedules data
   useEffect(() => {
+    loadData();
     loadSchedules(0);
-  }, [loadSchedules]);
+  }, [loadData, loadSchedules]);
 
   return (
    <AdminListLayout
       error={error}
-      onRetry={() => loadSchedules(currentPage)}
+      onRetry={() => {
+        loadData();
+        loadSchedules(0);
+      }}
       breadcrumbs={breadcrumbs}
       icon={ScheduleIcon}
-      description="Manage schedule entries: view, edit, and monitor schedule status, and performance metrics"
+      description="Manage scheduled tasks and automation rules, monitor execution status and configure timing settings"
        sideContent={
          <SchedulesDashboard 
            stats={stats} 
@@ -110,12 +125,12 @@ export default function SchedulesPage() {
           key='schedules'
           label="Schedules"
           data={schedules}
-          loading={loading}
+          loading={admin.schedules.state.loading}
           currentPage={currentPage}
           totalPages={totalPages}
           hasMore={hasMore}
           onPageChange={loadSchedules}
-          onRefresh={() => loadSchedules(currentPage)}
+          onRefresh={() => loadSchedules(0)}
         />
       ]}
     />   

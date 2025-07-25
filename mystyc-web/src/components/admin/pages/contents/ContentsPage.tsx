@@ -83,7 +83,7 @@ export default function ContentsPage() {
     } finally {
       setBusy(false);
     }
-  }, [setBusy]);
+  }, [setBusy, admin.content]);
 
   const loadContents = useCallback(async (page: number) => {
     try {
@@ -133,7 +133,7 @@ export default function ContentsPage() {
     } finally {
       setBusy(false);
     }
-  }, [showContentTable, setBusy, currentView]);
+  }, [showContentTable, setBusy, currentView, admin.content]);
 
   // Reload data when view changes
   useEffect(() => {

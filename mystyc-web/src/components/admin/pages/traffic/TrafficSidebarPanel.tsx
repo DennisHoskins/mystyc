@@ -2,8 +2,7 @@ import { TrafficStats } from '@/interfaces/admin/stats';
 
 import TrafficDashboard from './TrafficDashboard';
 
-export default function TrafficSidebarPanel({ trafficStats }: { trafficStats: TrafficStats }) {
-
+export default function TrafficSidebarPanel({ trafficStats }: { trafficStats?: TrafficStats | null }) {
   return (
     <div className='flex flex-col space-y-4'>
       <TrafficDashboard 

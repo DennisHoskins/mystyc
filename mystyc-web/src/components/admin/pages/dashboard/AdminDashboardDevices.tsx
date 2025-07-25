@@ -7,10 +7,6 @@ import DevicesDashboard from '../devices/DevicesDashboard';
 import Link from '@/components/ui/Link';
 
 export default function AdminDashboardDevices({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-  if (!stats) {
-    return;
-  }
-
   return (
     <AdminDashboardItemLayout
       icon={<DevicesIcon />}
@@ -22,11 +18,11 @@ export default function AdminDashboardDevices({ stats } : { stats?: AdminStatsRe
         href='/admin/devices'
       >
         <DevicesDashboard 
-          stats={{
+          stats={stats?.data.devices ? {
             data: stats.data.devices,
             query: stats.query,
             queryString: stats.queryString,
-          }}
+          } : null}
           charts={['stats', 'browsers', 'activity'] }
           height={100}
         />

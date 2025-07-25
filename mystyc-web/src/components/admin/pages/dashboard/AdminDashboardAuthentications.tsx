@@ -7,10 +7,6 @@ import AuthenticationDashboard from '../authentications/AuthenticationDashboard'
 import Link from '@/components/ui/Link';
 
 export default function AdminDashboardAuthentications({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-  if (!stats) {
-    return;
-  }
-
   return (
       <AdminDashboardItemLayout
         icon={<AuthenticationIcon />}
@@ -22,11 +18,11 @@ export default function AdminDashboardAuthentications({ stats } : { stats?: Admi
           href='/admin/authentication'
         >
           <AuthenticationDashboard 
-            stats={{
+            stats={stats?.data.authEvents ? {
               data: stats.data.authEvents,
               query: stats.query,
               queryString: stats.queryString,
-            }}
+            } : null}
             charts={['stats', 'peak', 'duration']}
             height={100}
           />

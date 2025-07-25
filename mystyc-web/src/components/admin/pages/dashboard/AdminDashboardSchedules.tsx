@@ -8,9 +8,18 @@ import SchedulesDashboard from '../schedules/SchedulesDashboard';
 import SchedulesExecutionsDashboard from '../schedule-executions/SchedulesExecutionsDashboard';
 
 export default function AdminDashboardSchedules({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-  if (!stats) {
-    return;
-  }
+
+  const dataSchedules = stats?.data.schedule ? {
+    data: stats.data.schedule,
+    query: stats.query,
+    queryString: stats.queryString,
+  } : null;
+
+  const dataExecutions = stats?.data.schedule.executions ? {
+    data: stats.data.schedule.executions,
+    query: stats.query,
+    queryString: stats.queryString,
+  } : null;
 
   return (
     <AdminDashboardItemLayout
@@ -27,19 +36,11 @@ export default function AdminDashboardSchedules({ stats } : { stats?: AdminStats
           >
             <SchedulesDashboard
               className="mb-2"
-              stats={{
-                data: stats.data.schedule,
-                query: stats.query,
-                queryString: stats.queryString,
-              }}
+              stats={dataSchedules}
               charts={['health']}
             />
             <SchedulesDashboard 
-              stats={{
-                data: stats.data.schedule,
-                query: stats.query,
-                queryString: stats.queryString,
-              }}
+              stats={dataSchedules}
               charts={['today']}
             />
           </Link>
@@ -50,19 +51,11 @@ export default function AdminDashboardSchedules({ stats } : { stats?: AdminStats
           >
             <div className='flex-1 flex flex-col space-y-4'>
               <SchedulesExecutionsDashboard
-                stats={{
-                  data: stats.data.schedule.executions,
-                  query: stats.query,
-                  queryString: stats.queryString,
-                }}
+                stats={dataExecutions}
                 charts={['stats']}
               />
               <SchedulesExecutionsDashboard
-                stats={{
-                  data: stats.data.schedule.executions,
-                  query: stats.query,
-                  queryString: stats.queryString,
-                }}
+                stats={dataExecutions}
                 charts={['today']}
               />
             </div>

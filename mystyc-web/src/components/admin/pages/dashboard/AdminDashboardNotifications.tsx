@@ -7,10 +7,6 @@ import NotificationsDashboard from '../notifications/NotificationsDashboard';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 
 export default function AdminDashboardNotifications({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-  if (!stats) {
-    return;
-  }
-
   return (
     <AdminDashboardItemLayout
       icon={<NotificationIcon />}
@@ -22,11 +18,11 @@ export default function AdminDashboardNotifications({ stats } : { stats?: AdminS
         href='/admin/notifications'
       >
         <NotificationsDashboard 
-          stats={{
+          stats={stats?.data.notifications ? {
             data: stats.data.notifications,
             query: stats.query,
             queryString: stats.queryString,
-          }}
+          } : null}
           charts={['stats', 'volume', 'platforms']}
           height={100}
         />

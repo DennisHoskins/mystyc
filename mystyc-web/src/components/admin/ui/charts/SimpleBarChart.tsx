@@ -9,7 +9,7 @@ interface BarDataItem {
 interface SimpleBarChartProps {
   title: string;
   label?: boolean;
-  data: BarDataItem[];
+  data?: BarDataItem[];
   dataKey: string;
   xAxisKey: string;
   color?: string;

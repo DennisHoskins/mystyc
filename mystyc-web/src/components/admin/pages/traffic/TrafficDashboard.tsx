@@ -24,48 +24,44 @@ export default function TrafficDashboard({
   layout = 'horizontal',
   label = true
 }: TrafficDashboardProps) {
-  if (!data) {
-    return null;
-  }
-
   // Calculate authentication percentage
-  const totalUsers = data.userTypes.visitor + data.userTypes.authenticated;
-  const authPercentage = totalUsers > 0 ? Math.round((data.userTypes.authenticated / totalUsers) * 100) : 0;
+  const totalUsers = data ? (data.userTypes.visitor + data.userTypes.authenticated) : 0;
+  const authPercentage = data?.userTypes && totalUsers > 0 ? Math.round((data?.userTypes.authenticated / totalUsers) * 100) : 0;
 
   // Transform daily visits for line chart
-  const visitorData = data.visitors.dailyVisits.map(visit => ({
+  const visitorData = data?.visitors.dailyVisits.map(visit => ({
     date: visit.date.split('-').slice(1).join('/'), // MM/DD format
     visits: visit.count
   }));
 
   // Transform top pages for bar chart (top 5)
-  const pageData = data.pages.slice(0, 5).map(page => ({
+  const pageData = data?.pages.slice(0, 5).map(page => ({
     name: page.path.split('/').pop() || page.path, // Get last part of path
     visits: page.count
   }));
 
   // Transform user types for pie chart
   const userTypeData = [
-    { name: 'Visitors', value: data.userTypes.visitor, color: '#3b82f6' },
-    { name: 'Authenticated', value: data.userTypes.authenticated, color: '#10b981' }
+    { name: 'Visitors', value: data?.userTypes.visitor ?? 0, color: '#3b82f6' },
+    { name: 'Authenticated', value: data?.userTypes.authenticated ?? 0, color: '#10b981' }
   ];
 
   // Transform browsers for pie chart (top 4)
-  const browserData = data.browsers.slice(0, 4).map(browser => ({
+  const browserData = data?.browsers.slice(0, 4).map(browser => ({
     name: browser.browser,
     value: browser.count,
     percentage: browser.percentage
   }));
 
   // Transform device types/types for pie chart
-  const typeData = data.deviceTypes.map(device => ({
+  const typeData = data?.deviceTypes.map(device => ({
     name: device.type.charAt(0).toUpperCase() + device.type.slice(1), // Capitalize
     value: device.count,
     percentage: device.percentage
   }));
 
   // Transform hourly visits for bar chart (top 12 hours)
-  const hourlyData = data.hourlyVisits
+  const hourlyData = data?.hourlyVisits
     .sort((a, b) => b.count - a.count)
     .slice(0, 12)
     .map(hour => ({
@@ -74,20 +70,20 @@ export default function TrafficDashboard({
     }));
 
   // Transform day of week data for bar chart
-  const dayOfWeekData = data.dayOfWeekVisits.map(day => ({
+  const dayOfWeekData = data?.dayOfWeekVisits.map(day => ({
     day: day.name.charAt(0).toUpperCase() + day.name.slice(1, 3), // Mon, Tue, etc.
     visits: day.count
   }));
 
   // Transform browser-device combinations for pie chart (top 6)
-  const browserDeviceData = data.browserDevices.slice(0, 6).map(combo => ({
+  const browserDeviceData = data?.browserDevices.slice(0, 6).map(combo => ({
     name: combo.combination,
     value: combo.count,
     percentage: combo.percentage
   }));
 
   // Transform browser-device detailed for bar chart (top 8)
-  const browserVersionData = data.browserDevicesDetailed
+  const browserVersionData = data?.browserDevicesDetailed
     .slice(0, 8)
     .map(combo => ({
       name: combo.combination.length > 15 ? combo.combination.substring(0, 15) + '...' : combo.combination,
@@ -98,14 +94,14 @@ export default function TrafficDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: data.visitors.totalVisits, label: 'Total Visits', color: 'text-blue-600' },
-          { value: `${authPercentage}%`, label: 'Authenticated', color: 'text-green-600' }
+          { value: data?.visitors ? data.visitors.totalVisits : "", label: 'Total Visits', color: 'text-blue-600' },
+          { value: data?.visitors ? `${authPercentage}%` : "", label: 'Authenticated', color: 'text-green-600' }
         ]} 
       />
     ),
     visitors: (
       <SimpleLineChart 
-        title={`Visitor Trend (${data.visitors.dailyVisits.length} days)`}
+        title={`Visitor Trend (${data?.visitors.dailyVisits.length} days)`}
         label={label}
         data={visitorData}
         dataKey="visits"

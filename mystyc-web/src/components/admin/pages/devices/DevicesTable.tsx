@@ -2,8 +2,6 @@
 
 import { Device } from 'mystyc-common/schemas/';
 
-import { formatDateForDisplay } from '@/util/dateTime';
-
 import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 

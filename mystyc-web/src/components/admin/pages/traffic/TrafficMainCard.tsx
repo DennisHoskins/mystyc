@@ -5,14 +5,14 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import TrafficDashboard from './TrafficDashboard';
 
-export default function TrafficMainCard({ trafficStats }: { trafficStats: TrafficStats }) {
+export default function TrafficMainCard({ trafficStats }: { trafficStats?: TrafficStats | null }) {
   return (
     <div className="flex flex-col space-y-4">
-      <Card>
+      <Card className='min-h-[20em]'>
         <Heading level={4} className="mb-4 text-blue-900">Day Of Week</Heading>
         <div className='grid grid-cols-3 gap-4'>
           <div className="flex flex-col justify-center space-y-3">
-            {trafficStats.dayOfWeekVisits
+            {trafficStats && trafficStats.dayOfWeekVisits
               .sort((a, b) => b.count - a.count)
               .slice(0, 4)
               .map((day, index) => (
@@ -43,11 +43,11 @@ export default function TrafficMainCard({ trafficStats }: { trafficStats: Traffi
         </div>
       </Card>
 
-      <Card>
+      <Card className='min-h-[20em]'>
         <Heading level={4} className="mb-4 text-blue-900">Peak Hours (Top 12)</Heading>
         <div className='grid grid-cols-3 gap-4'>
           <div className="flex flex-col justify-center space-y-3">
-            {trafficStats.hourlyVisits
+            {trafficStats && trafficStats.hourlyVisits
               .sort((a, b) => b.count - a.count)
               .slice(0, 5)
               .map((hour, index) => (

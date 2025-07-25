@@ -18,7 +18,6 @@ interface ContentDashboardProps {
 }
 
 export default function ContentDashboard({ 
-  className,
   stats,
   charts = ['stats', 'timeline', 'performance', 'coverage'],
   height

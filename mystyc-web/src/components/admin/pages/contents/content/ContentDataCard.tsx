@@ -1,8 +1,6 @@
 import { Content } from 'mystyc-common';
 
 import Card from '@/components/ui/Card';
-import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
@@ -10,8 +8,6 @@ export default function ContentDataCard({ content }: { content: Content }) {
   if (!content.data || content.data.length === 0) {
     return null;
   }
-
-  const cols = content.data.length;
 
   return (
     <Card>

@@ -7,10 +7,6 @@ import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import UsersDashboard from '../users/UsersDashboard';
 
 export default function AdminDashboardUsers({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-  if (!stats) {
-    return;
-  }
-
   return (
     <AdminDashboardItemLayout
       icon={<UsersIcon />}
@@ -22,11 +18,11 @@ export default function AdminDashboardUsers({ stats } : { stats?: AdminStatsResp
         href='/admin/users'
       >
         <UsersDashboard 
-          stats={{
+          stats={stats?.data.users ? {
             data: stats.data.users,
             query: stats.query,
             queryString: stats.queryString,
-          }}
+          } : null}
           charts={['stats', 'registrations', 'activity']} 
           height={100}
         />

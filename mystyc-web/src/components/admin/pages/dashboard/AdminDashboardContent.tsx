@@ -7,10 +7,6 @@ import ContentDashboard from '../contents/ContentDashboard';
 import Link from '@/components/ui/Link';
 
 export default function AdminDashboardContent({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-  if (!stats) {
-    return;
-  }
-
   return (
     <AdminDashboardItemLayout
       className='col-span-2'
@@ -25,20 +21,20 @@ export default function AdminDashboardContent({ stats } : { stats?: AdminStatsRe
         <div className='flex-1 flex  flex-col space-y-4 xl:flex-row xl:space-x-4 xl:space-y-0'>
           <ContentDashboard 
             className='w-full xl:w-64'
-            stats={{
+            stats={stats?.data.content ? {
               data: stats.data.content,
               query: stats.query,
               queryString: stats.queryString,
-            }}
+            } : null}
             charts={['stats']}
           />
           <ContentDashboard 
             className='w-full'
-            stats={{
+            stats={stats?.data.content ? {
               data: stats.data.content,
               query: stats.query,
               queryString: stats.queryString,
-            }}
+            } : null}
             charts={['timeline']}
           />
         </div>

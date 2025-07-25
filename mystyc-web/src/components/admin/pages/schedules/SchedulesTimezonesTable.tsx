@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { useAdmin } from '@/hooks/admin/useAdmin';
 import { logger } from '@/util/logger';
 
 import AdminErrorPage from '@/components/admin/ui/AdminError';
@@ -21,24 +21,21 @@ interface DisplayRow extends TimezoneData {
 }
 
 export default function SchedulesTimeZonesTable() {
+  const { admin } = useAdmin();
   const [timezones, setTimezones] = useState<TimezoneData[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadTimezones = useCallback(async () => {
     try {
-      setLoading(true);
       setError(null);
 
-      const response: TimezoneData[] = await apiClientAdmin.schedule.getTimezones();
+      const response: TimezoneData[] = await admin.schedules.getTimezones();
       setTimezones(response);
     } catch (err) {
       logger.error('Failed to load timeZones:', err);
       setError('Failed to load timeZones. Please try again.');
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [admin.schedules]);
 
   useEffect(() => {
     loadTimezones();
@@ -85,7 +82,7 @@ export default function SchedulesTimeZonesTable() {
         label="Timezones"
         data={displayData}
         columns={columns}
-        loading={loading}
+        loading={admin.schedules.state.loading}
         onRefresh={loadTimezones}
         emptyMessage="No Timezones found."
       />

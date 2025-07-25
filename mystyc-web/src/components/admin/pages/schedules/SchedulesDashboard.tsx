@@ -23,19 +23,15 @@ export default function SchedulesDashboard({
   height,
   className
 }: SchedulesDashboardProps) {
-  if (!stats) {
-    return null;
-  }
-
   // Transform event name distribution for pie chart
-  const eventData = stats.data.summary.schedulesByEventName.map(event => ({
+  const eventData = stats?.data.summary.schedulesByEventName.map(event => ({
     name: event.eventName.replace(/\./g, ' ').replace(/^[a-z]/, (match) => match.toUpperCase()), // Format event names
     value: event.count,
-    percentage: Math.round((event.count / stats.data.summary.totalSchedules) * 100)
+    percentage: Math.round((event.count / stats?.data.summary.totalSchedules) * 100)
   }));
 
   // Transform upcoming executions for bar chart (next 5)
-  const upcomingData = stats.data.performance.upcomingExecutions.slice(0, 5).map(execution => {
+  const upcomingData = stats?.data.performance.upcomingExecutions.slice(0, 5).map(execution => {
     const now = new Date();
     const nextExecution = new Date(execution.nextExecution); // Convert to Date
     const diff = nextExecution.getTime() - now.getTime();
@@ -50,7 +46,7 @@ export default function SchedulesDashboard({
   // Helper to pick the actual next execution based on local time
   const getNextExecutionEntry = () => {
     const now = new Date();
-    const scheduledEntries = stats.data.performance.upcomingExecutions.map(e => {
+    const scheduledEntries = stats?.data.performance.upcomingExecutions.map(e => {
       const [hourStr, minuteStr] = e.scheduledTime.split(':');
       const hour = parseInt(hourStr, 10);
       const minute = parseInt(minuteStr, 10);
@@ -61,7 +57,7 @@ export default function SchedulesDashboard({
       }
       return { entry: e, date: sched };
     });
-    if (!scheduledEntries.length) {
+    if (!scheduledEntries || !scheduledEntries.length) {
       return {entry: null,  date: null};
     }
     scheduledEntries.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -72,16 +68,16 @@ export default function SchedulesDashboard({
 
   // Transform schedule status for pie chart
   const statusData = [
-    { name: 'Enabled', value: stats.data.summary.enabledSchedules, color: '#10b981' },
-    { name: 'Disabled', value: stats.data.summary.disabledSchedules, color: '#ef4444' }
+    { name: 'Enabled', value: stats?.data.summary.enabledSchedules ?? 0, color: '#10b981' },
+    { name: 'Disabled', value: stats?.data.summary.disabledSchedules ?? 0, color: '#ef4444' }
   ];
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats.data.summary.totalSchedules, label: 'Total Schedules', color: 'text-blue-600' },
-          { value: stats.data.summary.enabledSchedules, label: 'Active', color: 'text-green-600' }
+          { value: stats?.data.summary.totalSchedules ?? 0, label: 'Total Schedules', color: 'text-blue-600' },
+          { value: stats?.data.summary.enabledSchedules ?? 0, label: 'Active', color: 'text-green-600' }
         ]} 
       />
     ),
@@ -118,17 +114,17 @@ export default function SchedulesDashboard({
     health: (
       <StatusCard
         icon={Clock}
-        iconColor={stats.data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'}
-        backgroundColor={stats.data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'}
-        textColor={stats.data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'}
-        shortText={stats.data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
-        longText={stats.data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
-        shortSubtext={stats.data.summary.enabledSchedules > 0 
-          ? `${stats.data.summary.enabledSchedules} running`
+        iconColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'}
+        backgroundColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'}
+        textColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'}
+        shortText={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
+        longText={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
+        shortSubtext={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 
+          ? `${stats?.data.summary.enabledSchedules} running`
           : 'All disabled'
         }
-        longSubtext={stats.data.summary.enabledSchedules > 0 
-          ? `${stats.data.summary.enabledSchedules} schedules running`
+        longSubtext={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 
+          ? `${stats?.data.summary.enabledSchedules} schedules running`
           : 'All schedules are disabled'
         }
       />

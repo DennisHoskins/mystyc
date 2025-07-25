@@ -7,10 +7,6 @@ import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import SubscriptionsDashboard  from '../subscriptions/SubscriptionsDashboard';
 
 export default function AdminDashboardSubscriptions({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-  if (!stats) {
-    return;
-  }
-
   return (
     <AdminDashboardItemLayout
       className='col-span-1 flex flex-col'
@@ -25,21 +21,21 @@ export default function AdminDashboardSubscriptions({ stats } : { stats?: AdminS
         <div className='flex-1 flex flex-col space-y-4 xl:flex-row xl:space-x-4 xl:space-y-0'>
           <SubscriptionsDashboard
             className='w-full xl:w-64'
-            stats={{
+            stats={stats?.data.subscriptions ? {
               data: stats.data.subscriptions,
               query: stats.query,
               queryString: stats.queryString,
-            }}
+            } : null}
             charts={['stats']}
             height={100}
           />
           <SubscriptionsDashboard
             className='w-full'
-            stats={{
+            stats={stats?.data.subscriptions ? {
               data: stats.data.subscriptions,
               query: stats.query,
               queryString: stats.queryString,
-            }}
+            } : null}
             charts={['mrr']}
             height={100}
           />

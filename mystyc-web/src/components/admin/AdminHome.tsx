@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { useAdmin } from '@/hooks/admin/useAdmin';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -36,8 +36,8 @@ export function getDefaultDashboardStatsQuery() {
 };
 
 export default function AdminHome() {
+  const { admin } = useAdmin();
   const { setBusy } = useBusy();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null>(null);
 
@@ -45,26 +45,21 @@ export default function AdminHome() {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const defaultQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.stats.getDashboard(defaultQuery);
+      const stats = await admin.stats.getDashboard(defaultQuery);
       setStats(stats)
     } catch (err) {
       logger.error('Failed to load dashboard:', err);
+      setError('Failed to load dashboard. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
-  }, [setBusy]);
+  }, [setBusy, admin.stats]);
 
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
-
-  if (loading) {
-    return null;
-  }
 
   if (error) {
     return(
@@ -77,7 +72,7 @@ export default function AdminHome() {
             <Heading level={2}>Admin</Heading>
           </div>
           <hr />
-            <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
         </Card>
         <AdminError 
           title={"Unable to load dashboard"}
@@ -86,10 +81,6 @@ export default function AdminHome() {
         />
       </>
     );
-  }
-
-  if (!stats) {
-    return;
   }
 
   return(
@@ -107,11 +98,11 @@ export default function AdminHome() {
         </Card>
         <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
           <SessionsDashboard 
-            stats={{
+            stats={stats?.data.sessions ? {
               data: stats.data.sessions,
               query: stats.query,
               queryString: stats.queryString,
-            }}
+            } : null}
           />
         </Card>
       </div>

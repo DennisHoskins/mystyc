@@ -12,7 +12,7 @@ interface PieDataItem {
 interface PieChartWithLegendProps {
   title: string;
   label?: boolean;
-  data?: PieDataItem[];
+  data?: PieDataItem[] | undefined | null;
   colors?: string[];
   showPercentage?: boolean;
   height?: number | string;
@@ -32,34 +32,36 @@ export default function PieChartWithLegend({
     <div className='flex flex-col flex-1 bg-gray-50 py-2 rounded-md'>
       {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mb-2">{title}</h4>}
       <div className="flex items-center justify-between grow">
-        <ResponsiveContainer width="50%" height={height}>
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={20}
-              outerRadius={40}
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={entry.color || colors[index % colors.length]} 
-                />
-              ))}
-            </Pie>
-            <Tooltip 
-              formatter={(value, name, props) => 
-                showPercentage && props.payload.percentage
-                  ? [`${props.payload.percentage}%`, props.payload.name]
-                  : [value, name]
-              } 
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        {data &&
+          <ResponsiveContainer width="50%" height={height}>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                innerRadius={20}
+                outerRadius={40}
+                dataKey="value"
+              >
+                {data.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.color || colors[index % colors.length]} 
+                  />
+                ))}
+              </Pie>
+              <Tooltip 
+                formatter={(value, name, props) => 
+                  showPercentage && props.payload.percentage
+                    ? [`${props.payload.percentage}%`, props.payload.name]
+                    : [value, name]
+                } 
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        }
         <div className="text-xs space-y-1 pr-4">
-          {data.map((item, index) => (
+          {data && data.map((item, index) => (
             <div key={item.name} className="flex items-center">
               <div 
                 className="w-2 h-2 rounded-full mr-2" 

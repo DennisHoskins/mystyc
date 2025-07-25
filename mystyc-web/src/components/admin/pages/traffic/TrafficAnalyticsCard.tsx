@@ -4,7 +4,7 @@ import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import TrafficDashboard from './TrafficDashboard';
 
-export default function TrafficAnalyticsCard({ trafficStats }: { trafficStats: TrafficStats }) {
+export default function TrafficAnalyticsCard({ trafficStats }: { trafficStats?: TrafficStats | null }) {
   return (
     <Card className='flex-1'>
       <Heading level={4} className="mb-4 text-blue-900">Visitor Analytics</Heading>

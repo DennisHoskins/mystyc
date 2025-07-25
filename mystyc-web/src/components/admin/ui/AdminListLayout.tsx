@@ -120,9 +120,9 @@ export default function AdminListLayout({
 
       {tableContent && (
         Array.isArray(tableContent) ? (
-          <div className='space-y-4'>  
+          <div className='space-y-4 flex-1 flex flex-col'>  
             {tableContent.map((content, index) => (
-              <Card key={index}>
+              <Card key={index} className='flex-1'>
                 {content}
               </Card>
             ))}

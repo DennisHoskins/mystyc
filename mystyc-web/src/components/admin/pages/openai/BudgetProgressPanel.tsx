@@ -1,8 +1,8 @@
 interface BudgetProgressPanelProps {
-  costUsed: number;
-  costBudget: number;
-  tokensUsed: number;
-  tokenBudget: number;
+  costUsed?: number;
+  costBudget?: number;
+  tokensUsed?: number;
+  tokenBudget?: number;
 }
 
 export default function BudgetProgressPanel({ 
@@ -11,8 +11,8 @@ export default function BudgetProgressPanel({
   tokensUsed, 
   tokenBudget 
 }: BudgetProgressPanelProps) {
-  const costUsagePercent = Math.round((costUsed / costBudget) * 100);
-  const tokenUsagePercent = Math.round((tokensUsed / tokenBudget) * 100);
+  const costUsagePercent =  costUsed && costBudget ? Math.round((costUsed / costBudget) * 100) : 0;
+  const tokenUsagePercent = tokensUsed && tokenBudget ? Math.round((tokensUsed / tokenBudget) * 100) : 0;
 
   const getCostColor = (percent: number) => {
     if (percent >= 90) return 'bg-red-500';
@@ -26,7 +26,8 @@ export default function BudgetProgressPanel({
     return 'bg-blue-500';
   };
 
-  const formatCost = (cost: number) => {
+  const formatCost = (cost?: number | null) => {
+    if (!cost) return "";
     return cost < 0.01 ? `$${cost.toFixed(4)}` : `$${cost.toFixed(2)}`;
   };
 
@@ -56,7 +57,7 @@ export default function BudgetProgressPanel({
         <div className="flex justify-between items-center mt-1">
           <span className="text-xs text-gray-500">{costUsagePercent}% used</span>
           <span className="text-xs text-gray-500">
-            {formatCost(costBudget - costUsed)} remaining
+            {formatCost((costBudget || 0) - (costUsed || 0))} remaining
           </span>
         </div>
       </div>
@@ -66,7 +67,7 @@ export default function BudgetProgressPanel({
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs font-medium text-gray-600">Token Budget</span>
           <span className="text-xs text-gray-500">
-            {formatTokens(tokensUsed)} / {formatTokens(tokenBudget)}
+            {formatTokens(tokensUsed || 0)} / {formatTokens(tokenBudget || 0)}
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -78,7 +79,7 @@ export default function BudgetProgressPanel({
         <div className="flex justify-between items-center mt-1">
           <span className="text-xs text-gray-500">{tokenUsagePercent}% used</span>
           <span className="text-xs text-gray-500">
-            {formatTokens(tokenBudget - tokensUsed)} remaining
+            {formatTokens((tokenBudget || 0) - (tokensUsed || 0))} remaining
           </span>
         </div>
       </div>

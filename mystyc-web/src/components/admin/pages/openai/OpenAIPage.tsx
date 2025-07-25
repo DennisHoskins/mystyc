@@ -6,7 +6,7 @@ import { OpenAIUsage } from 'mystyc-common/schemas';
 import { OpenAIUsageStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { useAdmin } from '@/hooks/admin/useAdmin';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -17,10 +17,10 @@ import OpenAIUsageTable from './OpenAIUsageTable';
 import OpenAIDashboard from './OpenAIUsageDashboard';
 
 export default function OpenAIPage() {
+  const { admin } = useAdmin();
   const { setBusy } = useBusy();
   const [usage, setUsage] = useState<OpenAIUsage[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<OpenAIUsageStats> | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -32,13 +32,28 @@ export default function OpenAIPage() {
     { label: 'OpenAI Usage' },
   ];
 
+  const loadData = useCallback(async () => {
+    try {
+      setError(null);
+      setBusy(1000);
+
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await admin.openai.getStats(statsQuery);
+      setStats(stats);
+    } catch (err) {
+      logger.error('Failed to load OpenAI stats:', err);
+      setError('Failed to load OpenAI stats. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }, [setBusy, admin.openai]);
+
   const loadUsage = useCallback(async (page: number) => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
-      const response = await apiClientAdmin.openai.getOpenAIUsages({
+      const response = await admin.openai.getUsages({
         limit: LIMIT,
         offset: page * LIMIT,
         sortBy: 'date',
@@ -46,33 +61,33 @@ export default function OpenAIPage() {
       });
 
       setUsage(response.data);
-      setHasMore(response.pagination.hasMore == true);
+      setHasMore(response.pagination.hasMore === true);
       setCurrentPage(page);
       setTotalPages(response.pagination.totalPages);
-
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.openai.getStats(statsQuery);
-      setStats(stats);
     } catch (err) {
-      logger.error('Failed to load open ai usage:', err);
-      setError('Failed to load open ai usage. Please try again.');
+      logger.error('Failed to load OpenAI usage:', err);
+      setError('Failed to load OpenAI usage. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
-  }, [setBusy]);
+  }, [setBusy, admin.openai]);
 
+  // Load stats and initial usage data
   useEffect(() => {
+    loadData();
     loadUsage(0);
-  }, [loadUsage])
+  }, [loadData, loadUsage, admin.openai]);
 
   return (
    <AdminListLayout
       error={error}
-      onRetry={() => loadUsage(0)}
+      onRetry={() => {
+        loadData();
+        loadUsage(0);
+      }}
       breadcrumbs={breadcrumbs}
       icon={ContentIcon}
-      description="View open ai usage statistics"
+      description="View OpenAI usage statistics and monitor API consumption across all content types"
       sideContent={
         <OpenAIDashboard 
           stats={stats} 
@@ -99,12 +114,12 @@ export default function OpenAIPage() {
       tableContent={
         <OpenAIUsageTable 
           data={usage}
-          loading={loading}
+          loading={admin.openai.state.loading}
           currentPage={currentPage}
           totalPages={totalPages}
           hasMore={hasMore}
           onPageChange={loadUsage}
-          onRefresh={() => loadUsage(currentPage)}
+          onRefresh={() => loadUsage(0)}
         />
       }
     />   

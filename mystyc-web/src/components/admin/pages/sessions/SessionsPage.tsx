@@ -7,7 +7,7 @@ import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/resp
 import { Session } from '@/interfaces';
 import { SessionStats } from '@/interfaces/admin/stats';
 
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { useAdmin } from '@/hooks/admin/useAdmin';
 import { logger } from '@/util/logger';
 import { getDefaultDashboardStatsQuery } from '../../AdminHome';
 
@@ -18,10 +18,10 @@ import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionsDashboard from './SessionsDashboard';
 
 export default function SessionsPage() {
+  const { admin } = useAdmin();
   const { setBusy } = useBusy();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [stats, setStats] = useState<AdminStatsResponseWithQuery<SessionStats> | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -32,41 +32,56 @@ export default function SessionsPage() {
     { label: 'Sessions' },
   ];
 
+  const loadData = useCallback(async () => {
+    try {
+      setError(null);
+      setBusy(1000);
+
+      const statsQuery = getDefaultDashboardStatsQuery();
+      const stats = await admin.sessions.getStats(statsQuery);
+      setStats(stats);
+    } catch (err) {
+      logger.error('Failed to load session stats:', err);
+      setError('Failed to load session stats. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }, [setBusy, admin.sessions]);
+
   const loadSessions = useCallback(async (page: number) => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
-      const response = await apiClientAdmin.sessions.getSessions({
+      const response = await admin.sessions.getSessions({
         limit: LIMIT,
         offset: page * LIMIT,
       });
 
       setSessions(response.data);
-      setHasMore(response.pagination.hasMore == true);
+      setHasMore(response.pagination.hasMore === true);
       setCurrentPage(page);
-
-      const statsQuery = getDefaultDashboardStatsQuery();
-      const stats = await apiClientAdmin.sessions.getStats(statsQuery);
-      setStats(stats);
     } catch (err) {
-      logger.error('Failed to load Sessions:', err);
-      setError('Failed to load Sessions. Please try again.');
+      logger.error('Failed to load sessions:', err);
+      setError('Failed to load sessions. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
-  }, [setBusy]);
+  }, [setBusy, , admin.sessions]);
 
+  // Load stats and initial sessions data
   useEffect(() => {
+    loadData();
     loadSessions(0);
-  }, [loadSessions]);
+  }, [loadData, loadSessions]);
 
   return (
     <AdminListLayout
       error={error}
-      onRetry={() => loadSessions(currentPage)}
+      onRetry={() => {
+        loadData();
+        loadSessions(0);
+      }}
       breadcrumbs={breadcrumbs}
       icon={SessionIcon}
       description="View active user sessions and devices, monitor login activity, and manage session security settings"
@@ -78,11 +93,11 @@ export default function SessionsPage() {
       tableContent={
         <SessionsTable 
           data={sessions}
-          loading={loading}
+          loading={admin.sessions.state.loading}
           currentPage={currentPage}
           hasMore={hasMore}
           onPageChange={loadSessions}
-          onRefresh={() => loadSessions(currentPage)}
+          onRefresh={() => loadSessions(0)}
         />
       }
     />

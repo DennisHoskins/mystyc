@@ -81,7 +81,7 @@ export default function UsersPage() {
     } finally {
       setBusy(false);
     }
-  }, [setBusy]);
+  }, [setBusy, admin.users]);
 
   const loadUsers = useCallback(async (page: number) => {
     try {
@@ -125,7 +125,7 @@ export default function UsersPage() {
     } finally {
       setBusy(false);
     }
-  }, [showUserTable, setBusy, currentView]);
+  }, [showUserTable, setBusy, currentView, admin.users]);
 
   // Reload data when view changes
   useEffect(() => {

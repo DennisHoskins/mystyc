@@ -4,7 +4,6 @@ import React from 'react';
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-import Text from '@/components/ui/Text';
 import {
   Table,
   TableHeader,
@@ -180,7 +179,7 @@ export default function AdminTable<T>({
           {loading == false && data.length == 0 && (
             <TableRow>
               <TableCell colSpan={columns.length}>
-                No data found
+                {emptyMessage}
               </TableCell>
             </TableRow>
           )}

@@ -81,7 +81,7 @@ export default function DevicesPage() {
     } finally {
       setBusy(false);
     }
-  }, [setBusy]);
+  }, [setBusy, admin.devices]);
 
   const loadDevices = useCallback(async (page: number) => {
     try {
@@ -125,13 +125,13 @@ export default function DevicesPage() {
     } finally {
       setBusy(false);
     }
-  }, [showDeviceTable, setBusy, currentView]);
+  }, [showDeviceTable, setBusy, currentView, admin.devices]);
 
   // Reload data when view changes
   useEffect(() => {
     if (currentView == 'online' || currentView == 'offline' || currentView == 'all') loadDevices(0);
     else loadData();
-  }, [loadData, loadDevices, currentView]);
+  }, [loadData, loadDevices, currentView, admin.devices]);
 
   // Load stats and summary on mount
   useEffect(() => {

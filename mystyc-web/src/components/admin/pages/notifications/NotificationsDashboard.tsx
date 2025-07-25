@@ -21,35 +21,31 @@ export default function NotificationsDashboard({
   charts = ['stats', 'delivery', 'volume', 'platforms'],
   height
 }: NotificationsDashboardProps) {
-  if (!stats) {
-    return null;
-  }
-
-  const duration = formatDateRangeForComponent(stats.query?.startDate, stats.query?.endDate);
+  const duration = formatDateRangeForComponent(stats?.query?.startDate, stats?.query?.endDate);
 
   // Transform delivery status for pie chart
   const deliveryData = [
-    { name: 'Sent', value: stats.data.delivery.deliveryMetrics.sent, color: '#10b981' },
-    { name: 'Failed', value: stats.data.delivery.deliveryMetrics.failed, color: '#ef4444' },
-    { name: 'Pending', value: stats.data.delivery.deliveryMetrics.pending, color: '#f59e0b' }
+    { name: 'Sent', value: stats?.data.delivery.deliveryMetrics.sent ?? 0, color: '#10b981' },
+    { name: 'Failed', value: stats?.data.delivery.deliveryMetrics.failed ?? 0, color: '#ef4444' },
+    { name: 'Pending', value: stats?.data.delivery.deliveryMetrics.pending ?? 0, color: '#f59e0b' }
   ];
 
   // Transform platform engagement for bar chart
-  const platformData = stats.data.engagement.deliveryByPlatform.map(platform => ({
+  const platformData = stats?.data.engagement.deliveryByPlatform.map(platform => ({
     name: platform.platform,
     successRate: platform.successRate,
     sent: platform.sent
   }));
 
   // Transform recent volume trends
-  const volumeData = stats.data.pattern.volumeTrends;
+  const volumeData = stats?.data.pattern.volumeTrends;
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats.data.delivery.totalNotifications, label: 'Total Sent', color: 'text-blue-600' },
-          { value: `${stats.data.delivery.deliveryMetrics.successRate}%`, label: 'Success Rate', color: 'text-green-600' }
+          { value: stats?.data.delivery.totalNotifications ?? 0, label: 'Total Sent', color: 'text-blue-600' },
+          { value: `${stats?.data.delivery.deliveryMetrics.successRate}%`, label: 'Success Rate', color: 'text-green-600' }
         ]} 
       />
     ),
