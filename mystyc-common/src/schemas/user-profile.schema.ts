@@ -33,6 +33,7 @@ export const UserProfileInputSchema = z.object({
     .trim()
     .optional(),
   dateOfBirth: z.coerce.date().optional().nullable(),
+  birthCity: z.coerce.string().optional().nullable(),
   zodiacSign: ZodiacSign.optional(),
   roles: z.array(z.nativeEnum(UserRole)).min(1),
   subscription: SubscriptionSchema,

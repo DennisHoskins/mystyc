@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react';
 
 import { apiClient } from '@/api/apiClient';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { logger } from '@/util/logger';
-
 import { useInitialized, useUser, useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
-import Card from "@/components/ui/Card";
+import AuthLayout from "./AuthLayout";
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
@@ -53,8 +51,6 @@ export default function LoginForm() {
     setBusy(500);
     setIsWorking(true);
 
-    logger.log("LOGIN");
-
     try {
       const u = await apiClient.auth.signIn(email, password);
       if (!u) throw new Error('no user returned');
@@ -77,7 +73,7 @@ export default function LoginForm() {
   }
 
   return (
-    <Card className='w-full md:max-w-lg text-center p-4 m-4'>
+    <AuthLayout>
       <FormLayout subtitle="Sign in to continue your journey..." error={error}>
         <Form onSubmit={handleSubmit}>
           <TextInput
@@ -118,6 +114,6 @@ export default function LoginForm() {
           </p>
         </Form>
       </FormLayout>
-    </Card>
+    </AuthLayout>
   );
 }

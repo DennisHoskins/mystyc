@@ -5,9 +5,8 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/api/apiClient';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
-
 import { useInitialized, useUser, useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
-import Card from "@/components/ui/Card";
+import AuthLayout from "./AuthLayout";
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
@@ -84,7 +83,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <Card className='w-full md:max-w-lg text-center p-4 m-4'>
+    <AuthLayout>
       <FormLayout
         subtitle="Create an account to begin your journey..."
         error={error}
@@ -130,6 +129,6 @@ export default function RegisterForm() {
           </p>
         </Form>
       </FormLayout>
-    </Card>
+    </AuthLayout>
   );
 }

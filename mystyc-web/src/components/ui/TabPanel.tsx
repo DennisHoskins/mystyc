@@ -35,7 +35,7 @@ export default function TabPanel({
   };
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full ${className} overflow-hidden flex flex-col grow min-h-0`}>
       <div className="flex border-b border-gray-100">
         {tabs.map((tab) => (
           <button
@@ -73,11 +73,11 @@ export default function TabPanel({
         ))}
       </div>
 
-      <div className="overflow-auto">
+      <div className="grow min-h-0 flex flex-col overflow-hidden">
         {tabs.map((tab) => (
           <div
             key={tab.id}
-            className={`${activeTab === tab.id ? 'block' : 'hidden'}`}
+            className={`${activeTab === tab.id ? 'flex flex-col overflow-hidden' : 'hidden'}`}
           >
             {tab.content}
           </div>

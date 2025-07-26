@@ -108,7 +108,7 @@ export default function AdminItemLayout({
   const rows = sectionsContent ? 'row-span-2' : 'row-span-1';
 
   return (
-    <>
+    <div className='grow min-h-0 flex flex-col mt-4 mr-2 mb-4'>
       <div className={`grid grid-cols-1 lg:grid-cols-3 ${gap} lg:space-y-0`}>
 
         <Card className={`order-1 lg:col-span-2`}>
@@ -142,10 +142,10 @@ export default function AdminItemLayout({
       </div>
 
       {mainContent && (
-        <div className="mt-4 space-y-4 flex-1 flex flex-col">
+        <div className="mt-4 space-y-4 grow min-h-0 flex flex-col overflow-hidden">
           {mainContent}
         </div>
       )}
-    </>
+    </div>
   );
 }

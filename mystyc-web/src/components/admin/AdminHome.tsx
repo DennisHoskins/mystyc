@@ -9,6 +9,7 @@ import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
+import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
@@ -66,29 +67,31 @@ export default function AdminHome() {
   }
 
   return(
-    <>
-      <div className="flex flex-col sm:flex-row mb-4">
-        <Card className='grow'>
-          <div className='flex space-x-3 items-center mb-4'>
-            <div className='mt-1'>
-              <Avatar size={'medium'} icon={<DashboardIcon />} />
+    <ScrollWrapper>
+      <div className='mt-4 mr-2 mb-4 flex flex-col'>
+        <div className="flex flex-col sm:flex-row pb-4">
+          <Card className='grow'>
+            <div className='flex space-x-3 items-center mb-4'>
+              <div className='mt-1'>
+                <Avatar size={'medium'} icon={<DashboardIcon />} />
+              </div>
+              <Heading level={2}>Admin</Heading>
             </div>
-            <Heading level={2}>Admin</Heading>
-          </div>
-          <hr />
-          <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
-        </Card>
-        <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
-          <SessionsDashboard 
-            stats={stats?.data.sessions ? {
-              data: stats.data.sessions,
-              query: stats.query,
-              queryString: stats.queryString,
-            } : null}
-          />
-        </Card>
+            <hr />
+            <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          </Card>
+          <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
+            <SessionsDashboard 
+              stats={stats?.data.sessions ? {
+                data: stats.data.sessions,
+                query: stats.query,
+                queryString: stats.queryString,
+              } : null}
+            />
+          </Card>
+        </div>
+        <AdminDashboard stats={stats} />
       </div>
-      <AdminDashboard stats={stats} />
-    </>
+    </ScrollWrapper>
   );
 };

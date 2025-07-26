@@ -1,6 +1,10 @@
+
 export default function Main({ children }: { children: React.ReactNode }) {
   return (
-    <main className='main flex-1 flex flex-col'>
+    <main
+      className='flex flex-col items-center overflow-hidden'
+      style={{ height: 'calc(100vh - 4em)' }}
+    >
       {children}
     </main>
   );

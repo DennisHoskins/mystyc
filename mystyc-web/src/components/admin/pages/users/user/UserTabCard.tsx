@@ -97,7 +97,7 @@ export default function UserTabCard({ firebaseUid }: { firebaseUid: string | nul
   }, [firebaseUid, activeTab, summary]);
 
   return (
-    <Card className='min-h-52 flex-1'>
+    <Card className='grow min-h-0'>
       <TabPanel 
         tabs={tabs} 
         defaultActiveTab={activeTab}

@@ -16,12 +16,10 @@ import Header from '@/components/ui/layout/Header';
 import WebsiteHeader from '@/components/website/ui/WebsiteHeader';
 import AppHeader from '@/components/mystyc/ui/MystycHeader';
 import Menu from '@/components/ui/layout/menu/Menu';
-import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
 import AdminSidebar from '@/components/admin/ui/AdminSidebar';
 import PageTransition from '@/components/ui/layout/transition/PageTransition';
 import Main from '@/components/ui/layout/Main';
 import Footer from '@/components/ui/layout/Footer';
-import WebsiteFooter from '@/components/website/ui/WebsiteFooter';
 import AppFooter from '@/components/mystyc/ui/MystycFooter';
 import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
 import GlobalError from '@/components/ui/layout/GlobalError';
@@ -52,10 +50,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
 
-    // Set initial state
     setOnline(navigator.onLine);
 
-    // Listen for changes
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
@@ -65,11 +61,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
   }, [setOnline]);  
 
-  // Close menu when pathname changes
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
-
 
   const isAdminPath = pathname.startsWith('/admin');  
   const isAdmin = user && user.isAdmin && isAdminPath;
@@ -77,7 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const header = isWebsite ? <WebsiteHeader /> : <AppHeader menuOpen={menuOpen} setMenuOpen={setMenuOpen} />;
   const menu = isWebsite ? null : <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />;
   const sidebar = isAdmin ? <AdminSidebar isCollapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} /> : null;
-  const footer = isWebsite ? <WebsiteFooter /> : <AppFooter />;
+  const footer = isWebsite ? null : <Footer><AppFooter /></Footer>;
 
   let content;
   if (isGlobalError) {
@@ -86,7 +80,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     content = <Offline />;
   } else {
     content = (
-      <div className="flex flex-1">
+      <div className="flex grow min-h-0">
         {sidebar}
         <PageTransition>
           <Main>{children}</Main>
@@ -101,10 +95,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AppTransition>
           <Header isFullWidth={isAdmin == true} isPlus={(user && user.isPlus) === true}>{header}</Header>
           {menu}  
-          <ScrollWrapper>
-            {content}
-            <Footer>{footer}</Footer>
-          </ScrollWrapper>
+          {content}
+          {footer}
         </AppTransition>
       </TransitionProvider>
       <ServerLogoutForm />

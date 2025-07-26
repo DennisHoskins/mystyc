@@ -44,7 +44,7 @@ export default function AdminListLayout({
   if (error) {
     return (
       <>
-        <div className="flex flex-col mb-4">
+        <div className="flex flex-col mt-4 mr-2 mb-4">
           <Card className='grow mb-4'>
             <div className='flex space-x-3 items-center mb-4'>
               {icon && (
@@ -70,7 +70,7 @@ export default function AdminListLayout({
   }
 
   return (
-    <>
+    <div className='grow min-h-0 flex flex-col mt-4 mr-2 mb-4'>
       <div className="flex flex-col sm:flex-row mb-4">
         <Card className='grow'>
           <div className='flex space-x-3 items-center mb-4'>
@@ -119,18 +119,18 @@ export default function AdminListLayout({
       )}
 
       {tableContent && (
-        <div className='space-y-4 flex-1 flex flex-col'>  
+        <div className='space-y-4 flex-1 flex flex-col grow min-h-0 overflow-hidden'>  
           {Array.isArray(tableContent) ? (
             tableContent.map((content, index) => (
-              <Card key={index} className='flex-1'>
+              <Card key={index} className='grow min-h-0 overflow-hidden'>
                 {content}
               </Card>
             ))
           ) : (
-            <Card className='flex flex-1'>{tableContent}</Card>
+            <Card className='grow min-h-0 overflow-hidden flex'>{tableContent}</Card>
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }

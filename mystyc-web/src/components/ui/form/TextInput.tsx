@@ -15,7 +15,7 @@ export default function TextInput({
   ...props
 }: TextInputProps) {
   return (
-    <div>
+    <div className='text-left mb-4'>
       {label && (
         <FormLabel htmlFor={id}>
           {label}

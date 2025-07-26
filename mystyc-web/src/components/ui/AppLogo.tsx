@@ -35,7 +35,7 @@ export default function AppLogo({
             mystyc{isPlus && <sup>+</sup>}
           </div>
           {subheading && (
-            <div style={{ fontSize: subSize }} className="text-gray-500 mt-2">
+            <div style={{ fontSize: subSize }} className="text-gray-500 mt-4">
               {subheading}
             </div>
           )}

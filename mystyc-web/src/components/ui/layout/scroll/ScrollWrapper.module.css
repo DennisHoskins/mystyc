@@ -1,12 +1,9 @@
 .scrollWrapper {
   height: var(--client-height);
   overflow-x: hidden;
+  overflow-y: scroll;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
-}
-
-.scrollWrapper.admin {
-  overflow-y: scroll;
 }
 
 .scrollWrapper::-webkit-scrollbar-track {

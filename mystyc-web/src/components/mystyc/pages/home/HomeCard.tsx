@@ -11,7 +11,7 @@ export default function WelcomeCard({ user } : { user: AppUser }) {
 
   return (
     <Card className='p-6 space-y-6'>
-      <Heading level={2} className="text-wrap">Welcome, {fullName} 👋</Heading>
+      <Heading level={2} className="text-wrap">Welcome back, {fullName} 👋</Heading>
       <Text variant="muted" className="mt-4 text-center">Glad to have you back.</Text>
 
       <div className="text-center">

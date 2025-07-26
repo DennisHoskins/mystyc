@@ -12,10 +12,7 @@ export default function Form({
 }: FormProps) {
   return (
     <form
-      className={clsx(
-        'space-y-4',
-        className
-      )}
+      className={clsx(className)}
       {...props}
     >
       {children}

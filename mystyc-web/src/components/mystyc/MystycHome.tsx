@@ -1,23 +1,15 @@
 'use client';
 
 import { AppUser } from '@/interfaces/app/app-user.interface';
-import { useFirebaseMessaging } from '@/hooks/useFirebaseMessaging';
-
-import WelcomeCard from '@/components/mystyc/pages/home/WelcomeCard';
-import InsightsCard from '@/components/mystyc/ui/insights/InsightsCard';
-import UpgradePlusCard from './ui/UpgradePlusCard';
+import MystycLayout from './MystycLayout';
+import OnboardPage from './pages/onboard/OnboardPage';
+import HomePage from './pages/home/HomePage';
 
 export default function Mystyc({ user } : { user: AppUser }) {
-  useFirebaseMessaging();
 
   return (
-    <div className="flex flex-1 justify-center p-6">
-      <div className='w-full max-w-content text-center space-y-6'>
-        {/* {user.isOnboard ? <Welcome /> : <Onboard />} */}
-        <WelcomeCard user={user} />
-        <InsightsCard user={user} />
-        {!user.isPlus && <UpgradePlusCard />}
-      </div>
-    </div>
+    <MystycLayout>
+      {user.isOnboard ? <HomePage user={user} /> : <OnboardPage user={user} />}
+    </MystycLayout>
   );
 }
