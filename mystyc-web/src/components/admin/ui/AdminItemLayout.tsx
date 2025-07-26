@@ -105,7 +105,7 @@ export default function AdminItemLayout({
   const hasX = sidebarContent != null;
   const hasY = sectionsContent != null;
   const gap = hasX && hasY ? "gap-4" : hasX ? "gap-x-4" : "gap-y-4"
-  const rows = sectionsContent ? 2 : 1;
+  const rows = sectionsContent ? 'row-span-2' : 'row-span-1';
 
   return (
     <>
@@ -132,7 +132,7 @@ export default function AdminItemLayout({
           </div>
         </Card>
 
-        <Card className={`order-2 lg:col-span-1 lg:row-span-${rows}`}>
+        <Card className={`order-2 lg:col-span-1 lg:${rows}`}>
           {sidebarContent}
         </Card>
 
