@@ -38,10 +38,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isOnline = useAppStore((state) => state.isOnline);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  logger.log("");
-  logger.log("mystyc: v2025-07-04:12:00");
-  logger.log("");
-
   useEffect(() => {
     registerVisit({
       deviceInfo: getDeviceInfo(),

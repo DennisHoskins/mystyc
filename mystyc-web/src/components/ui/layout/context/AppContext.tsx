@@ -17,18 +17,12 @@ interface AppContextProps {
 }
 
 export default function AppContext({ children }: AppContextProps) {
-  console.log("AppContext - start of render");
-  
   const storeRef = useRef<ReturnType<typeof createUserStore>>(createUserStore(null));
 
   const hasHydrated = useAppStore((state) => state.hasHydrated);  
-  console.log("AppContext - hasHydrated:", hasHydrated);
-  
   if (!hasHydrated) {
     return null
   }  
-
-  console.log("AppContext - rendering children");
   
   return (
     <UserStoreContext.Provider value={storeRef.current}>

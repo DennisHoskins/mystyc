@@ -14,13 +14,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 import '@/styles/globals.css';
 
-import { logger } from '@/util/logger';
 import AppContext from '@/components/ui/layout/context/AppContext';
 import ErrorBoundary from '@/components/ui/layout/ErrorBoundary';
  
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  logger.log("RootLayout Rendered");
-
   return (
     <html lang="en">
       <body className="bg-gray-200">
