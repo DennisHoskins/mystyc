@@ -1,17 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server'
 
 import { Content } from 'mystyc-common/schemas/';
+import { DeviceInfo } from '@/interfaces/device-info.interface';
 
-import { ContentRequest } from '@/interfaces/website-requests.interface';
 import { logger } from '@/util/logger';
-import redis from '../redisClient';
 
-export async function POST(request: NextRequest) {
+import redis from '@/server/lib/redis';
+
+export async function getContent(deviceInfo: DeviceInfo): Promise<Content> {
   logger.log('[getContent] Get attempt started');
 
-  // Parse client timezone from request body
-  const body: ContentRequest = await request.json();
-  const { deviceInfo } = body;
+  // Parse client timezone
   const timezone = deviceInfo?.timezone || 'UTC';
   logger.log(`[getContent] Client timezone: ${timezone}`);
 
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest) {
     logger.log('[getContent] Cache hit');
     try {
       const content: Content = JSON.parse(cached);
-      return NextResponse.json(content);
+      return content;
     } catch (err) {
       logger.error('[getContent] JSON parse failed', err);
       // fall through to refetch
@@ -54,7 +53,7 @@ export async function POST(request: NextRequest) {
 
   if (!nestResponse.ok) {
     logger.error('[getContent] Failed to fetch content:', nestResponse.status);
-    return NextResponse.error();
+    throw new Error(`Failed to fetch content: ${nestResponse.status}`);
   }
 
   const content: Content = await nestResponse.json();
@@ -67,6 +66,5 @@ export async function POST(request: NextRequest) {
     logger.error('[getContent] Redis SET failed', err);
   }
 
-  // Return the fresh content
-  return NextResponse.json(content);
+  return content;
 }

@@ -16,7 +16,7 @@ import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
 import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [session, setSession] = useState<Session | null>(null);
   const [device, setDevice] = useState<Device | null>(null);
   const [error, setError] = useState<string | null>(null);

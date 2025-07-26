@@ -3,7 +3,9 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { apiClient } from '@/api/apiClient';
+import { registerVisit } from '@/server/actions/analytics';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+
 import { useAppStore } from '@/store/appStore';
 import { logger } from '@/util/logger'
 
@@ -41,7 +43,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   logger.log("");
 
   useEffect(() => {
-    apiClient.registerVisit(pathname)
+    registerVisit({
+      deviceInfo: getDeviceInfo(),
+      pathname,
+      clientTimestamp: new Date().toISOString()
+    }).catch(err => {
+      logger.error('Analytics error:', err);
+    });
   }, [pathname])  
 
   useEffect(() => {

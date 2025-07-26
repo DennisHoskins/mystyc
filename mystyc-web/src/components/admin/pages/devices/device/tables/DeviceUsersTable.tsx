@@ -46,7 +46,7 @@ export default function DeviceUsersTable({ deviceId, isActive = false }: DeviceU
     } finally {
       setBusy(false);
     }
-  }, [deviceId]);
+  }, [deviceId, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

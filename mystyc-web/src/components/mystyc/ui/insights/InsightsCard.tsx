@@ -3,7 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { AppUser } from '@/interfaces/app/app-user.interface';
-import { apiClient } from '@/api/apiClient';
+
+import { getUserContent } from '@/server/actions/user';
+import { getDeviceInfo } from "@/util/getDeviceInfo";
+
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import { Content } from 'mystyc-common/schemas/content.schema';
 import { logger } from '@/util/logger';
@@ -20,7 +23,7 @@ export default function Insights({ user } : { user: AppUser }) {
     setBusy(1000);
 
     try {
-      const reply = await apiClient.user.getUserContent();
+      const reply = await getUserContent(getDeviceInfo());
       setData(reply);
     } catch (err) {
       logger.error('Failed to load users:', err);

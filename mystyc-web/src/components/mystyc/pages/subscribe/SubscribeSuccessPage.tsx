@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useRef } from 'react';
 
-import { apiClient } from '@/api/apiClient';
+import { getUser } from '@/server/actions/user';
+import { getDeviceInfo } from "@/util/getDeviceInfo";
+
 import { useUser, useSetUser, useBusy, useToast } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
@@ -19,13 +21,15 @@ export default function SubscribeSuccessPage() {
   const setUser = useSetUser();
   const { setBusy } = useBusy();
   const user = useUser();
-  const [isUpdating, setIsUpdating] = useState(true);
   const [isSubscribe, setIsSubscribe] = useState(false);
   const [error, setError] = useState("");
 
   const hasRunRef = useRef(false);
 
   useEffect(() => {
+
+    debugger
+
     if (hasRunRef.current) return;
     hasRunRef.current = true;
     
@@ -47,13 +51,12 @@ export default function SubscribeSuccessPage() {
       if (user.isPlus) {
         hasRunRef.current = true;
         setBusy(false);
-        setIsUpdating(false);
         return;
       }
 
       try {
         setBusy(true);
-        const updatedUser = await apiClient.user.getUser();
+        const updatedUser = await getUser(getDeviceInfo());
         setUser(updatedUser);
         showToast("Upgraded to Mystyc Plus!", "success");
       } catch (error) {
@@ -61,17 +64,12 @@ export default function SubscribeSuccessPage() {
         logger.error(error);
         setError("Failed to update subscription");
       } finally {
-        setIsUpdating(false);
         setBusy(false);
       }
     };
 
     updateUserSubscription();
   }, [user, setUser, isSubscribe, setIsSubscribe, router, setBusy, showToast]);
-
-  if (isUpdating || !isSubscribe) {
-    return null;
-  }
 
   const handleClick = () => {
     router.replace("/");

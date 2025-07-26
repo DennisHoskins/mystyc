@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server'
+
 import { headers } from 'next/headers';
 import { UAParser } from 'ua-parser-js';
 
-import { RegisterVisitRequest } from '@/interfaces/website-requests.interface';
+import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { logger } from '@/util/logger';
-import redis from '../redisClient';
+
+import redis from '@/server/lib/redis';
 
 type VisitSession = {
   sessionId: string | null;
@@ -42,20 +44,24 @@ function createDedupeKey(
   userAgent: string, 
   timestamp: Date
 ): string {
-  // Round timestamp to nearest minute to catch rapid refreshes/strict mode
   const roundedMinute = Math.floor(timestamp.getTime() / (60 * 1000)) * 60 * 1000;
-  const userAgentHash = userAgent.slice(0, 20); // Simple hash alternative
+  const userAgentHash = userAgent.slice(0, 20);
   return `analytics:dedupe:${visitorId}:${pathname}:${userAgentHash}:${roundedMinute}`;
 }
 
-export async function POST(request: NextRequest) {
+export async function registerVisit(params: {
+  deviceInfo: DeviceInfo;
+  pathname: string;
+  clientTimestamp: string;
+}): Promise<void> {
   logger.log('[registerVisit] begin register visit');
-
-  const body: RegisterVisitRequest = await request.json();
-  const { deviceInfo, clientTimestamp, pathname } = body;
+  
+  const { deviceInfo, pathname, clientTimestamp } = params;
   logger.log('[registerVisit] DeviceInfo:', deviceInfo);
 
   const headersList = await headers();
+  
+  // Try to get session but don't fail if none
   let session;
   try {
     session = await sessionManager.getCurrentSession(headersList, deviceInfo);
@@ -78,8 +84,8 @@ export async function POST(request: NextRequest) {
   const serverTimestamp = new Date();
   const clientDate = new Date(clientTimestamp);
 
-  // Deduplication - 30 minute window to catch strict mode and refreshes
-  const THRESHOLD_SECS = 30 * 60; // 30 minutes
+  // Deduplication
+  const THRESHOLD_SECS = 30 * 60;
   const visitorId = session?.sessionId ?? session?.deviceId ?? 'anon';
   const dedupeKey = createDedupeKey(visitorId, pathname, userAgent, serverTimestamp);
   
@@ -88,15 +94,15 @@ export async function POST(request: NextRequest) {
     wasNew = await redis.set(dedupeKey, Date.now(), { NX: true, EX: THRESHOLD_SECS });
   } catch (err) {
     logger.error('[registerVisit] dedupe check failed', err);
-    wasNew = 'OK'; // Fail open - allow the visit if Redis is down
+    wasNew = 'OK';
   }
   
   if (!wasNew) {
     logger.log('[registerVisit] duplicate visit detected, skipping');
-    return new NextResponse(null, { status: 204 });
+    return; // Just return, no error
   }
 
-  // Build comprehensive visit payload
+  // Build visit payload
   const visit = {
     user,
     path: pathname,
@@ -112,14 +118,13 @@ export async function POST(request: NextRequest) {
     language: deviceInfo.language,
   };
 
-  // Date and time calculations
+  // Date calculations
   const dateKey = clientDate.toISOString().split('T')[0];
   const hour = serverTimestamp.getHours().toString().padStart(2, '0');
-  const dayOfWeek = serverTimestamp.getDay(); // 0 = Sunday, 6 = Saturday
+  const dayOfWeek = serverTimestamp.getDay();
   const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const dayName = dayNames[dayOfWeek];
   
-  // Timezone-aware hour (if timezone info available)
   let timezoneHour = hour;
   if (deviceInfo.timezone) {
     try {
@@ -130,7 +135,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Pipeline writes for all analytics counters
+  // Write analytics
   try {
     const pipeline = redis.multi();
     
@@ -184,6 +189,4 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     logger.error('[registerVisit] analytics write failed', err);
   }
-
-  return new NextResponse(null, { status: 204 });
 }

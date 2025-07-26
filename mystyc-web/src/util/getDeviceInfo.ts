@@ -1,19 +1,5 @@
-import { RegisterVisitRequest } from '@/interfaces/website-requests.interface';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
-import { AuthClient } from './AuthClient';
 import { logger } from '@/util/logger';
-
-export const serverRoot: string = '/api';
-export class ApiError extends Error {
-  code: number;
-  type: string;
-  
-  constructor(message: string, code: number, type: string = 'unknown') {
-    super(message);
-    this.code = code;
-    this.type = type;
-  }
-}
 
 export const getDeviceInfo = (): DeviceInfo => {
   const getTimezone = (): string => {
@@ -70,22 +56,4 @@ export const getDeviceInfo = (): DeviceInfo => {
     timezone: getTimezone(),
     language: getLanguage()
   };
-};
-
-export const apiClient = {
-  auth: new AuthClient(),  
-
-  registerVisit(pathname: string): void {
-    const requestBody: RegisterVisitRequest = {
-      deviceInfo: getDeviceInfo(),
-      pathname,
-      clientTimestamp: new Date().toISOString() 
-    };
-
-    fetch(`${serverRoot}/register-visit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
-  },
 };

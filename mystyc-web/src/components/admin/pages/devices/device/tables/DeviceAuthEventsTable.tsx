@@ -46,7 +46,7 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
     } finally {
       setBusy(false);
     }
-  }, [deviceId]);
+  }, [deviceId, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

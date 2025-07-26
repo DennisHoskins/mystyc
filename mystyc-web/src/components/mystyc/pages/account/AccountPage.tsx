@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 
-import { apiClient } from "@/api/apiClient";
+import { startSubscription, cancelSubscription, getBillingPortal, getUser } from '@/server/actions/user';
+import { getDeviceInfo } from "@/util/getDeviceInfo";
+
+import { handleSessionError } from '@/util/sessionErrorHandler'; 
 import { useTransitionRouter } from "@/hooks/useTransitionRouter";
 import { logger } from "@/util/logger";
 
 import { useUser, useSetUser, useInitialized, useBusy, useToast } from "@/components/ui/layout/context/AppContext";
 import Card from "@/components/ui/Card";
 import Heading from "@/components/ui/Heading";
-//import Text from "@/components/ui/Text";
 import Button from "@/components/ui/Button";
 import FormError from "@/components/ui/form/FormError";
 
@@ -43,18 +45,26 @@ export default function AccountPage() {
     setLoaded(true);
 
     const loadBillingPortal = async () => {
+
       try {
-        const response = await apiClient.user.getCustomerBillingPortal();
-        if (response) {
+        setError("");
+        setBusy(1000);
+
+        const response = await getBillingPortal(getDeviceInfo());
+        if (response && response.portalUrl) {
           setUrl(response.portalUrl);
         } else {
           logger.log("No billing portal URL returned");
+          setError('Failed to load billing portal. Please try again.');
+          setBusy(false);
         }
       } catch (err) {
+        await handleSessionError(err, 'loadBillingPortal');
         logger.error("Failed to load billing portal:", err);
         setError('Failed to load billing portal. Please try again.');
       } finally {
         setLoading(false);
+        setBusy(false);
       }
     }
 
@@ -65,13 +75,20 @@ export default function AccountPage() {
     return null;
   } 
 
-  const upgradeToPlus = async () => {
+  const handleUpgradeToPlus = async () => {
     try {
       setError("");
       setBusy(true);
-      const response = await apiClient.user.startSubscription(MYSTYC_PLUS_PRICE_ID);
-      window.location.href = response.sessionUrl;
+
+      const response = await startSubscription(getDeviceInfo(), MYSTYC_PLUS_PRICE_ID);
+      if (response && response.sessionUrl) {
+        window.location.href = response.sessionUrl;
+      } else {
+        setError('Failed to subscribe. Please try again.');
+        setBusy(false);
+      }
     } catch(err) {
+      await handleSessionError(err, 'upgradeToPlus');
       logger.log(err);
       setError('Failed to subscribe. Please try again.');
     } finally {
@@ -79,29 +96,26 @@ export default function AccountPage() {
     }
   };
 
-  const showBillingPortal = () => {
+  const handleShowBillingPortal = () => {
     if (!url) {
       return;
     }
     window.open(url, "_blank");    
   }
 
-  const cancelSubscription = async () => {
+  const handleCancelSubscription = async () => {
     try {
       setError("");
       setBusy(true);
-      const response = await apiClient.user.cancelSubscription();
-      if (response.success) {
-        logger.log("Subscription cancelled successfully");
 
-        const updatedUser = await apiClient.user.getUser();
-        setUser(updatedUser);
+      await cancelSubscription(getDeviceInfo());
+      await Promise.resolve(() => { setTimeout(() => null, 1000) });
+      const updatedUser = await getUser(getDeviceInfo());
+      setUser(updatedUser);
 
-        showToast("Subscription cancelled successfully", "success");
-      } else {
-        setError(response.message || "Failed to cancel subscription. Please try again.");
-      }
+      showToast("Subscription cancelled successfully", "success");
     } catch(err) {
+      await handleSessionError(err, 'cancelSubscription');
       logger.log(err);
       setError('Failed to unsubscribe. Please try again.');
     } finally {
@@ -117,29 +131,29 @@ export default function AccountPage() {
         {error && <FormError message={error} />}
 
         {user.isPlus ? (
-            <>
-              <Button 
-                onClick={showBillingPortal}
-                className="w-full max-w-md"
-                disabled={!url}
-              >
-                {loading ? "Loading..." : "Go to Stripe Billing Portal"}
-              </Button>
-              <Button 
-                onClick={cancelSubscription}
-                className="w-full max-w-md"
-              >
-                Cancel Subscription
-              </Button>
-            </>
-          ) : (
+          <>
             <Button 
-              onClick={upgradeToPlus}
+              onClick={handleShowBillingPortal}
+              className="w-full max-w-md"
+              disabled={!url}
+            >
+              {loading ? "Loading..." : "Go to Stripe Billing Portal"}
+            </Button>
+            <Button 
+              onClick={handleCancelSubscription}
               className="w-full max-w-md"
             >
-              Upgrade to Mystyc Plus
+              Cancel Subscription
             </Button>
-          )}
+          </>
+        ) : (
+          <Button 
+            onClick={handleUpgradeToPlus}
+            className="w-full max-w-md"
+          >
+            Upgrade to Mystyc Plus
+          </Button>
+        )}
       </Card>
     </div>
   );

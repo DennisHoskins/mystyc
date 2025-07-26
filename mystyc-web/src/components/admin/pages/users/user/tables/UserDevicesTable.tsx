@@ -46,7 +46,7 @@ export default function UserDevices({ firebaseUid, isActive = false }: UserDevic
     } finally {
       setBusy(false);
     }
-  }, [firebaseUid]);
+  }, [firebaseUid, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

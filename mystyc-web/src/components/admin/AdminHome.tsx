@@ -37,7 +37,7 @@ export default function AdminHome() {
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [setBusy]);
 
   useEffect(() => {
     loadDashboard();

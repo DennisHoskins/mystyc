@@ -15,7 +15,7 @@ import ContentDataCard from './ContentDataCard';
 import ContentPreviewCard from './ContentPreviewCard';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [content, setContent] = useState<Content | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +32,7 @@ export default function ContentPage({ contentId }: { contentId: string }) {
     } finally {
       setBusy(false);
     }
-  }, [contentId, setBusy]);
+  }, [setBusy, contentId]);
 
   useEffect(() => {
     loadContent();
@@ -42,7 +42,7 @@ export default function ContentPage({ contentId }: { contentId: string }) {
     { label: 'Admin', href: '/admin' },
     { label: 'Content', href: '/admin/content' },
     { label: content ? content.date : `` },
-  ], [content, contentId]);
+  ], [content]);
 
   return (
     <AdminItemLayout

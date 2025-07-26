@@ -3,7 +3,10 @@ import { initializeApp } from 'firebase/app';
 import { Messaging, getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 import { useUser, useInitialized, useSetUser } from '@/components/ui/layout/context/AppContext';
-import { apiClient } from '@/api/apiClient';
+
+import { updateFcmToken } from '@/server/actions/user';
+import { getDeviceInfo } from "@/util/getDeviceInfo";
+
 import { logger } from '@/util/logger';
 
 const firebaseConfig = {
@@ -69,7 +72,7 @@ export function useFirebaseMessaging() {
      });
      logger.log('[useFirebaseMessaging] FCM Token received:', newToken);
 
-     const updatedDevice = await apiClient.user.updateFcmToken(user.device.deviceId, newToken);
+     const updatedDevice = await updateFcmToken(getDeviceInfo(), user.device.deviceId, newToken);
 
      user.device = updatedDevice;
      setUser(user);

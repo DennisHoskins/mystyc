@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 
-import { apiClient } from "@/api/apiClient";
+import { startSubscription } from '@/server/actions/user';
+import { getDeviceInfo } from "@/util/getDeviceInfo";
+
 import { useUser, useInitialized } from "@/components/ui/layout/context/AppContext";
 import { useBusy } from "@/components/ui/layout/context/AppContext";  
 import { useTransitionRouter } from "@/hooks/useTransitionRouter";
@@ -27,8 +29,14 @@ export default function SubscribePage({ error } : { error?: string }) {
     try {
       setUpgradeError("");
       setBusy(true);
-      const response = await apiClient.user.startSubscription(MYSTYC_PLUS_PRICE_ID);
-      window.location.href = response.sessionUrl;
+      
+      const response = await startSubscription(getDeviceInfo(), MYSTYC_PLUS_PRICE_ID);
+      if (response && response.sessionUrl) {
+        window.location.href = response.sessionUrl;
+      } else {
+        setUpgradeError('Failed to subscribe. Please try again.');
+        setBusy(false);
+      }
     } catch(err) {
       logger.log(err);
       setUpgradeError('Failed to subscribe. Please try again.');

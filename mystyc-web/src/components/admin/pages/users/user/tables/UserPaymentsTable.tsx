@@ -46,7 +46,7 @@ export default function UserPayments({ firebaseUid, isActive = false }: UserPaym
     } finally {
       setBusy(false);
     }
-  }, [firebaseUid]);
+  }, [firebaseUid, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

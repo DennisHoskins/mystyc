@@ -14,7 +14,7 @@ import ScheduleDetailsPanel from './ScheduleDetailsPanel';
 import ScheduleExecutionsCard from './ScheduleExecutionsCard';
 
 export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [schedule, setSchedule] = useState<Schedule | null>(null);
   const [error, setError] = useState<string | null>(null);
 

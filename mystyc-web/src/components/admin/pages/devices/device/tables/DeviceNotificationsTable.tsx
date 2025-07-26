@@ -46,7 +46,7 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
     } finally {
       setBusy(false);
     }
-  }, [deviceId]);
+  }, [deviceId, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

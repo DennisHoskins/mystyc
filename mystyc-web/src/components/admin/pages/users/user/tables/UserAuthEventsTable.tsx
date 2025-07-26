@@ -46,7 +46,7 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
     } finally {
       setBusy(false);
     }
-  }, [firebaseUid]);
+  }, [firebaseUid, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

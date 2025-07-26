@@ -1,6 +1,5 @@
 import { Device } from 'mystyc-common/schemas/';
 
-import Text from '@/components/ui/Text';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 

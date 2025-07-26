@@ -46,7 +46,7 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
     } finally {
       setBusy(false);
     }
-  }, [firebaseUid]);
+  }, [firebaseUid, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

@@ -46,7 +46,7 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
     } finally {
       setBusy(false);
     }
-  }, [firebaseUid]);
+  }, [firebaseUid, setBusy]);
 
   useEffect(() => {
     if (isActive && !hasLoaded) {

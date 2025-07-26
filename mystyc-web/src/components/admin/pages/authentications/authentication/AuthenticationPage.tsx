@@ -15,9 +15,8 @@ import AuthenticationUserPanel from './AuthenticationUserPanel';
 import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [authentication, setAuthentication] = useState<AuthEvent | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadAuthentication = useCallback(async () => {
