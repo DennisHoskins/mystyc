@@ -12,7 +12,7 @@ interface UsersTableProps {
   icon?: IconComponent,
   label?: string,
   data?: UserProfile[];
-  pagination?: Pagination;
+  pagination?: Pagination | null;
   loading?: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;

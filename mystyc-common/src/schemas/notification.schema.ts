@@ -20,7 +20,8 @@ export const NotificationInputSchema = z.object({
   sentBy: z.string().min(1).trim(),
   sentAt: z.date().optional(),
   scheduleId: z.string().optional(),
-  executionId: z.string().optional()
+  executionId: z.string().optional(),
+  contentId: z.string().optional()
 }).strict();
 
 export const NotificationSchema = NotificationInputSchema.extend({

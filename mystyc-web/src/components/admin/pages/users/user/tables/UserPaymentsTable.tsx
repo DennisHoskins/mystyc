@@ -3,65 +3,56 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
+import { Pagination } from 'mystyc-common/admin';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 import PaymentsTable from '@/components/admin/pages/subscriptions/PaymentsTable';
 
 interface UserPaymentsTableProps {
-  firebaseUid: string;
+  firebaseUid?: string | null;
   isActive?: boolean;
 }
 
 export default function UserPayments({ firebaseUid, isActive = false }: UserPaymentsTableProps) {
+  const { setBusy, isBusy } = useBusy();
   const [payments, setPayments] = useState<PaymentHistory[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const LIMIT = 20;
 
   const loadPayments = useCallback(async (page: number) => {
     try {
-      setLoading(true);
+      if (!firebaseUid) {
+        return;
+      }
+
+      setBusy(1000);
       setError(null);
 
-      const response = await apiClientAdmin.users.getUserPayments(firebaseUid, {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'desc',
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.users.getUserPayments(firebaseUid, listQuery);
 
       setPayments(response.data);
       setCurrentPage(page);
+      setPagination(response.pagination);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load user payments:', err);
       setError('Failed to load user payments. Please try again.');
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   }, [firebaseUid]);
 
-  // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
       loadPayments(0);
     }
   }, [isActive, hasLoaded, loadPayments]);
-
-  // Show loading state if tab is active but hasn't loaded yet
-  if (isActive && !hasLoaded && !loading) {
-    return null;
-  }
-
-  // Don't render anything if tab isn't active and hasn't loaded
-  if (!isActive && !hasLoaded) {
-    return null;
-  }
 
   if (error) {
     return (
@@ -76,7 +67,8 @@ export default function UserPayments({ firebaseUid, isActive = false }: UserPaym
   return (
     <PaymentsTable
       data={payments}
-      loading={loading}
+      pagination={pagination}
+      loading={isBusy || !hasLoaded}
       currentPage={currentPage}
       onPageChange={loadPayments}
       onRefresh={() => loadPayments(currentPage)}

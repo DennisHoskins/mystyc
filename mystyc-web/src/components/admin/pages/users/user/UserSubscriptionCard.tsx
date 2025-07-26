@@ -11,10 +11,10 @@ import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
-export default function UserSubscriptionCard({ user }: { user: UserProfile }) {
+export default function UserSubscriptionCard({ user }: { user?: UserProfile | null }) {
 
   return (
-    <Card className='flex flex-col min-h-36'>
+    <Card className='flex flex-col'>
       <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={SubscriptionsIcon} />
         <div>
@@ -24,22 +24,22 @@ export default function UserSubscriptionCard({ user }: { user: UserProfile }) {
 
       <hr/ >
 
-      <AdminDetailGroup className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
+      <AdminDetailGroup cols={2} className='mt-4'>
         <AdminDetailField
           label="Subscription Level"
-          value={user.subscription.level}
+          value={user?.subscription.level}
         />
         <AdminDetailField
           label="Stripe Customer Id"
-          value={user.stripeCustomerId || "-"}
+          value={user?.stripeCustomerId}
         />
         <AdminDetailField
           label="Start Date"
-          value={user.subscription.startDate ? formatDateForDisplay(user.subscription.startDate) : "-"}
+          value={user && user.subscription.startDate ? formatDateForDisplay(user.subscription.startDate) : ""}
         />
         <AdminDetailField
           label="Credit Balance"
-          value={user.subscription.creditBalance || "0"}
+          value={user ? user.subscription.creditBalance || "0" : ""}
         />
       </AdminDetailGroup>
     </Card>

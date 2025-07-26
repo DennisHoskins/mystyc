@@ -11,10 +11,6 @@ import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import UserProfileIcon from '@/components/admin/ui/icons/UserProfileIcon';
 
 export default function UserProfilePanel({ user }: { user?: UserProfile | null }) {
-  if (!user) {
-    return;
-  }
-
   return (
     <div className='flex flex-col'>
       <div className="flex items-center space-x-2 mb-4">
@@ -26,22 +22,22 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
 
       <hr/ >
 
-      <AdminDetailGroup className='pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 overflow-hidden gap-1'>
+      <AdminDetailGroup cols={1} className='mt-4'>
         <AdminDetailField
           label="Full Name"
-          value={user.fullName || 'Not set'}
+          value={user && (user.fullName || 'Not set')}
         />
         <AdminDetailField
           label="Date of Birth"
-          value={user.dateOfBirth ? formatDateForDisplay(user.dateOfBirth) : 'Not set'}
+          value={user && (user.dateOfBirth ? formatDateForDisplay(user.dateOfBirth) : 'Not set')}
         />
         <AdminDetailField
           label="Time of Birth"
-          value={user.dateOfBirth ? formatDateForDisplay(user.dateOfBirth) : 'Not set'}
+          value={user && (user.dateOfBirth ? formatDateForDisplay(user.dateOfBirth) : 'Not set')}
         />
         <AdminDetailField
           label="Zodiac Sign"
-          value={user.zodiacSign || 'Not set'}
+          value={user && (user.zodiacSign || 'Not set')}
         />
       </AdminDetailGroup>
     </div>

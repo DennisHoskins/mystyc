@@ -16,17 +16,15 @@ import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
 import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [session, setSession] = useState<Session | null>(null);
   const [device, setDevice] = useState<Device | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadSession = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const data = await apiClientAdmin.sessions.getSession(sessionId);
       setSession(data);
@@ -35,7 +33,6 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       setError('Failed to load session. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [sessionId, setBusy]);
 
@@ -53,33 +50,17 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
     setDevice(device);
   }, []);
 
-  if (loading) {
-    return null;
-  }
-
-  if (!session) {
-    return (
-      <AdminItemLayout
-        error={'Session Not Found'}
-        onRetry={loadSession}
-        breadcrumbs={breadcrumbs}
-        icon={<SessionIcon />}
-        title={'Unkown Session'}
-      />
-    );
-  }
-
   return (
     <AdminItemLayout
       error={error}
       onRetry={loadSession}
       breadcrumbs={breadcrumbs}
       icon={<SessionIcon />}
-      title={`${session.email} - ${session.deviceName}`}
+      title={session ? `${session.email} - ${session.deviceName}` : ""}
       headerContent={<SessionDetailsPanel session={session} />}
       sectionsContent={[
-        <UserInfoCard key='user' firebaseUid={session.uid} />,
-        <DeviceInfoCard key='device' deviceId={session.deviceId} onLoad={handleDeviceLoad} />
+        <UserInfoCard key='user' firebaseUid={session?.uid} />,
+        <DeviceInfoCard key='device' deviceId={session?.deviceId} onLoad={handleDeviceLoad} />
       ]}
       sidebarContent={<SessionTokensPanel session={session} device={device} />}
     />

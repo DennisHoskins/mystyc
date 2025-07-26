@@ -11,20 +11,18 @@ import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
 import SubscriptionDetailsPanel from './SubscriptionDetailsPanel';
-import SubscriptionUserPanel from './SubscriptionUserPanel';
+import SubscriptionUserCard from './SubscriptionUserCard';
 import SubscriptionStripeCard from './SubscriptionStripeCard';
 
 export default function SubscriptionPage({ subscriptionId }: { subscriptionId: string }) {
   const { setBusy } = useBusy();
   const [payment, setPayment] = useState<PaymentHistory | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadPayment = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const data = await apiClientAdmin.payments.getPayment(subscriptionId);
       setPayment(data);
@@ -34,7 +32,6 @@ export default function SubscriptionPage({ subscriptionId }: { subscriptionId: s
       setError('Failed to load subscription. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [subscriptionId, setBusy]);
 
@@ -48,32 +45,16 @@ export default function SubscriptionPage({ subscriptionId }: { subscriptionId: s
     { label: subscriptionId },
   ], [subscriptionId]);
 
-  if (loading) {
-    return null;
-  }
-
-  if (!payment) {
-    return (
-      <AdminItemLayout
-        error={'Subscription Not Found'}
-        onRetry={loadPayment}
-        breadcrumbs={breadcrumbs}
-        icon={<SubscriptionsIcon size={6}/>}
-        title={'Unkown Subscription'}
-      />
-    );
-  }
-
   return (
     <AdminItemLayout
       error={error}
       onRetry={loadPayment}
       breadcrumbs={breadcrumbs}
       icon={<SubscriptionsIcon size={6} />}
-      title={payment.stripeInvoiceId}
+      title={payment?.stripeInvoiceId ?? "Payment"}
       headerContent={<SubscriptionDetailsPanel payment={payment} />}
-      sidebarContent={<SubscriptionUserPanel firebaseUid={payment.firebaseUid} />}
-      sectionsContent={[<SubscriptionStripeCard key='stripe' payment={payment} />]}
+      sidebarContent={<SubscriptionStripeCard key='stripe' payment={payment} />}
+      mainContent={<SubscriptionUserCard firebaseUid={payment?.firebaseUid} />}
     />
   );
 }

@@ -7,6 +7,7 @@ export const DataItemSchema = z.object({
 }).strict();
 
 export const OpenAIDataSchema = z.object({
+  _id: z.string().optional(),
   prompt: z.string().optional(),
   model: z.string().optional(),
   inputTokens: z.number().int().min(0).optional(),
@@ -32,6 +33,7 @@ export const ContentInputSchema = z.object({
   scheduleId: z.string().optional(),
   executionId: z.string().optional(),
   notificationId: z.string().optional(),
+  contentId: z.string().optional(),
   userId: z.string().min(20).max(128).optional(),
   openAIData: OpenAIDataSchema.optional(),
   title: z.string().min(1).max(200).trim(),

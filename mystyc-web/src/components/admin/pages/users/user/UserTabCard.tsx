@@ -2,35 +2,29 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { UserSummary } from 'mystyc-common/admin';
+
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
-import UserContentTable from './UserContentTable';
-import UserAuthEventsTable from './UserAuthEventsTable';
-import UserNotificationsTable from './UserNotificationsTable';
-import UserPaymentsTable from './UserPaymentsTable';
-
-interface UserSummary {
-  content: { total: number };
-  requests: { total: number };
-  authEvents: { total: number };
-  notifications: { total: number };
-  payments: { total: number };
-}
+import UserContentTable from './tables/UserContentTable';
+import UserDevicesTable from './tables/UserDevicesTable';
+import UserAuthEventsTable from './tables/UserAuthEventsTable';
+import UserNotificationsTable from './tables/UserNotificationsTable';
+import UserPaymentsTable from './tables/UserPaymentsTable';
 
 export default function UserTabCard({ firebaseUid }: { firebaseUid: string | null }) {
   const [activeTab, setActiveTab] = useState('content');
   const [summary, setSummary] = useState<UserSummary | null>(null);
 
-  // Load summary data (all counts)
   useEffect(() => {
-    if (!firebaseUid) {
-      return;
-    }
-
     const loadSummary = async () => {
+      if (!firebaseUid) {
+        return;
+      }
+
       try {
         const summaryData = await apiClientAdmin.users.getUserSummary(firebaseUid);
         setSummary(summaryData);
@@ -43,13 +37,11 @@ export default function UserTabCard({ firebaseUid }: { firebaseUid: string | nul
   }, [firebaseUid]);
 
   const tabs: Tab[] = useMemo(() => {
-    if (!firebaseUid) return [];
-
     return [
       {
         id: 'content',
         label: 'Content',
-        count: summary?.content.total,
+        count: summary?.content,
         content: (
           <UserContentTable
             firebaseUid={firebaseUid}
@@ -58,20 +50,31 @@ export default function UserTabCard({ firebaseUid }: { firebaseUid: string | nul
         )
       },
       {
-        id: 'auth-events',
-        label: 'Auth Events',
-        count: summary?.authEvents.total,
+        id: 'payments',
+        label: 'Payments',
+        count: summary?.payments,
         content: (
-          <UserAuthEventsTable
+          <UserPaymentsTable
             firebaseUid={firebaseUid}
-            isActive={activeTab === 'auth-events'}
+            isActive={activeTab === 'payments'}
+          />
+        )
+      },
+      {
+        id: 'devices',
+        label: 'Devices',
+        count: summary?.devices,
+        content: (
+          <UserDevicesTable
+            firebaseUid={firebaseUid}
+            isActive={activeTab === 'devices'}
           />
         )
       },
       {
         id: 'notifications',
         label: 'Notifications',
-        count: summary?.notifications.total,
+        count: summary?.notifications,
         content: (
           <UserNotificationsTable
             firebaseUid={firebaseUid}
@@ -80,29 +83,24 @@ export default function UserTabCard({ firebaseUid }: { firebaseUid: string | nul
         )
       },
       {
-        id: 'payments',
-        label: 'Payments',
-        count: summary?.payments.total,
+        id: 'auth-events',
+        label: 'Auth Events',
+        count: summary?.authEvents,
         content: (
-          <UserPaymentsTable
+          <UserAuthEventsTable
             firebaseUid={firebaseUid}
-            isActive={activeTab === 'payments'}
+            isActive={activeTab === 'auth-events'}
           />
         )
-      }
+      },
     ];
   }, [firebaseUid, activeTab, summary]);
 
-  if (!firebaseUid) {
-    return null;
-  }
-
   return (
-    <Card className='min-h-52'>
+    <Card className='min-h-52 flex-1'>
       <TabPanel 
         tabs={tabs} 
         defaultActiveTab={activeTab}
-        height="900px"
         onTabChange={setActiveTab}
       />
     </Card>      

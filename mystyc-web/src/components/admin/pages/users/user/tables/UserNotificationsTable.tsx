@@ -3,60 +3,56 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
+import { Pagination } from 'mystyc-common/admin';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import NotificationsTable from '@/components/admin/pages/notifications/NotificationsTable';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 
 interface UserNotificationsTableProps {
-  firebaseUid: string;
+  firebaseUid?: string | null;
   isActive?: boolean;
 }
 
 export default function UserNotifications({ firebaseUid, isActive = false }: UserNotificationsTableProps) {
+  const { setBusy, isBusy } = useBusy();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const LIMIT = 20;
 
   const loadUserNotifications = useCallback(async (page: number) => {
     try {
-      setLoading(true);
+      if (!firebaseUid) {
+        return;
+      }
+
+      setBusy(1000);
       setError(null);
 
-      const response = await apiClientAdmin.users.getUserNotifications(firebaseUid, {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'desc',
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.users.getUserNotifications(firebaseUid, listQuery);
 
       setNotifications(response.data);
+      setPagination(response.pagination);
       setCurrentPage(page);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load notifications:', err);
       setError('Failed to load notifications. Please try again.');
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   }, [firebaseUid]);
 
-  // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
       loadUserNotifications(0);
     }
   }, [isActive, hasLoaded, loadUserNotifications]);
-
-  // Don't render anything if tab isn't active and hasn't loaded
-  if (!isActive && !hasLoaded) {
-    return null;
-  }
 
   if (error) {
     return (
@@ -69,15 +65,14 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
   }
 
   return (
-    <div>
-      <NotificationsTable
-        hideUserColumn={true}
-        data={notifications}
-        loading={loading}
-        currentPage={currentPage}
-        onPageChange={loadUserNotifications}
-        onRefresh={() => loadUserNotifications(currentPage)}
-      />
-    </div>
+    <NotificationsTable
+      hideUserColumn={true}
+      data={notifications}
+      pagination={pagination}
+      loading={isBusy || !hasLoaded}
+      currentPage={currentPage}
+      onPageChange={loadUserNotifications}
+      onRefresh={() => loadUserNotifications(currentPage)}
+    />
   );
 }

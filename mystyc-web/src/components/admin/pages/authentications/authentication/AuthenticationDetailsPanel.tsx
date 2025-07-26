@@ -1,33 +1,32 @@
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 
-import { formatTimestampForComponent } from '@/util/dateTime';
+import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
-export default function AuthenticationDetailsPanel({ authentication }: { authentication: AuthEvent }) {
+export default function AuthenticationDetailsPanel({ authentication }: { authentication: AuthEvent | null }) {
   return (
-    <div className='min-h-10'>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Type"
-            value={authentication.type}
-          />
-        </AdminDetailGroup>
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Sent"
-            value={authentication.clientTimestamp ? formatTimestampForComponent(new Date(authentication.clientTimestamp).getTime()) : '-'}
-          />
-        </AdminDetailGroup>
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="TCP/IP Address"
-            value={authentication.ip}
-          />
-        </AdminDetailGroup>
-     </div>
-    </div>
+    <AdminDetailGroup cols={2}>
+      <AdminDetailField
+        label="Type"
+        value={authentication?.type}
+      />
+      <AdminDetailField
+        label="TCP/IP Address"
+        value={authentication?.ip}
+      />
+      <AdminDetailField
+        label="Created"
+        value={formatDateForComponent(authentication?.createdAt)}
+      />
+      <AdminDetailField
+        label="Sent"
+        value={authentication 
+          ? authentication.clientTimestamp ? formatTimestampForComponent(new Date(authentication.clientTimestamp).getTime()) : '-'
+          : ""
+        }
+      />
+    </AdminDetailGroup>
   );
 }

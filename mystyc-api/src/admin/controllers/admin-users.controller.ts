@@ -222,7 +222,8 @@ export class AdminUsersController extends AdminController<UserProfile> {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getUserSummary(@Param('firebaseUid') firebaseUid: string) {
-    const [contentCount, authEventsCount, notificationsCount, paymentsCount] = await Promise.all([
+    const [deviceCount, contentCount, authEventsCount, notificationsCount, paymentsCount] = await Promise.all([
+      this.deviceService.getTotalByFirebaseUid(firebaseUid),
       this.contentService.getTotalByFirebaseUid(firebaseUid),
       this.authEventsService.getTotalByFirebaseUid(firebaseUid),
       this.notificationsService.getTotalByFirebaseUid(firebaseUid),
@@ -230,10 +231,11 @@ export class AdminUsersController extends AdminController<UserProfile> {
     ]);
 
     return {
-      content: { total: contentCount },
-      authEvents: { total: authEventsCount },
-      notifications: { total: notificationsCount },
-      payments: { total: paymentsCount },
+      devices: deviceCount,
+      content: contentCount,
+      authEvents: authEventsCount,
+      notifications: notificationsCount,
+      payments: paymentsCount,
     };
   }
 

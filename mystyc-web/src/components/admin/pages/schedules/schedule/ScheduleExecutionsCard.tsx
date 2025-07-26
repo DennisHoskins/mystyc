@@ -11,7 +11,6 @@ import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
-import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 
 export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: string }) {
   const [executions, setExecutions] = useState<AdminListResponse<ScheduleExecution> | null>(null);
@@ -56,10 +55,6 @@ export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: str
     loadScheduleExecutions(0);
   }, [scheduleId, loadScheduleExecutions]);
 
-  if (!executions?.data) {
-    return null;
-  }
-
   const columns: Column<ScheduleExecution>[] = [
     { key: '_id', header: 'Id', link: (e) => `/admin/schedule-executions/${e._id}`},
     { key: 'executedAt', header: 'Executed', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => formatDateForDisplay(e.executedAt) || '-' },
@@ -68,11 +63,9 @@ export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: str
   ];
 
   return (
-    <Card className='h-[56rem]'>
+    <Card className='grow'>
       <AdminTable<ScheduleExecution>
-        icon={<ScheduleIcon variant='schedule-execution' />}
-        label={"Executions"}
-        data={executions.data}
+        data={executions?.data}
         columns={columns}
         loading={loading}
         currentPage={currentPage}

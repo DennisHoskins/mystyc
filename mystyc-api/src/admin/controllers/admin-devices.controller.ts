@@ -165,14 +165,16 @@ export class AdminDevicesController extends AdminController<Device> {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getDeviceSummary(@Param('deviceId') deviceId: string) {
-    const [authEventsCount, notificationsCount] = await Promise.all([
+    const [usersCount, authEventsCount, notificationsCount] = await Promise.all([
+      this.service.getTotalUsersByDeviceId(deviceId),
       this.authEventService.getTotalByDeviceId(deviceId),
       this.notificationsService.getTotalByDeviceId(deviceId)
     ]);
 
     return {
-      authEvents: { total: authEventsCount },
-      notifications: { total: notificationsCount },
+      users: usersCount,
+      authEvents: authEventsCount,
+      notifications: notificationsCount,
     };
   }
 

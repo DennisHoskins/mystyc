@@ -34,7 +34,7 @@ export default function SchedulesPage() {
       const statsQuery = apiClientAdmin.getDefaultStatsQuery();
       const stats = await apiClientAdmin.schedule.getStats(statsQuery);
 
-      setStats(stats);
+     setStats(stats);
     } catch (err) {
       logger.error('Failed to load schedule stats:', err);
       setError('Failed to load schedule stats. Please try again.');

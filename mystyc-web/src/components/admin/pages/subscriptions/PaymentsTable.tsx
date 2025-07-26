@@ -8,7 +8,7 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 interface PaymentsTableProps {
   label?: string;
   data?: PaymentHistory[];
-  pagination?: Pagination;
+  pagination?: Pagination | null;
   loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;

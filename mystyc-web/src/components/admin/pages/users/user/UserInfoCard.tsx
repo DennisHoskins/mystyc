@@ -13,13 +13,16 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
 
-export default function UserInfoCard({ firebaseUid }: { firebaseUid: string }) {
+export default function UserInfoCard({ firebaseUid }: { firebaseUid?: string | null }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadUser = useCallback(async () => {
     try {
+      if (!firebaseUid) {
+        return;
+      }
       setLoading(true);
       setError(null);
 
@@ -37,7 +40,7 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string }) {
     loadUser();
   }, [loadUser]);
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <Card className='min-h-22'>
         <div className="flex items-center space-x-4">

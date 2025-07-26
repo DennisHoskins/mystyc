@@ -7,7 +7,7 @@ import {
   Notification, 
   PaymentHistory 
 } from 'mystyc-common/schemas/';
-import { UserStats, UsersSummary } from 'mystyc-common/admin/interfaces';
+import { UserStats, UsersSummary, UserSummary } from 'mystyc-common/admin/interfaces';
 
 import { logger } from '@/util/logger';
 import { BaseAdminClient } from './BaseAdminClient';
@@ -94,13 +94,7 @@ export class UserClient extends BaseAdminClient {
     }
   };
 
-  getUserSummary = async (firebaseUid: string): Promise<{
-    content: { total: number };
-    requests: { total: number };
-    authEvents: { total: number };
-    notifications: { total: number };
-    payments: { total: number };
-  }> => {
+  getUserSummary = async (firebaseUid: string): Promise<UserSummary> => {
     try {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/users/${firebaseUid}/summary`);
     } catch (error) {

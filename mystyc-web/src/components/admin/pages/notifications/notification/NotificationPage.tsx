@@ -6,7 +6,6 @@ import { Notification } from 'mystyc-common/schemas';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
@@ -19,14 +18,12 @@ import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCa
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
   const { setBusy } = useBusy();
   const [notification, setNotification] = useState<Notification | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadNotification = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const data = await apiClientAdmin.notifications.getNotification(notificationId);
       setNotification(data);
@@ -35,7 +32,6 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       setError('Failed to load notification. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [notificationId, setBusy]);
 
@@ -51,24 +47,8 @@ export default function NotificationPage({ notificationId }: { notificationId: s
     },
   ], [notification, notificationId]);
 
-  if (loading) {
-    return null;
-  }
-
-  if (!notification) {
-    return (
-      <AdminItemLayout
-        error={'Notification Not Found'}
-        onRetry={loadNotification}
-        breadcrumbs={breadcrumbs}
-        icon={<NotificationIcon size={6}/>}
-        title={'Unkown Notification'}
-      />
-    );
-  }
-
   return (
-   <AdminItemLayout
+    <AdminItemLayout
       error={error}
       onRetry={loadNotification}
       breadcrumbs={breadcrumbs}
@@ -76,11 +56,11 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       title={notification ? `${notification.sentBy}: ${notification.type}` : 'Unknown Notification'}
       headerContent={<NotificationDetailsPanel notification={notification} />}
       sectionsContent={[
-        <NotificationGenerationCard key='generation' notification={notification} />,
-        <UserInfoCard key='user' firebaseUid={notification.firebaseUid} />,
-        (notification.deviceId && <DeviceInfoCard key='device' deviceId={notification.deviceId} />)
+        <UserInfoCard key='user' firebaseUid={notification?.firebaseUid} />,
+        <DeviceInfoCard key='device' deviceId={notification?.deviceId} />
       ]}
       sidebarContent={<NotificationMessagePanel notification={notification} />}
+      mainContent={<NotificationGenerationCard key='generation' notification={notification} />}
     />
   );
 }

@@ -13,13 +13,16 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import DeviceIcon from '@/components/admin/ui/icons/DeviceIcon'
 
-export default function DeviceInfoCard({ deviceId, onLoad }: { deviceId: string, onLoad?: (device: Device) => void; }) {
+export default function DeviceInfoCard({ deviceId, onLoad }: { deviceId?: string | null, onLoad?: (device: Device) => void; }) {
   const [device, setDevice] = useState<Device | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadDevice = useCallback(async () => {
     try {
+      if (!deviceId) {
+        return;
+      }
       setLoading(true);
       setError(null);
 
@@ -39,7 +42,7 @@ export default function DeviceInfoCard({ deviceId, onLoad }: { deviceId: string,
     loadDevice();
   }, [loadDevice]);
 
-  if (loading) {
+  if (loading || !device) {
     return (
       <Card className='min-h-22'>
         <div className="flex items-center space-x-4">
@@ -60,20 +63,6 @@ export default function DeviceInfoCard({ deviceId, onLoad }: { deviceId: string,
           <Avatar size={'medium'} icon={(props) => <DeviceIcon {...props} />} />
           <div>
             <Heading level={5} className='text-red-400'>{error}</Heading>
-            <Heading level={6}>Unable to load Device</Heading>
-          </div>
-        </div>
-      </Card>
-    )
-  }
-
-  if (!device) {
-    return (
-      <Card className='min-h-22'>
-        <div className="flex items-center space-x-4">
-          <Avatar size={'medium'} icon={(props) => <DeviceIcon {...props} />} />
-          <div>
-            <Heading level={5} className='text-red-400'>Device not found</Heading>
             <Heading level={6}>Unable to load Device</Heading>
           </div>
         </div>

@@ -5,7 +5,7 @@ import {
   AuthEvent, 
   Notification 
 } from 'mystyc-common/schemas/';
-import { DeviceStats, DevicesSummary } from 'mystyc-common/admin/interfaces';
+import { DeviceStats, DevicesSummary, DeviceSummary } from 'mystyc-common/admin/interfaces';
 
 import { DeviceSession } from '@/interfaces';
 
@@ -94,10 +94,7 @@ export class DeviceClient extends BaseAdminClient {
     }
   };
 
-  getDeviceSummary = async (deviceId: string): Promise<{
-    authEvents: { total: number };
-    notifications: { total: number };
-  }> => {
+  getDeviceSummary = async (deviceId: string): Promise<DeviceSummary> => {
     try {
       return await this.fetchWithAuth(`${this.API_BASE_URL}/admin/devices/${deviceId}/summary`);
     } catch (error) {

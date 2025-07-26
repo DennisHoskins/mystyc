@@ -5,7 +5,7 @@ import { formatTimestampForComponent } from '@/util/dateTime';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
-export default function ContentDetailsPanel({ content }: { content: Content }) {
+export default function ContentDetailsPanel({ content }: { content: Content | null }) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'generated':
@@ -20,69 +20,48 @@ export default function ContentDetailsPanel({ content }: { content: Content }) {
   };
 
   return (
-    <div className='min-h-10'>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Status"
-            value={
-              <span className={`font-medium ${getStatusColor(content.status)}`}>
-                {content.status.charAt(0).toUpperCase() + content.status.slice(1)}
-              </span>
-            }
-          />
-          <AdminDetailField
-            label="Type"
-            value={content.type}
-          />
-        </AdminDetailGroup>
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Date"
-            value={content.date}
-          />
-          <AdminDetailField
-            label="Generated At"
-            value={content.generatedAt ? formatTimestampForComponent(new Date(content.generatedAt).getTime()) : '-'}
-          />
-        </AdminDetailGroup>
-
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Sources"
-            value={"[" + content.sources && content.sources.length ? content.sources.join(', ') : "-" + "]"}
-          />
-          <AdminDetailField
-            label="Title"
-            value={content.title}
-          />
-          <AdminDetailField
-            label="Message"
-            value={content.message.substring(0, 25) + "..."}
-          />
-        </AdminDetailGroup>
-
-        {content.linkUrl && (
-          <AdminDetailGroup>
-            <AdminDetailField
-              label="Link URL"
-              value={content.linkUrl}
-              href={content.linkUrl}
-            />
-            <AdminDetailField
-              label="Link Text"
-              value={content.linkText || 'Not set'}
-            />
-            {content.imageUrl && (
-              <AdminDetailField
-                label="Image URL"
-                value={content.imageUrl.substring(0, 50) + '...'}
-                href={content.imageUrl}
-              />
-            )}
-          </AdminDetailGroup>
-        )}
-      </div>
+    <div className='space-y-4'>
+      <AdminDetailGroup cols={2}>
+        <AdminDetailField
+          label="Status"
+          value={content &&
+            <span className={`font-medium ${getStatusColor(content.status)}`}>
+              {content.status.charAt(0).toUpperCase() + content.status.slice(1)}
+            </span>
+          }
+        />
+        <AdminDetailField
+          label="Generated At"
+          value={content?.generatedAt ? formatTimestampForComponent(new Date(content.generatedAt).getTime()) : ''}
+        />
+        <AdminDetailField
+          label="Date"
+          value={content?.date}
+        />
+        <AdminDetailField
+          label="Sources"
+          value={content && content?.sources && content?.sources.length ? "[" + content.sources.join(', ') + "]" : ""}
+        />
+        <AdminDetailField
+          label="Type"
+          value={content?.type}
+        />
+        <AdminDetailField
+          label="Source"
+          value={
+            content?.userId ? content?.userId : 
+            content?.executionId ? content?.executionId : 
+            content?.notificationId ? content?.notificationId : 
+            content ? "-" : ""
+          }
+          href={
+            content?.userId ? `/admin/users/${content?.userId}` :
+            content?.executionId ? `/admin/schedule-executions/${content?.executionId}` :
+            content?.notificationId ? `/admin/notifications/${content?.notificationId}` :
+            null
+          }
+        />
+      </AdminDetailGroup>
     </div>
   );
 }

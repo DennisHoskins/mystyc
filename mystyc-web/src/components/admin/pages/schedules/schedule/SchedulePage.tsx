@@ -14,16 +14,14 @@ import ScheduleDetailsPanel from './ScheduleDetailsPanel';
 import ScheduleExecutionsCard from './ScheduleExecutionsCard';
 
 export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [schedule, setSchedule] = useState<Schedule | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadSchedule = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const data = await apiClientAdmin.schedule.getSchedule(scheduleId);
       setSchedule(data);
@@ -32,7 +30,6 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
       setError('Failed to load schedule. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [scheduleId, setBusy]);
 
@@ -46,29 +43,13 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
     { label: schedule ? (schedule.event_name || `Schedule ${scheduleId}`) : ``},
   ], [schedule, scheduleId]);
 
-  if (loading) {
-    return null;
-  }
-
-  if (!schedule) {
-    return (
-      <AdminItemLayout
-        error={'Schedule Not Found'}
-        onRetry={loadSchedule}
-        breadcrumbs={breadcrumbs}
-        icon={<ScheduleIcon size={6}/>}
-        title={'Unkown Schedule'}
-      />
-    );
-  }
-
   return (
     <AdminItemLayout
       error={error}
       onRetry={loadSchedule}
       breadcrumbs={breadcrumbs}
       icon={<ScheduleIcon size={6} />}
-      title={schedule.event_name || `Unknown Schedule`}
+      title={schedule?.event_name || `Unknown Schedule`}
       headerContent={<ScheduleDetailsPanel schedule={schedule} />}
       mainContent={<ScheduleExecutionsCard scheduleId={scheduleId} />}
     />

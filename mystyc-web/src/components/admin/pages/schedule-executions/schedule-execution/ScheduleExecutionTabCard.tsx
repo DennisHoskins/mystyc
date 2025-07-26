@@ -16,10 +16,9 @@ interface ScheduleExecutionSummary {
 }
 
 export default function ScheduleExecutionTabCard({ executionId }: { executionId: string }) {
-  const [activeTab, setActiveTab] = useState('content');
+  const [activeTab, setActiveTab] = useState('notifications');
   const [summary, setSummary] = useState<ScheduleExecutionSummary | null>(null);
 
-  // // Load summary data (all counts)
   useEffect(() => {
     if (!executionId) return;
 
@@ -36,9 +35,18 @@ export default function ScheduleExecutionTabCard({ executionId }: { executionId:
   }, [executionId]);
 
   const tabs: Tab[] = useMemo(() => {
-    if (!executionId) return [];
-
     return [
+      {
+        id: 'notifications',
+        label: 'Notifications',
+        count: summary?.notifications.total,
+        content: (
+          <ScheduleExecutionNotificationsTable
+            executionId={executionId}
+            isActive={activeTab === 'notifications'}
+          />
+        )
+      },
       {
         id: 'content',
         label: 'Content',
@@ -50,22 +58,11 @@ export default function ScheduleExecutionTabCard({ executionId }: { executionId:
           />
         )
       },
-      {
-        id: 'notifications',
-        label: 'Notifications',
-        count: summary?.notifications.total,
-        content: (
-          <ScheduleExecutionNotificationsTable
-            executionId={executionId}
-            isActive={activeTab === 'notifications'}
-          />
-        )
-      }
     ];
   }, [executionId, activeTab, summary]);
 
   return (
-    <Card className='h-[56rem]'>
+    <Card className='flex-1'>
       <TabPanel 
         tabs={tabs} 
         defaultActiveTab={activeTab}

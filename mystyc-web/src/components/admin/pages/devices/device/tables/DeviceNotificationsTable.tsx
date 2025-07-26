@@ -3,60 +3,56 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
+import { Pagination } from 'mystyc-common/admin';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import NotificationsTable from '@/components/admin/pages/notifications/NotificationsTable';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 
 interface DeviceNotificationsTableProps {
-  deviceId: string;
+  deviceId?: string | null;
   isActive?: boolean;
 }
 
 export default function DeviceNotifications({ deviceId, isActive = false }: DeviceNotificationsTableProps) {
+  const { setBusy, isBusy } = useBusy();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const LIMIT = 20;
 
   const loadDeviceNotifications = useCallback(async (page: number) => {
     try {
-      setLoading(true);
+      if (!deviceId) {
+        return;
+      }
+
+      setBusy(1000);
       setError(null);
 
-      const response = await apiClientAdmin.devices.getDeviceNotifications(deviceId, {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'desc',
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.devices.getDeviceNotifications(deviceId, listQuery);
 
       setNotifications(response.data);
+      setPagination(response.pagination);
       setCurrentPage(page);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load notifications:', err);
       setError('Failed to load notifications. Please try again.');
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   }, [deviceId]);
 
-  // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
       loadDeviceNotifications(0);
     }
   }, [isActive, hasLoaded, loadDeviceNotifications]);
-
-  // Don't render anything if tab isn't active and hasn't loaded
-  if (!isActive && !hasLoaded) {
-    return null;
-  }
 
   if (error) {
     return (
@@ -71,7 +67,8 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
   return (
     <NotificationsTable
       data={notifications}
-      loading={loading}
+      pagination={pagination}
+      loading={isBusy || !hasLoaded}
       currentPage={currentPage}
       onPageChange={loadDeviceNotifications}
       onRefresh={() => loadDeviceNotifications(currentPage)}

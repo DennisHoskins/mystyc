@@ -15,7 +15,7 @@ import AuthenticationUserPanel from './AuthenticationUserPanel';
 import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
-  const { setBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   const [authentication, setAuthentication] = useState<AuthEvent | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +24,6 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const data = await apiClientAdmin.auth.getAuthEvent(authId);
       setAuthentication(data);
@@ -33,7 +32,6 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       setError('Failed to load authentication. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [authId, setBusy]);
 
@@ -44,26 +42,8 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Authentication', href: '/admin/authentication' },
-    { 
-      label: authentication ? (authentication._id || `Notification ${authId}`) : ``
-    },
+    { label: authentication ? (authentication._id || `Notification ${authId}`) : ``},
   ], [authentication, authId]);
-
-  if (loading) {
-    return;
-  }
-
-  if (!authentication) {
-    return (
-      <AdminItemLayout
-        error={'Authentication Not Found'}
-        onRetry={loadAuthentication}
-        breadcrumbs={breadcrumbs}
-        icon={<AuthenticationIcon size={6}/>}
-        title={'Unkown Authentication'}
-      />
-    );
-  }
 
   return (
     <AdminItemLayout
@@ -71,9 +51,9 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       onRetry={loadAuthentication}
       breadcrumbs={breadcrumbs}
       icon={<AuthenticationIcon size={6} />}
-      title={authentication ? authentication.type : 'Unknown Authentication'}
+      title={authentication?.type ?? "Authentication"}
       headerContent={<AuthenticationDetailsPanel authentication={authentication} />}
-      sectionsContent={[(authentication.deviceId && <DeviceInfoCard key='device' deviceId={authentication.deviceId} />)]}
+      sectionsContent={[<DeviceInfoCard key='device' deviceId={authentication?.deviceId} />]}
       sidebarContent={<AuthenticationUserPanel firebaseUid={authentication && authentication.firebaseUid} />}
     />
   );

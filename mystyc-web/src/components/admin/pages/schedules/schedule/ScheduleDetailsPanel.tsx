@@ -5,31 +5,25 @@ import { formatTimestampForComponent } from '@/util/dateTime';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
-export default function ScheduleDetailsPanel({ schedule }: { schedule: Schedule }) {
+export default function ScheduleDetailsPanel({ schedule }: { schedule?: Schedule | null }) {
   return (
-    <div className='min-h-10'>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Created"
-            value={schedule.createdAt ? formatTimestampForComponent(new Date(schedule.createdAt).getTime()) : '-'}
-          />
-          <AdminDetailField
-            label="Enabled"
-            value={schedule.enabled ? "True" : "False"}
-          />
-        </AdminDetailGroup>
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Execution Time"
-            value={`${schedule.time.hour}:${String(schedule.time.minute).padStart(2, '0')}`}
-          />
-          <AdminDetailField
-            label="Timezone Aware"
-            value={schedule.timezone_aware ? "True" : "False"}
-          />
-        </AdminDetailGroup>
-     </div>
-    </div>
+    <AdminDetailGroup cols={4}>
+      <AdminDetailField
+        label="Created"
+        value={schedule ? (schedule.createdAt ? formatTimestampForComponent(new Date(schedule.createdAt).getTime()) : '-') : null}
+      />
+      <AdminDetailField
+        label="Enabled"
+        value={schedule ? (schedule.enabled ? "True" : "False") : null}
+      />
+      <AdminDetailField
+        label="Execution Time"
+        value={schedule ? (`${schedule.time.hour}:${String(schedule.time.minute).padStart(2, '0')}`) : null}
+      />
+      <AdminDetailField
+        label="Timezone Aware"
+        value={schedule ? (schedule.timezone_aware ? "True" : "False") : null}
+      />
+    </AdminDetailGroup>
   );
 }

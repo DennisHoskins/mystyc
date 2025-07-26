@@ -1,30 +1,33 @@
 import { Notification } from 'mystyc-common/schemas';
 
 import Card from '@/components/ui/Card';
+import Avatar from '@/components/ui/Avatar';
+import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
-export default function NotificationGenerationCard({ notification }: { notification: Notification }) {
-  if (!notification.scheduleId && !notification.executionId) {
-    return;
-  }
-
+export default function NotificationGenerationCard({ notification }: { notification?: Notification | null }) {
   return (
-    <Card className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-      <AdminDetailGroup>
-        <AdminDetailField
-          label="Schedule"
-          value={notification.scheduleId || '-'}
-          href={notification.scheduleId ? `/admin/schedules/${notification.scheduleId}` : null}
-        />
-      </AdminDetailGroup>
-      <AdminDetailGroup>
-        <AdminDetailField
-          label="Execution"
-          value={notification.executionId || '-'}
-          href={notification.executionId ? `/admin/schedules/${notification.executionId}` : null}
-        />
+    <Card>
+      <AdminDetailGroup cols={2}>
+        <div className='flex items-center'>
+          <Avatar size={'small'} icon={<ScheduleIcon />} className='mr-4' />
+          <AdminDetailField
+            label="Schedule"
+            value={notification && (notification.scheduleId || '-')}
+            href={notification && (notification.scheduleId ? `/admin/schedules/${notification.scheduleId}` : null)}
+          />
+        </div>
+        <div className='flex items-center'>
+          <Avatar size={'small'} icon={<ScheduleIcon variant='schedule-execution' />} className='mr-4' />
+          <AdminDetailField
+            label="Execution"
+            value={notification && (notification.executionId || '-')}
+            href={notification && (notification.executionId ? `/admin/schedule-executions/${notification.executionId}` : null)}
+          />
+        </div>
       </AdminDetailGroup>
    </Card>
   );
 }
+

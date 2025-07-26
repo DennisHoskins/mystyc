@@ -73,24 +73,22 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
 
       <hr />
 
-      <div className="pt-4">
-        <AdminDetailGroup>
-          <AdminDetailField
-            label="Firebase Uid"
-            value={user.firebaseUid}
-            href={`/admin/users/${user.firebaseUid}`}
-          />
-          <AdminDetailField
-            label="Contact Information"
-            value={user.email}
-            href={`/admin/users/${user.firebaseUid}`}
-          />
-          <AdminDetailField
-            label="Roles"
-            value={formatUserRoles(user.roles)}
-          />
-        </AdminDetailGroup>
-      </div>
+      <AdminDetailGroup cols={1} className='mt-4'>
+        <AdminDetailField
+          label="Firebase Uid"
+          value={user.firebaseUid}
+          href={`/admin/users/${user.firebaseUid}`}
+        />
+        <AdminDetailField
+          label="Contact Information"
+          value={user.email}
+          href={`/admin/users/${user.firebaseUid}`}
+        />
+        <AdminDetailField
+          label="Roles"
+          value={formatUserRoles(user.roles)}
+        />
+      </AdminDetailGroup>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Clock, CalendarClock } from 'lucide-react';
+import { Clock, CalendarClock, Earth } from 'lucide-react';
 
 import { ScheduleStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsResponseWithQuery } from 'mystyc-common/admin';
@@ -114,19 +114,11 @@ export default function SchedulesDashboard({
     health: (
       <StatusCard
         icon={Clock}
-        iconColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'text-green-600' : 'text-red-600'}
-        backgroundColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'bg-green-50' : 'bg-red-50'}
+        iconColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'text-green-600' : stats ? 'text-red-600' : 'text-gray-500'}
+        backgroundColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'bg-green-50' : stats ? 'bg-red-50' : 'bg-gray-50'}
         textColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'}
         shortText={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
-        longText={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'Scheduler Active' : 'No Active Schedules'}
-        shortSubtext={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 
-          ? `${stats?.data.summary.enabledSchedules} running`
-          : 'All disabled'
-        }
-        longSubtext={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 
-          ? `${stats?.data.summary.enabledSchedules} schedules running`
-          : 'All schedules are disabled'
-        }
+        longText={stats ? (stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? `${stats?.data.summary.enabledSchedules} Active Schedule(s)` : 'No Active Schedules') : ""}
       />
     ),
     today: nextEntry && nextDate ? (
@@ -134,31 +126,22 @@ export default function SchedulesDashboard({
         icon={CalendarClock}
         iconColor="text-gray-500"
         backgroundColor="bg-gray-50"
-        shortText='Next:'
-        shortSubtext={`@${nextEntry.scheduledTime}`}
-        longText="Next Execution:"
-        longSubtext={
-          <>
-            <div className='text-lg mb-1'>{`@${nextEntry.scheduledTime}`}</div>
-            {nextEntry.timezoneAware && (
-              <div className="mt-2">
-                <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">
-                  timezone-aware
-                </span>
-              </div>
-            )}
-          </>
-        }
-        badge={nextEntry.timezoneAware && (
-          <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">
-            timezone
+        shortText={`Next: @${nextEntry.scheduledTime}`}
+        longText={`Next Execution: @${nextEntry.scheduledTime}`}
+        badge={
+          <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded-full w-6 h-6 flex justify-center items-center ml-2">
+            <Earth className='h-4 w-4' />
           </span>
-        )}
+        }
       />
     ) : (
-      <div className="flex items-center justify-center w-full h-full text-gray-500 bg-gray-100">
-        <p className='p-4 text-sm'>No upcoming schedules</p>
-      </div>
+      <StatusCard
+        icon={CalendarClock}
+        iconColor="text-gray-500"
+        backgroundColor="bg-gray-50"
+        shortText={stats ? `No Schedules` : ""}
+        longText={stats ? `No Upcoming Schedules` : ""}
+      />
     )
   };
 

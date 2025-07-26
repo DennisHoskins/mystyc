@@ -12,7 +12,7 @@ interface AuthenticationsTableProps {
   icon?: IconComponent,
   label?: string,
   data?: AuthEvent[];
-  pagination?: Pagination;
+  pagination?: Pagination | null;
   loading?: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;

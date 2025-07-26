@@ -1,6 +1,7 @@
 import { AlarmClockCheck, Bell, Globe, Users, UserPlus } from 'lucide-react';
 
 import { Content } from 'mystyc-common/schemas';
+import { Pagination } from 'mystyc-common/admin';
 
 import { formatDateForDisplay } from '@/util/dateTime';
 
@@ -11,11 +12,9 @@ interface ContentTableProps {
   icon?: IconComponent,
   label?: string,
   data: Content[];
+  pagination?: Pagination | null;
   loading: boolean;
   currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  hasMore: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
   hideSourceColumn?: boolean;
@@ -25,11 +24,9 @@ export default function ContentTable({
   icon,
   label,
   data,
+  pagination,
   loading,
   currentPage,
-  totalPages,
-  totalItems,
-  hasMore,
   onPageChange,
   onRefresh,
   hideSourceColumn = false
@@ -89,9 +86,9 @@ export default function ContentTable({
       columns={columns}
       loading={loading}
       currentPage={currentPage}
-      totalPages={totalPages}
-      totalItems={totalItems}
-      hasMore={hasMore}
+      totalPages={pagination?.totalPages}
+      totalItems={pagination?.totalItems}
+      hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}
       emptyMessage="No Content found."

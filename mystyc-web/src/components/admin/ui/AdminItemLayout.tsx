@@ -66,7 +66,7 @@ export default function AdminItemLayout({
   if (!sidebarContent) {
     return (
       <>
-        <Card className={`order-1 lg:col-span-2 lg:order-none`}>
+        <Card>
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
               <div className='mt-1'>
@@ -87,12 +87,14 @@ export default function AdminItemLayout({
           </div>
         </Card>
 
-        <div className={`order-3 lg:col-span-2 lg:order-none space-y-4 flex-1 grow`}>
-          {sectionsContent}
-        </div>
+        {sectionsContent &&
+          <div className={`mt-4`}>
+            {sectionsContent}
+          </div>
+        }
 
         {mainContent && (
-          <div className="mt-4 space-y-4">
+          <div className="mt-4 space-y-4 flex-1 flex flex-col">
             {mainContent}
           </div>
         )}
@@ -100,10 +102,16 @@ export default function AdminItemLayout({
     );
   }
 
+  const hasX = sidebarContent != null;
+  const hasY = sectionsContent != null;
+  const gap = hasX && hasY ? "gap-4" : hasX ? "gap-x-4" : "gap-y-4"
+  const rows = sectionsContent ? 2 : 1;
+
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className={`order-1 lg:col-span-2 lg:order-none`}>
+      <div className={`grid grid-cols-1 lg:grid-cols-3 ${gap} lg:space-y-0`}>
+
+        <Card className={`order-1 lg:col-span-2`}>
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
               <div className='mt-1'>
@@ -124,19 +132,17 @@ export default function AdminItemLayout({
           </div>
         </Card>
 
-        {sidebarContent && (
-          <Card className="h-full order-2 lg:col-span-1 lg:order-none lg:row-span-2">
-            {sidebarContent}
-          </Card>
-        )}
+        <Card className={`order-2 lg:col-span-1 lg:row-span-${rows}`}>
+          {sidebarContent}
+        </Card>
 
-        <div className={`order-3 lg:col-span-2 lg:order-none space-y-4 flex-1 grow`}>
+        <div className={`order-3 lg:col-span-2 space-y-4 flex-1 grow`}>
           {sectionsContent}
         </div>
       </div>
 
       {mainContent && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-4 flex-1 flex flex-col">
           {mainContent}
         </div>
       )}

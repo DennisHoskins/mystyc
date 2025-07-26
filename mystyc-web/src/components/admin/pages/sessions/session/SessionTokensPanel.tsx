@@ -9,7 +9,7 @@ import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import TokensIcon from '@/components/admin/ui/icons/TokensIcon';
 
-export default function DeviceTokensPanel({ session, device }: { session: Session, device?: Device | null }) {
+export default function DeviceTokensPanel({ session, device }: { session?: Session | null, device?: Device | null }) {
   return (
     <div className='flex flex-col'>
       <div className="flex items-center space-x-2 mb-4">
@@ -22,16 +22,16 @@ export default function DeviceTokensPanel({ session, device }: { session: Sessio
       <hr />
 
       <div className="pt-4">
-        <AdminDetailGroup className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 overflow-hidden'>
+        <AdminDetailGroup cols={1}>
           <AdminDetailField
             label="Auth Token"
-            value={session.authToken}
-            text={formatTimestampForComponent(session.authTokenTimestamp)}
+            value={session?.authToken}
+            text={session && formatTimestampForComponent(session.authTokenTimestamp)}
           />
           <AdminDetailField
             label="Refresh Token"
-            value={session.refreshToken}
-            text={formatTimestampForComponent(session.refreshTokenTimestamp)}
+            value={session?.refreshToken}
+            text={session && formatTimestampForComponent(session.refreshTokenTimestamp)}
           />
             <AdminDetailField
               label="FcmToken"

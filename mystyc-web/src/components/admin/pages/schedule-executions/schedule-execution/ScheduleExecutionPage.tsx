@@ -6,7 +6,6 @@ import { ScheduleExecution } from 'mystyc-common/schemas';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
@@ -16,14 +15,12 @@ import ScheduleExecutionTabCard from './ScheduleExecutionTabCard';
 export default function ScheduleExecutionPage({ executionId }: { executionId: string }) {
   const { setBusy } = useBusy();
   const [execution, setScheduleExecution] = useState<ScheduleExecution | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadScheduleExecution = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const data = await apiClientAdmin.schedule.getExecution(executionId);
       setScheduleExecution(data);
@@ -32,7 +29,6 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
       setError('Failed to load schedule execution. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [executionId, setBusy]);
 
@@ -44,26 +40,8 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
     { label: 'Admin', href: '/admin' },
     { label: 'Schedules', href: '/admin/schedules' },
     { label: 'Executions', href: '/admin/schedule-executions/' },
-    { 
-      label: execution ? (execution.eventName || `Schedule Execution ${executionId}`) : ``
-    },
+    { label: execution ? (execution.eventName || `Schedule Execution ${executionId}`) : ``},
   ], [execution, executionId]);
-
-  if (loading) {
-    return null;
-  }
-
-  if (!execution) {
-    return (
-      <AdminItemLayout
-        error={'Schedule Not Found'}
-        onRetry={loadScheduleExecution}
-        breadcrumbs={breadcrumbs}
-        icon={<ScheduleIcon size={6} variant='schedule-execution'/>}
-        title={'Unkown Schedule Execution'}
-      />
-    );
-  }
   
   return (
     <AdminItemLayout
@@ -71,7 +49,7 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
       onRetry={loadScheduleExecution}
       breadcrumbs={breadcrumbs}
       icon={<ScheduleIcon size={6} variant='schedule-execution' />}
-      title={execution.eventName || `Unknown Schedule Execution`}
+      title={execution?.eventName || `Schedule Execution`}
       headerContent={<ScheduleExecutionDetailsPanel execution={execution} />}
       mainContent={<ScheduleExecutionTabCard executionId={executionId} />}
     />

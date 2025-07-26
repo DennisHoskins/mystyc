@@ -208,7 +208,7 @@ export class SchedulesService {
     return null;
   }
 
-  @Cron('*/30 * * * *')
+  @Cron('*/5 * * * *')
   async checkScheduledTasks() {
     logger.info('Checking scheduled tasks', {}, 'ScheduleService');
     
@@ -455,7 +455,10 @@ export class SchedulesService {
   private transformToInterface(doc: ScheduleDocument): ScheduleInterface {
     return {
       _id: doc._id.toString(),
-      time: doc.time,
+      time: {
+        hour: doc.time.hour,
+        minute: doc.time.minute
+      },
       event_name: doc.event_name,
       enabled: doc.enabled,
       timezone_aware: doc.timezone_aware,

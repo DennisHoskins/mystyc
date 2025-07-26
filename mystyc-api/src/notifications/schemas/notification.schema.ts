@@ -48,6 +48,9 @@ export class Notification {
   @Prop({ index: true })
   executionId?: string;
 
+  @Prop({ index: true })
+  contentId?: string;
+
   createdAt!: Date;
   updatedAt!: Date;
 }

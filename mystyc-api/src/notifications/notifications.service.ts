@@ -53,7 +53,6 @@ export class NotificationsService {
         details: []
       };
 
-
       // Generate content once
       const { title, body, fullContent } = await this.notificationContentService.getNotificationData(payload.scheduleId, payload.executionId);
       const url = 'https://mystyc.app';
@@ -837,6 +836,7 @@ export class NotificationsService {
       sentAt: doc.sentAt,
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
+      contentId: doc.contentId,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

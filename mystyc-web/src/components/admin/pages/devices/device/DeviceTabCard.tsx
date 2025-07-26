@@ -2,21 +2,19 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { DeviceSummary } from 'mystyc-common/admin';
+
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
-import DeviceAuthEventsTable from './DeviceAuthEventsTable';
-import DeviceNotificationsTable from './DeviceNotificationsTable';
+import DeviceUsersTable from './tables/DeviceUsersTable';
+import DeviceAuthEventsTable from './tables/DeviceAuthEventsTable';
+import DeviceNotificationsTable from './tables/DeviceNotificationsTable';
 
-interface DeviceSummary {
-  authEvents: { total: number };
-  notifications: { total: number };
-}
-
-export default function DeviceTabCard({ deviceId }: { deviceId: string }) {
-  const [activeTab, setActiveTab] = useState('auth-events');
+export default function DeviceTabCard({ deviceId }: { deviceId?: string | null }) {
+  const [activeTab, setActiveTab] = useState('users');
   const [summary, setSummary] = useState<DeviceSummary | null>(null);
 
   // Load summary data (all counts)
@@ -36,13 +34,33 @@ export default function DeviceTabCard({ deviceId }: { deviceId: string }) {
   }, [deviceId]);
 
   const tabs: Tab[] = useMemo(() => {
-    if (!deviceId) return [];
-
     return [
+      {
+        id: 'users',
+        label: 'Users',
+        count: summary?.users,
+        content: (
+          <DeviceUsersTable
+            deviceId={deviceId}
+            isActive={activeTab === 'users'}
+          />
+        )
+      },
+      {
+        id: 'notifications',
+        label: 'Notifications',
+        count: summary?.notifications,
+        content: (
+          <DeviceNotificationsTable
+            deviceId={deviceId}
+            isActive={activeTab === 'notifications'}
+          />
+        )
+      },
       {
         id: 'auth-events',
         label: 'Auth Events',
-        count: summary?.authEvents.total,
+        count: summary?.authEvents,
         content: (
           <DeviceAuthEventsTable
             deviceId={deviceId}
@@ -50,22 +68,11 @@ export default function DeviceTabCard({ deviceId }: { deviceId: string }) {
           />
         )
       },
-      {
-        id: 'notifications',
-        label: 'Notifications',
-        count: summary?.notifications.total,
-        content: (
-          <DeviceNotificationsTable
-            deviceId={deviceId}
-            isActive={activeTab === 'notifications'}
-          />
-        )
-      }
     ];
   }, [deviceId, activeTab, summary]);
 
   return (
-    <Card className='h-[56rem]'>
+    <Card className='flex-1'>
       <TabPanel 
         tabs={tabs} 
         defaultActiveTab={activeTab}

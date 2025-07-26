@@ -3,65 +3,56 @@
 import { useEffect, useCallback, useState } from 'react';
 
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
+import { Pagination } from 'mystyc-common/admin';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
-
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AuthenticationsTable from '@/components/admin/pages/authentications/AuthenticationsTable';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 
 interface DeviceAuthEventsTableProps {
-  deviceId: string;
+  deviceId?: string | null;
   isActive?: boolean;
 }
 
 export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceAuthEventsTableProps) {
+  const { setBusy, isBusy } = useBusy();
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const LIMIT = 20;
 
   const loadDeviceAuthEvents = useCallback(async (page: number) => {
     try {
-      setLoading(true);
+      if (!deviceId) {
+        return;
+      }
+
+      setBusy(1000);
       setError(null);
 
-      const response = await apiClientAdmin.devices.getDeviceAuthEvents(deviceId, {
-        limit: LIMIT,
-        offset: page * LIMIT,
-        sortBy: 'createdAt',
-        sortOrder: 'desc',
-      });
+      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const response = await apiClientAdmin.devices.getDeviceAuthEvents(deviceId, listQuery);
 
       setAuthEvents(response.data);
+      setPagination(response.pagination);
       setCurrentPage(page);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load authEvents:', err);
       setError('Failed to load authEvents. Please try again.');
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   }, [deviceId]);
 
-  // Only load when tab becomes active for the first time
   useEffect(() => {
     if (isActive && !hasLoaded) {
       loadDeviceAuthEvents(0);
     }
   }, [isActive, hasLoaded, loadDeviceAuthEvents]);
-
-  // Show loading state if tab is active but hasn't loaded yet
-  if (isActive && !hasLoaded && !loading) {
-    return null;
-  }
-
-  // Don't render anything if tab isn't active and hasn't loaded
-  if (!isActive && !hasLoaded) {
-    return null;
-  }
 
   if (error) {
     return (
@@ -76,7 +67,8 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
   return (
     <AuthenticationsTable
       data={authEvents}
-      loading={loading}
+      pagination={pagination}
+      loading={isBusy || !hasLoaded}
       currentPage={currentPage}
       onPageChange={loadDeviceAuthEvents}
       onRefresh={() => loadDeviceAuthEvents(currentPage)}

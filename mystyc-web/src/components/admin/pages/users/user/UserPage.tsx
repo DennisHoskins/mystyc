@@ -8,26 +8,22 @@ import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
 import { logger } from '@/util/logger';
 
 import { useBusy } from '@/components/ui/layout/context/AppContext';
-import Card from '@/components/ui/Card';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import UserDetailsPanel from './UserDetailsPanel';
 import UserProfilePanel from './UserProfilePanel';
-import UserDevicesPanel from './UserDevicesPanel';
-import UserTabCard from './UserTabCard';
 import UserSubscriptionCard from './UserSubscriptionCard';
+import UserTabCard from './UserTabCard';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const { setBusy } = useBusy();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const loadUser = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
-      setLoading(true);
 
       const data = await apiClientAdmin.users.getUser(firebaseUid);
       setUser(data);
@@ -36,7 +32,6 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       setError('Failed to load user. Please try again.');
     } finally {
       setBusy(false);
-      setLoading(false);
     }
   }, [firebaseUid, setBusy]);
 
@@ -47,26 +42,8 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Users', href: '/admin/users' },
-    { 
-      label: user ? `${user.fullName || user.email}` : `${firebaseUid}`
-    },
+    { label: user ? `${user.fullName || user.email}` : `${firebaseUid}`},
   ], [user, firebaseUid]);
-
-  if (loading) {
-    return null;
-  }
-
-  if (!user) {
-    return (
-      <AdminItemLayout
-        error={'User Not Found'}
-        onRetry={loadUser}
-        breadcrumbs={breadcrumbs}
-        icon={<UserIcon size={6} userProfile={user} />}
-        title={'Unknown User'}
-      />
-    );
-  }
 
   return (
     <AdminItemLayout
@@ -76,12 +53,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       icon={<UserIcon size={6} userProfile={user} />}
       title={user && user.fullName ? user.fullName : `Unknown User`}
       headerContent={<UserDetailsPanel user={user} />}
-      sectionsContent={[
-        <UserSubscriptionCard key="subscription" user={user} />,
-        <Card key='devices'>
-          <UserDevicesPanel firebaseUid={user && user.firebaseUid} />
-        </Card>,
-      ]}
+      sectionsContent={[<UserSubscriptionCard key='subscriptions' user={user} />]}
       sidebarContent={<UserProfilePanel user={user} />}
       mainContent={<UserTabCard firebaseUid={user && user.firebaseUid} />}
     />
