@@ -60,10 +60,10 @@ export default function TrafficDashboard({
     percentage: device.percentage
   }));
 
-  // Transform hourly visits for bar chart (top 12 hours)
+  // Transform hourly visits for bar chart (top 6 hours)
   const hourlyData = data?.hourlyVisits
     .sort((a, b) => b.count - a.count)
-    .slice(0, 12)
+    .slice(0, 6)
     .map(hour => ({
       hour: `${hour.hour}:00`,
       visits: hour.count
@@ -210,8 +210,8 @@ export default function TrafficDashboard({
   };
 
   return (
-    <div className={`@container w-full flex-1 flex flex-col ${className}`}>
-      <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
+    <div className={`@container w-full flex flex-col grow min-h-0 ${className}`}>
+      <div className={`grow min-h-0 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
         {charts.map((chartType) => (
           <div key={chartType} className='flex h-full'>
             {chartComponents[chartType]}

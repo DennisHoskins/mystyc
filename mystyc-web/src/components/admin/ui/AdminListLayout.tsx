@@ -70,7 +70,7 @@ export default function AdminListLayout({
   }
 
   return (
-    <div className='grow min-h-0 flex flex-col mt-4 mr-2 mb-4'>
+    <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
       <div className="flex flex-col sm:flex-row mb-4">
         <Card className='grow'>
           <div className='flex space-x-3 items-center mb-4'>

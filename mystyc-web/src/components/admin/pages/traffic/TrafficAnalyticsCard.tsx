@@ -6,14 +6,23 @@ import TrafficDashboard from './TrafficDashboard';
 
 export default function TrafficAnalyticsCard({ trafficStats }: { trafficStats?: TrafficStats | null }) {
   return (
-    <Card className='flex-1'>
-      <Heading level={4} className="mb-4 text-blue-900">Visitor Analytics</Heading>
-      <div className='flex h-full min-h-[17em]'>
-        <TrafficDashboard 
-          data={trafficStats} 
-          charts={['visitors']}
-        />
-      </div>        
-    </Card>
+    <div className='grid grid-cols-3 gap-4'>
+      <Card className='flex-1 col-span-2'>
+        <div className='flex h-full min-h-[10em]'>
+          <TrafficDashboard 
+            data={trafficStats} 
+            charts={['visitors']}
+          />
+        </div>        
+      </Card>
+      <Card className='flex-1'>
+        <div className='flex h-full min-h-[10em]'>
+          <TrafficDashboard 
+            data={trafficStats} 
+            charts={['browsers']}
+          />
+        </div>        
+      </Card>
+    </div>
   );
 }

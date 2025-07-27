@@ -79,14 +79,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   } else if (!isOnline) {
     content = <Offline />;
   } else {
-    content = (
-      <div className="flex grow min-h-0">
-        {sidebar}
-        <PageTransition>
-          <Main>{children}</Main>
-        </PageTransition>
-      </div>
-    );
+    content = children;
   }
 
   return (
@@ -95,7 +88,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AppTransition>
           <Header isFullWidth={isAdmin == true} isPlus={(user && user.isPlus) === true}>{header}</Header>
           {menu}  
-          {content}
+          <div className="flex grow min-h-0">
+            {sidebar}
+            <PageTransition>
+              <Main>
+                {content}
+              </Main>
+            </PageTransition>
+          </div>
           {footer}
         </AppTransition>
       </TransitionProvider>

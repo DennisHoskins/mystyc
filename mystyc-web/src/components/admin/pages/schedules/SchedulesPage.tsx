@@ -76,7 +76,7 @@ export default function SchedulesPage() {
       breadcrumbs={breadcrumbs}
       icon={ScheduleIcon}
       description="Manage scheduled tasks and automation rules, monitor execution status and configure timing settings"
-       sideContent={
+      sideContent={
          <SchedulesDashboard 
            stats={stats} 
            charts={['stats']}

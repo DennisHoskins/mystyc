@@ -79,20 +79,13 @@ export default function SchedulesExecutionsDashboard({
         shortSubtext={`${dayCount} executed`}
         longSubtext={dayCount === 0 ? 'No executions' : `${dayCount} total`}
         badge={dayCount > 0 && (
-          <span className={`text-xs px-1 rounded ${
+          <span className={`text-xs px-1 ml-2 rounded flex items-center ${
             daySuccessful === dayCount 
               ? 'bg-green-100 text-green-700' 
               : 'bg-yellow-100 text-yellow-700'
           }`}>
-            {/* Responsive text within the badge */}
-            <span className='@[200px]:hidden'>
+            <span>
               {daySuccessful === dayCount ? 'all ✓' : `${daySuccessful}/${dayCount} ✓`}
-            </span>
-            <span className='hidden @[200px]:inline'>
-              {daySuccessful === dayCount 
-                ? 'All successful' 
-                : `${daySuccessful} successful, ${dayCount - (daySuccessful ?? 0)} failed`
-              }
             </span>
           </span>
         )}

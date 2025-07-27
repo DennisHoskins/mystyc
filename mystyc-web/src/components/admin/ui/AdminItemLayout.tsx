@@ -39,7 +39,7 @@ export default function AdminItemLayout({
 
   if (error) {
     return (
-      <>
+      <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
         <Card className='mb-4'>
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
@@ -59,13 +59,13 @@ export default function AdminItemLayout({
           error={error} 
           onRetry={onRetry}
         />
-      </>
+      </div>
     )
   }
 
   if (!sidebarContent) {
     return (
-      <>
+      <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
         <Card>
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
@@ -98,7 +98,7 @@ export default function AdminItemLayout({
             {mainContent}
           </div>
         )}
-      </>
+      </div>
     );
   }
 
@@ -107,8 +107,10 @@ export default function AdminItemLayout({
   const gap = hasX && hasY ? "gap-4" : hasX ? "gap-x-4" : "gap-y-4"
   const rows = sectionsContent ? 'row-span-2' : 'row-span-1';
 
+// todo: what the fuck
+
   return (
-    <div className='grow min-h-0 flex flex-col mt-4 mr-2 mb-4'>
+    <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
       <div className={`grid grid-cols-1 lg:grid-cols-3 ${gap} lg:space-y-0`}>
 
         <Card className={`order-1 lg:col-span-2`}>
@@ -132,7 +134,7 @@ export default function AdminItemLayout({
           </div>
         </Card>
 
-        <Card className={`order-2 lg:col-span-1 lg:${rows}`}>
+        <Card className={`order-2 lg:col-span-1 ${rows}`}>
           {sidebarContent}
         </Card>
 

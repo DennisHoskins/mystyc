@@ -7,11 +7,12 @@ import TrafficDashboard from './TrafficDashboard';
 
 export default function TrafficMainCard({ trafficStats }: { trafficStats?: TrafficStats | null }) {
   return (
-    <div className="flex flex-col space-y-4">
-      <Card className='min-h-[20em]'>
-        <Heading level={4} className="mb-4 text-blue-900">Day Of Week</Heading>
-        <div className='grid grid-cols-3 gap-4'>
-          <div className="flex flex-col justify-center space-y-3">
+    <div className="grid grid-cols-2 gap-4 grow min-h-0">
+      <Card className='grow min-h-0'>
+        <Heading level={5} className="mb-4 text-blue-900">Day Of Week</Heading>
+        <div className='grid grid-cols-3 gap-4 grow min-h-0'>
+
+          <div className="flex flex-col justify-start space-y-3">
             {trafficStats && trafficStats.dayOfWeekVisits
               .sort((a, b) => b.count - a.count)
               .slice(0, 4)
@@ -32,7 +33,7 @@ export default function TrafficMainCard({ trafficStats }: { trafficStats?: Traff
             ))}
           </div>
           
-          <div className='col-span-2 flex'>
+          <div className='col-span-2 flex grow min-h-0'>
             <TrafficDashboard 
               data={trafficStats} 
               charts={['dayofweek']}
@@ -43,13 +44,13 @@ export default function TrafficMainCard({ trafficStats }: { trafficStats?: Traff
         </div>
       </Card>
 
-      <Card className='min-h-[20em]'>
-        <Heading level={4} className="mb-4 text-blue-900">Peak Hours (Top 12)</Heading>
-        <div className='grid grid-cols-3 gap-4'>
-          <div className="flex flex-col justify-center space-y-3">
+      <Card className='grow min-h-0'>
+        <Heading level={5} className="mb-4 text-blue-900">Peak Hours (Top 6)</Heading>
+        <div className='grid grid-cols-3 gap-4 grow min-h-0'>
+          <div className="flex flex-col justify-start space-y-3">
             {trafficStats && trafficStats.hourlyVisits
               .sort((a, b) => b.count - a.count)
-              .slice(0, 5)
+              .slice(0, 4)
               .map((hour, index) => (
               <div key={hour.hour} className="flex justify-between items-center bg-gradient-to-br from-indigo-50 to-purple-100 border-indigo-200 rounded-lg p-3">
                 <div>
@@ -67,13 +68,13 @@ export default function TrafficMainCard({ trafficStats }: { trafficStats?: Traff
             ))}
           </div>
           
-          <div className='col-span-2 flex'>
+          <div className='col-span-2 flex grow min-h-0'>
             <TrafficDashboard 
               data={trafficStats} 
               charts={['hourly']}
               layout={'vertical'}
               label={false}
-          />
+            />
           </div>
         </div>
       </Card>

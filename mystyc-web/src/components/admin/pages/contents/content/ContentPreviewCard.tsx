@@ -9,7 +9,7 @@ import Text from '@/components/ui/Text';
 
 export default function ContentPreviewCard({ content }: { content: Content | null }) {
   return (
-    <Card className='min-h-[20em]'>
+    <Card>
       <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={<Eye className='w-4 h-4'/>} />
         <div>
@@ -27,7 +27,7 @@ export default function ContentPreviewCard({ content }: { content: Content | nul
       )}
       
       <div className="mt-4 space-y-4">
-        <div className="bg-gray-50 rounded-lg p-4 min-h-24">
+        <div className="bg-gray-50 rounded-lg p-4">
           <Heading level={5} className="mb-3">{content?.title}</Heading>
           <Text className="text-gray-700">{content?.message}</Text>
         </div>
