@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { AuthEventsSummary } from 'mystyc-common/admin/interfaces/summary';
 

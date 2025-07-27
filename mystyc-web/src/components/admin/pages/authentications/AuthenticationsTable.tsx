@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { AuthEvent } from 'mystyc-common/schemas/';
 import { Pagination } from 'mystyc-common/admin';

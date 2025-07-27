@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { ContentsSummary } from 'mystyc-common/admin/interfaces/summary';
 import { ContentStats } from 'mystyc-common/admin/interfaces/stats';

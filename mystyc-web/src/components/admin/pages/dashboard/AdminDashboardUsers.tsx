@@ -1,5 +1,4 @@
 import { AdminStatsQuery, UserStats } from 'mystyc-common/admin';
-
 import Link from '@/components/ui/Link';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
