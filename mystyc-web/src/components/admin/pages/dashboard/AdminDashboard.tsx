@@ -29,10 +29,10 @@ export default function AdminDashboard({ stats } : { stats?: AdminStatsResponseW
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <AdminDashboardUsers stats={stats} />
-        <AdminDashboardDevices stats={stats} />
-        <AdminDashboardNotifications stats={stats} />
-        <AdminDashboardAuthentications stats={stats} />
+        <AdminDashboardUsers stats={stats?.data} query={stats?.query} />
+        <AdminDashboardDevices stats={stats?.data} />
+        <AdminDashboardNotifications stats={stats?.data} />
+        <AdminDashboardAuthentications stats={stats?.data} />
       </div>
     </>
   );

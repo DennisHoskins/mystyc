@@ -1,10 +1,6 @@
-'use client';
-
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { Pagination } from 'mystyc-common/admin';
-
 import { formatDateForDisplay } from '@/util/dateTime';
-
 import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 

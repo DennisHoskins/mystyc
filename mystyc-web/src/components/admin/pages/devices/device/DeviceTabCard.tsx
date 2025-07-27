@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { DeviceSummary } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDeviceSummary } from '@/server/actions/admin/devices';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import DeviceUsersTable from './tables/DeviceUsersTable';
@@ -23,7 +22,7 @@ export default function DeviceTabCard({ deviceId }: { deviceId?: string | null }
 
     const loadSummary = async () => {
       try {
-        const summaryData = await apiClientAdmin.devices.getDeviceSummary(deviceId);
+        const summaryData = await getDeviceSummary({deviceInfo: getDeviceInfo(), deviceId});
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load device summary:', err);
@@ -72,7 +71,7 @@ export default function DeviceTabCard({ deviceId }: { deviceId?: string | null }
   }, [deviceId, activeTab, summary]);
 
   return (
-    <Card className='flex-1'>
+    <Card className='grow min-h-0'>
       <TabPanel 
         tabs={tabs} 
         defaultActiveTab={activeTab}

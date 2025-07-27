@@ -11,6 +11,10 @@ import WelcomePanel from '@/components/mystyc/pages/onboard/WelcomePanel';
 
 export default function HomePage({ user } : { user: AppUser }) {
 
+  if (!user) {
+    return null;
+  }
+
   const hasSHownWelcome = false;
 
   const content = user.userProfile.zodiacSign 

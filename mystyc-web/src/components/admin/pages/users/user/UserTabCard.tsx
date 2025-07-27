@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { UserSummary } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getUserSummary } from '@/server/actions/admin/users';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import Card from '@/components/ui/Card';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
 import UserContentTable from './tables/UserContentTable';
@@ -26,7 +25,7 @@ export default function UserTabCard({ firebaseUid }: { firebaseUid: string | nul
       }
 
       try {
-        const summaryData = await apiClientAdmin.users.getUserSummary(firebaseUid);
+        const summaryData = await getUserSummary({deviceInfo: getDeviceInfo(), firebaseUid});
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load user summary:', err);

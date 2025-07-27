@@ -1,12 +1,11 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
 import DevicesDashboard from '../devices/DevicesDashboard';
 import Link from '@/components/ui/Link';
 
-export default function AdminDashboardDevices({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardDevices({ stats } : { stats?: AdminStatsResponseExtended | null }) {
   return (
     <AdminDashboardItemLayout
       icon={<DevicesIcon />}
@@ -18,11 +17,7 @@ export default function AdminDashboardDevices({ stats } : { stats?: AdminStatsRe
         href='/admin/devices'
       >
         <DevicesDashboard 
-          stats={stats?.data.devices ? {
-            data: stats.data.devices,
-            query: stats.query,
-            queryString: stats.queryString,
-          } : null}
+          stats={stats?.devices}
           charts={['stats', 'browsers', 'activity'] }
           height={100}
         />

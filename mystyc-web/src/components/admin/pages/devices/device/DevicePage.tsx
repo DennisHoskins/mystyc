@@ -3,10 +3,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { DeviceSession } from '@/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDeviceSession } from '@/server/actions/admin/devices';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import DeviceIcon from '@/components/admin/ui/icons/DeviceIcon';
@@ -24,7 +23,7 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
       setError(null);
       setBusy(1000);
 
-      const data = await apiClientAdmin.devices.getDeviceSession(deviceId);
+      const data = await getDeviceSession({deviceInfo: getDeviceInfo(), deviceId});
       setDeviceSession(data);
     } catch (err) {
       logger.error('Failed to load device:', err);

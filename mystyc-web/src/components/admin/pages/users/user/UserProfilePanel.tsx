@@ -1,9 +1,5 @@
-'use client';
-
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-
 import { formatDateForDisplay } from '@/util/dateTime';
-
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

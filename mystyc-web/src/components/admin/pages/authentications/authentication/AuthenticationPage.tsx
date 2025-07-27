@@ -3,10 +3,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getAuthEvent } from '@/server/actions/admin/auth-events';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
@@ -24,7 +23,7 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       setError(null);
       setBusy(1000);
 
-      const data = await apiClientAdmin.auth.getAuthEvent(authId);
+      const data = await getAuthEvent({deviceInfo: getDeviceInfo(),  eventId: authId});
       setAuthentication(data);
     } catch (err) {
       logger.error('Failed to load authentication:', err);

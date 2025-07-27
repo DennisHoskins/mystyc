@@ -8,6 +8,10 @@ import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { SubscriptionStats, SubscriptionsSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/';
 
 import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+
+import { getPlusUsers } from '@/server/actions/admin/users';
+
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
@@ -95,7 +99,7 @@ export default function SubscriptionsPage() {
       setBusy(1000);
 
       const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.users.getPlusUsers(listQuery);
+      const response = await getPlusUsers({deviceInfo: getDeviceInfo(), ...listQuery});
       
       setSubscribers(response);
       setCurrentPageSubscribers(page);

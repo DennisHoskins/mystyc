@@ -4,8 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas';
 import { Pagination } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceUsers } from '@/server/actions/admin/devices';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import UsersTable from '@/components/admin/pages/users/UsersTable';
@@ -33,8 +34,8 @@ export default function DeviceUsersTable({ deviceId, isActive = false }: DeviceU
       setBusy(1000);
       setError(null);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.devices.getDeviceUsers(deviceId, listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getDeviceUsers({deviceInfo: getDeviceInfo(), deviceId, ...listQuery});
 
       setUsers(response.data);
       setPagination(response.pagination);

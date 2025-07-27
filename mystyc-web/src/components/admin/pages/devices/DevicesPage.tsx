@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { Device } from 'mystyc-common/schemas/';
-import { DeviceStats, DevicesSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { DeviceStats, DevicesSummary, AdminListResponse } from 'mystyc-common/admin';
+import { getDevicesSummaryStats, getDevices, getOnlineDevices, getOfflineDevices } from '@/server/actions/admin/devices';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
@@ -25,7 +26,7 @@ export default function DevicesPage() {
   const searchParams = useSearchParams();
   
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<DeviceStats> | null>(null);
+  const [stats, setStats] = useState<DeviceStats | null>(null);
   const [summary, setSummary] = useState<DevicesSummary | null>(null);
   const [data, setData] = useState<AdminListResponse<Device> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,8 +56,8 @@ export default function DevicesPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const summaryStats = await apiClientAdmin.devices.getSummaryStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const summaryStats = await getDevicesSummaryStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
@@ -77,19 +78,19 @@ export default function DevicesPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const listQuery = getDefaultListQuery(page);
       let response: AdminListResponse<Device>;
 
       switch (currentView) {
         case 'online':
-          response = await apiClientAdmin.devices.getOnlineDevices(listQuery);
+          response = await getOnlineDevices({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'offline':
-          response = await apiClientAdmin.devices.getOfflineDevices(listQuery);
+          response = await getOfflineDevices({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'all':
         default:
-          response = await apiClientAdmin.devices.getDevices(listQuery);
+          response = await getDevices({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
       }
 
@@ -131,7 +132,9 @@ export default function DevicesPage() {
           charts={['stats']}
         />
       }
-      itemContent={showDeviceTable == false && <DevicesDashboardGrid stats={stats} />}
+      itemContent={
+        showDeviceTable == false && <DevicesDashboardGrid stats={stats} />
+      }
       tableContent={
         <>
           {showDeviceTable ?

@@ -1,12 +1,12 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+import { AdminStatsQuery } from 'mystyc-common/admin';
 
 import Link from '@/components/ui/Link';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import UsersDashboard from '../users/UsersDashboard';
 
-export default function AdminDashboardUsers({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardUsers({ query, stats } : { query?: Partial<AdminStatsQuery>, stats?: AdminStatsResponseExtended | null }) {
   return (
     <AdminDashboardItemLayout
       icon={<UsersIcon />}
@@ -18,11 +18,8 @@ export default function AdminDashboardUsers({ stats } : { stats?: AdminStatsResp
         href='/admin/users'
       >
         <UsersDashboard 
-          stats={stats?.data.users ? {
-            data: stats.data.users,
-            query: stats.query,
-            queryString: stats.queryString,
-          } : null}
+          query={query}
+          stats={stats?.users}
           charts={['stats', 'registrations', 'activity']} 
           height={100}
         />

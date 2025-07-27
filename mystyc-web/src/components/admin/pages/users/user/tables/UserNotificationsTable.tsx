@@ -4,8 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
 import { Pagination } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getUserNotifications } from '@/server/actions/admin/users';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import NotificationsTable from '@/components/admin/pages/notifications/NotificationsTable';
@@ -33,8 +34,8 @@ export default function UserNotifications({ firebaseUid, isActive = false }: Use
       setBusy(1000);
       setError(null);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.users.getUserNotifications(firebaseUid, listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getUserNotifications({deviceInfo: getDeviceInfo(), firebaseUid, ...listQuery});
 
       setNotifications(response.data);
       setPagination(response.pagination);

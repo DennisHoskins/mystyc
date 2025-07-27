@@ -10,17 +10,22 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function BirthPanel({ user } : { user: AppUser }) {
-  const [isWorking, setWorking] = useState(false);
-  const [error, setError] = useState('');
+  // const [isWorking, setWorking] = useState(false);
+  // const [error, setError] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [timeOfBirth, setTimeOfBirth] = useState("");
+
+  if (!user) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   };
 
   return (
-    <FormLayout subtitle="Tell me when you were born. Be as accurate as possible" error={error}>
+    // <FormLayout subtitle="Tell me when you were born. Be as accurate as possible" error={error}>
+    <FormLayout subtitle="Tell me when you were born. Be as accurate as possible" error={null}>
       <Form onSubmit={handleSubmit}>
         <TextInput
           id="dateOfBirth"
@@ -46,7 +51,7 @@ export default function BirthPanel({ user } : { user: AppUser }) {
         />
         <Button
           type="submit"
-          loading={isWorking}
+          // loading={isWorking}
           loadingContent="Working..."
           className="w-full mt-6"
         >

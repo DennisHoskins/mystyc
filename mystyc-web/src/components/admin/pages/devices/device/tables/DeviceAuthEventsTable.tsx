@@ -4,8 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 import { Pagination } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceAuthEvents } from '@/server/actions/admin/devices';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AuthenticationsTable from '@/components/admin/pages/authentications/AuthenticationsTable';
@@ -33,8 +34,8 @@ export default function DeviceAuthEvents({ deviceId, isActive = false }: DeviceA
       setBusy(1000);
       setError(null);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.devices.getDeviceAuthEvents(deviceId, listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getDeviceAuthEvents({deviceInfo: getDeviceInfo(), deviceId, ...listQuery});
 
       setAuthEvents(response.data);
       setPagination(response.pagination);

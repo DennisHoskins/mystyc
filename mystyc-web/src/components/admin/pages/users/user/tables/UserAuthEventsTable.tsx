@@ -4,8 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 import { Pagination } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getUserAuthEvents } from '@/server/actions/admin/users';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
@@ -33,8 +34,8 @@ export default function UserAuthEvents({ firebaseUid, isActive = false }: UserAu
       setBusy(1000);
       setError(null);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.users.getUserAuthEvents(firebaseUid, listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getUserAuthEvents({deviceInfo: getDeviceInfo(), firebaseUid, ...listQuery});
 
       setAuthEvents(response.data);
       setPagination(response.pagination);

@@ -1,8 +1,6 @@
 import { NotificationStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
-
+import { AdminStatsQuery } from 'mystyc-common/admin';
 import { formatDateRangeForComponent } from '@/util/dateTime'
-
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/admin/ui/charts/PieChartWithLegend';
 import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
@@ -11,41 +9,43 @@ import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';
 type ChartType = 'stats' | 'delivery' | 'volume' | 'platforms';
 
 interface NotificationsDashboardProps {
-  stats?: AdminStatsResponseWithQuery<NotificationStats> | null;
+  query?: Partial<AdminStatsQuery> | null;
+  stats?: NotificationStats | null;
   charts?: ChartType[];
   height?: number;
 }
 
 export default function NotificationsDashboard({ 
+  query,
   stats, 
   charts = ['stats', 'delivery', 'volume', 'platforms'],
   height
 }: NotificationsDashboardProps) {
-  const duration = formatDateRangeForComponent(stats?.query?.startDate, stats?.query?.endDate);
+  const duration = formatDateRangeForComponent(query?.startDate, query?.endDate);
 
   // Transform delivery status for pie chart
   const deliveryData = [
-    { name: 'Sent', value: stats?.data.delivery.deliveryMetrics.sent ?? 0, color: '#10b981' },
-    { name: 'Failed', value: stats?.data.delivery.deliveryMetrics.failed ?? 0, color: '#ef4444' },
-    { name: 'Pending', value: stats?.data.delivery.deliveryMetrics.pending ?? 0, color: '#f59e0b' }
+    { name: 'Sent', value: stats?.delivery.deliveryMetrics.sent ?? 0, color: '#10b981' },
+    { name: 'Failed', value: stats?.delivery.deliveryMetrics.failed ?? 0, color: '#ef4444' },
+    { name: 'Pending', value: stats?.delivery.deliveryMetrics.pending ?? 0, color: '#f59e0b' }
   ];
 
   // Transform platform engagement for bar chart
-  const platformData = stats?.data.engagement.deliveryByPlatform.map(platform => ({
+  const platformData = stats?.engagement.deliveryByPlatform.map(platform => ({
     name: platform.platform,
     successRate: platform.successRate,
     sent: platform.sent
   }));
 
   // Transform recent volume trends
-  const volumeData = stats?.data.pattern.volumeTrends;
+  const volumeData = stats?.pattern.volumeTrends;
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats?.data.delivery.totalNotifications ?? 0, label: 'Total Sent', color: 'text-blue-600' },
-          { value: `${stats?.data.delivery.deliveryMetrics.successRate}%`, label: 'Success Rate', color: 'text-green-600' }
+          { value: stats ? stats.delivery.totalNotifications ?? 0 : "", label: 'Total Sent', color: 'text-blue-600' },
+          { value: stats ? `${stats?.delivery.deliveryMetrics.successRate}%` : "", label: 'Success Rate', color: 'text-green-600' }
         ]} 
       />
     ),

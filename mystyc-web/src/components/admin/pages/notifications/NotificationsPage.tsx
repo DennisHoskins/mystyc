@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { Notification } from 'mystyc-common/schemas/';
-import { NotificationStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { NotificationStats, AdminStatsQuery, AdminListResponse } from 'mystyc-common/admin';
+import { getNotificationStats, getNotifications } from '@/server/actions/admin/notifications';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
@@ -25,7 +26,8 @@ export default function NotificationsPage() {
   const searchParams = useSearchParams();
   
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<NotificationStats> | null>(null);
+  const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
+  const [stats, setStats] = useState<NotificationStats | null>(null);
   const [data, setData] = useState<AdminListResponse<Notification> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -55,9 +57,10 @@ export default function NotificationsPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const stats = await apiClientAdmin.notifications.getStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const stats = await getNotificationStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
+      setQuery(statsQuery);
       setStats(stats);
     } catch (err) {
       logger.error('Failed to load notification data:', err);
@@ -76,12 +79,12 @@ export default function NotificationsPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const listQuery = getDefaultListQuery(page);
       let response: AdminListResponse<Notification>;
       
       switch (currentView) {
         default:
-          response = await apiClientAdmin.notifications.getNotifications(listQuery);
+          response = await getNotifications({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
       }
 
@@ -113,6 +116,7 @@ export default function NotificationsPage() {
       description="View sent push notifications, message history, and delivery status for user communications"
       headerContent={
         <NotificationsSummaryPanel 
+          query={query}
           stats={stats}
           handleClick={handleClick}
           currentView={currentView}
@@ -120,11 +124,14 @@ export default function NotificationsPage() {
       }
       sideContent={
         <NotificationsDashboard 
+          query={query}
           stats={stats} 
           charts={['stats']}
         />
       }
-      itemContent={showNotificationTable == false && <NotificationsDashboardGrid stats={stats} />}
+      itemContent={
+        showNotificationTable == false && <NotificationsDashboardGrid query={query} stats={stats} />
+      }
       tableContent={
         <>
           {showNotificationTable ?
@@ -136,14 +143,14 @@ export default function NotificationsPage() {
                 pagination={data?.pagination}
                 onPageChange={() => loadNotifications(currentPage)}
                 onRefresh={() => loadNotifications(0)}
-                hideUserColumn={currentView === 'user'}
               />
             ) : (
               <div className='flex-1 flex'>
                 <NotificationsDashboard 
-                  key={'platforms'}
+                  key={'volume'}
+                  query={query}
                   stats={stats} 
-                  charts={['platforms']}
+                  charts={['volume']}
                 />
               </div>
             )

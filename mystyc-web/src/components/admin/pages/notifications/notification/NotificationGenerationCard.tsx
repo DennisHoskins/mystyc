@@ -1,5 +1,4 @@
 import { Notification } from 'mystyc-common/schemas';
-
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';

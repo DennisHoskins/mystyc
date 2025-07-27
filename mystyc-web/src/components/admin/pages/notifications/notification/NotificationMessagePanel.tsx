@@ -1,5 +1,4 @@
 import { Notification } from 'mystyc-common/schemas';
-
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

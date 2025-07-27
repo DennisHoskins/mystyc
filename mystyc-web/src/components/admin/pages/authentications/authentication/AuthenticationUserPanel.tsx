@@ -3,10 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getUser } from '@/server/actions/admin/users';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
@@ -27,7 +26,7 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
       setLoading(true);
       setError(null);
 
-      const data = await apiClientAdmin.users.getUser(firebaseUid);
+      const data = await getUser({deviceInfo: getDeviceInfo(), firebaseUid});
       setUser(data);
     } catch (err) {
       logger.error('Failed to load user:', err);

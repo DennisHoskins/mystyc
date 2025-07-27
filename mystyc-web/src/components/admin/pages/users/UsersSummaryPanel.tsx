@@ -1,7 +1,4 @@
-'use client';
-
 import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
-
 import { UserView } from './UsersPage'; 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';

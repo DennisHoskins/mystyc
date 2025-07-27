@@ -1,7 +1,4 @@
-'use client';
-
 import { DevicesSummary } from 'mystyc-common/admin/interfaces/summary';
-
 import { DeviceView } from './DevicesPage'; 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';

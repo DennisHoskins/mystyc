@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getUser } from '@/server/actions/admin/users';
+
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
 
@@ -25,7 +27,7 @@ export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: st
 
     const loadUser = async () => {
       try {
-        const user = await apiClientAdmin.users.getUser(firebaseUid);
+        const user = await getUser({deviceInfo: getDeviceInfo(), firebaseUid});
         setUser(user);
       } catch (err) {
         logger.error('Failed to load user:', err);

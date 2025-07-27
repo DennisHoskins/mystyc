@@ -4,9 +4,10 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-import { UserStats, UsersSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { UserStats, UsersSummary, AdminListResponse, AdminStatsQuery } from 'mystyc-common/admin';
+import { getUsersSummaryStats, getAllUsers, getUsers, getPlusUsers } from '@/server/actions/admin/users';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
@@ -25,8 +26,9 @@ export default function UsersPage() {
   const searchParams = useSearchParams();
   
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<UserStats> | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
   const [summary, setSummary] = useState<UsersSummary | null>(null);
+  const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [data, setData] = useState<AdminListResponse<UserProfile> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -55,9 +57,10 @@ export default function UsersPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const summaryStats = await apiClientAdmin.users.getSummaryStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const summaryStats = await getUsersSummaryStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
+      setQuery(statsQuery);
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
     } catch (err) {
@@ -77,19 +80,19 @@ export default function UsersPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const listQuery = getDefaultListQuery(page);
       let response: AdminListResponse<UserProfile>;
       
       switch (currentView) {
         case 'plus':
-          response = await apiClientAdmin.users.getPlusUsers(listQuery);
+          response = await getPlusUsers({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'users':
-          response = await apiClientAdmin.users.getUsers(listQuery);
+          response = await getUsers({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'all':
         default:
-          response = await apiClientAdmin.users.getAll(listQuery);
+          response = await getAllUsers({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
       }
 
@@ -126,12 +129,15 @@ export default function UsersPage() {
         />
       }
       sideContent={
-        <UsersDashboard 
+        <UsersDashboard
+          query={query} 
           stats={stats} 
           charts={['stats']}
         />
       }
-      itemContent={showUserTable == false && <UsersDashboardGrid stats={stats} />}
+      itemContent={
+        showUserTable == false && <UsersDashboardGrid query={query} stats={stats} />
+      }
       tableContent={
         <>
           {showUserTable ?
@@ -148,6 +154,7 @@ export default function UsersPage() {
               <div className='flex-1 flex'>
                 <UsersDashboard 
                   key={'registrations'}
+                  query={query} 
                   stats={stats} 
                   charts={['registrations']}
                 />

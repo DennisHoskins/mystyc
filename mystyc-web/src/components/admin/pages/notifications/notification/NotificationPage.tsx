@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getNotification } from '@/server/actions/admin/notifications';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
@@ -25,7 +25,7 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       setError(null);
       setBusy(1000);
 
-      const data = await apiClientAdmin.notifications.getNotification(notificationId);
+      const data = await getNotification({deviceInfo: getDeviceInfo(),  notificationId});
       setNotification(data);
     } catch (err) {
       logger.error('Failed to load notification:', err);

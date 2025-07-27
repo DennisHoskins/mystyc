@@ -1,15 +1,11 @@
-'use client';
-
 import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
-
 import Card from "@/components/ui/Card";
 import AuthenticationDashboard from "./AuthenticationDashboard";
 
 export default function AuthenticationsDashboardGrid({
   stats
 } : {
-  stats: AdminStatsResponseWithQuery<AuthEventStats> | null
+  stats: AuthEventStats | null
 }) {
   return (
     <div className='flex-1 grid grid-cols-3 gap-4 h-[15em] mb-4'>

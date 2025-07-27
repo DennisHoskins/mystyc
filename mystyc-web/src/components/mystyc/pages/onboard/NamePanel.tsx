@@ -10,17 +10,22 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function NamePanel({ user } : { user: AppUser }) {
-  const [isWorking, setWorking] = useState(false);
-  const [error, setError] = useState('');
+  // const [isWorking, setWorking] = useState(false);
+  // const [error, setError] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+
+  if (!user) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   };
 
   return (
-    <FormLayout subtitle="Enter your first and last name so I know who I'm talking to" error={error}>
+    // <FormLayout subtitle="Enter your first and last name so I know who I'm talking to" error={error}>
+    <FormLayout subtitle="Enter your first and last name so I know who I'm talking to" error={null}>
       <Form onSubmit={handleSubmit}>
         <TextInput
           id="firstName"
@@ -46,7 +51,7 @@ export default function NamePanel({ user } : { user: AppUser }) {
         />
         <Button
           type="submit"
-          loading={isWorking}
+          // loading={isWorking}
           loadingContent="Working..."
           className="w-full mt-6"
         >

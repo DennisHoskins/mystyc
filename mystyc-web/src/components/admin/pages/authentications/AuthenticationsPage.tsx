@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { AuthEvent } from 'mystyc-common/schemas/';
-import { AuthEventStats, AuthEventsSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { AuthEventStats, AuthEventsSummary, AdminListResponse } from 'mystyc-common/admin';
+import { getAuthEventsSummaryStats, getAuthEvents, getAuthEventsByType } from '@/server/actions/admin/auth-events';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
@@ -25,7 +26,7 @@ export default function AuthenticationsPage() {
   const searchParams = useSearchParams();
   
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<AuthEventStats> | null>(null);
+  const [stats, setStats] = useState<AuthEventStats | null>(null);
   const [summary, setSummary] = useState<AuthEventsSummary | null>(null);
   const [data, setData] = useState<AdminListResponse<AuthEvent> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,8 +58,8 @@ export default function AuthenticationsPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const summaryStats = await apiClientAdmin.auth.getSummaryStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const summaryStats = await getAuthEventsSummaryStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
@@ -79,25 +80,25 @@ export default function AuthenticationsPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const listQuery = getDefaultListQuery(page);
       let response: AdminListResponse<AuthEvent>;
       
       switch (currentView) {
         case 'create':
-          response = await apiClientAdmin.auth.getAuthEventsByType("create", listQuery);
+          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "create", ...listQuery});
           break;
         case 'login':
-          response = await apiClientAdmin.auth.getAuthEventsByType("login", listQuery);
+          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "login", ...listQuery});
           break;
         case 'logout':
-          response = await apiClientAdmin.auth.getAuthEventsByType("logout", listQuery);
+          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "logout", ...listQuery});
           break;
         case 'server-logout':
-          response = await apiClientAdmin.auth.getAuthEventsByType("server-logout", listQuery);
+          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "server-logout", ...listQuery});
           break;
         case 'all':
         default:
-          response = await apiClientAdmin.auth.getAuthEvents(listQuery);
+          response = await getAuthEvents({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
       }
 
@@ -140,7 +141,9 @@ export default function AuthenticationsPage() {
           charts={['stats']}
         />
       }
-      itemContent={showAuthTable == false && <AuthenticationsDashboardGrid stats={stats} />}
+      itemContent={
+        showAuthTable == false && <AuthenticationsDashboardGrid stats={stats} />
+      }
       tableContent={
         <>
           {showAuthTable ?

@@ -4,8 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { Device } from 'mystyc-common/schemas';
 import { Pagination } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getUserDevices } from '@/server/actions/admin/users';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import DevicesTable from '@/components/admin/pages/devices/DevicesTable';
@@ -33,8 +34,8 @@ export default function UserDevices({ firebaseUid, isActive = false }: UserDevic
       setBusy(1000);
       setError(null);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.users.getUserDevices(firebaseUid, listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getUserDevices({deviceInfo: getDeviceInfo(), firebaseUid, ...listQuery});
 
       setDevices(response.data);
       setPagination(response.pagination);

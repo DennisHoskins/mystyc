@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+// import { useState } from 'react';
 
 import { AppUser } from '@/interfaces/app/app-user.interface';
 
@@ -10,7 +10,11 @@ import Form from '@/components/ui/form/Form';
 import Button from '@/components/ui/Button';
 
 export default function WelcomePanel({ user } : { user: AppUser }) {
-  const [isWorking, setWorking] = useState(false);
+  // const [isWorking, setWorking] = useState(false);
+
+  if (!user) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,11 +26,11 @@ export default function WelcomePanel({ user } : { user: AppUser }) {
       <Form onSubmit={handleSubmit}>
         <Button
           type="submit"
-          loading={isWorking}
+          // loading={isWorking}
           loadingContent="Working..."
           className="w-full mt-6"
         >
-          Let's Go!
+          Let&apos;s Go!
         </Button>
       </Form>
     </FormLayout>

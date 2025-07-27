@@ -4,8 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { Content } from 'mystyc-common/schemas/content.schema';
 import { Pagination } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getUserContent } from '@/server/actions/admin/users';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
@@ -33,8 +34,8 @@ export default function UserContent({ firebaseUid, isActive = false }: UserConte
       setBusy(1000);
       setError(null);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.users.getUserContent(firebaseUid, listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getUserContent({deviceInfo: getDeviceInfo(), firebaseUid, ...listQuery});
 
       setContent(response.data);
       setPagination(response.pagination);

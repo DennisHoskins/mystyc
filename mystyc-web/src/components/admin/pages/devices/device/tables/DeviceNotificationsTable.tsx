@@ -4,8 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
 import { Pagination } from 'mystyc-common/admin';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceNotifications } from '@/server/actions/admin/devices';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import NotificationsTable from '@/components/admin/pages/notifications/NotificationsTable';
@@ -33,8 +34,8 @@ export default function DeviceNotifications({ deviceId, isActive = false }: Devi
       setBusy(1000);
       setError(null);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.devices.getDeviceNotifications(deviceId, listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getDeviceNotifications({deviceInfo: getDeviceInfo(), deviceId, ...listQuery});
 
       setNotifications(response.data);
       setPagination(response.pagination);

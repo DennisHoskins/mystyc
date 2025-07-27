@@ -1,8 +1,5 @@
-'use client';
-
 import { Device } from 'mystyc-common/schemas/';
 import { Pagination } from 'mystyc-common/admin';
-
 import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 

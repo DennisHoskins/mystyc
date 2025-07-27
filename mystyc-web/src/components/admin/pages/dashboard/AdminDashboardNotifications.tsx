@@ -1,12 +1,11 @@
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
 
 import Link from '@/components/ui/Link';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import NotificationsDashboard from '../notifications/NotificationsDashboard';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 
-export default function AdminDashboardNotifications({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardNotifications({ stats } : { stats?: AdminStatsResponseExtended | null }) {
   return (
     <AdminDashboardItemLayout
       icon={<NotificationIcon />}
@@ -18,11 +17,7 @@ export default function AdminDashboardNotifications({ stats } : { stats?: AdminS
         href='/admin/notifications'
       >
         <NotificationsDashboard 
-          stats={stats?.data.notifications ? {
-            data: stats.data.notifications,
-            query: stats.query,
-            queryString: stats.queryString,
-          } : null}
+          stats={stats?.notifications}
           charts={['stats', 'volume', 'platforms']}
           height={100}
         />
