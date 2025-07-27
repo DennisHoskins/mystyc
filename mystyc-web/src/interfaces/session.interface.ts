@@ -2,13 +2,13 @@ export interface Session {
   sessionId: string; 
   deviceId: string; 
   uid: string;
-  authToken: string; 
-  authTokenTimestamp: number;
-  refreshToken: string; 
-  refreshTokenTimestamp: number;
+  authToken?: string | null; 
+  authTokenTimestamp?: number | null;
+  refreshToken?: string | null; 
+  refreshTokenTimestamp?: number | null;
   email: string;
   deviceName: string;
   isAdmin: boolean;
-  createdAt: number;  
-  lastUpdated: number;  
+  createdAt?: string | number | null;  
+  lastUpdated?: string | number | null;  
 }

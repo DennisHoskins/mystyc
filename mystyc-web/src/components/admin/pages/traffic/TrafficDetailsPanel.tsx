@@ -1,5 +1,4 @@
 import { TrafficStats } from '@/interfaces/admin/stats';
-
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 

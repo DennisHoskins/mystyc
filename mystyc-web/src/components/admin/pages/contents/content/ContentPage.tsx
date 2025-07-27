@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Content } from 'mystyc-common/schemas';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getContent } from '@/server/actions/admin/content';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
@@ -25,7 +25,7 @@ export default function ContentPage({ contentId }: { contentId: string }) {
       setError(null);
       setBusy(1000);
 
-      const data = await apiClientAdmin.content.getContent(contentId);
+      const data = await getContent({deviceInfo: getDeviceInfo(), contentId});
       setContent(data);
     } catch (err) {
       logger.error('Failed to load content:', err);

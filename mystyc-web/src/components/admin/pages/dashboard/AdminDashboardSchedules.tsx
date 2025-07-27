@@ -1,26 +1,13 @@
-import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
-
+import { ScheduleStats, ScheduleExecutionStats } from 'mystyc-common/admin';
 import Link from '@/components/ui/Link';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon'
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import SchedulesDashboard from '../schedules/SchedulesDashboard';
 import SchedulesExecutionsDashboard from '../schedule-executions/SchedulesExecutionsDashboard';
 
-export default function AdminDashboardSchedules({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
-
-  const dataSchedules = stats?.data.schedule ? {
-    data: stats.data.schedule,
-    query: stats.query,
-    queryString: stats.queryString,
-  } : null;
-
-  const dataExecutions = stats?.data.schedule.executions ? {
-    data: stats.data.schedule.executions,
-    query: stats.query,
-    queryString: stats.queryString,
-  } : null;
-
+export default function AdminDashboardSchedules({ stats } : { 
+  stats?: ScheduleStats & {executions: ScheduleExecutionStats} | null
+}) {
   return (
     <AdminDashboardItemLayout
       className='col-span-1 flex flex-col'
@@ -36,11 +23,11 @@ export default function AdminDashboardSchedules({ stats } : { stats?: AdminStats
           >
             <SchedulesDashboard
               className="mb-2"
-              stats={dataSchedules}
+              stats={stats}
               charts={['health']}
             />
             <SchedulesDashboard 
-              stats={dataSchedules}
+              stats={stats}
               charts={['today']}
             />
           </Link>
@@ -51,11 +38,11 @@ export default function AdminDashboardSchedules({ stats } : { stats?: AdminStats
           >
             <div className='flex-1 flex flex-col space-y-4'>
               <SchedulesExecutionsDashboard
-                stats={dataExecutions}
+                stats={stats?.executions}
                 charts={['stats']}
               />
               <SchedulesExecutionsDashboard
-                stats={dataExecutions}
+                stats={stats?.executions}
                 charts={['today']}
               />
             </div>

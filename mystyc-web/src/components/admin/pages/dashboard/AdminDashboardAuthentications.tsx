@@ -1,11 +1,12 @@
-import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-
+import { AuthEventStats } from 'mystyc-common/admin';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDashboard from '../authentications/AuthenticationDashboard';
 import Link from '@/components/ui/Link';
 
-export default function AdminDashboardAuthentications({ stats } : { stats?: AdminStatsResponseExtended | null }) {
+export default function AdminDashboardAuthentications({ stats } : { 
+  stats?: AuthEventStats | null 
+}) {
   return (
       <AdminDashboardItemLayout
         icon={<AuthenticationIcon />}
@@ -17,7 +18,7 @@ export default function AdminDashboardAuthentications({ stats } : { stats?: Admi
           href='/admin/authentication'
         >
           <AuthenticationDashboard 
-            stats={stats?.authEvents}
+            stats={stats}
             charts={['stats', 'peak', 'duration']}
             height={100}
           />

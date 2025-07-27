@@ -1,5 +1,4 @@
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
-
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';

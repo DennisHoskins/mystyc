@@ -2,7 +2,6 @@ import { DeviceSession } from '@/interfaces';
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
@@ -28,22 +27,22 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession?: 
           label="Session Id"
           value={deviceSession?.session?.sessionId}
           href={deviceSession && deviceSession.session ? `/admin/sessions/${deviceSession.session.sessionId}` : ''}
-          text={deviceSession && deviceSession.session && formatTimestampForComponent(deviceSession.session.createdAt)}
+          text={deviceSession?.session?.createdAt ? formatTimestampForComponent(deviceSession.session.createdAt) : ""}
         />
         <AdminDetailField
           label="Auth Token"
           value={deviceSession?.session?.authToken}
-          text={deviceSession && deviceSession.session && formatTimestampForComponent(deviceSession.session.authTokenTimestamp)}
+          text={deviceSession?.session?.authTokenTimestamp ? formatTimestampForComponent(deviceSession.session.authTokenTimestamp) : ""}
         />
         <AdminDetailField
           label="Refresh Token"
           value={deviceSession?.session?.refreshToken}
-          text={deviceSession && deviceSession.session && formatTimestampForComponent(deviceSession.session.refreshTokenTimestamp)}
+          text={deviceSession?.session?.refreshTokenTimestamp ? formatTimestampForComponent(deviceSession.session.refreshTokenTimestamp) : ""}
         />
         <AdminDetailField
           label="Fcm Token"
           value={deviceSession?.device.fcmToken || 'Not set'}
-          text={deviceSession && deviceSession.device.fcmToken && deviceSession.device.fcmTokenUpdatedAt ? formatDateForComponent(deviceSession.device.fcmTokenUpdatedAt) : '-'}
+          text={deviceSession?.device.fcmTokenUpdatedAt ? formatDateForComponent(deviceSession.device.fcmTokenUpdatedAt) : '-'}
         />
       </AdminDetailGroup>
     </>

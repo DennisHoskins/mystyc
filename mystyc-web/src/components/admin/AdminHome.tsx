@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
+import { AdminStatsQuery } from 'mystyc-common/admin';
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDashboardStats } from '@/server/actions/admin/stats';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
 import Card from '@/components/ui/Card';
@@ -22,15 +22,18 @@ import SessionsDashboard from './pages/sessions/SessionsDashboard';
 export default function AdminHome() {
   const { setBusy } = useBusy();
   const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null>(null);
+  const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
+  const [stats, setStats] = useState<AdminStatsResponseExtended | null>(null);
 
   const loadDashboard = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
 
-      const defaultQuery = apiClientAdmin.getDefaultStatsQuery();
-      const stats = await apiClientAdmin.stats.getDashboard(defaultQuery);
+      const defaultQuery = getDefaultStatsQuery();
+      const stats = await getDashboardStats({deviceInfo: getDeviceInfo(), ...defaultQuery});
+
+      setQuery(defaultQuery)
       setStats(stats)
     } catch (err) {
       logger.error('Failed to load dashboard:', err);
@@ -82,15 +85,11 @@ export default function AdminHome() {
           </Card>
           <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
             <SessionsDashboard 
-              stats={stats?.data.sessions ? {
-                data: stats.data.sessions,
-                query: stats.query,
-                queryString: stats.queryString,
-              } : null}
+              stats={stats?.sessions}
             />
           </Card>
         </div>
-        <AdminDashboard stats={stats} />
+        <AdminDashboard query={query} stats={stats} />
       </div>
     </ScrollWrapper>
   );

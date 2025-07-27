@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Device } from 'mystyc-common/schemas/';
 import { Session } from '@/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getSession } from '@/server/actions/admin/sessions';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
@@ -26,7 +26,7 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       setError(null);
       setBusy(1000);
 
-      const data = await apiClientAdmin.sessions.getSession(sessionId);
+      const data = await getSession({deviceInfo: getDeviceInfo(), sessionId});
       setSession(data);
     } catch (err) {
       logger.error('Failed to load session:', err);

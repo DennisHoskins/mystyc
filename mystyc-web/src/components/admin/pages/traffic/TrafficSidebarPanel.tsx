@@ -1,5 +1,4 @@
 import { TrafficStats } from '@/interfaces/admin/stats';
-
 import TrafficDashboard from './TrafficDashboard';
 
 export default function TrafficSidebarPanel({ trafficStats }: { trafficStats?: TrafficStats | null }) {

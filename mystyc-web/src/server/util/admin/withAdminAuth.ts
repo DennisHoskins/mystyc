@@ -2,9 +2,10 @@
 
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+
 import { Session } from '@/interfaces/session.interface';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
-import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
+import { sessionManager, InvalidSessionError } from '@/server/services/sessionManager';
 import { logger } from '@/util/logger';
 
 export async function withAdminAuth<TParams extends { deviceInfo: DeviceInfo }, TResult>(

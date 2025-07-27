@@ -1,7 +1,6 @@
-import { Content } from 'mystyc-common';
-
 import { Database } from 'lucide-react';
 
+import { Content } from 'mystyc-common';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';

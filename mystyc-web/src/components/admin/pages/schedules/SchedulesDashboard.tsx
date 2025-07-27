@@ -1,8 +1,6 @@
 import { Clock, CalendarClock, Earth } from 'lucide-react';
 
 import { ScheduleStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin';
-
 import StatusCard from '@/components/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/admin/ui/charts/PieChartWithLegend';
@@ -11,7 +9,7 @@ import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
 type ChartType = 'stats' | 'events' | 'upcoming' | 'status' | 'health' | 'today';
 
 interface SchedulesDashboardProps {
-  stats?: AdminStatsResponseWithQuery<ScheduleStats> | null;
+  stats?: ScheduleStats | null;
   charts?: ChartType[];
   height?: number;
   className?: string | null;
@@ -24,14 +22,14 @@ export default function SchedulesDashboard({
   className
 }: SchedulesDashboardProps) {
   // Transform event name distribution for pie chart
-  const eventData = stats?.data.summary.schedulesByEventName.map(event => ({
+  const eventData = stats?.summary.schedulesByEventName.map(event => ({
     name: event.eventName.replace(/\./g, ' ').replace(/^[a-z]/, (match) => match.toUpperCase()), // Format event names
     value: event.count,
-    percentage: Math.round((event.count / stats?.data.summary.totalSchedules) * 100)
+    percentage: Math.round((event.count / stats?.summary.totalSchedules) * 100)
   }));
 
   // Transform upcoming executions for bar chart (next 5)
-  const upcomingData = stats?.data.performance.upcomingExecutions.slice(0, 5).map(execution => {
+  const upcomingData = stats?.performance.upcomingExecutions.slice(0, 5).map(execution => {
     const now = new Date();
     const nextExecution = new Date(execution.nextExecution); // Convert to Date
     const diff = nextExecution.getTime() - now.getTime();
@@ -46,7 +44,7 @@ export default function SchedulesDashboard({
   // Helper to pick the actual next execution based on local time
   const getNextExecutionEntry = () => {
     const now = new Date();
-    const scheduledEntries = stats?.data.performance.upcomingExecutions.map(e => {
+    const scheduledEntries = stats?.performance.upcomingExecutions.map(e => {
       const [hourStr, minuteStr] = e.scheduledTime.split(':');
       const hour = parseInt(hourStr, 10);
       const minute = parseInt(minuteStr, 10);
@@ -68,16 +66,16 @@ export default function SchedulesDashboard({
 
   // Transform schedule status for pie chart
   const statusData = [
-    { name: 'Enabled', value: stats?.data.summary.enabledSchedules ?? 0, color: '#10b981' },
-    { name: 'Disabled', value: stats?.data.summary.disabledSchedules ?? 0, color: '#ef4444' }
+    { name: 'Enabled', value: stats?.summary.enabledSchedules ?? 0, color: '#10b981' },
+    { name: 'Disabled', value: stats?.summary.disabledSchedules ?? 0, color: '#ef4444' }
   ];
 
   const chartComponents = {
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats?.data.summary.totalSchedules ?? 0, label: 'Total Schedules', color: 'text-blue-600' },
-          { value: stats?.data.summary.enabledSchedules ?? 0, label: 'Active', color: 'text-green-600' }
+          { value: stats?.summary.totalSchedules ?? 0, label: 'Total Schedules', color: 'text-blue-600' },
+          { value: stats?.summary.enabledSchedules ?? 0, label: 'Active', color: 'text-green-600' }
         ]} 
       />
     ),
@@ -114,11 +112,11 @@ export default function SchedulesDashboard({
     health: (
       <StatusCard
         icon={Clock}
-        iconColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'text-green-600' : stats ? 'text-red-600' : 'text-gray-500'}
-        backgroundColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'bg-green-50' : stats ? 'bg-red-50' : 'bg-gray-50'}
-        textColor={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'}
-        shortText={stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
-        longText={stats ? (stats?.data.summary && stats?.data.summary.enabledSchedules > 0 ? `${stats?.data.summary.enabledSchedules} Active Schedule(s)` : 'No Active Schedules') : ""}
+        iconColor={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'text-green-600' : stats ? 'text-red-600' : 'text-gray-500'}
+        backgroundColor={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'bg-green-50' : stats ? 'bg-red-50' : 'bg-gray-50'}
+        textColor={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'}
+        shortText={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
+        longText={stats ? (stats?.summary && stats?.summary.enabledSchedules > 0 ? `${stats?.summary.enabledSchedules} Active Schedule(s)` : 'No Active Schedules') : ""}
       />
     ),
     today: nextEntry && nextDate ? (

@@ -1,7 +1,9 @@
-import redis from './redisClient';
+import 'server-only';
+
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
+import redis from '@/server/util/redisClient';
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 
@@ -13,7 +15,7 @@ import {
   generateDeviceId 
 } from './keyManager';
 import { IdTokens } from './authTokenManager';
-import { extractDeviceFingerprint } from './services/deviceManager';
+import { extractDeviceFingerprint } from './deviceManager';
 
 import { Session } from '@/interfaces/session.interface';
 import { logger } from '@/util/logger';
@@ -161,7 +163,7 @@ export const sessionManager = {
 
     // Get session data
     const session = await this.getSessionData(sessionId, deviceId, uid, true);
-    if (!session) {
+    if (!session || !session.authToken) {
       logger.error('[sessionManager] Session data missing');
       throw new InvalidSessionError('session data missing');
     }
@@ -372,7 +374,7 @@ export const sessionManager = {
     let cursor = '0';
     let totalFound = 0;
     do {
-      const result = await redis.scan(cursor, { MATCH: 'mystyc::*::*::*::metadata', COUNT: 100 });
+      const result = await redis.scan(cursor, { MATCH: 'mystyc::*::*::*::metadata', COUNT: limit });
       cursor = result.cursor;
       for (const metadataKey of result.keys) {
         totalFound++;
@@ -390,11 +392,11 @@ export const sessionManager = {
           email: metadata.email,
           deviceName: metadata.deviceName,
           isAdmin: metadata.isAdmin === 'true',
-          createdAt: metadata.createdAt ? new Date(parseInt(metadata.createdAt)) : null
+          createdAt: metadata.createdAt ? new Date(parseInt(metadata.createdAt)).toString() : null
         });
       }
     } while (cursor !== '0' && sessions.length < limit);
-    return { data: sessions, pagination: { offset, limit, totalItems: totalFound } };
+    return { data: sessions, pagination: { offset, limit, totalItems: totalFound, totalPages: 1 } };
   },
 
   async getSessionsDevices(limit: number = 20, offset: number = 0) {

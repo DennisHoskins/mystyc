@@ -3,7 +3,7 @@ import { TrafficStats } from '@/interfaces/admin/stats/admin-traffic-stats.inter
 
 import { logger } from '@/util/logger';
 
-import redis from '@/app/api/redisClient';
+import redis from '@/server/util/redisClient';
 
 type DateRange = {
   startDate: Date;

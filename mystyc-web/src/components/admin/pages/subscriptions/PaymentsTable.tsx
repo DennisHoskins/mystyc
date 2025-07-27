@@ -1,8 +1,6 @@
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { Pagination } from 'mystyc-common/admin';
-
 import { formatDateForDisplay } from '@/util/dateTime';
-
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface PaymentsTableProps {

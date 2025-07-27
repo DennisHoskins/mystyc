@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { Content } from 'mystyc-common/schemas/';
-import { ContentStats, ContentsSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { ContentsSummary, ContentStats, AdminStatsQuery, AdminListResponse } from 'mystyc-common/admin';
+import { getContentsSummaryStats, getContents, getNotificationsContents, getWebsiteContents, getUserContents, getUserPlusContents } from '@/server/actions/admin/content';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
@@ -25,7 +26,8 @@ export default function ContentsPage() {
   const searchParams = useSearchParams();
   
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<ContentStats> | null>(null);
+  const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
+  const [stats, setStats] = useState<ContentStats | null>(null);
   const [summary, setSummary] = useState<ContentsSummary | null>(null);
   const [data, setData] = useState<AdminListResponse<Content> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,9 +59,10 @@ export default function ContentsPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const summaryStats = await apiClientAdmin.content.getSummaryStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const summaryStats = await getContentsSummaryStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
+      setQuery(statsQuery);
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
     } catch (err) {
@@ -79,24 +82,24 @@ export default function ContentsPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const listQuery = getDefaultListQuery(page);
       let response: AdminListResponse<Content>;
       
       switch (currentView) {
         case 'notifications':
-          response = await apiClientAdmin.content.getNotificationsContents(listQuery);
+          response = await getNotificationsContents({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'website':
-          response = await apiClientAdmin.content.getWebsiteContents(listQuery);
+          response = await getWebsiteContents({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'users':
-          response = await apiClientAdmin.content.getUserContents(listQuery);
+          response = await getUserContents({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'users-plus':
-          response = await apiClientAdmin.content.getUserPlusContents(listQuery);
+          response = await getUserPlusContents({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         case 'all':
-          response = await apiClientAdmin.content.getContents(listQuery);
+          response = await getContents({deviceInfo: getDeviceInfo(), ...listQuery});
           break;
         default:
           return;
@@ -138,6 +141,7 @@ export default function ContentsPage() {
       }
       sideContent={
         <ContentDashboard 
+          query={query}
           stats={stats} 
           charts={['stats']}
         />
@@ -160,6 +164,7 @@ export default function ContentsPage() {
               <div className='flex-1 flex'>
                 <ContentDashboard 
                   key={'performance'}
+                  query={query}
                   stats={stats} 
                   charts={['performance']}
                 />

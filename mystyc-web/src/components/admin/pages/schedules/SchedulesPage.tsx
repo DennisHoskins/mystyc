@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { Schedule } from 'mystyc-common/schemas';
-import { ScheduleStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { ScheduleStats, AdminListResponse } from 'mystyc-common/admin';
+import { getScheduleStats, getSchedules } from '@/server/actions/admin/schedules';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -16,7 +17,7 @@ import SchedulesDashboard from './SchedulesDashboard';
 
 export default function SchedulesPage() {
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleStats> | null>(null);
+  const [stats, setStats] = useState<ScheduleStats | null>(null);
   const [data, setData] = useState<AdminListResponse<Schedule> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -31,8 +32,8 @@ export default function SchedulesPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const stats = await apiClientAdmin.schedule.getStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const stats = await getScheduleStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
      setStats(stats);
     } catch (err) {
@@ -48,8 +49,8 @@ export default function SchedulesPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.schedule.getSchedules(listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getSchedules({deviceInfo: getDeviceInfo(), ...listQuery});
 
       setData(response);
       setCurrentPage(page);

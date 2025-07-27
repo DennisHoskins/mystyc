@@ -2,12 +2,11 @@
 
 import { headers } from 'next/headers';
 import { UAParser } from 'ua-parser-js';
-
 import { DeviceInfo } from '@/interfaces/device-info.interface';
-import { sessionManager, InvalidSessionError } from '@/app/api/sessionManager';
 import { logger } from '@/util/logger';
+import { sessionManager, InvalidSessionError } from '@/server/services/sessionManager';
 
-import redis from '@/server/lib/redis';
+import redis from '@/server/util/redisClient';
 
 type VisitSession = {
   sessionId: string | null;

@@ -1,10 +1,7 @@
 import { CalendarClock } from 'lucide-react';
 
 import { ScheduleExecutionStats } from 'mystyc-common/admin/interfaces/stats';
-
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
-
-
+import { AdminStatsQuery } from 'mystyc-common/admin';
 import StatusCard from '@/components/admin/ui/charts/StatusCard';
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import PieChartWithLegend from '@/components/admin/ui/charts/PieChartWithLegend';
@@ -14,44 +11,46 @@ import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';
 type ChartType = 'stats' | 'events' | 'performance' | 'recent' | 'today';
 
 interface SchedulesExecutionsDashboardProps {
-  stats?: AdminStatsResponseWithQuery<ScheduleExecutionStats> | null;
+  query?: Partial<AdminStatsQuery> | null;
+  stats?: ScheduleExecutionStats | null;
   charts?: ChartType[];
   height?: number;
 }
 
 export default function SchedulesExecutionsDashboard({ 
+  query,
   stats, 
   charts = ['stats', 'events', 'performance', 'recent', 'today'],
   height
 }: SchedulesExecutionsDashboardProps) {
   // Transform event type breakdown for pie chart
-  const eventData = stats?.data.byEventType.map(event => ({
+  const eventData = stats?.byEventType.map(event => ({
     name: event.eventName.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || event.eventName,
     value: event.executions,
-    percentage: Math.round((event.executions / stats?.data.systemOverview.totalExecutions) * 100)
+    percentage: Math.round((event.executions / stats?.systemOverview.totalExecutions) * 100)
   }));
 
   // Transform event type performance for bar chart
-  const performanceData = stats?.data.byEventType.map(event => ({
+  const performanceData = stats?.byEventType.map(event => ({
     name: event.eventName.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || event.eventName,
     successRate: event.successRate,
     executions: event.executions
   }));
 
   // Transform recent executions for timeline (last 10, reversed to show chronological order)
-  const recentData = stats?.data.recentExecutions.slice(-10).reverse().map((execution, index) => ({
+  const recentData = stats?.recentExecutions.slice(-10).reverse().map((execution, index) => ({
     date: new Date(execution.executedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     success: execution.status === 'completed' ? 1 : 0,
     index: index
   }));
 
   // Calculate "today" or last day data
-  const endDate = stats?.query?.endDate ? new Date(stats?.query.endDate) : new Date();
+  const endDate = query?.endDate ? new Date(query.endDate) : new Date();
   const today = new Date();
   const isToday = endDate.toDateString() === today.toDateString();
   
   // Filter executions for the target date
-  const targetDayExecutions = stats?.data.recentExecutions.filter(execution => {
+  const targetDayExecutions = stats?.recentExecutions.filter(execution => {
     const execDate = new Date(execution.executedAt);
     return execDate.toDateString() === endDate.toDateString();
   });
@@ -64,8 +63,8 @@ export default function SchedulesExecutionsDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats?.data ? stats.data.systemOverview.totalExecutions : "", label: 'Total Executions', color: 'text-blue-600' },
-          { value: stats?.data ? `${stats.data.systemOverview.successRate}%` : "", label: 'Success Rate', color: 'text-green-600' }
+          { value: stats ? stats.systemOverview.totalExecutions : "", label: 'Total Executions', color: 'text-blue-600' },
+          { value: stats ? `${stats.systemOverview.successRate}%` : "", label: 'Success Rate', color: 'text-green-600' }
         ]} 
       />
     ),

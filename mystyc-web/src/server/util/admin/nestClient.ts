@@ -1,7 +1,7 @@
 'use server'
 
 import { Session } from '@/interfaces/session.interface';
-import { authTokenManager } from '@/app/api/authTokenManager';
+import { authTokenManager } from '@/server/services/authTokenManager';
 import { logger } from '@/util/logger';
 
 function buildQueryString(params: Record<string, any>): string {
@@ -26,6 +26,11 @@ export async function nestGet<T>(
 ): Promise<T> {
   const queryString = queryParams ? buildQueryString(queryParams) : '';
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}${queryString}`;
+
+  if (!session.authToken) {
+    logger.error(`[nestClient] Request failed: No Auth Token`);
+    throw new Error(`Request failed: No Auth Token`);
+  }
 
   logger.log(`[nestClient] GET ${endpoint}${queryString}`);
 
@@ -53,6 +58,11 @@ export async function nestPost<T>(
 ): Promise<T> {
   const queryString = queryParams ? buildQueryString(queryParams) : '';
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}${queryString}`;
+
+  if (!session.authToken) {
+    logger.error(`[nestClient] Request failed: No Auth Token`);
+    throw new Error(`Request failed: No Auth Token`);
+  }
 
   logger.log(`[nestClient] POST ${endpoint}${queryString}`);
 

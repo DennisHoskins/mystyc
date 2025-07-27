@@ -4,9 +4,8 @@ import { headers } from 'next/headers';
 
 import { User, Content, Device } from 'mystyc-common/schemas/';
 import { DeviceInfo, Session } from '@/interfaces/';
-
-import { sessionManager } from '@/app/api/sessionManager';
-import { authTokenManager } from '@/app/api/authTokenManager';
+import { sessionManager } from '@/server/services/sessionManager';
+import { authTokenManager } from '@/server/services/authTokenManager';
 import { logger } from '@/util/logger';
 
 async function withSession<T>(
@@ -31,6 +30,10 @@ async function withSession<T>(
 export async function getUser(deviceInfo: DeviceInfo): Promise<User | null> {
   return withSession(async (session) => {
     logger.log('[getUser] Fetching user data');
+
+    if (!session.authToken) {
+      throw new Error(`Failed to fetch user: No Auth Token`);
+    }
     
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`, {
       method: 'GET',
@@ -64,6 +67,10 @@ export async function getUser(deviceInfo: DeviceInfo): Promise<User | null> {
 export async function getUserContent(deviceInfo: DeviceInfo): Promise<Content | null> {
   return withSession(async (session) => {
     logger.log('[getUserContent] Fetching user content');
+
+    if (!session.authToken) {
+      throw new Error(`Failed to fetch user: No Auth Token`);
+    }
     
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/content`, {
       method: 'POST',
@@ -86,6 +93,10 @@ export async function getUserContent(deviceInfo: DeviceInfo): Promise<Content | 
 export async function getBillingPortal(deviceInfo: DeviceInfo): Promise<{ portalUrl: string } | null> {
   return withSession(async (session) => {
     logger.log('[getBillingPortal] Getting billing portal URL');
+
+    if (!session.authToken) {
+      throw new Error(`Failed to fetch user: No Auth Token`);
+    }
     
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/billing-portal`, {
       method: 'POST',
@@ -110,6 +121,10 @@ export async function startSubscription(
 ): Promise<{ sessionUrl: string } | null> {
   return withSession(async (session) => {
     logger.log('[startSubscription] Starting subscription for price:', priceId);
+
+    if (!session.authToken) {
+      throw new Error(`Failed to fetch user: No Auth Token`);
+    }
     
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/start-subscription`, {
       method: 'POST',
@@ -132,6 +147,10 @@ export async function startSubscription(
 export async function cancelSubscription(deviceInfo: DeviceInfo): Promise<string | null> {
   return withSession(async (session) => {
     logger.log('[cancelSubscription] Cancelling subscription');
+
+    if (!session.authToken) {
+      throw new Error(`Failed to fetch user: No Auth Token`);
+    }
     
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/cancel-subscription`, {
       method: 'POST',
@@ -157,6 +176,10 @@ export async function updateFcmToken(
 ): Promise<Device | null> {
   return withSession(async (session) => {
     logger.log('[updateFcmToken] Updating FCM token for device:', deviceId.substring(0, 8));
+
+    if (!session.authToken) {
+      throw new Error(`Failed to fetch user: No Auth Token`);
+    }
     
     const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/devices/notify-token`, {
       method: 'POST',

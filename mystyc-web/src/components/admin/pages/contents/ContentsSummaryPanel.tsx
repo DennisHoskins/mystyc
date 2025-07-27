@@ -2,15 +2,13 @@
 
 import { ContentsSummary } from 'mystyc-common/admin/interfaces/summary';
 import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
-
 import { ContentView } from './ContentsPage'; 
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 interface ContentsSummaryPanelProps {
   summary: ContentsSummary | null,
-  stats: AdminStatsResponseWithQuery<ContentStats> | null,
+  stats: ContentStats | null,
   handleClick: (view: ContentView) => void;
   currentView?: ContentView;
 }
@@ -21,9 +19,9 @@ export default function ContentsSummaryPanel({ summary, stats, handleClick, curr
       <AdminDetailField
         label="Success Rate"
         value={(() => {
-          if (!stats?.data?.summary?.successRate) return null;
+          if (!stats?.summary?.successRate) return null;
           
-          return `${stats.data.summary.successRate}%`;
+          return `${stats.summary.successRate}%`;
         })()}
         href='/admin/content/'
         onClick={() => handleClick("summary")}

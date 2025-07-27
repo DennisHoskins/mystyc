@@ -1,5 +1,4 @@
 import { Content } from 'mystyc-common';
-
 import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';

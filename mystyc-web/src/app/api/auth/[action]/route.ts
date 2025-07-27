@@ -2,16 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers, cookies } from 'next/headers';
 
 import { AuthLogoutRequest, AuthResetPasswordRequest } from '@/interfaces/auth-requests.interface';
-
 import { logger } from '@/util/logger';
-import { extractDeviceFingerprint, buildDevice } from '../../services/deviceManager';
-import { generateDeviceId, getSessionCookieName } from '../../keyManager';
-import { sessionManager } from '../../sessionManager';
-import { authTokenManager } from '../../authTokenManager';
-import { firebaseAuth } from '../../firebaseAuth';
-
-// Auth handler from services
-import { handleAuth } from '../../services/authHandler';
+import { extractDeviceFingerprint, buildDevice } from '@/server/services/deviceManager';
+import { generateDeviceId, getSessionCookieName } from '@/server/services/keyManager';
+import { sessionManager } from '@/server/services/sessionManager';
+import { authTokenManager } from '@/server/services/authTokenManager';
+import { firebaseAuth } from '@/server/services/firebaseAuth';
+import { handleAuth } from './authHandler';
 
 // Logout handler
 async function handleLogout(request: NextRequest) {
@@ -37,6 +34,11 @@ async function handleLogout(request: NextRequest) {
 
   // sign out of firebase
   await firebaseAuth.signOut();
+
+  if (!session.authToken) {
+    logger.error('[handleLogout] No Auth Token');
+    return new Response('Unauthorized', { status: 401 });
+  }
 
   logger.log(`[handleLogout] Calling Nest API for Logout`);
   const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/logout`, {

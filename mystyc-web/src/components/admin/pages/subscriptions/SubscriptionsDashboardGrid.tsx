@@ -1,15 +1,11 @@
-'use client';
-
 import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses/admin-stats-response.interface';
-
 import Card from "@/components/ui/Card";
 import SubscriptionsDashboard from "./SubscriptionsDashboard";
 
 export default function SubscriptionsDashboardGrid({
   stats
 } : {
-  stats: AdminStatsResponseWithQuery<SubscriptionStats> | null
+  stats: SubscriptionStats | null
 }) {
   return (
     <div className='flex-1 grid grid-cols-3 gap-4 h-[15em] mb-4'>

@@ -1,11 +1,12 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useCallback } from 'react';
 
 import { ScheduleExecution } from 'mystyc-common/schemas';
-import { ScheduleExecutionStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { ScheduleExecutionStats, AdminListResponse, AdminStatsQuery } from 'mystyc-common/admin';
+import { getScheduleExecutionStats, getExecutions } from '@/server/actions/admin/schedules';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -15,7 +16,8 @@ import SchedulesExecutionsDashboard from './SchedulesExecutionsDashboard';
 
 export default function SchedulesExecutionsPage() {
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<ScheduleExecutionStats> | null>(null);
+  const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
+  const [stats, setStats] = useState<ScheduleExecutionStats | null>(null);
   const [data, setData] = useState<AdminListResponse<ScheduleExecution> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -31,9 +33,10 @@ export default function SchedulesExecutionsPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const stats = await apiClientAdmin.schedule.getExecutionStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const stats = await getScheduleExecutionStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
+      setQuery(statsQuery);
       setStats(stats);
     } catch (err) {
       logger.error('Failed to load schedule execution stats:', err);
@@ -48,8 +51,8 @@ export default function SchedulesExecutionsPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.schedule.getExecutions(listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getExecutions({deviceInfo: getDeviceInfo(), ...listQuery});
 
       setData(response);
       setCurrentPage(page);
@@ -78,6 +81,7 @@ export default function SchedulesExecutionsPage() {
       description="Monitor scheduled task executions, view performance metrics and track automation success rates"
        sideContent={
          <SchedulesExecutionsDashboard
+          query={query}
            stats={stats} 
            charts={['stats']}
          />
@@ -85,16 +89,19 @@ export default function SchedulesExecutionsPage() {
       itemContent={[
         <SchedulesExecutionsDashboard
           key={'performance'}
+          query={query}
           stats={stats} 
           charts={['performance']}
         />,
         <SchedulesExecutionsDashboard
           key={'recent'}
+          query={query}
           stats={stats} 
           charts={['recent']}
         />,
         <SchedulesExecutionsDashboard
           key={'events'}
+          query={query}
           stats={stats} 
           charts={['events']}
         />,

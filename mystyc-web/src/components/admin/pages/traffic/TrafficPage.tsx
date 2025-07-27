@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { TrafficStats } from '@/interfaces/admin/stats';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
+import { getTrafficStats } from '@/server/actions/admin/stats';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
@@ -24,9 +25,9 @@ export default function TrafficPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const stats = await apiClientAdmin.stats.getTrafficStats(statsQuery);
-      setTrafficStats(stats.data);
+      const statsQuery = getDefaultStatsQuery();
+      const stats = await getTrafficStats({deviceInfo: getDeviceInfo(), ...statsQuery});
+      setTrafficStats(stats);
     } catch (err) {
       logger.error('Failed to load traffic stats:', err);
       setError('Failed to load traffic stats. Please try again.');

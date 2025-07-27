@@ -2,15 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { User } from 'mystyc-common/schemas/';
 import { UserRole } from 'mystyc-common/constants';
-
 import { logger } from '@/util/logger';
 import { AuthLoginRequest, AuthRegisterRequest } from '@/interfaces/auth-requests.interface';
-
-import { generateSessionId } from '../keyManager';
-import { authTokenManager } from '../authTokenManager';
-import { sessionManager } from '../sessionManager';
-import { firebaseAuth } from '../firebaseAuth';
-import { buildDevice } from './deviceManager';
+import { generateSessionId } from '@/server/services/keyManager';
+import { authTokenManager } from '@/server/services/authTokenManager';
+import { sessionManager } from '@/server/services/sessionManager';
+import { firebaseAuth } from '@/server/services/firebaseAuth';
+import { buildDevice } from '@/server/services/deviceManager';
 
 export async function handleAuth(request: NextRequest, isRegister: boolean): Promise<NextResponse> {
   const operation = isRegister ? 'Registration' : 'Login';

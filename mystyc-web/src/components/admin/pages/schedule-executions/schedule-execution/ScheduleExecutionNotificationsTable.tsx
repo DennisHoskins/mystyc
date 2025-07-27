@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
 import { useEffect, useCallback, useState } from 'react';
 
 import { Notification } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getExecutionNotifications } from '@/server/actions/admin/schedules';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
-
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 export default function ScheduleExecutionsNotificationsTable({ executionId, isActive }: { executionId: string | null | undefined, isActive?: boolean }) {
@@ -19,7 +19,6 @@ export default function ScheduleExecutionsNotificationsTable({ executionId, isAc
   const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const LIMIT = 20;
 
   const loadScheduleExecutionNotifications = useCallback(async (page: number) => {
     if (!executionId) {
@@ -28,15 +27,8 @@ export default function ScheduleExecutionsNotificationsTable({ executionId, isAc
     try {
       setLoading(true);
 
-      const response = await apiClientAdmin.schedule.getExecutionNotifications(
-        executionId, 
-        {
-          limit: LIMIT,
-          offset: page * LIMIT,
-          sortBy: 'clientTimestamp',
-          sortOrder: 'desc',
-        }        
-      );
+      const listQuery = getDefaultListQuery(page);
+      const response = await getExecutionNotifications({deviceInfo: getDeviceInfo(), scheduleExecutionId: executionId, ...listQuery}); 
       setNotifications(response);
 
       setHasMore(response.pagination.hasMore == true);

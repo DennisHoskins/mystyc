@@ -1,8 +1,6 @@
 import { Session } from '@/interfaces';
 import { Pagination } from 'mystyc-common/admin';
-
 import { formatTimestampForComponent } from '@/util/dateTime';
-
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SessionsTableProps {
@@ -28,7 +26,7 @@ export default function SessionsTable({
     { key: 'sessionId', header: 'Session', link: (s) => `/admin/sessions/${s.sessionId}`},
     { key: 'email', header: 'User', link: (s) => `/admin/users/${s.uid}`},
     { key: 'deviceName', header: 'Device', link: (s) => `/admin/devices/${s.deviceId}`},
-    { key: 'age', header: 'Age', align: 'right', link: (s) => `/admin/sessions/${s.sessionId}`, render: (s) => formatTimestampForComponent(s.createdAt)},
+    { key: 'age', header: 'Age', align: 'right', link: (s) => `/admin/sessions/${s.sessionId}`, render: (s) => s.createdAt && formatTimestampForComponent(s.createdAt)},
   ];
 
   return (

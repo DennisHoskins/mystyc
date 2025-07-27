@@ -1,9 +1,11 @@
+import 'server-only';
+
 import { NextRequest } from 'next/server';
 import { createHash } from 'crypto';
 
 import { Device } from 'mystyc-common/schemas/';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
-import { generateDeviceId } from '../keyManager';
+import { generateDeviceId } from './keyManager';
 
 /**
  * Extract device fingerprint from request headers and TLS data

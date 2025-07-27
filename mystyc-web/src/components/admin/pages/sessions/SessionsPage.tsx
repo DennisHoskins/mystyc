@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
-
+import { AdminListResponse } from 'mystyc-common/admin';
 import { Session } from '@/interfaces';
 import { SessionStats } from '@/interfaces/admin/stats';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getSessionStats, getSessions } from '@/server/actions/admin/sessions';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -17,7 +17,7 @@ import SessionsDashboard from './SessionsDashboard';
 
 export default function SessionsPage() {
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<SessionStats> | null>(null);
+  const [stats, setStats] = useState<SessionStats | null>(null);
   const [data, setData] = useState<AdminListResponse<Session> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -32,8 +32,8 @@ export default function SessionsPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const stats = await apiClientAdmin.sessions.getStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const stats = await getSessionStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
       setStats(stats);
     } catch (err) {
@@ -49,8 +49,8 @@ export default function SessionsPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.sessions.getSessions(listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getSessions({deviceInfo: getDeviceInfo(), ...listQuery});
 
       setData(response);
       setCurrentPage(page);

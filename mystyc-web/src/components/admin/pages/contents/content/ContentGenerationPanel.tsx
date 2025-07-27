@@ -1,5 +1,4 @@
 import { Content } from 'mystyc-common/schemas';
-
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import OpenAIIcon from '@/components/admin/ui/icons/OpenAIIcon';

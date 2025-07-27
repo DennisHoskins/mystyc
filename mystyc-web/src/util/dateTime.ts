@@ -41,7 +41,7 @@ export function formatDateForInput(dateValue: string | Date | null | undefined):
   return parsedDate.toISOString().slice(0, 10);
 }
 
-export function formatTimestampForComponent(timestamp: number): string {
+export function formatTimestampForComponent(timestamp: number | string): string {
   if (!timestamp) return "";
   const date = new Date(timestamp);
   return formatDateForComponent(date);

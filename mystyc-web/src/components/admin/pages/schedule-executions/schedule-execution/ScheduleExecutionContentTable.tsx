@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
 import { useEffect, useCallback, useState } from 'react';
 
 import { Content } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getExecutionContent } from '@/server/actions/admin/schedules';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
-
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 export default function ScheduleExecutionsContentTable({ executionId, isActive }: { executionId: string | null | undefined, isActive?: boolean }) {
@@ -19,7 +19,6 @@ export default function ScheduleExecutionsContentTable({ executionId, isActive }
   const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const LIMIT = 20;
 
   const loadScheduleExecutionContent = useCallback(async (page: number) => {
     if (!executionId) {
@@ -28,21 +27,14 @@ export default function ScheduleExecutionsContentTable({ executionId, isActive }
     try {
       setLoading(true);
 
-      const response = await apiClientAdmin.schedule.getExecutionContent(
-        executionId, 
-        {
-          limit: LIMIT,
-          offset: page * LIMIT,
-          sortBy: 'clientTimestamp',
-          sortOrder: 'desc',
-        }        
-      );
+      const listQuery = getDefaultListQuery(page);
+      const response = await getExecutionContent({deviceInfo: getDeviceInfo(), scheduleExecutionId: executionId, ...listQuery}); 
       setContent(response);
 
-      setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
       setTotalItems(response.pagination.totalItems);
       setTotalPages(response.pagination.totalPages);
+      setHasMore(response.pagination.hasMore == true);
       setHasLoaded(true);
     } catch (err) {
       logger.error('Failed to load schedule execution content:', err);

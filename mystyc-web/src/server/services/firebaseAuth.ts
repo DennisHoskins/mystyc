@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { 
   getAuth,
   signInWithEmailAndPassword,
@@ -6,8 +8,8 @@ import {
   signOut,
   User as FirebaseAuthUser,
 } from 'firebase/auth';
-
 import { initializeApp } from 'firebase/app';
+
 import { logger } from '@/util/logger';
 
 const firebaseConfig = {

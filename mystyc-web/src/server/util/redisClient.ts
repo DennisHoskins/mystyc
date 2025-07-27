@@ -1,4 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
+
 import { logger } from '@/util/logger';
 
 const url = process.env.REDIS_URL;

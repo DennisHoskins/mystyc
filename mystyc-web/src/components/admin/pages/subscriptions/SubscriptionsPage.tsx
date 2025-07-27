@@ -1,16 +1,14 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
 
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-import { SubscriptionStats, SubscriptionsSummary, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
-
+import { SubscriptionStats, SubscriptionsSummary, AdminListResponse } from 'mystyc-common/admin';
 import { getPlusUsers } from '@/server/actions/admin/users';
-
+import { getSubscriptionsSummaryStats, getPayments } from '@/server/actions/admin/payments';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
@@ -31,7 +29,7 @@ export default function SubscriptionsPage() {
   const searchParams = useSearchParams();
   
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<SubscriptionStats> | null>(null);
+  const [stats, setStats] = useState<SubscriptionStats | null>(null);
   const [summary, setSummary] = useState<SubscriptionsSummary | null>(null);
   const [payments, setPayments] = useState<AdminListResponse<PaymentHistory> | null>(null);
   const [subscribers, setSubscribers] = useState<AdminListResponse<UserProfile> | null>(null);
@@ -62,8 +60,8 @@ export default function SubscriptionsPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const summaryStats = await apiClientAdmin.payments.getSummaryStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const summaryStats = await getSubscriptionsSummaryStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
       setStats(summaryStats.stats);
       setSummary(summaryStats.summary);
@@ -80,8 +78,8 @@ export default function SubscriptionsPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.payments.getPayments(listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getPayments({deviceInfo: getDeviceInfo(), ...listQuery});
       
       setPayments(response);
       setCurrentPagePayments(page);
@@ -98,7 +96,7 @@ export default function SubscriptionsPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
+      const listQuery = getDefaultListQuery(page);
       const response = await getPlusUsers({deviceInfo: getDeviceInfo(), ...listQuery});
       
       setSubscribers(response);

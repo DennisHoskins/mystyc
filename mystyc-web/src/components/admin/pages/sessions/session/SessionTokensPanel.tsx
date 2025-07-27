@@ -1,8 +1,6 @@
 import { Device } from 'mystyc-common/schemas/';
 import { Session } from '@/interfaces';
-
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
-
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
@@ -26,12 +24,12 @@ export default function DeviceTokensPanel({ session, device }: { session?: Sessi
           <AdminDetailField
             label="Auth Token"
             value={session?.authToken}
-            text={session && formatTimestampForComponent(session.authTokenTimestamp)}
+            text={(session && session.authTokenTimestamp) ? formatTimestampForComponent(session.authTokenTimestamp) : ""}
           />
           <AdminDetailField
             label="Refresh Token"
             value={session?.refreshToken}
-            text={session && formatTimestampForComponent(session.refreshTokenTimestamp)}
+            text={(session && session.refreshTokenTimestamp) ? formatTimestampForComponent(session.refreshTokenTimestamp) : ""}
           />
             <AdminDetailField
               label="FcmToken"

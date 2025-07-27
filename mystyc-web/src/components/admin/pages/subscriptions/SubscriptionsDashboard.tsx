@@ -1,6 +1,4 @@
 import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
-
 import KeyStatsGrid from '@/components/admin/ui/charts/KeyStatsGrid';
 import SimpleLineChart from '@/components/admin/ui/charts/SimpleLineChart';
 import SimpleBarChart from '@/components/admin/ui/charts/SimpleBarChart';
@@ -10,7 +8,7 @@ type ChartType = 'stats' | 'revenue' | 'mrr' | 'growth' | 'tiers' | 'conversion'
 
 interface SubscriptionsDashboardProps {
   className?: string | null;
-  stats?: AdminStatsResponseWithQuery<SubscriptionStats> | null;
+  stats?: SubscriptionStats | null;
   charts?: ChartType[];
   height?: number;
   duration?: string;
@@ -24,7 +22,7 @@ export default function SubscriptionsDashboard({
   duration
 }: SubscriptionsDashboardProps) {
   // Transform monthly revenue for line chart
-  const revenueData = stats?.data.revenue.monthlyRevenue.slice(-12).map(month => ({
+  const revenueData = stats?.revenue.monthlyRevenue.slice(-12).map(month => ({
     month: month.month.split('-')[1] + '/' + month.month.split('-')[0].slice(-2), // MM/YY format
     revenue: month.revenue,
     plusRevenue: month.plusRevenue,
@@ -32,13 +30,13 @@ export default function SubscriptionsDashboard({
   }));
 
   // Transform MRR trend (using monthly revenue as proxy)
-  const mrrData = stats?.data.revenue.monthlyRevenue.slice(-12).map(month => ({
+  const mrrData = stats?.revenue.monthlyRevenue.slice(-12).map(month => ({
     month: month.month.split('-')[1] + '/' + month.month.split('-')[0].slice(-2), // MM/YY format
     mrr: month.revenue // Assuming monthly revenue represents MRR
   }));
 
   // Transform growth data for line chart
-  const growthData = stats?.data.revenue.monthlyRevenue.slice(-12).map((month, index, array) => {
+  const growthData = stats?.revenue.monthlyRevenue.slice(-12).map((month, index, array) => {
     const prevMonth = array[index - 1];
     const growthRate = prevMonth ? 
       Math.round(((month.revenue - prevMonth.revenue) / prevMonth.revenue) * 100) : 0;
@@ -51,7 +49,7 @@ export default function SubscriptionsDashboard({
   });
 
   // Transform tier data for pie chart
-  const tierData = stats?.data.revenue.revenueByTier.map(tier => ({
+  const tierData = stats?.revenue.revenueByTier.map(tier => ({
     name: tier.tier.charAt(0).toUpperCase() + tier.tier.slice(1),
     value: tier.totalRevenue,
     percentage: tier.percentage,
@@ -60,27 +58,27 @@ export default function SubscriptionsDashboard({
 
   // Transform conversion data for bar chart
   const conversionData = [
-    { metric: 'User to Plus', rate: stats?.data.lifecycle.conversionRates.userToPlus ?? 0 },
-    { metric: 'User to Pro', rate: stats?.data.lifecycle.conversionRates.userToPro ?? 0 },
-    { metric: 'Plus to Pro', rate: stats?.data.lifecycle.conversionRates.plusToPro ?? 0 },
-    { metric: 'Total Conv.', rate: stats?.data.lifecycle.conversionRates.totalConversionRate ?? 0 }
+    { metric: 'User to Plus', rate: stats?.lifecycle.conversionRates.userToPlus ?? 0 },
+    { metric: 'User to Pro', rate: stats?.lifecycle.conversionRates.userToPro ?? 0 },
+    { metric: 'Plus to Pro', rate: stats?.lifecycle.conversionRates.plusToPro ?? 0 },
+    { metric: 'Total Conv.', rate: stats?.lifecycle.conversionRates.totalConversionRate ?? 0 }
   ];
 
   // Transform payment health data for pie chart
   const paymentData = [
-    { name: 'Successful', value: stats?.data.paymentHealth.paymentMetrics.successfulPayments ?? 0, color: '#10b981' },
-    { name: 'Failed', value: stats?.data.paymentHealth.paymentMetrics.failedPayments ?? 0, color: '#ef4444' }
+    { name: 'Successful', value: stats?.paymentHealth.paymentMetrics.successfulPayments ?? 0, color: '#10b981' },
+    { name: 'Failed', value: stats?.paymentHealth.paymentMetrics.failedPayments ?? 0, color: '#ef4444' }
   ];
 
   // Transform churn data for bar chart
-  const churnData = stats?.data.lifecycle.churnAnalysis.churnByTier.map(tier => ({
+  const churnData = stats?.lifecycle.churnAnalysis.churnByTier.map(tier => ({
     tier: tier.tier.charAt(0).toUpperCase() + tier.tier.slice(1),
     churnRate: tier.churnRate,
     cancellations: tier.cancellations
   }));
 
   // Transform new subscriptions for line chart
-  const newSubsData = stats?.data.lifecycle.newSubscriptions.slice(-30).map(day => ({
+  const newSubsData = stats?.lifecycle.newSubscriptions.slice(-30).map(day => ({
     date: day.date.split('-').slice(1).join('/'), // MM/DD format
     total: day.total,
     plus: day.plus,
@@ -91,8 +89,8 @@ export default function SubscriptionsDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: `${stats?.data ? "%" + stats.data.summary.currentMRR.toLocaleString() : ""}`, label: 'Current MRR', color: 'text-green-600' },
-          { value: stats?.data ? stats.data.summary.totalSubscriptions : "", label: 'Active Subs', color: 'text-blue-600' }
+          { value: `${stats ? "%" + stats.summary.currentMRR.toLocaleString() : ""}`, label: 'Current MRR', color: 'text-green-600' },
+          { value: stats ? stats.summary.totalSubscriptions : "", label: 'Active Subs', color: 'text-blue-600' }
         ]} 
       />
     ),
@@ -161,7 +159,7 @@ export default function SubscriptionsDashboard({
     ),
     payments: (
       <PieChartWithLegend 
-        title={`Payment Success (${stats?.data.paymentHealth.paymentMetrics.successRate}%)`}
+        title={`Payment Success (${stats?.paymentHealth.paymentMetrics.successRate}%)`}
         data={paymentData}
         height={height}
         showPercentage={false}

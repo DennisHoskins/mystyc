@@ -1,7 +1,5 @@
 import { TrafficStats } from '@/interfaces/admin/stats';
-
 import Card from '@/components/ui/Card';
-import Heading from '@/components/ui/Heading';
 import TrafficDashboard from './TrafficDashboard';
 
 export default function TrafficAnalyticsCard({ trafficStats }: { trafficStats?: TrafficStats | null }) {

@@ -52,7 +52,7 @@ export default function LoginForm() {
     setIsWorking(true);
 
     try {
-      const u = await apiClient.auth.signIn(email, password);
+      const u = await apiClient.signIn(email, password);
       if (!u) throw new Error('no user returned');
 
       setUser(u);

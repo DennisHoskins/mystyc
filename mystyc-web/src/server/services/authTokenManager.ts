@@ -1,4 +1,5 @@
 import 'server-only';
+
 import { firebaseAuth } from './firebaseAuth';
 import { logger } from '@/util/logger';
 

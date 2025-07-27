@@ -55,7 +55,7 @@ export default function RegisterForm() {
     logger.log("REGISTER");
 
     try {
-      const user = await apiClient.auth.register(email, password);
+      const user = await apiClient.register(email, password);
       if (!user) {
         throw new Error('Register failed: no user returned');
       }

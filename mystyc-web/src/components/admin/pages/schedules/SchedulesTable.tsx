@@ -1,6 +1,5 @@
 import { Schedule } from 'mystyc-common/schemas';
 import { Pagination } from 'mystyc-common/admin';
-
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SchedulesTableProps {

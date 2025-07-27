@@ -3,13 +3,10 @@
 import { useEffect, useState } from 'react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-
 import { getUser } from '@/server/actions/admin/users';
-
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
-
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';

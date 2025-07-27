@@ -1,12 +1,11 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Schedule } from 'mystyc-common/schemas';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getSchedule } from '@/server/actions/admin/schedules';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
@@ -23,7 +22,7 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
       setError(null);
       setBusy(1000);
 
-      const data = await apiClientAdmin.schedule.getSchedule(scheduleId);
+      const data = await getSchedule({deviceInfo: getDeviceInfo(), scheduleId});
       setSchedule(data);
     } catch (err) {
       logger.error('Failed to load schedule:', err);

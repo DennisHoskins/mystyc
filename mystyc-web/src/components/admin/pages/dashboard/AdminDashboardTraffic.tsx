@@ -1,12 +1,12 @@
-import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
-import { AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces/responses';
-
+import { TrafficStats } from '@/interfaces/admin/stats';
 import Link from '@/components/ui/Link';
 import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon'
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import TrafficDashboard from '../traffic/TrafficDashboard';
 
-export default function AdminDashboardTraffic({ stats } : { stats?: AdminStatsResponseWithQuery<AdminStatsResponseExtended> | null }) {
+export default function AdminDashboardTraffic({ stats } : { 
+  stats?: TrafficStats | null 
+}) {
   return (
     <AdminDashboardItemLayout
       icon={<TrafficIcon />}
@@ -20,7 +20,7 @@ export default function AdminDashboardTraffic({ stats } : { stats?: AdminStatsRe
         <div className="col-span-1 sm:col-span-2 xl:col-span-3 h-full flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <div className='w-full sm:w-32 h-full flex'>
             <TrafficDashboard 
-              data={stats?.data.traffic} 
+              data={stats} 
               charts={['stats']} 
               height="100%"
             />
@@ -29,7 +29,7 @@ export default function AdminDashboardTraffic({ stats } : { stats?: AdminStatsRe
           <div className="flex-1 md:h-full flex">
             <TrafficDashboard 
               className={'min-h-40'}
-              data={stats?.data.traffic} 
+              data={stats} 
               charts={['visitors']} 
               height="100%"
             />
@@ -39,7 +39,7 @@ export default function AdminDashboardTraffic({ stats } : { stats?: AdminStatsRe
         <div className="h-full flex">
           <TrafficDashboard 
             className={'min-h-40'}
-            data={stats?.data.traffic} 
+            data={stats} 
             charts={['browsers']} 
             height="100%"
           />
@@ -48,7 +48,7 @@ export default function AdminDashboardTraffic({ stats } : { stats?: AdminStatsRe
         <div className="h-full flex">
           <TrafficDashboard 
             className={'min-h-40'}
-            data={stats?.data.traffic} 
+            data={stats} 
             charts={['types']} 
             height="100%"
           />

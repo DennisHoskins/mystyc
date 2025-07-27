@@ -3,10 +3,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getPayment } from '@/server/actions/admin/payments';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
@@ -24,7 +23,7 @@ export default function SubscriptionPage({ subscriptionId }: { subscriptionId: s
       setError(null);
       setBusy(1000);
 
-      const data = await apiClientAdmin.payments.getPayment(subscriptionId);
+      const data = await getPayment({deviceInfo: getDeviceInfo(), paymentId: subscriptionId});
       setPayment(data);
 
     } catch (err) {

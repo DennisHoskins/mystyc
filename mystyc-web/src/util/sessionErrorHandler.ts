@@ -15,7 +15,7 @@ export async function handleSessionError(error: any, context = 'Unknown') {
       message.includes('HTTP 500')) {
     
     try {
-      await apiClient.auth.serverLogout();
+      await apiClient.serverLogout();
       useAppStore.getState().setLoggedOutByServer(true);
       useAppStore.getState().clearBusy();
       useUserStore.getState().clearUser();

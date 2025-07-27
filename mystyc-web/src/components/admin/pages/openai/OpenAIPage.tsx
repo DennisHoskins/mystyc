@@ -1,11 +1,12 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useCallback } from 'react';
 
 import { OpenAIUsage } from 'mystyc-common/schemas';
-import { OpenAIUsageStats, AdminListResponse, AdminStatsResponseWithQuery } from 'mystyc-common/admin/interfaces';
-
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { OpenAIUsageStats, AdminListResponse } from 'mystyc-common/admin/interfaces';
+import { getOpenAIStats, getOpenAIUsages } from '@/server/actions/admin/openai';
+import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
@@ -15,7 +16,7 @@ import OpenAIDashboard from './OpenAIUsageDashboard';
 
 export default function OpenAIPage() {
   const { setBusy, isBusy } = useBusy();
-  const [stats, setStats] = useState<AdminStatsResponseWithQuery<OpenAIUsageStats> | null>(null);
+  const [stats, setStats] = useState<OpenAIUsageStats | null>(null);
   const [data, setData] = useState<AdminListResponse<OpenAIUsage> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -30,8 +31,8 @@ export default function OpenAIPage() {
       setError(null);
       setBusy(1000);
 
-      const statsQuery = apiClientAdmin.getDefaultStatsQuery();
-      const stats = await apiClientAdmin.openai.getStats(statsQuery);
+      const statsQuery = getDefaultStatsQuery();
+      const stats = await getOpenAIStats({deviceInfo: getDeviceInfo(), ...statsQuery});
 
       setStats(stats);
     } catch (err) {
@@ -47,8 +48,8 @@ export default function OpenAIPage() {
       setError(null);
       setBusy(1000);
 
-      const listQuery = apiClientAdmin.getDefaultListQuery(page);
-      const response = await apiClientAdmin.openai.getOpenAIUsages(listQuery);
+      const listQuery = getDefaultListQuery(page);
+      const response = await getOpenAIUsages({deviceInfo: getDeviceInfo(), ...listQuery});
 
       setData(response);
       setCurrentPage(page);

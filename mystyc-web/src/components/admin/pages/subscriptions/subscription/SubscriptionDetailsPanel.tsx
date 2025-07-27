@@ -1,7 +1,5 @@
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
-
 import { formatDateForDisplay } from '@/util/dateTime';
-
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 

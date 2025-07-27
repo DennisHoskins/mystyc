@@ -26,9 +26,9 @@ export default function UsersPage() {
   const searchParams = useSearchParams();
   
   const { setBusy, isBusy } = useBusy();
+  const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [summary, setSummary] = useState<UsersSummary | null>(null);
-  const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [data, setData] = useState<AdminListResponse<UserProfile> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);

@@ -4,7 +4,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 interface PieDataItem {
   name: string;
-  value: number;
+  value: number | undefined;
   percentage?: number;
   color?: string;
 }

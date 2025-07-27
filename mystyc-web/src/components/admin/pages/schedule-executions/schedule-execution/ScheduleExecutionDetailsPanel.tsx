@@ -1,7 +1,5 @@
 import { ScheduleExecution } from 'mystyc-common/schemas';
-
 import { formatTimestampForComponent } from '@/util/dateTime';
-
 import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 

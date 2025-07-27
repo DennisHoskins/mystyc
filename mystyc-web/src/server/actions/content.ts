@@ -2,10 +2,8 @@
 
 import { Content } from 'mystyc-common/schemas/';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
-
 import { logger } from '@/util/logger';
-
-import redis from '@/server/lib/redis';
+import redis from '@/server/util/redisClient';
 
 export async function getContent(deviceInfo: DeviceInfo): Promise<Content> {
   logger.log('[getContent] Get attempt started');

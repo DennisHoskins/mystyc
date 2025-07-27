@@ -10,11 +10,10 @@ import {
 import { DeviceStats, DevicesSummary, DeviceSummary } from 'mystyc-common/admin/interfaces';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { DeviceSession } from '@/interfaces/device-session.interface';
-
 import { logger } from '@/util/logger';
 import { withAdminAuth } from '@/server/util/admin/withAdminAuth';
 import { nestGet } from '@/server/util/admin/nestClient';
-import { sessionManager } from '@/app/api/sessionManager'; // TODO: move to /server/services
+import { sessionManager } from '@/server/services/sessionManager';
 
 // Device Stats
 export async function getDeviceStats(params: {

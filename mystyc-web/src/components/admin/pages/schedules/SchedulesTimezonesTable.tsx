@@ -2,9 +2,9 @@
 
 import { useEffect, useCallback, useState } from 'react';
 
-import { apiClientAdmin } from '@/api/admin/apiClientAdmin';
+import { getTimezones } from '@/server/actions/admin/schedules';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
@@ -30,7 +30,7 @@ export default function SchedulesTimeZonesTable() {
       setError(null);
       setLoading(true);
 
-      const response: TimezoneData[] = await apiClientAdmin.schedule.getTimezones();
+      const response: TimezoneData[] = await getTimezones({deviceInfo: getDeviceInfo()});
       setTimezones(response);
     } catch (err) {
       logger.error('Failed to load timeZones:', err);
