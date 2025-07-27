@@ -43,34 +43,32 @@ export default function AdminListLayout({
 
   if (error) {
     return (
-      <>
-        <div className="flex flex-col mt-4 mr-2 mb-4">
-          <Card className='grow mb-4'>
-            <div className='flex space-x-3 items-center mb-4'>
-              {icon && (
-                <div className='mt-1'>
-                  <Avatar size={'medium'} icon={icon} />
-                </div>
-              )}
-              {breadcrumbs ? (
-                <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
-              ) : (
-                <Heading level={2}>{title}</Heading>
-              )}
-            </div>
-          </Card>
-          <AdminError 
-            title={"Unable to load data"}
-            error={error} 
-            onRetry={onRetry}
-          />
-        </div>
-      </>
+      <div className="flex-1 w-full flex flex-col p-4">
+        <Card className='grow mb-4'>
+          <div className='flex space-x-3 items-center mb-4'>
+            {icon && (
+              <div className='mt-1'>
+                <Avatar size={'medium'} icon={icon} />
+              </div>
+            )}
+            {breadcrumbs ? (
+              <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+            ) : (
+              <Heading level={3}>{title}</Heading>
+            )}
+          </div>
+        </Card>
+        <AdminError 
+          title={"Unable to load data"}
+          error={error} 
+          onRetry={onRetry}
+        />
+      </div>
     );
   }
 
   return (
-    <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
+    <div className='grow w-full min-h-0 flex flex-col p-4'>
       <div className="flex flex-col sm:flex-row mb-4">
         <Card className='grow'>
           <div className='flex space-x-3 items-center mb-4'>
@@ -82,7 +80,7 @@ export default function AdminListLayout({
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
-              <Heading level={2}>{title}</Heading>
+              <Heading level={3}>{title}</Heading>
             )}
             <div className='flex-1 flex justify-end'>
               {button}
@@ -91,7 +89,7 @@ export default function AdminListLayout({
 
           <hr />
 
-          <div className='w-full flex mt-4'>
+          <div className='w-full flex mt-4 mb-2'>
             {headerContent ? (
               <>{headerContent}</>
             ) : (

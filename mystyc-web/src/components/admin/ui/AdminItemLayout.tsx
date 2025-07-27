@@ -65,7 +65,7 @@ export default function AdminItemLayout({
 
   if (!sidebarContent) {
     return (
-      <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
+      <div className='grow w-full min-h-0 flex flex-col p-4'>
         <Card>
           <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
             {icon && (
@@ -76,7 +76,7 @@ export default function AdminItemLayout({
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
-              <Heading level={2}>{title}</Heading>
+              <Heading level={3}>{title}</Heading>
             )}
           </div>
 
@@ -107,10 +107,8 @@ export default function AdminItemLayout({
   const gap = hasX && hasY ? "gap-4" : hasX ? "gap-x-4" : "gap-y-4"
   const rows = sectionsContent ? 'row-span-2' : 'row-span-1';
 
-// todo: what the fuck
-
   return (
-    <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
+    <div className='grow w-full min-h-0 flex flex-col p-4'>
       <div className={`grid grid-cols-1 lg:grid-cols-3 ${gap} lg:space-y-0`}>
 
         <Card className={`order-1 lg:col-span-2`}>
@@ -123,7 +121,7 @@ export default function AdminItemLayout({
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
-              <Heading level={2}>{title}</Heading>
+              <Heading level={3}>{title}</Heading>
             )}
           </div>
 

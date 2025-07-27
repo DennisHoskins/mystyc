@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useBusy, useUser } from '@/components/ui/layout/context/AppContext';
@@ -19,6 +19,9 @@ export function useTransitionRouter() {
     method: 'push' | 'replace',
     transition = true
   ) => {
+
+    transition = false;
+
     if (transitioningRef.current) {
       logger.log('[ROUTER]: Transition already in progress, ignoring');
       return;

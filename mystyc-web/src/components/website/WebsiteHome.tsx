@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import ScrollWrapper from "@/components/ui/layout/scroll/ScrollWrapper";
+import WebsiteLayout from "./WebsiteLayout";
 import Section from "@/components/ui/Section";
 import Hero from "@/components/website/pages/Hero";
 import Features from "@/components/website/pages/Features";
@@ -9,19 +9,17 @@ import Footer from "../ui/layout/Footer";
 
 export default function WebsiteHome() {
   return (
-    <>
-      <ScrollWrapper>
-        <Section background="blue">
-          <Hero />
-        </Section>
-        <Section background="white">
-          <Features />
-        </Section>
-        <Section background="gray">
-          <WebsiteContent />
-        </Section>
-        <Footer />
-      </ScrollWrapper>
-    </>
+    <WebsiteLayout>
+      <Section background="blue">
+        <Hero />
+      </Section>
+      <Section background="white">
+        <Features />
+      </Section>
+      <Section background="gray">
+        <WebsiteContent />
+      </Section>
+      <Footer />
+    </WebsiteLayout>
   );
 }

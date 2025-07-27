@@ -1,27 +1,27 @@
-import MenuButton from '@/components/ui/layout/menu/MenuButton';
-import MystycMenu from '@/components/mystyc/ui/MystycMenu';
+'use client'
 
-interface MystycHeaderProps {
-  menuOpen: boolean;
-  setMenuOpen: (open: boolean) => void;
-}
+import { useState } from 'react';
 
-export default function AppHeader({ menuOpen, setMenuOpen }: MystycHeaderProps) {
+import { AppUser } from '@/interfaces/app/app-user.interface';
+import Header from '@/components/ui/layout/Header';
+import MystycMenuButton from '@/components/mystyc/ui/MystycMenuButton';
+import Menu from '@/components/ui/layout/menu/Menu';
+
+export default function MystycHEader({ user, className } : {
+  user?: AppUser | null | undefined,
+  className?: string | null
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <div className="flex space-x-4 ml-auto relative">
-      <MenuButton 
-        isOpen={menuOpen}
-        onToggle={() => setMenuOpen(!menuOpen)}
-      />
-      
-      {/* Desktop: Floating popup */}
-      <div className={`hidden md:block absolute top-10 right-0 z-[100] w-64 bg-white border border-gray-200 rounded-md shadow-lg transition-opacity duration-200 ease-in-out ${
-        menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-      }`}>
-        <div className="p-4">
-          <MystycMenu />
-        </div>
-      </div>
-    </div>        
+    <>
+      <Header user={user} className={className}>
+        <MystycMenuButton 
+          menuOpen={menuOpen} 
+          setMenuOpen={setMenuOpen} 
+        />
+      </Header>
+      <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+    </>
   );
 }

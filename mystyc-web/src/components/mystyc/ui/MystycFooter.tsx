@@ -3,7 +3,7 @@
 import { useUser } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-export default function AppFooter() {
+export default function MystycFooter() {
   const router = useTransitionRouter();
   const user = useUser();
   if (!user) {
