@@ -1,11 +1,10 @@
-'use client';
+'use client'
 
 import { createContext, useContext, useRef, useCallback } from 'react';
 import { useStore } from 'zustand';
 
 import { useAppStore } from '@/store/appStore';
 import { createUserStore, UserState } from '@/store/userStore';
-
 import Layout from '@/components/ui/layout/Layout';
 import Working from '@/components/ui/working/Working';
 import Toast from '@/components/ui/toast/Toast';

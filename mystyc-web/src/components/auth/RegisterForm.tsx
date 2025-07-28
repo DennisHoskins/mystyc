@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
 
-import { apiClient } from '@/api/apiClient';
+import { useAuth } from '@/hooks/useAuth';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 import { useInitialized, useUser, useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
@@ -14,6 +14,7 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function RegisterForm() {
+  const { register } = useAuth();
   const router = useTransitionRouter();
   const user = useUser();
   const setUser = useSetUser();
@@ -55,7 +56,7 @@ export default function RegisterForm() {
     logger.log("REGISTER");
 
     try {
-      const user = await apiClient.register(email, password);
+      const user = await register(email, password);
       if (!user) {
         throw new Error('Register failed: no user returned');
       }

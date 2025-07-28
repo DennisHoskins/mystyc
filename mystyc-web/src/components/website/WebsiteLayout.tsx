@@ -1,8 +1,7 @@
-'use client'
-
 import Header from "../ui/layout/Header";
 import WebsiteHeader from "./ui/WebsiteHeader";
 import ScrollWrapper from "@/components/ui/layout/scroll/ScrollWrapper";
+import PageTransition from '@/components/ui/layout/transition/PageTransition';
 import Footer from "../ui/layout/Footer";
 
 export default function WebsiteLayout({ children } : { children: React.ReactNode }) {
@@ -10,8 +9,10 @@ export default function WebsiteLayout({ children } : { children: React.ReactNode
     <>
       <Header><WebsiteHeader /></Header>
       <ScrollWrapper>
-        {children}
-        <Footer />
+        <PageTransition>
+          {children}
+          <Footer />
+        </PageTransition>
       </ScrollWrapper>
     </>
   );

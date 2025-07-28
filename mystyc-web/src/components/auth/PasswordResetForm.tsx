@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
 
-import { apiClient } from '@/api/apiClient';
+import { useAuth } from '@/hooks/useAuth';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 import { useUser, useInitialized, useBusy } from '@/components/ui/layout/context/AppContext';
@@ -14,6 +14,7 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function PasswordResetPage() {
+  const { resetPassword } = useAuth();
   const router = useTransitionRouter();
   const user = useUser();
   const initialized = useInitialized();
@@ -47,7 +48,7 @@ export default function PasswordResetPage() {
     setIsWorking(true);
 
     try {
-      await apiClient.resetPassword(email);
+      await resetPassword(email);
       setMessage('Check your email for a password reset link.');
       setBusy(false);
     } catch (err: any) {

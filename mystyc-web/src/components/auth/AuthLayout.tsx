@@ -1,5 +1,3 @@
-'use client'
-
 import Card from "@/components/ui/Card";
 
 export default function AuthLayout({ children } : { children: React.ReactNode }) {

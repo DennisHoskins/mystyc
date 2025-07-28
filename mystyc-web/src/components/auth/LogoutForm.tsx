@@ -1,14 +1,15 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
 
-import { apiClient } from '@/api/apiClient';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useInitialized, useUser, useClearUser, useBusy } from '@/components/ui/layout/context/AppContext';
 import { logger } from '@/util/logger';
 
 export default function LogoutPage() {
+  const { signOut } = useAuth();
   const router = useTransitionRouter();
   const initialized = useInitialized();
   const showToast = useToast();
@@ -47,7 +48,7 @@ export default function LogoutPage() {
 
     logger.log("LOGOUT");
 
-    apiClient.signOut()
+    signOut()
       .then(() => {
         clearUser();
         showToast("You have been Logged Out", "success");

@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
 
-import { apiClient } from '@/api/apiClient';
+import { useAuth } from '@/hooks/useAuth';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { useInitialized, useUser, useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
 import AuthLayout from "./AuthLayout";
@@ -13,6 +13,7 @@ import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function LoginForm() {
+  const { signIn } = useAuth();
   const user = useUser();
   const setUser = useSetUser();
   const initialized = useInitialized();
@@ -52,7 +53,7 @@ export default function LoginForm() {
     setIsWorking(true);
 
     try {
-      const u = await apiClient.signIn(email, password);
+      const u = await signIn(email, password);
       if (!u) throw new Error('no user returned');
 
       setUser(u);
