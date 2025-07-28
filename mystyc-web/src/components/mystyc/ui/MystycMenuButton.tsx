@@ -1,12 +1,36 @@
+'use client';
+
+import { useEffect } from 'react';
+
 import MenuButton from '@/components/ui/layout/menu/MenuButton';
 import MystycMenu from '@/components/mystyc/ui/MystycMenu';
 
-interface MystycHeaderProps {
+interface MystycMenuButtonProps {
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
 }
 
-export default function AppHeader({ menuOpen, setMenuOpen }: MystycHeaderProps) {
+export default function MystycMenuButton({ menuOpen, setMenuOpen }: MystycMenuButtonProps) {
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Check if click is outside both button and menu
+      if (!target.closest('[data-menu-button]') && !target.closest('[data-menu-popup]')) {
+        setMenuOpen(false);
+      }
+    };
+
+    // Small delay to avoid closing immediately after opening
+    setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 0);
+
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [menuOpen, setMenuOpen]);
+
   return (
     <div className="flex space-x-4 ml-auto relative">
       <MenuButton 

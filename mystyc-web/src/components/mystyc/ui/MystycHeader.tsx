@@ -7,7 +7,7 @@ import Header from '@/components/ui/layout/Header';
 import MystycMenuButton from '@/components/mystyc/ui/MystycMenuButton';
 import Menu from '@/components/ui/layout/menu/Menu';
 
-export default function MystycHEader({ user, className } : {
+export default function MystycHeader({ user, className } : {
   user?: AppUser | null | undefined,
   className?: string | null
 }) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import MystycMenu from '@/components/mystyc/ui/MystycMenu';
 
@@ -12,10 +12,14 @@ interface MenuProps {
 
 export default function Menu({ isOpen, onClose }: MenuProps) {
   const pathname = usePathname();
+  const prevPathname = useRef(pathname);
 
   // Close menu when path changes
   useEffect(() => {
-    onClose();
+    if (prevPathname.current !== pathname) {
+      onClose();
+    }
+    prevPathname.current = pathname;
   }, [pathname, onClose]);
 
   // Close menu on escape key

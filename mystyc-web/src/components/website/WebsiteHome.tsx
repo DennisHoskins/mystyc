@@ -19,7 +19,6 @@ export default function WebsiteHome() {
       <Section background="gray">
         <WebsiteContent />
       </Section>
-      <Footer />
     </WebsiteLayout>
   );
 }

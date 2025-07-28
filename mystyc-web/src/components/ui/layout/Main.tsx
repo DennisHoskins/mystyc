@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 
 export default function Main({ children }: { children: React.ReactNode }) {
   return (
@@ -9,5 +10,3 @@ export default function Main({ children }: { children: React.ReactNode }) {
     </main>
   );
 }
-
-

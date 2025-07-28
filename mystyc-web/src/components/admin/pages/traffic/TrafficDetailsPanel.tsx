@@ -17,38 +17,38 @@ export default function TrafficDetailsPanel({ trafficStats }: { trafficStats?: T
     <AdminDetailGroup cols={3}>
       <AdminDetailField
         label="Total Visits"
-        value={trafficStats?.visitors.totalVisits.toLocaleString()}
+        value={trafficStats && trafficStats.visitors.totalVisits.toLocaleString()}
       />
       <AdminDetailField
         label="Authenticated Users"
-        value={`${authPercentage}%`}
+        value={trafficStats && `${authPercentage}%`}
       />
       <AdminDetailField
         label="Top Browser"
-        value={topBrowser && `${topBrowser.percentage}% ` + topBrowser?.browser || 'N/A'}
+        value={topBrowser && (`${topBrowser.percentage}% ` + topBrowser?.browser || 'N/A')}
       />
       <AdminDetailField
         label="Top Device Type"
-        value={topDevice && `${topDevice.percentage}% ` + topDevice?.type.charAt(0).toUpperCase() + topDevice?.type.slice(1) || 'N/A'}
+        value={topDevice && (`${topDevice.percentage}% ` + topDevice?.type.charAt(0).toUpperCase() + topDevice?.type.slice(1) || 'N/A')}
       />
       <AdminDetailField
         label="Peak Hour"
-        value={(trafficStats?.hourlyVisits.length ?? 0) > 0 
+        value={trafficStats && ((trafficStats?.hourlyVisits.length ?? 0) > 0 
           ? `${trafficStats?.hourlyVisits.reduce((prev, current) => 
               prev.count > current.count ? prev : current
             ).hour}:00`
-          : 'N/A'
+          : 'N/A')
         }
       />
       <AdminDetailField
         label="Most Active Day"
-        value={trafficStats && trafficStats?.dayOfWeekVisits.length > 0
+        value={trafficStats && (trafficStats?.dayOfWeekVisits.length > 0
           ? trafficStats?.dayOfWeekVisits.reduce((prev, current) => 
               prev.count > current.count ? prev : current
             ).name.charAt(0).toUpperCase() + trafficStats?.dayOfWeekVisits.reduce((prev, current) => 
               prev.count > current.count ? prev : current
             ).name.slice(1)
-          : 'N/A'
+          : 'N/A')
         }
       />
     </AdminDetailGroup>
