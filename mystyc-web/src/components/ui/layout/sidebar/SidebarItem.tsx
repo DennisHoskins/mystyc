@@ -49,7 +49,7 @@ export default function SidebarItem({
     <a
       href={href}
       onClick={handleClick}
-      className={`${styles.sidebarItem} ${computedIsActive ? styles.active : ''} ${isCollapsed ? styles.collapsed : ''} hover:bg-gray-100`}
+      className={`${styles.sidebarItem} ${computedIsActive ? styles.active : ''} ${isCollapsed ? styles.collapsed : ''} hover:bg-gray-100 flex rounded-md overflow-hidden`}
       title={isCollapsed ? label : undefined}
     >
       <span className={`${styles.icon}`}>{icon}</span>
