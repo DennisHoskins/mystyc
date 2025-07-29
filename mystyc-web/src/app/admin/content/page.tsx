@@ -7,7 +7,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import ContentsPage from '@/components/admin/pages/contents/ContentsPage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 export default function Page() {
-  return <ContentsPage />
+  return (
+    <AdminTransition>
+      <ContentsPage />
+    </AdminTransition>      
+  )
 }

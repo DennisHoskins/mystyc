@@ -1,9 +1,11 @@
-import { apiClient } from '@/api/apiClient';
+// import { useAuth } from '@/hooks/useAuth';
 import { useAppStore } from '@/store/appStore';
 import { useUserStore } from '@/store/userStore';
 import { logger } from '@/util/logger';
 
 export async function handleSessionError(error: any, context = 'Unknown') {
+  // const { serverLogout } = useAuth();
+
   logger.error(`[${context}] Session Error:`, error);
   
   const message = error.message ? error.message : error.error ? error.error : error;
@@ -15,7 +17,7 @@ export async function handleSessionError(error: any, context = 'Unknown') {
       message.includes('HTTP 500')) {
     
     try {
-      await apiClient.serverLogout();
+      // await serverLogout();
       useAppStore.getState().setLoggedOutByServer(true);
       useAppStore.getState().clearBusy();
       useUserStore.getState().clearUser();

@@ -9,15 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
 import { use } from 'react';
 
 import SchedulePage from '@/components/admin/pages/schedules/schedule/SchedulePage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 interface SchedulePageProps {
-  params: Promise<{
-    scheduleId: string;
-  }>;
+  params: Promise<{ scheduleId: string; }>;
 }
 
 export default function Page({ params }: SchedulePageProps) {
   const { scheduleId } = use(params);
 
-  return <SchedulePage scheduleId={scheduleId} />
+  return (
+    <AdminTransition>
+      <SchedulePage scheduleId={scheduleId} />
+    </AdminTransition>      
+  )
 }

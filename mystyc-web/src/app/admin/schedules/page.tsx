@@ -7,7 +7,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import SchedulesPage from '@/components/admin/pages/schedules/SchedulesPage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 export default function Page() {
-  return <SchedulesPage />
+  return (
+    <AdminTransition>
+      <SchedulesPage />
+    </AdminTransition>      
+  )
 }

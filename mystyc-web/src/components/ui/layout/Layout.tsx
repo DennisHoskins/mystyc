@@ -7,7 +7,6 @@ import { registerVisit } from '@/server/actions/analytics';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { useAppStore } from '@/store/appStore';
 import { logger } from '@/util/logger'
-import AppTransition from '@/components/ui/layout/transition/AppTransition';
 import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
 import GlobalError from '@/components/ui/layout/GlobalError';
 import Offline from '@/components/ui/layout/Offline';
@@ -42,14 +41,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <AppTransition>
-        {isGlobalError
-          ? <GlobalError />
-          : !isOnline
-          ? <Offline />
-          : children
-        }
-      </AppTransition>
+      {isGlobalError
+        ? <GlobalError />
+        : !isOnline
+        ? <Offline />
+        : children
+      }
       <ServerLogoutForm />
     </>
   );  

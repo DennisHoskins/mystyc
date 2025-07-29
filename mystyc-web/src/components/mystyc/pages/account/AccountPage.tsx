@@ -48,7 +48,6 @@ export default function AccountPage() {
 
       try {
         setError("");
-        setBusy(1000);
 
         const response = await getBillingPortal(getDeviceInfo());
         if (response && response.portalUrl) {
@@ -56,7 +55,6 @@ export default function AccountPage() {
         } else {
           logger.log("No billing portal URL returned");
           setError('Failed to load billing portal. Please try again.');
-          setBusy(false);
         }
       } catch (err) {
         await handleSessionError(err, 'loadBillingPortal');
@@ -64,7 +62,6 @@ export default function AccountPage() {
         setError('Failed to load billing portal. Please try again.');
       } finally {
         setLoading(false);
-        setBusy(false);
       }
     }
 
@@ -123,8 +120,12 @@ export default function AccountPage() {
     }
   };
 
+  const handleSubscribe = () => {
+    router.push("/subscribe");
+  }
+
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <div className="flex flex-1 justify-center items-center w-full">
       <Card className='w-full md:max-w-lg text-center p-4 m-4 items-center space-y-6 flex flex-col'>
         <Heading level={2}>Account</Heading>
 
@@ -154,6 +155,14 @@ export default function AccountPage() {
             Upgrade to Mystyc Plus
           </Button>
         )}
+
+         <Button 
+            onClick={handleSubscribe}
+            className="w-full max-w-md"
+          >
+            Subscribe
+          </Button>
+         
       </Card>
     </div>
   );

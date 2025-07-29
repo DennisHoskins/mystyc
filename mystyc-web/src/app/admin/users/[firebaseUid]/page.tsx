@@ -8,16 +8,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 import { use } from 'react';
 
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 import UserPage from '@/components/admin/pages/users/user/UserPage';
 
 interface UserPageProps {
-  params: Promise<{
-    firebaseUid: string;
-  }>;
+  params: Promise<{ firebaseUid: string; }>;
 }
 
 export default function Page({ params }: UserPageProps) {
   const { firebaseUid } = use(params);
-
-  return <UserPage firebaseUid={firebaseUid} />
+  return (
+    <AdminTransition>
+      <UserPage firebaseUid={firebaseUid} />
+    </AdminTransition>      
+  )
 }

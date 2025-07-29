@@ -7,7 +7,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import OpenAIPage from '@/components/admin/pages/openai/OpenAIPage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 export default function Page() {
-  return <OpenAIPage />
+  return (
+    <AdminTransition>
+      <OpenAIPage />
+    </AdminTransition>      
+  )
 }

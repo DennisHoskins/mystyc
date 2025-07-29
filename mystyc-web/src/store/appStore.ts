@@ -7,9 +7,13 @@ export interface AppState {
   isGlobalError: boolean;
   isLoggedOutByServer: boolean;
   isBusy: boolean;
-  busyTimer: NodeJS.Timeout | null;
+  busyTimer: ReturnType<typeof setTimeout> | null;
   toasts: { id: string; message: string; type: 'success' | 'error' | 'info'; timestamp: number }[];
   hasHydrated: boolean;
+
+  // Transition state
+  transition: 'none' | 'app' | 'page';
+  transitionWorking: boolean;
 
   // Admin state
   sidebarCollapsed: boolean;
@@ -25,6 +29,10 @@ export interface AppState {
   setHasHydrated: (isHydrated: boolean) => void;
   clearAppState: () => void;
 
+  // Transition actions
+  setTransition: (transition: 'none' | 'app' | 'page') => void;
+  setTransitionWorking: (working: boolean) => void;
+
   // Admin actions
   setSidebarCollapsed: (collapsed: boolean) => void;
 }
@@ -38,6 +46,10 @@ const initialState = {
   busyTimer: null,
   toasts: [],
   hasHydrated: false,
+
+  // Transition initial state
+  transition: 'none' as 'none' | 'app' | 'page',
+  transitionWorking: false,
 
   // Admin initial state
   sidebarCollapsed: false,
@@ -67,7 +79,7 @@ export const useAppStore = create<AppState>()(
       setGlobalError: (isGlobalError) => set({ isGlobalError }),
       setLoggedOutByServer: (isLoggedOutByServer) => set({ isLoggedOutByServer }),
       showToast: (message, type = 'info') => {
-        const toast = { id: Math.random().toString(36).substr(2, 9), message, type, timestamp: Date.now() };
+        const toast = { id: Math.random().toString(36).slice(2, 11), message, type, timestamp: Date.now() };
         set((state) => ({ toasts: [...state.toasts, toast] }));
         setTimeout(() => get().hideToast(toast.id), 5000);
       },
@@ -78,6 +90,10 @@ export const useAppStore = create<AppState>()(
         set(initialState as any);
       },
       setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
+
+      // Transition actions
+      setTransition: (transition: 'none' | 'app' | 'page') => set({ transition }),
+      setTransitionWorking: (working) => set({ transitionWorking: working }),
 
       // Admin actions
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),

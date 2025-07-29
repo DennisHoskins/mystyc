@@ -9,15 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
 import { use } from 'react';
 
 import NotificationPage from '@/components/admin/pages/notifications/notification/NotificationPage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 interface NotificationPageProps {
-  params: Promise<{
-    notificationId: string;
-  }>;
+  params: Promise<{ notificationId: string; }>;
 }
 
 export default function Page({ params }: NotificationPageProps) {
   const { notificationId } = use(params);
 
-  return <NotificationPage notificationId={notificationId} />
+  return (
+    <AdminTransition>
+      <NotificationPage notificationId={notificationId} />
+    </AdminTransition>      
+  )
 }

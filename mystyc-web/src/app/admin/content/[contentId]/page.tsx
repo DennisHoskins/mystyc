@@ -9,15 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
 import { use } from 'react';
 
 import ContentPage from '@/components/admin/pages/contents/content/ContentPage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 interface ContentPageProps {
-  params: Promise<{
-    contentId: string;
-  }>;
+  params: Promise<{ contentId: string; }>;
 }
 
 export default function Page({ params }: ContentPageProps) {
   const { contentId } = use(params);
 
-  return <ContentPage contentId={contentId} />
+  return (
+    <AdminTransition>
+      <ContentPage contentId={contentId} />
+    </AdminTransition>      
+  )
 }

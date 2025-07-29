@@ -13,6 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import '@/styles/globals.css';
+import '@/styles/transition.css';
 
 import AppContext from '@/components/ui/layout/context/AppContext';
 import ErrorBoundary from '@/components/ui/layout/ErrorBoundary';

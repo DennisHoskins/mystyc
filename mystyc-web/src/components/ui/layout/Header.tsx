@@ -12,7 +12,7 @@ interface HeaderProps {
 
 export default function Header({ children, user, className }: HeaderProps) {
   return (
-    <header className="flex w-full bg-white px-4 py-3 shadow-sm relative z-[70]">
+    <header className="flex w-full bg-white px-4 py-3 shadow-sm relative z-[50]">
       <nav className={`flex w-full ${className ? className : 'max-w-content'} mx-auto items-center`}>
         <Link href="/" className="flex items-center">
           <AppLogo orientation="horizontal" showText isPlus={user?.isPlus} />

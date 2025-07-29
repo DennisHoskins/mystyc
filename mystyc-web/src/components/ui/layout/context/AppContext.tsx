@@ -22,7 +22,7 @@ export default function AppContext({ children }: AppContextProps) {
   if (!hasHydrated) {
     return null
   }  
-  
+
   return (
     <UserStoreContext.Provider value={storeRef.current}>
       <Layout>

@@ -1,0 +1,71 @@
+/* ========================
+   App Container Transitions
+   ======================== */
+
+/* Example: Slide down on enter */
+#app.transition-in {
+  animation: page-fade-in 500ms ease-out forwards;
+}
+
+/* Example: Slide up on exit */
+#app.transition-out {
+  animation: page-fade-out 500ms ease-in forwards;
+}
+
+/* =========================
+   Page Container Transitions
+   ========================= */
+
+/* Example: Fade in */
+#page.transition-in {
+  animation: page-fade-in 500ms ease-out forwards;
+}
+
+/* Example: Fade out */
+#page.transition-out {
+  animation: page-fade-out 500ms ease-in forwards;
+}
+
+/* ===============
+   Keyframes
+   =============== */
+
+@keyframes app-slide-in {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes app-slide-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

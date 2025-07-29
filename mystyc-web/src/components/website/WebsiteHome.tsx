@@ -1,12 +1,11 @@
-import WebsiteLayout from "./WebsiteLayout";
 import Section from "@/components/ui/Section";
-import Hero from "@/components/website/pages/Hero";
-import Features from "@/components/website/pages/Features";
-import WebsiteContent from "@/components/website/pages/Content";
+import Hero from "@/components/website/content/Hero";
+import Features from "@/components/website/content/Features";
+import WebsiteContent from "@/components/website/content/Content";
 
 export default function WebsiteHome() {
   return (
-    <WebsiteLayout>
+    <>
       <Section background="blue">
         <Hero />
       </Section>
@@ -16,6 +15,6 @@ export default function WebsiteHome() {
       <Section background="gray">
         <WebsiteContent />
       </Section>
-    </WebsiteLayout>
+    </>
   );
 }

@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 import { useUser, useInitialized, useBusy } from '@/components/ui/layout/context/AppContext';
-import AuthLayout from "./AuthLayout";
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
@@ -20,24 +19,13 @@ export default function PasswordResetPage() {
   const initialized = useInitialized();
   const { setBusy } = useBusy();
 
-  const [isReady, setIsReady] = useState(false);
   const [isWorking, setIsWorking] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // mount guard
   useEffect(() => {
-    if (isReady) {
-      return;
-    }
-    setIsReady(true);
-  }, [isReady]);
-
-  useEffect(() => {
-    if (initialized && user) {
-      router.replace('/');
-    }
+    if (initialized && user) router.replace('/', false);
   }, [initialized, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,49 +55,48 @@ export default function PasswordResetPage() {
     }
   };
 
-  // Prevent any render until after mount, and bail if not initialized or already logged in
-  if (!isReady || !initialized || user) {
+  if (!initialized || user) {
     return null;
   }
 
   return (
-    <AuthLayout>
-      <FormLayout
-        subtitle="Reset your password"
-        error={error}
-        success={message}
-      >
-        <Form onSubmit={handleSubmit}>
-          <TextInput
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <FormLayout
+      error={error}
+      success={message}
+    >
+      <Form onSubmit={handleSubmit}>
+        <div className="text-gray-500 text-sm mb-2 -mt-4">Forgot your password? Don&apos;t worry. These things happen.</div>
+        <div className="text-gray-500 text-sm mb-11">Enter your email address we will send you a link to set a new one</div>
+        
+        <TextInput
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-          <Button
-            type="submit"
-            loading={isWorking}
-            loadingContent="Sending Reset Email..."
-            className="w-full"
-          >
-            Send Reset Email
-          </Button>
+        <Button
+          type="submit"
+          loading={isWorking}
+          loadingContent="Sending Reset Email..."
+          className="w-full"
+        >
+          Send Reset Email
+        </Button>
 
-          <p className="text-center text-sm mt-2 text-gray-600">
-            <span className="block">
-              Remember your password? <Link href="/login">Sign In</Link>
-            </span>
-            <span className="block mt-1">
-              Don&apos;t have an account? <Link href="/register">Register</Link>
-            </span>
-          </p>
-        </Form>
-      </FormLayout>
-    </AuthLayout>
+        <p className="text-center text-sm mt-4 text-gray-600">
+          <span className="block">
+            Remember your password? <Link href="/login">Sign In</Link>
+          </span>
+          <span className="block mt-1">
+            Don&apos;t have an account? <Link href="/register">Register</Link>
+          </span>
+        </p>
+      </Form>
+    </FormLayout>
   );
 }

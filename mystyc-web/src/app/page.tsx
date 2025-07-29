@@ -1,26 +1,21 @@
-'use client';
-
-import { useEffect } from 'react';
-
-import { useUser, useBusy } from '@/components/ui/layout/context/AppContext';
+import WebsiteHeader from "@/components/website/WebsiteHeader";
+import ScrollWrapper from "@/components/ui/layout/scroll/ScrollWrapper";
+import AppTransition from '@/components/ui/layout/transition/AppTransition';
+import WebsiteFooter from "@/components/website/WebsiteFooter";
 import WebsiteHome from "@/components/website/WebsiteHome";
-import MystycHome from "@/components/mystyc/MystycHome"
 
 export default function Page() {
-  const user = useUser();
-  const { setBusy } = useBusy();
-
-  useEffect(() => {
-    setBusy(false);
-  }, [setBusy])
-
-  if (!user) {
-    return (
-      <WebsiteHome />
-    )
-  }
-
   return (
-    <MystycHome user={user} />
-  );
+    <>
+      <WebsiteHeader />
+      <div className="flex overflow-hidden">
+        <ScrollWrapper>
+          <AppTransition>
+            <WebsiteHome />
+            <WebsiteFooter />
+          </AppTransition>
+        </ScrollWrapper>
+      </div>
+    </>
+  )
 }

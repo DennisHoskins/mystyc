@@ -17,36 +17,19 @@ export default function LogoutPage() {
   const clearUser = useClearUser();
   const { setBusy } = useBusy();
 
-  const [isReady, setIsReady] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
-  const [isBusy, setIsBusy] = useState(false);
+  const [isWorking, setIsWorking] = useState(false);
 
-  // mount guard
   useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    if (isReady) {
-      return;
-    }
-    setIsReady(true);
+    if (!initialized) return;
     setIsLogout(user != null);
-  }, [initialized, isReady, user]);
+    if (!user && !isLogout) router.replace('/', false);
+  }, [initialized, isLogout, user, router]);
 
   useEffect(() => {
-    if (initialized && !user && !isLogout) {
-      router.replace('/', false);
-    }
-  }, [initialized, user, isLogout, router]);
-
-  useEffect(() => {
-    if (!user || !isLogout || isBusy) {
-      return;
-    }
+    if (!user || !isLogout || isWorking) return;
     setBusy(500);
-    setIsBusy(true);
-
-    logger.log("LOGOUT");
+    setIsWorking(true);
 
     signOut()
       .then(() => {
@@ -57,8 +40,9 @@ export default function LogoutPage() {
         logger.error('Logout error:', err);
       }).finally(() => {
         router.replace('/');
+        setBusy(false);
       });
-  }, [user, isReady, isBusy, setBusy, clearUser, isLogout, showToast, router]);
+  }, [user, isLogout, isWorking, setBusy, signOut, clearUser, showToast, router]);
 
   return null;
 }

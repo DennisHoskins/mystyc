@@ -29,7 +29,7 @@ export default function HomePage({ user } : { user: AppUser }) {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center -mt-20 w-full p-4">
-      <Card className='w-full md:max-w-lg text-center space-y-6'>
+      <Card className='w-full md:max-w-lg text-center space-y-4 p-6'>
         {content}
       </Card>
     </div>

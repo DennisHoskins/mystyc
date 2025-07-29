@@ -1,14 +1,11 @@
 'use client';
 
-import { useUser } from '@/components/ui/layout/context/AppContext';
+import { AppUser } from '@/interfaces/app/app-user.interface';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import Footer from "../ui/layout/Footer";
 
-export default function MystycFooter() {
+export default function MystycFooter({ user } : { user: AppUser }) {
   const router = useTransitionRouter();
-  const user = useUser();
-  if (!user) {
-    return;
-  }
 
   const handleAdminClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -16,8 +13,8 @@ export default function MystycFooter() {
   }
 
   return (
-    <>
-    {user.isAdmin && (
+    <Footer>
+      {user.isAdmin && (
         <>
           {' · '}
           <a            
@@ -28,7 +25,7 @@ export default function MystycFooter() {
             Admin
           </a>
         </>
-    )}
-    </>
+      )}
+    </Footer>
   );
 }

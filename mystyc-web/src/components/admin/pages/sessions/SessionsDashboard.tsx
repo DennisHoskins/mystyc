@@ -63,11 +63,6 @@ export default function SessionsDashboard({ stats } : { stats?: SessionStats | n
           <div className="hidden md:block lg:hidden">
             <div className={`font-medium text-xs ${healthStatus.textColor} flex items-center`}>
               {healthStatus.status}
-              {!healthy && (
-                <span className="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">
-                  ({difference})
-                </span>
-              )}
             </div>
           </div>
         </div>
@@ -97,13 +92,6 @@ export default function SessionsDashboard({ stats } : { stats?: SessionStats | n
             </div>
           </div>
         </div>
-
-        {/* Difference indicator (only for large screens and small screens) */}
-        {!healthy && (
-          <div className="mt-2 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded block md:hidden lg:block">
-            Difference: {difference} {difference === 1 ? 'session' : 'sessions'}
-          </div>
-        )}
       </div>
     </Link>
   );

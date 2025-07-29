@@ -9,19 +9,19 @@ import {
 } from '@/interfaces/auth-requests.interface';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 
+class ApiError extends Error {
+  code: number;
+  type: string;
+
+  constructor(message: string, code: number, type: string = 'unknown') {
+    super(message);
+    this.code = code;
+    this.type = type;
+  }
+}
+
 export const useAuth = () => {
   const serverRoot: string = '/api';
-
-  class ApiError extends Error {
-    code: number;
-    type: string;
-
-    constructor(message: string, code: number, type: string = 'unknown') {
-      super(message);
-      this.code = code;
-      this.type = type;
-    }
-  }
 
   const register = useCallback(async (email: string, password: string): Promise<User> => {
     const requestBody: AuthRegisterRequest = {

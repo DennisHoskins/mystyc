@@ -9,15 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
 import { use } from 'react';
 
 import DevicePage from '@/components/admin/pages/devices/device/DevicePage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 interface DevicePageProps {
-  params: Promise<{
-    deviceId: string;
-  }>;
+  params: Promise<{ deviceId: string; }>;
 }
 
 export default function Page({ params }: DevicePageProps) {
   const { deviceId } = use(params);
 
-  return <DevicePage deviceId={deviceId} />
+  return (
+    <AdminTransition>
+      <DevicePage deviceId={deviceId} />
+    </AdminTransition>      
+  )
 }

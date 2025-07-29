@@ -9,7 +9,6 @@ import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
-import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
@@ -70,27 +69,25 @@ export default function AdminHome() {
   }
 
   return(
-    <ScrollWrapper>
-      <div className='flex-1 flex flex-col p-4'>
-        <div className="flex flex-col sm:flex-row mb-4">
-          <Card className='grow'>
-            <div className='flex space-x-3 items-center mb-4'>
-              <div className='mt-1'>
-                <Avatar size={'small'} icon={<DashboardIcon />} />
-              </div>
-              <Heading level={3}>Admin</Heading>
+    <div className='flex-1 flex flex-col p-4'>
+      <div className="flex flex-col sm:flex-row mb-4">
+        <Card className='grow'>
+          <div className='flex space-x-3 items-center mb-4'>
+            <div className='mt-1'>
+              <Avatar size={'small'} icon={<DashboardIcon />} />
             </div>
-            <hr />
-            <Text className='mt-4 mb-2 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
-          </Card>
-          <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
-            <SessionsDashboard 
-              stats={stats?.sessions}
-            />
-          </Card>
-        </div>
-        <AdminDashboard query={query} stats={stats} />
+            <Heading level={3}>Admin</Heading>
+          </div>
+          <hr />
+          <Text className='mt-4 mb-2 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+        </Card>
+        <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
+          <SessionsDashboard 
+            stats={stats?.sessions}
+          />
+        </Card>
       </div>
-    </ScrollWrapper>
+      <AdminDashboard query={query} stats={stats} />
+    </div>
   );
 };

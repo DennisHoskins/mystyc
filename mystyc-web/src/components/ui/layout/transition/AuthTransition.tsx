@@ -2,17 +2,17 @@
 
 import { motion } from "framer-motion";
 
-export default function PageTransition({
+export default function AuthTransition({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <motion.div
-      initial={{ y: 5, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ ease: "easeInOut", duration: 0.5 }}
-      className="flex-1 flex flex-col w-full h-full items-center"
+      className="flex-1 flex flex-col w-full min-h-0"
     >
       {children}
     </motion.div>

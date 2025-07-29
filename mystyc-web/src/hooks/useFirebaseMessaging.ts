@@ -3,10 +3,8 @@ import { initializeApp } from 'firebase/app';
 import { Messaging, getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 import { useUser, useInitialized, useSetUser } from '@/components/ui/layout/context/AppContext';
-
 import { updateFcmToken } from '@/server/actions/user';
 import { getDeviceInfo } from "@/util/getDeviceInfo";
-
 import { logger } from '@/util/logger';
 
 const firebaseConfig = {

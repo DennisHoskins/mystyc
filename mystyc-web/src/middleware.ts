@@ -1,18 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { Ratelimit } from '@upstash/ratelimit';
-// import { Redis } from '@upstash/redis';
+
 import { logger } from '@/util/logger'
 
-// const ratelimit = new Ratelimit({
-//   redis: Redis.fromEnv(),
-//   limiter: Ratelimit.slidingWindow(20, '60s'),
-// });
+async function getMiddlewareCookieName(): Promise<string> {
+  if (process.env.NODE_ENV === 'development') {
+    return 'sessionId';
+  }
+  const encoder = new TextEncoder();
+  const data = encoder.encode(process.env.SESSION_COOKIE_SEED!);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return '_mst_' + hashHex.substring(0, 8);
+}
 
 export async function middleware(request: NextRequest) {
-  const host = request.headers.get('host') || '';
+  const cookieName = await getMiddlewareCookieName();
+  const sessionCookie = request.cookies.get(cookieName);
+  if (sessionCookie?.value) {
+    if (request.nextUrl.pathname === '/') {
+      logger.info('rewrite home');
+      return NextResponse.rewrite(new URL('/home', request.url));
+    }
+  }
 
-  logger.info(host + request.nextUrl.pathname);
-  
+  // const host = request.headers.get('host') || '';
   // if (process.env.NODE_ENV === 'production') {
   //   if (host !== 'mystyc.app' && host !== '127.0.0.1:3000') {
   //     return new NextResponse('Forbidden', { status: 403 });
@@ -38,8 +50,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/'
   ],
 };
-
-

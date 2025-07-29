@@ -9,15 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
 import { use } from 'react';
 
 import ScheduleExecutionPage from '@/components/admin/pages/schedule-executions/schedule-execution/ScheduleExecutionPage';
+import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 interface ScheduleExecutionPageProps {
-  params: Promise<{
-    executionId: string;
-  }>;
+  params: Promise<{ executionId: string; }>;
 }
 
 export default function Page({ params }: ScheduleExecutionPageProps) {
   const { executionId } = use(params);
 
-  return <ScheduleExecutionPage executionId={executionId} />
+  return (
+    <AdminTransition>
+      <ScheduleExecutionPage executionId={executionId} />
+    </AdminTransition>      
+  )
 }

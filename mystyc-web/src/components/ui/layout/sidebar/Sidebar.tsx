@@ -22,11 +22,13 @@ export default function Sidebar({
   className = '' 
 }: SidebarProps) {
   return (
-    <aside className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''} ${isOpen ? styles.open : styles.closed} ${className} hidden md:flex sticky top-0 rounded-md m-4 mr-0 shadow-sm bg-white flex-col self-start h-auto`}>
-    <SidebarToggleButton isCollapsed={isCollapsed} onToggle={onToggle} />
-      <nav className={`${styles.nav} rounded-md p-4 flex flex-col`}>
-        {children}
-      </nav>
-    </aside>
+    <div className='relative'>
+      <aside className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''} ${isOpen ? styles.open : styles.closed} ${className} hidden md:flex sticky top-4 rounded-md m-4 mr-0 shadow-sm bg-white flex-col self-start flex-shrink-0`}>
+      <SidebarToggleButton isCollapsed={isCollapsed} onToggle={onToggle} />
+        <nav className={`${styles.nav} rounded-md p-4 flex flex-col`}>
+          {children}
+        </nav>
+      </aside>
+    </div>
   );
 }

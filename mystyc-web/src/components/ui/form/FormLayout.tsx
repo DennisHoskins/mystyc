@@ -1,4 +1,3 @@
-import AppLogo from '@/components/ui/AppLogo';
 import FormError from './FormError';
 import FormSuccess from './FormSuccess';
 
@@ -16,13 +15,15 @@ export default function FormLayout({
   children,
 }: FormLayoutProps) {
   return (
-    <>
-      <AppLogo scale={1.2} subheading={subtitle} className='mt-6' />
+    <div className='flex flex-col w-full space-y-6'>
+      <div className="text-gray-500 text-sm">
+        {subtitle}
+      </div>
 
       {error && <FormError message={error} />}
       {success && <FormSuccess message={success} />}
 
       {children}
-    </>
+    </div>
   );
 }

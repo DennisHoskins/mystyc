@@ -1,5 +1,3 @@
-'use client';
-
 import Text from '@/components/ui/Text';
 
 export default function Footer({ children } : { children?: React.ReactNode | null }) {
