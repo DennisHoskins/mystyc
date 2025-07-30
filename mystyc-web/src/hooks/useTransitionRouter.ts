@@ -8,6 +8,13 @@ export function useTransitionRouter() {
 
   const navigateWithTransition = async (url: string, method: 'push' | 'replace') => {
     if (pathname === url) return;
+
+    const foo = true;
+    if (foo) {
+      router[method](url);
+      return;
+    }
+
     window.dispatchEvent(new CustomEvent('start-exit'));
     await new Promise<void>(resolve => {
       const handleExitComplete = () => {

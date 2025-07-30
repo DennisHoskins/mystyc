@@ -21,7 +21,7 @@ export default function Modal({ children, isOpen, onClose }: ModalProps) {
 
   return (
     <Overlay onClick={handleOverlayClick}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={`w-full max-w-xl p-6 text-center space-y-6 ${styles.modal}`} onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </Overlay>

@@ -11,7 +11,7 @@ import AdminFooter from "@/components/admin/AdminFooter";
 import AdminSidebar from '@/components/admin/ui/AdminSidebar';
 import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
 
-export default function Layout({ children}: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useUser();
   const router = useTransitionRouter();

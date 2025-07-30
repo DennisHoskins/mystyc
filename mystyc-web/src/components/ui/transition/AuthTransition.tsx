@@ -1,10 +1,16 @@
 "use client"
 
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Template({ children } : { children: React.ReactNode }) {
   const [showing, setShowing] = useState(true);
+  const pathname = usePathname();
+
+   useEffect(() => {
+    setShowing(true);
+  }, [pathname]);
 
   useEffect(() => {
     const handleStartExit = () => setShowing(false);
@@ -16,7 +22,7 @@ export default function Template({ children } : { children: React.ReactNode }) {
     <AnimatePresence onExitComplete={ () => window.dispatchEvent(new CustomEvent('exit-complete')) } >
       {showing && (
         <motion.div
-          key="auth"
+          key={pathname}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

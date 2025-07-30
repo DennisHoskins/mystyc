@@ -8,7 +8,7 @@ import Main from '@/components/ui/layout/Main';
 import MystycHeader from "@/components/mystyc/MystycHeader";
 import MystycFooter from "@/components/mystyc/MystycFooter";
 
-export default function Layout({ children}: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();
   const router = useTransitionRouter();
 

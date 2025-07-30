@@ -20,7 +20,7 @@ export default function UserSubscriptionCard({ user }: { user?: UserProfile | nu
 
       <hr/ >
 
-      <AdminDetailGrid cols={2} className='mt-4'>
+      <AdminDetailGrid cols={4} className='mt-4'>
         <AdminDetailField
           label="Subscription Level"
           value={user?.subscription.level}

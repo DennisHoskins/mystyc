@@ -18,13 +18,14 @@ import '@/styles/transition.css';
 import AppContext from '@/components/ui/layout/context/AppContext';
 import ErrorBoundary from '@/components/ui/layout/ErrorBoundary';
  
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-gray-200">
         <ErrorBoundary>
           <AppContext>
             {children}
+            <div key={Math.random()}>{modal}</div>
           </AppContext>
         </ErrorBoundary>
       </body>

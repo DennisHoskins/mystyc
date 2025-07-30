@@ -1,8 +1,8 @@
 "use client"
 
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePathname } from "next/navigation";
 
 export default function Template({ children } : { children: React.ReactNode }) {
   const [showing, setShowing] = useState(true);
@@ -22,7 +22,7 @@ export default function Template({ children } : { children: React.ReactNode }) {
     <AnimatePresence onExitComplete={ () => window.dispatchEvent(new CustomEvent('exit-complete')) } >
       {showing && (
         <motion.div
-          key={pathname} // Dynamic key based on current route
+          key={pathname}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

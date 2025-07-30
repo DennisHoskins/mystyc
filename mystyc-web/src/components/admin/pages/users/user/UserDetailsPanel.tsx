@@ -11,7 +11,7 @@ export default function UserDetailsPanel({ user }: { user?: UserProfile | null }
 
   return (
     <div className='space-y-4'>
-      <AdminDetailGrid cols={2}>
+      <AdminDetailGrid cols={3}>
         <AdminDetailField
           label="Firebase Uid"
           value={user?.firebaseUid}

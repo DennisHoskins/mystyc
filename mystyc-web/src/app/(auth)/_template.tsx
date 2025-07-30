@@ -4,6 +4,6 @@ export default function Template({ children } : { children: React.ReactNode }) {
   return (
     <AuthTransition>
       {children}
-    </AuthTransition>          
+    </AuthTransition>
   );
 }

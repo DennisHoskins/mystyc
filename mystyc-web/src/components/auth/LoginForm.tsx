@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
@@ -14,6 +15,7 @@ export default function LoginForm() {
   const { signIn } = useAuth();
   const setUser = useSetUser();
   const { setBusy } = useBusy();
+  const router = useTransitionRouter();
 
   const [isWorking, setIsWorking] = useState(false);
   const [email, setEmail] = useState('');
@@ -31,6 +33,8 @@ export default function LoginForm() {
       if (!user) throw new Error('no user returned');
 
       setUser(user);
+
+      router.push("/");
     } catch (err: any) {
       setError(
         err.code === 500
