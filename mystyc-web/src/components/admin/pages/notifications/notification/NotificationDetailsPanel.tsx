@@ -1,11 +1,11 @@
 import { Notification } from 'mystyc-common/schemas';
 import { formatTimestampForComponent } from '@/util/dateTime';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function NotificationDetailsPanel({ notification }: { notification?: Notification | null }) {
   return (
-    <AdminDetailGroup cols={2}>
+    <AdminDetailGrid cols={2}>
       <AdminDetailField
         label="type"
         value={notification?.type}
@@ -18,6 +18,6 @@ export default function NotificationDetailsPanel({ notification }: { notificatio
         label="Sent"
         value={notification &&(notification.sentAt ? formatTimestampForComponent(new Date(notification.sentAt).getTime()) : '-')}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

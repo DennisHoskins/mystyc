@@ -1,17 +1,16 @@
-'use client';
+'use client'
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { AppUser } from '@/interfaces/app/app-user.interface';
-
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Form from '@/components/ui/form/Form';
 import TextInput from '@/components/ui/form/TextInput';
 import Button from '@/components/ui/Button';
 
 export default function BirthPanel({ user } : { user: AppUser }) {
-  const router = useRouter();
+  const router = useTransitionRouter();
   // const [isWorking, setWorking] = useState(false);
   // const [error, setError] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState("");

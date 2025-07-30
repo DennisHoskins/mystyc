@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { LayoutDashboard, Clock, BookOpenText, CircleDollarSign, Globe, Sparkle, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 

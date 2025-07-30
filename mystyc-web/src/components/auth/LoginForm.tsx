@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useInitialized, useUser, useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
+import { useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
@@ -13,23 +12,13 @@ import Button from '@/components/ui/Button';
 
 export default function LoginForm() {
   const { signIn } = useAuth();
-  const user = useUser();
-  const initialized = useInitialized();
   const setUser = useSetUser();
-  const router = useTransitionRouter();
   const { setBusy } = useBusy();
 
   const [isWorking, setIsWorking] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (!initialized) return;
-    setIsLogin(user == null);
-    if (user && !isLogin) router.replace('/', false);
-  }, [initialized, isLogin, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,10 +41,6 @@ export default function LoginForm() {
       setIsWorking(false);
     }
   };
-
-  if (!initialized || (user && !isLogin)) {
-    return null;
-  }
 
   return (
     <FormLayout subtitle="Sign in to continue your journey..." error={error}>

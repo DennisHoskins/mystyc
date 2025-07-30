@@ -3,7 +3,7 @@ import { Session } from '@/interfaces';
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import TokensIcon from '@/components/admin/ui/icons/TokensIcon';
 
@@ -20,7 +20,7 @@ export default function DeviceTokensPanel({ session, device }: { session?: Sessi
       <hr />
 
       <div className="pt-4">
-        <AdminDetailGroup cols={1}>
+        <AdminDetailGrid cols={1}>
           <AdminDetailField
             label="Auth Token"
             value={session?.authToken}
@@ -36,7 +36,7 @@ export default function DeviceTokensPanel({ session, device }: { session?: Sessi
               value={device && device.fcmToken ? device.fcmToken : ''}
               text={device && device.fcmToken && device.fcmTokenUpdatedAt ? formatDateForComponent(device.fcmTokenUpdatedAt) : ''}
             />
-        </AdminDetailGroup>
+        </AdminDetailGrid>
       </div>
     </div>
   );

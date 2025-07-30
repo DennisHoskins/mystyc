@@ -1,7 +1,7 @@
 import { NotificationStats } from 'mystyc-common/admin/interfaces/stats';
 import { AdminStatsQuery } from 'mystyc-common/admin';
 import { NotificationView } from './NotificationsPage'; 
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 interface NotificationsSummaryPanelProps {
@@ -13,7 +13,7 @@ interface NotificationsSummaryPanelProps {
 
 export default function NotificationsSummaryPanel({ stats, handleClick, currentView }: NotificationsSummaryPanelProps) {
   return (
-    <AdminDetailGroup>
+    <AdminDetailGrid>
       <AdminDetailField
         label="Success Rate"
         value={(() => {
@@ -34,6 +34,6 @@ export default function NotificationsSummaryPanel({ stats, handleClick, currentV
         onClick={() => handleClick("all")}
         active={currentView == "all"}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

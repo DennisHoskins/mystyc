@@ -11,7 +11,7 @@ import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: string | null }) {
@@ -43,7 +43,7 @@ export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: st
 
       <hr />
 
-      <AdminDetailGroup cols={3} className='mt-4'>
+      <AdminDetailGrid cols={3} className='mt-4'>
         <AdminDetailField
           label="Full Name"
           value={user?.fullName}
@@ -71,7 +71,7 @@ export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: st
           label="Start Date"
           value={formatDateForDisplay(user?.subscription.startDate)}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </Card>      
   );
 }

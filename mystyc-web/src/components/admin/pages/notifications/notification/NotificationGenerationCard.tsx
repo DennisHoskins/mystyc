@@ -2,13 +2,13 @@ import { Notification } from 'mystyc-common/schemas';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function NotificationGenerationCard({ notification }: { notification?: Notification | null }) {
   return (
     <Card>
-      <AdminDetailGroup cols={2}>
+      <AdminDetailGrid cols={2}>
         <div className='flex items-center'>
           <Avatar size={'small'} icon={<ScheduleIcon />} className='mr-4' />
           <AdminDetailField
@@ -25,7 +25,7 @@ export default function NotificationGenerationCard({ notification }: { notificat
             href={notification && (notification.executionId ? `/admin/schedule-executions/${notification.executionId}` : null)}
           />
         </div>
-      </AdminDetailGroup>
+      </AdminDetailGrid>
    </Card>
   );
 }

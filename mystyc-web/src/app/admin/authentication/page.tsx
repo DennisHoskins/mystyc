@@ -7,12 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import AuthenticationsPage from '@/components/admin/pages/authentications/AuthenticationsPage';
-import AdminTransition from '@/components/ui/layout/transition/AdminTransition';
 
 export default function Page() {
-  return (
-    <AdminTransition>
-      <AuthenticationsPage />
-    </AdminTransition>      
-  )
+  return <AuthenticationsPage />;
 }

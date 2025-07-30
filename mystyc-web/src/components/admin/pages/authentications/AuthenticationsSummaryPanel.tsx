@@ -3,7 +3,7 @@
 import { AuthEventsSummary } from 'mystyc-common/admin/interfaces/summary';
 
 import { AuthenticationView } from './AuthenticationsPage'; 
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 interface AuthenticationsSummaryPanelProps {
@@ -14,7 +14,7 @@ interface AuthenticationsSummaryPanelProps {
 
 export default function AuthenticationsSummaryPanel({ summary, handleClick, currentView }: AuthenticationsSummaryPanelProps) {
   return (
-    <AdminDetailGroup cols={6}>
+    <AdminDetailGrid cols={6}>
       <AdminDetailField
         label="Success Rate"
         value={(() => {
@@ -67,6 +67,6 @@ export default function AuthenticationsSummaryPanel({ summary, handleClick, curr
         onClick={() => handleClick("server-logout")}
         active={currentView == "server-logout"}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

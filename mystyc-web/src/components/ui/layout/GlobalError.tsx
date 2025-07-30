@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';

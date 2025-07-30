@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { Menu as MenuIcon, X } from 'lucide-react';
 

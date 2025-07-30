@@ -3,7 +3,7 @@
 import { ContentsSummary } from 'mystyc-common/admin/interfaces/summary';
 import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
 import { ContentView } from './ContentsPage'; 
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 interface ContentsSummaryPanelProps {
@@ -15,7 +15,7 @@ interface ContentsSummaryPanelProps {
 
 export default function ContentsSummaryPanel({ summary, stats, handleClick, currentView }: ContentsSummaryPanelProps) {
   return (
-    <AdminDetailGroup cols={6}>
+    <AdminDetailGrid cols={6}>
       <AdminDetailField
         label="Success Rate"
         value={(() => {
@@ -62,6 +62,6 @@ export default function ContentsSummaryPanel({ summary, stats, handleClick, curr
         onClick={() => handleClick("users-plus")}
         active={currentView == "users-plus"}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

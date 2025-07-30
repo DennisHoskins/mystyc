@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useCallback } from 'react';
 
@@ -69,7 +69,7 @@ export default function AdminHome() {
   }
 
   return(
-    <div className='flex-1 flex flex-col p-4'>
+    <div className='flex-1 flex flex-col p-4 w-full'>
       <div className="flex flex-col sm:flex-row mb-4">
         <Card className='grow'>
           <div className='flex space-x-3 items-center mb-4'>

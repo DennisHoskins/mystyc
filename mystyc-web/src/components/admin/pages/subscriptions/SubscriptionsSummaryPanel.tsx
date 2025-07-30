@@ -1,7 +1,7 @@
 import { SubscriptionsSummary } from 'mystyc-common/admin/interfaces/summary';
 import { SubscriptionStats } from 'mystyc-common/admin/interfaces/stats';
 import { SubscriptionView } from './SubscriptionsPage'; 
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 interface SubscriptionsSummaryPanelProps {
@@ -13,7 +13,7 @@ interface SubscriptionsSummaryPanelProps {
 
 export default function SubscriptionsSummaryPanel({ summary, stats, handleClick, currentView }: SubscriptionsSummaryPanelProps) {
   return (
-    <AdminDetailGroup cols={3}>
+    <AdminDetailGrid cols={3}>
       <AdminDetailField
         label="Current MRR"
         value={(() => {
@@ -41,6 +41,6 @@ export default function SubscriptionsSummaryPanel({ summary, stats, handleClick,
         onClick={() => handleClick("subscribers")}
         active={currentView == "subscribers"}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

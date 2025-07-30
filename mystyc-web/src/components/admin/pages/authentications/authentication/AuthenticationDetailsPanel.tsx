@@ -1,11 +1,11 @@
 import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function AuthenticationDetailsPanel({ authentication }: { authentication: AuthEvent | null }) {
   return (
-    <AdminDetailGroup cols={2}>
+    <AdminDetailGrid cols={2}>
       <AdminDetailField
         label="Type"
         value={authentication?.type}
@@ -25,6 +25,6 @@ export default function AuthenticationDetailsPanel({ authentication }: { authent
           : ""
         }
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

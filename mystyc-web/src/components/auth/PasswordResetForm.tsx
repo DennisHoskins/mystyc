@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
-import { useUser, useInitialized, useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/layout/context/AppContext';
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
@@ -14,19 +13,12 @@ import Button from '@/components/ui/Button';
 
 export default function PasswordResetPage() {
   const { resetPassword } = useAuth();
-  const router = useTransitionRouter();
-  const user = useUser();
-  const initialized = useInitialized();
   const { setBusy } = useBusy();
 
   const [isWorking, setIsWorking] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (initialized && user) router.replace('/', false);
-  }, [initialized, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,10 +46,6 @@ export default function PasswordResetPage() {
       setIsWorking(false);
     }
   };
-
-  if (!initialized || user) {
-    return null;
-  }
 
   return (
     <FormLayout

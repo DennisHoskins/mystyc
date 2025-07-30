@@ -1,7 +1,7 @@
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import StripeIcon from '@/components/admin/ui/icons/StripeIcon';
 
@@ -15,7 +15,7 @@ export default function SubscriptionStripeCard({ payment }: { payment?: PaymentH
 
       <hr />
 
-      <AdminDetailGroup cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1} className='mt-4'>
         <AdminDetailField
           label="Invoice Id"
           value={payment?.stripeInvoiceId}
@@ -32,7 +32,7 @@ export default function SubscriptionStripeCard({ payment }: { payment?: PaymentH
           label="Customer Id"
           value={payment?.stripeCustomerId}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </div>
   );
 }

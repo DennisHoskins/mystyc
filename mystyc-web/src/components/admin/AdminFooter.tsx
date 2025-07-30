@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useUser } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';

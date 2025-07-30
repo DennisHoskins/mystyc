@@ -1,6 +1,6 @@
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function UserDetailsPanel({ user }: { user?: UserProfile | null }) {
@@ -11,7 +11,7 @@ export default function UserDetailsPanel({ user }: { user?: UserProfile | null }
 
   return (
     <div className='space-y-4'>
-      <AdminDetailGroup cols={2}>
+      <AdminDetailGrid cols={2}>
         <AdminDetailField
           label="Firebase Uid"
           value={user?.firebaseUid}
@@ -36,7 +36,7 @@ export default function UserDetailsPanel({ user }: { user?: UserProfile | null }
           label="Last Updated"
           value={formatDateForDisplay(user?.updatedAt)}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </div>
   );
 }

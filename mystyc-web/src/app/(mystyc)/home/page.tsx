@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 
 import { useUser, useBusy } from '@/components/ui/layout/context/AppContext';
-import PageTransition from '@/components/ui/layout/transition/PageTransition';
 import MystycHome from "@/components/mystyc/MystycHome"
 
 export default function Page() {
@@ -18,9 +17,5 @@ export default function Page() {
     return null;
   }
 
-  return (
-    <PageTransition>
-      <MystycHome user={user} />
-    </PageTransition>      
-  );
+  return <MystycHome user={user} />;
 }

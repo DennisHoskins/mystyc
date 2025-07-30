@@ -1,6 +1,6 @@
 import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
 import { UserView } from './UsersPage'; 
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 interface UsersSummaryPanelProps {
@@ -11,7 +11,7 @@ interface UsersSummaryPanelProps {
 
 export default function UsersSummaryPanel({ summary, handleClick, currentView }: UsersSummaryPanelProps) {
   return (
-    <AdminDetailGroup>
+    <AdminDetailGrid>
       <AdminDetailField
         label="Conversion Rate"
         value={(() => {
@@ -50,6 +50,6 @@ export default function UsersSummaryPanel({ summary, handleClick, currentView }:
         onClick={() => handleClick("plus")}
         active={currentView == "plus"}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

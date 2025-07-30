@@ -4,10 +4,8 @@ import { useEffect } from 'react';
 
 import { useUser } from '@/components/ui/layout/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import PageTransition from '@/components/ui/layout/transition/PageTransition';
 import Main from '@/components/ui/layout/Main';
 import MystycHeader from "@/components/mystyc/MystycHeader";
-import AppTransition from "@/components/ui/layout/transition/AppTransition";
 import MystycFooter from "@/components/mystyc/MystycFooter";
 
 export default function Layout({ children}: { children: React.ReactNode }) {
@@ -25,15 +23,11 @@ export default function Layout({ children}: { children: React.ReactNode }) {
   return (
     <>
       <MystycHeader user={user} />
-      <AppTransition>
         <div className='flex grow w-full min-h-0 max-w-content self-center'>
-          <PageTransition>
-            <Main>
-              {children}
-            </Main>
-          </PageTransition>
+          <Main>
+            {children}
+          </Main>
         </div>
-      </AppTransition> 
       <MystycFooter user={user} />
     </>
   );

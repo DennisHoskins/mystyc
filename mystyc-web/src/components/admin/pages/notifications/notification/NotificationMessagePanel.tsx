@@ -1,7 +1,7 @@
 import { Notification } from 'mystyc-common/schemas';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import MessageIcon from '@/components/admin/ui/icons/MessageIcon';
 
@@ -18,7 +18,7 @@ export default function NotificationMessagePanel({ notification }: { notificatio
       <hr />
 
       <div className="pt-4">
-        <AdminDetailGroup cols={1}>
+        <AdminDetailGrid cols={1}>
           {notification?.contentId &&
             <AdminDetailField
               label="Content Id"
@@ -39,7 +39,7 @@ export default function NotificationMessagePanel({ notification }: { notificatio
             value={notification && 'https://mystyc.app'}
             href={notification && 'https://mystyc.app'}
           />
-        </AdminDetailGroup>
+        </AdminDetailGrid>
       </div>
     </div>
   );

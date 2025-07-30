@@ -4,7 +4,7 @@ import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function UserSubscriptionCard({ user }: { user?: UserProfile | null }) {
@@ -20,7 +20,7 @@ export default function UserSubscriptionCard({ user }: { user?: UserProfile | nu
 
       <hr/ >
 
-      <AdminDetailGroup cols={2} className='mt-4'>
+      <AdminDetailGrid cols={2} className='mt-4'>
         <AdminDetailField
           label="Subscription Level"
           value={user?.subscription.level}
@@ -37,7 +37,7 @@ export default function UserSubscriptionCard({ user }: { user?: UserProfile | nu
           label="Credit Balance"
           value={user ? user.subscription.creditBalance || "0" : ""}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </Card>
   );
 }

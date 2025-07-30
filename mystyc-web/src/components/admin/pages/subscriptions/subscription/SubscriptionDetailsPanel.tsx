@@ -1,11 +1,11 @@
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function SubscriptionDetailsPanel({ payment }: { payment?: PaymentHistory | null }) {
   return (
-    <AdminDetailGroup cols={2}>
+    <AdminDetailGrid cols={2}>
       <AdminDetailField
         label="Tier"
         value={payment?.subscriptionTier}
@@ -38,6 +38,6 @@ export default function SubscriptionDetailsPanel({ payment }: { payment?: Paymen
         label="End Period"
         value={payment && formatDateForDisplay(payment.periodEnd)}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

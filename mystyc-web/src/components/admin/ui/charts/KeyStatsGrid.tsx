@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 interface StatItem {
   value: string | number;

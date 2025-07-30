@@ -1,6 +1,6 @@
 import { DevicesSummary } from 'mystyc-common/admin/interfaces/summary';
 import { DeviceView } from './DevicesPage'; 
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 interface DevicesSummaryPanelProps {
@@ -11,7 +11,7 @@ interface DevicesSummaryPanelProps {
 
 export default function DevicesSummaryPanel({ summary, handleClick, currentView }: DevicesSummaryPanelProps) {
   return (
-    <AdminDetailGroup>
+    <AdminDetailGrid>
       <AdminDetailField
         label="Online Rate"
         value={(() => {
@@ -50,6 +50,6 @@ export default function DevicesSummaryPanel({ summary, handleClick, currentView 
         onClick={() => handleClick("offline")}
         active={currentView == "offline"}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

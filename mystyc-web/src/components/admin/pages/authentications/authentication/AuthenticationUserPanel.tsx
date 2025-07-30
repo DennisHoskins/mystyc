@@ -8,7 +8,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import UserIcon from '@/components/admin/ui/icons/UserIcon'
 
@@ -72,7 +72,7 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
 
       <hr />
 
-      <AdminDetailGroup cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1} className='mt-4'>
         <AdminDetailField
           label="Firebase Uid"
           value={user.firebaseUid}
@@ -87,7 +87,7 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
           label="Roles"
           value={formatUserRoles(user.roles)}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </div>
   );
 }

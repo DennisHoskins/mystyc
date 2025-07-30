@@ -2,7 +2,7 @@ import { DeviceSession } from '@/interfaces';
 import { formatTimestampForComponent, formatDateForComponent } from '@/util/dateTime';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 
@@ -16,7 +16,7 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession?: 
 
       <hr />
 
-      <AdminDetailGroup cols={1} className="pt-4">
+      <AdminDetailGrid cols={1} className="pt-4">
         <AdminDetailField
           label="User"
           value={deviceSession?.session?.email}
@@ -44,7 +44,7 @@ export default function DeviceSessionPanel({ deviceSession }: { deviceSession?: 
           value={deviceSession?.device.fcmToken || 'Not set'}
           text={deviceSession?.device.fcmTokenUpdatedAt ? formatDateForComponent(deviceSession.device.fcmTokenUpdatedAt) : '-'}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </>
   );
 }

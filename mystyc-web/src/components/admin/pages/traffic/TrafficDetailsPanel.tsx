@@ -1,5 +1,5 @@
 import { TrafficStats } from '@/interfaces/admin/stats';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function TrafficDetailsPanel({ trafficStats }: { trafficStats?: TrafficStats | null }) {
@@ -14,7 +14,7 @@ export default function TrafficDetailsPanel({ trafficStats }: { trafficStats?: T
   const topDevice = trafficStats?.deviceTypes && trafficStats?.deviceTypes.length > 0 ? trafficStats?.deviceTypes[0] : null;
 
   return (
-    <AdminDetailGroup cols={3}>
+    <AdminDetailGrid cols={3}>
       <AdminDetailField
         label="Total Visits"
         value={trafficStats && trafficStats.visitors.totalVisits.toLocaleString()}
@@ -51,6 +51,6 @@ export default function TrafficDetailsPanel({ trafficStats }: { trafficStats?: T
           : 'N/A')
         }
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

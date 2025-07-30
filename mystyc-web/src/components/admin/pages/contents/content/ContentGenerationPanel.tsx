@@ -2,7 +2,7 @@ import { Content } from 'mystyc-common/schemas';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import OpenAIIcon from '@/components/admin/ui/icons/OpenAIIcon';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function ContentSidebarPanel({ content }: { content: Content | null }) {
@@ -22,7 +22,7 @@ export default function ContentSidebarPanel({ content }: { content: Content | nu
 
       <hr/>
 
-      <AdminDetailGroup cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1} className='mt-4'>
         <AdminDetailField
           label="Id"
           value={content?.openAIData?._id}
@@ -51,7 +51,7 @@ export default function ContentSidebarPanel({ content }: { content: Content | nu
           label="Cost"
           value={content && content.openAIData ? `$${content.openAIData.cost}` : ""}
         />
-     </AdminDetailGroup>
+     </AdminDetailGrid>
    </div>
   );
 }

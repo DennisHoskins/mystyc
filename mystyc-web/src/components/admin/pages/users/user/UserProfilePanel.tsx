@@ -2,7 +2,7 @@ import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import UserProfileIcon from '@/components/admin/ui/icons/UserProfileIcon';
 
@@ -18,7 +18,7 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
 
       <hr/ >
 
-      <AdminDetailGroup cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1} className='mt-4'>
         <AdminDetailField
           label="Full Name"
           value={user && (user.fullName || 'Not set')}
@@ -35,7 +35,7 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
           label="Zodiac Sign"
           value={user && (user.zodiacSign || 'Not set')}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </div>
   );
 }

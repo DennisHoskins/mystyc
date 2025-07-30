@@ -1,11 +1,11 @@
 import { ScheduleExecution } from 'mystyc-common/schemas';
 import { formatTimestampForComponent } from '@/util/dateTime';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function ScheduleExecutionDetailsPanel({ execution }: { execution?: ScheduleExecution | null }) {
   return (
-    <AdminDetailGroup cols={4}>
+    <AdminDetailGrid cols={4}>
       <AdminDetailField
         label="Schedule"
         value={execution?.scheduleId}
@@ -35,6 +35,6 @@ export default function ScheduleExecutionDetailsPanel({ execution }: { execution
         label="Status"
         value={execution?.status}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

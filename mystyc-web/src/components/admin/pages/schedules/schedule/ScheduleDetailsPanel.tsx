@@ -1,11 +1,11 @@
 import { Schedule } from 'mystyc-common/schemas';
 import { formatTimestampForComponent } from '@/util/dateTime';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function ScheduleDetailsPanel({ schedule }: { schedule?: Schedule | null }) {
   return (
-    <AdminDetailGroup cols={4}>
+    <AdminDetailGrid cols={4}>
       <AdminDetailField
         label="Created"
         value={schedule ? (schedule.createdAt ? formatTimestampForComponent(new Date(schedule.createdAt).getTime()) : '-') : null}
@@ -22,6 +22,6 @@ export default function ScheduleDetailsPanel({ schedule }: { schedule?: Schedule
         label="Timezone Aware"
         value={schedule ? (schedule.timezone_aware ? "True" : "False") : null}
       />
-    </AdminDetailGroup>
+    </AdminDetailGrid>
   );
 }

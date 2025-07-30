@@ -4,7 +4,7 @@ import { Content } from 'mystyc-common';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
-import AdminDetailGroup from '@/components/admin/ui/detail/AdminDetailGroup';
+import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function ContentDataCard({ content }: { content: Content | null }) {
@@ -25,13 +25,13 @@ export default function ContentDataCard({ content }: { content: Content | null }
 
       <hr/>
 
-      <AdminDetailGroup cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1} className='mt-4'>
         <AdminDetailField
           label="Prompt"
           value={content?.openAIData?.prompt}
         />
-      </AdminDetailGroup>
-      <AdminDetailGroup cols={2} className='mt-4'>
+      </AdminDetailGrid>
+      <AdminDetailGrid cols={2} className='mt-4'>
         <AdminDetailField
           label="Title"
           value={content?.title}
@@ -58,7 +58,7 @@ export default function ContentDataCard({ content }: { content: Content | null }
           value={content?.imageUrl && content.imageUrl.substring(0, 50) + '...'}
           href={content?.imageUrl}
         />
-      </AdminDetailGroup>
+      </AdminDetailGrid>
     </Card>
   );
 }

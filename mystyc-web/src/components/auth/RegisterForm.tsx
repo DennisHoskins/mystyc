@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
-import { useInitialized, useUser, useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
+import { useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
@@ -14,23 +13,13 @@ import Button from '@/components/ui/Button';
 
 export default function RegisterForm() {
   const { register } = useAuth();
-  const router = useTransitionRouter();
-  const user = useUser();
   const setUser = useSetUser();
-  const initialized = useInitialized();
   const { setBusy } = useBusy();
 
   const [isWorking, setIsWorking] = useState(false);
-  const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (!initialized) return;
-    setIsRegister(user == null);
-    if (user && !isRegister) router.replace('/', false);
-  }, [initialized, isRegister, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,10 +49,6 @@ export default function RegisterForm() {
       setIsWorking(false);
     }
   };
-
-  if (!initialized || (user && !isRegister)) {
-    return null;
-  }
 
   return (
     <FormLayout
