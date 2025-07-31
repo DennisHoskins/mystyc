@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 import styles from './Overlay.module.css';
+import OverlayTransition from '../transition/OverlayTransition';
 
 interface OverlayProps {
   children?: ReactNode;
@@ -9,8 +10,10 @@ interface OverlayProps {
 
 export default function Overlay({ children, onClick }: OverlayProps) {
   return (
-    <div className={styles.overlay} onClick={onClick}>
-      {children}
-    </div>
+    <OverlayTransition>
+      <div className={styles.overlay} onClick={onClick}>
+        {children}
+      </div>
+    </OverlayTransition>      
   );
 }

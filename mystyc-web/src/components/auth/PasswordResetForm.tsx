@@ -3,8 +3,9 @@
 import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { logger } from '@/util/logger';
 import Form from '@/components/ui/form/Form';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
@@ -14,6 +15,7 @@ import Button from '@/components/ui/Button';
 export default function PasswordResetPage() {
   const { resetPassword } = useAuth();
   const { setBusy } = useBusy();
+  const router = useTransitionRouter();
 
   const [isWorking, setIsWorking] = useState(false);
   const [email, setEmail] = useState('');
@@ -30,7 +32,6 @@ export default function PasswordResetPage() {
     try {
       await resetPassword(email);
       setMessage('Check your email for a password reset link.');
-      setBusy(false);
     } catch (err: any) {
       logger.error('Password reset error:', err);
 
@@ -41,7 +42,7 @@ export default function PasswordResetPage() {
         default:
           setError('Password reset failed. Please try again.');
       }
-
+    } finally {
       setBusy(false);
       setIsWorking(false);
     }
@@ -78,10 +79,10 @@ export default function PasswordResetPage() {
 
         <p className="text-center text-sm mt-4 text-gray-600">
           <span className="block">
-            Remember your password? <Link href="/login">Sign In</Link>
+            Remember your password? <Link href="/login" onClick={() => router.replace("/login")}>Sign In</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <Link href="/register">Register</Link>
+            Don&apos;t have an account? <Link href="/register" onClick={() => router.replace("/register")}>Register</Link>
           </span>
         </p>
       </Form>

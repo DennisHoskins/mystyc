@@ -1,37 +1,16 @@
 "use client"
 
-import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import BaseTransition, { transitionVariants } from "./BaseTransition";
 
-export default function Template({ children } : { children: React.ReactNode }) {
-  const [showing, setShowing] = useState(true);
-  const pathname = usePathname();
-
-   useEffect(() => {
-    setShowing(true);
-  }, [pathname]);
-
-  useEffect(() => {
-    const handleStartExit = () => setShowing(false);
-    window.addEventListener('start-exit', handleStartExit);
-    return () => window.removeEventListener('start-exit', handleStartExit);
-  }, []);
-
+export default function AuthTransition({ children }: { children: React.ReactNode }) {
   return (
-    <AnimatePresence onExitComplete={ () => window.dispatchEvent(new CustomEvent('exit-complete')) } >
-      {showing && (
-        <motion.div
-          key={pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="flex-1 flex flex-col w-full items-center justify-center"
-        >
-          {children}
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <BaseTransition
+      variants={transitionVariants.fade}
+      className="flex-1 flex flex-col w-full items-center justify-center"
+      keyPrefix="auth"
+      usePathnameKey={true}
+    >
+      {children}
+    </BaseTransition>
   );
 }

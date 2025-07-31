@@ -12,10 +12,10 @@ import GlobalError from '@/components/ui/layout/GlobalError';
 import Offline from '@/components/ui/layout/Offline';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const isGlobalError = useAppStore((state) => state.isGlobalError);
   const setOnline = useAppStore((state) => state.setOnline);  
   const isOnline = useAppStore((state) => state.isOnline);
+  const pathname = usePathname();
 
   useEffect(() => {
     registerVisit({

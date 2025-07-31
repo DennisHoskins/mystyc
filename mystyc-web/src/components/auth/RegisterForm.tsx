@@ -3,8 +3,9 @@
 import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { logger } from '@/util/logger';
 import { useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
+import { useTransitionRouter } from '@/hooks/useTransitionRouter';
+import { logger } from '@/util/logger';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
@@ -15,6 +16,7 @@ export default function RegisterForm() {
   const { register } = useAuth();
   const setUser = useSetUser();
   const { setBusy } = useBusy();
+  const router = useTransitionRouter();
 
   const [isWorking, setIsWorking] = useState(false);
   const [email, setEmail] = useState('');
@@ -26,17 +28,12 @@ export default function RegisterForm() {
     setError('');
     setBusy(500);
     setIsWorking(true);
-
     try {
       const user = await register(email, password);
-      if (!user) {
-        throw new Error('Register failed: no user returned');
-      }
-
+      if (!user) throw new Error('Register failed: no user returned');
       setUser(user);
     } catch (err: any) {
       logger.error('Registration error:', err);
-
       switch (err.code) {
         case 500:
           setError('Server error. Please try again.');
@@ -44,7 +41,7 @@ export default function RegisterForm() {
         default:
           setError('Registration failed. Please try again.');
       }
-
+    } finally {
       setBusy(false);
       setIsWorking(false);
     }
@@ -88,10 +85,10 @@ export default function RegisterForm() {
 
         <p className="text-center text-sm mt-4 text-gray-600">
           <span className="block">
-            Already have an account? <Link href="/login">Sign In</Link>
+            Already have an account? <Link href="/login" onClick={() => router.replace("/login")}>Sign In</Link>
           </span>
           <span className="block mt-1">
-            <Link href="/password-reset">Forgot your password?</Link>
+            <Link href="/password-reset" onClick={() => router.replace("/password-reset")}>Forgot your password?</Link>
           </span>
         </p>
       </Form>

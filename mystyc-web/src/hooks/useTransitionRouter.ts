@@ -6,15 +6,12 @@ export function useTransitionRouter() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const navigateWithTransition = async (url: string, method: 'push' | 'replace') => {
+  const navigateWithTransition = async (method: 'push' | 'replace' | 'back', url?: string | null) => {
     if (pathname === url) return;
-
-    const foo = true;
-    if (foo) {
-      router[method](url);
+    if (!url) {
+      router[method]("");
       return;
     }
-
     window.dispatchEvent(new CustomEvent('start-exit'));
     await new Promise<void>(resolve => {
       const handleExitComplete = () => {
@@ -28,12 +25,16 @@ export function useTransitionRouter() {
 
   return {
     push: (url: string, doTransition: boolean = true) => {
-      if (doTransition) navigateWithTransition(url, 'push');
+      if (doTransition) navigateWithTransition('push', url);
       else router.push(url);
     },
     replace: (url: string, doTransition: boolean = true) => {
-      if (doTransition) navigateWithTransition(url, 'replace');
+      if (doTransition) navigateWithTransition('replace', url);
       else router.replace(url);
+    },
+    back: (doTransition: boolean = true) => {
+      if (doTransition) navigateWithTransition('back');
+      else router.back();
     },
   };
 }

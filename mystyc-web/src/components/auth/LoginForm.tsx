@@ -27,20 +27,17 @@ export default function LoginForm() {
     setError('');
     setBusy(500);
     setIsWorking(true);
-
     try {
       const user = await signIn(email, password);
       if (!user) throw new Error('no user returned');
-
       setUser(user);
-
-      router.push("/");
     } catch (err: any) {
       setError(
         err.code === 500
           ? 'Server error. Please try again.'
           : 'Login failed. Please try again.'
       );
+    } finally {
       setBusy(false);
       setIsWorking(false);
     }
@@ -79,10 +76,10 @@ export default function LoginForm() {
         </Button>
         <p className="text-center text-sm mt-4 text-gray-600">
           <span className="block">
-            <Link href="/password-reset">Forgot your password?</Link>
+            <Link href="/password-reset" onClick={() => { router.replace("/password-reset") }}>Forgot your password?</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <Link href="/register">Register</Link>
+            Don&apos;t have an account? <Link href="/register" onClick={() => { router.replace("/register") }}>Register</Link>
           </span>
         </p>
       </Form>
