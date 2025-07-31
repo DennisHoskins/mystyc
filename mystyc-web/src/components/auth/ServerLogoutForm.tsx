@@ -1,36 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
-
-import { useAppStore } from '@/store/appStore';
 import Modal from '@/components/ui/modal/Modal';
 import AppLogo from '@/components/ui/AppLogo';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
 
 export default function ServerLogoutForm() {
-  const { isLoggedOutByServer, setLoggedOutByServer } = useAppStore();
-  const [shouldShow, setShouldShow] = useState(false);
-  const hasProcessed = useRef(false);
-
-  useEffect(() => {
-    if (hasProcessed.current) {
-      return;
-    }
-
-    const wasLoggedOut = isLoggedOutByServer;
-    setShouldShow(wasLoggedOut);
-    hasProcessed.current = true;
-    setLoggedOutByServer(false);
-  }, [isLoggedOutByServer, setLoggedOutByServer]);
 
   const handleClick = () => {
-    setShouldShow(false);
   };
-
-  if (!shouldShow) {
-    return null;
-  }
 
   return (
     <Modal isOpen={true}>

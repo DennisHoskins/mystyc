@@ -2,8 +2,8 @@
 
 import { useAppStore } from '@/store/appStore';
 
-import Text from '@/components/ui/Text';
 import styles from './Toast.module.css';
+import Text from '@/components/ui/Text';
 
 export default function Toast() {
   const toasts = useAppStore((state) => state.toasts);

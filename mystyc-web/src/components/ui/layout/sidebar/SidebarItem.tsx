@@ -4,7 +4,6 @@ import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 
 import styles from './Sidebar.module.css';
-
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 interface SidebarItemProps {

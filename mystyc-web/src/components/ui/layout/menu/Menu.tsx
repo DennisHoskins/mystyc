@@ -53,8 +53,8 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     <>
       {/* Mobile: Backdrop */}
       <div 
-        className={`md:hidden fixed inset-0 bg-white z-[60] transition-opacity duration-300 ease-in-out ${
-          isOpen ? 'opacity-25 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        className={`md:hidden fixed top-16 inset-0 bg-white z-[60] transition-opacity duration-300 ease-in-out ${
+          isOpen ? 'opacity-75 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
@@ -63,7 +63,7 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
       <div className={`md:hidden fixed top-16 right-0 bottom-0 w-[80%] bg-white z-[60] shadow-lg transform transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : 'translate-x-[110%]'
       }`}>
-        <div className="flex flex-col h-full p-4">
+        <div className="flex flex-col h-full p-4 shadow-inner">
           <MystycMenu />
         </div>
       </div>

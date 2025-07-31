@@ -1,24 +1,35 @@
 'use client'
 
-import { AppUser } from '@/interfaces/app/app-user.interface';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+import { useUser } from '../context/AppContext';
 import AppLogo from '@/components/ui/AppLogo';
 import Link from '@/components/ui/Link';
+import WebsiteHeader from '@/components/website/WebsiteHeader';
+import MystycHeader from '@/components/mystyc/MystycHeader';
 
-interface HeaderProps {
-  children?: React.ReactNode | null;
-  user?: AppUser | null;
-  className?: string | null;
-}
+export default function Header() {
+  const user = useUser();
+  const pathname = usePathname();
+  const [className, setClassName] = useState("max-w-content");
 
-export default function Header({ children, user, className }: HeaderProps) {
+  useEffect(() => {
+    if (pathname.startsWith("/admin")) setClassName("max-w-full");
+    else setClassName("max-w-[80rem]");
+  }, [pathname, setClassName]);
+
   return (
     <header className="flex w-full bg-white px-4 py-3 shadow-sm relative z-[50]">
-      <nav className={`flex w-full ${className ? className : 'max-w-content'} mx-auto items-center`}>
-        <Link href="/home" className="flex items-center">
-          <AppLogo orientation="horizontal" showText isPlus={user?.isPlus} />
+      <nav className={`flex w-full mx-auto items-center ${className} transition-[max-width] duration-300 ease-in-out`}>
+        <Link href="/" className="flex items-center hover:!no-underline">
+          <AppLogo orientation="horizontal" showText user={user} />
         </Link>
         <div className="flex space-x-4 ml-auto">
-          {children}
+          {user
+            ? <MystycHeader />
+            : <WebsiteHeader />
+          }
         </div>
       </nav>
     </header>

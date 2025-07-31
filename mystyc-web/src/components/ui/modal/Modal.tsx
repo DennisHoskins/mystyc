@@ -3,9 +3,6 @@
 import { ReactNode } from 'react';
 
 import styles from './Modal.module.css';
-
-import { useEffect } from 'react';  
-
 import { useAppStore } from '@/store/appStore';
 import Overlay from '@/components/ui/overlay/Overlay';
 import ModalTransition from '../transition/ModalTransition';
@@ -34,16 +31,9 @@ export default function Modal({ children, isOpen, onClose, doTransition = true }
     }
   };
 
-  useEffect(() => {
-    console.log('Modal mounted');
-    return () => console.log('Modal unmounted');
-  }, []);
-
   if (!isModalShowing || !isOpen) {
     return null;
   }
-
-console.log("MODAL TRANS:", doTransition);  
 
   return (
     <Overlay onClick={handleOverlayClick}>

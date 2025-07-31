@@ -5,7 +5,6 @@ export interface AppState {
   // App state
   isOnline: boolean;
   isGlobalError: boolean;
-  isLoggedOutByServer: boolean;
   isBusy: boolean;
   busyTimer: ReturnType<typeof setTimeout> | null;
   toasts: { id: string; message: string; type: 'success' | 'error' | 'info'; timestamp: number }[];
@@ -20,7 +19,6 @@ export interface AppState {
   // Actions
   setOnline: (isOnline: boolean) => void;
   setGlobalError: (isGlobalError: boolean) => void;
-  setLoggedOutByServer: (isLoggedOutByServer: boolean) => void;
   setBusy: (delayMs?: number) => void;
   clearBusy: () => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -40,7 +38,6 @@ const initialState = {
   isOnline: true,
   isBusy: false,
   isGlobalError: false,
-  isLoggedOutByServer: false,
   busyTimer: null,
   toasts: [],
   hasHydrated: false,
@@ -74,7 +71,6 @@ export const useAppStore = create<AppState>()(
         set({ isBusy: false, busyTimer: null });
       },
       setGlobalError: (isGlobalError) => set({ isGlobalError }),
-      setLoggedOutByServer: (isLoggedOutByServer) => set({ isLoggedOutByServer }),
       showToast: (message, type = 'info') => {
         const toast = { id: Math.random().toString(36).slice(2, 11), message, type, timestamp: Date.now() };
         set((state) => ({ toasts: [...state.toasts, toast] }));
@@ -98,7 +94,6 @@ export const useAppStore = create<AppState>()(
       name: 'app-storage',
       partialize: (state) => ({ 
         sidebarCollapsed: state.sidebarCollapsed,
-        isLoggedOutByServer: state.isLoggedOutByServer, 
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

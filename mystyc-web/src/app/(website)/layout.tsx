@@ -35,7 +35,6 @@ export default function Template({ children, modal } : { children: React.ReactNo
   useEffect(() => {
     if (isModalShowing == prevModalShowingRef.current) return;
     prevModalShowingRef.current = isModalShowing;    
-    console.log("LAYOUT CHANGE:", isModalShowing);
   }, [isModalShowing]);  
 
   const handleCloseModal = () => {

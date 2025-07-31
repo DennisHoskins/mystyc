@@ -1,13 +1,13 @@
 'use client'
 
-import React from 'react';
-
 import IconEye from '@/components/ui/icons/IconEye';
+import Sparkle from './sparkle/Sparkle';
+import { AppUser } from '@/interfaces/app/app-user.interface';
 
 type AppLogoProps = {
   orientation?: 'vertical' | 'horizontal';
   showText?: boolean;
-  isPlus?: boolean;
+  user?: AppUser | null;
   subheading?: string;
   scale?: number;
   className?: string;
@@ -16,7 +16,7 @@ type AppLogoProps = {
 export default function AppLogo({
   orientation = 'vertical',
   showText = true,
-  isPlus = false,
+  user,
   subheading,
   scale = 1,
   className = '',
@@ -31,8 +31,8 @@ export default function AppLogo({
       <IconEye size={iconSize} className="text-gray-500" />
       {showText && (
         <div className={`${isVertical ? 'text-center' : 'ml-1'}`}>
-          <div style={{ fontSize: titleSize }} className="font-bold tracking-wide text-gray-900">
-            mystyc{isPlus && <sup>+</sup>}
+          <div style={{ fontSize: titleSize }} className="font-bold tracking-wide text-gray-900 flex items-center">
+            mystyc<Sparkle user={user} />
           </div>
           {subheading && (
             <div style={{ fontSize: subSize }} className="text-gray-500 mt-4">

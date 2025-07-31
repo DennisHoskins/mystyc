@@ -7,7 +7,7 @@ import { registerVisit } from '@/server/actions/analytics';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { useAppStore } from '@/store/appStore';
 import { logger } from '@/util/logger'
-import ServerLogoutForm from '@/components/auth/ServerLogoutForm';
+import Header from './Header';
 import GlobalError from '@/components/ui/layout/GlobalError';
 import Offline from '@/components/ui/layout/Offline';
 
@@ -41,13 +41,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <Header />
       {isGlobalError
         ? <GlobalError />
         : !isOnline
         ? <Offline />
         : children
       }
-      <ServerLogoutForm />
     </>
   );  
 }

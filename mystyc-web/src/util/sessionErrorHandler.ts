@@ -18,7 +18,6 @@ export async function handleSessionError(error: any, context = 'Unknown') {
     
     try {
       // await serverLogout();
-      useAppStore.getState().setLoggedOutByServer(true);
       useAppStore.getState().clearBusy();
       useUserStore.getState().clearUser();
     } catch (logoutErr) {
