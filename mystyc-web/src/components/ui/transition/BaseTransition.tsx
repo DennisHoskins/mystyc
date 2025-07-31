@@ -40,7 +40,7 @@ export const transitionVariants = {
 export default function BaseTransition({ 
   children, 
   variants,
-  transitionConfig = { duration: 0.5, ease: "easeInOut" },
+  transitionConfig = { duration: 0.25, ease: "easeInOut" },
   className = "",
   keyPrefix = "transition",
   usePathnameKey = false

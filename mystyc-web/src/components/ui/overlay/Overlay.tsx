@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 import styles from './Overlay.module.css';
-import OverlayTransition from '../transition/OverlayTransition';
+import OverlayTransition from '@/components/ui/transition/OverlayTransition';
 
 interface OverlayProps {
   children?: ReactNode;
