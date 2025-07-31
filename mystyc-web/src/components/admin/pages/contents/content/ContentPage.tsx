@@ -6,7 +6,7 @@ import { Content } from 'mystyc-common/schemas';
 import { getContent } from '@/server/actions/admin/content';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';

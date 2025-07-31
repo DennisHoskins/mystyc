@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@/components/ui/layout/context/AppContext';
+import { useUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Footer from "../ui/layout/Footer";
 

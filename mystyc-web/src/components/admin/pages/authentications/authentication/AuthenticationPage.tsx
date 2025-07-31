@@ -6,7 +6,7 @@ import { AuthEvent } from 'mystyc-common/schemas/auth-event.schema';
 import { getAuthEvent } from '@/server/actions/admin/auth-events';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDetailsPanel from './AuthenticationDetailsPanel';

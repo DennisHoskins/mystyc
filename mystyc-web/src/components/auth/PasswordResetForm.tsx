@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 import Form from '@/components/ui/form/Form';
@@ -79,10 +79,10 @@ export default function PasswordResetPage() {
 
         <p className="text-center text-sm mt-4 text-gray-600">
           <span className="block">
-            Remember your password? <Link href="/login" onClick={() => router.replace("/login")}>Sign In</Link>
+            Remember your password? <Link href="/login" onClick={() => router.replace("/login", false)}>Sign In</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <Link href="/register" onClick={() => router.replace("/register")}>Register</Link>
+            Don&apos;t have an account? <Link href="/register" onClick={() => router.replace("/register", false)}>Register</Link>
           </span>
         </p>
       </Form>

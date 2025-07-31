@@ -8,7 +8,7 @@ import { getUserDevices } from '@/server/actions/admin/users';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import DevicesTable from '@/components/admin/pages/devices/DevicesTable';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 

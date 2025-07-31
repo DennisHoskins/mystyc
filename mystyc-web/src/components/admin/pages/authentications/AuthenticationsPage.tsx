@@ -9,7 +9,7 @@ import { getAuthEventsSummaryStats, getAuthEvents, getAuthEventsByType } from '@
 import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import AuthenticationsBreadcrumbs from './AuthenticationsBreadcrumbs';

@@ -6,7 +6,7 @@ import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { getUser } from '@/server/actions/admin/users';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import UserDetailsPanel from './UserDetailsPanel';

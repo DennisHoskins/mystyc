@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { useAppStore } from '@/store/appStore';
-import { useUser } from '@/components/ui/layout/context/AppContext';
+import { useUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminFooter from "@/components/admin/AdminFooter";

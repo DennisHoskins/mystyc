@@ -1,7 +1,12 @@
+'use client'
+
 import { ReactNode } from 'react';
 
 import styles from './Modal.module.css';
 
+import { useEffect } from 'react';  
+
+import { useAppStore } from '@/store/appStore';
 import Overlay from '@/components/ui/overlay/Overlay';
 import ModalTransition from '../transition/ModalTransition';
 
@@ -9,10 +14,11 @@ interface ModalProps {
   children: ReactNode;
   isOpen: boolean;
   onClose?: () => void;
+  doTransition?: boolean;
 }
 
-export default function Modal({ children, isOpen, onClose }: ModalProps) {
-  if (!isOpen) return null;
+export default function Modal({ children, isOpen, onClose, doTransition = true }: ModalProps) {
+  const { isModalShowing } = useAppStore();
 
   const handleOverlayClick = async (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && onClose) {
@@ -28,9 +34,20 @@ export default function Modal({ children, isOpen, onClose }: ModalProps) {
     }
   };
 
+  useEffect(() => {
+    console.log('Modal mounted');
+    return () => console.log('Modal unmounted');
+  }, []);
+
+  if (!isModalShowing || !isOpen) {
+    return null;
+  }
+
+console.log("MODAL TRANS:", doTransition);  
+
   return (
     <Overlay onClick={handleOverlayClick}>
-      <ModalTransition>
+      <ModalTransition doTransition={doTransition}>
         <div className={`w-full max-w-xl p-6 text-center space-y-6 pointer-events-auto ${styles.modal}`} onClick={(e) => e.stopPropagation()}>
           {children}
         </div>

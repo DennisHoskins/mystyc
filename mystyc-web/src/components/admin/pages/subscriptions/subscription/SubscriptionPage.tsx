@@ -6,7 +6,7 @@ import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
 import { getPayment } from '@/server/actions/admin/payments';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
 import SubscriptionDetailsPanel from './SubscriptionDetailsPanel';

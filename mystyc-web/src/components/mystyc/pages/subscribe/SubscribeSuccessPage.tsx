@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { getUser } from '@/server/actions/user';
 import { getDeviceInfo } from "@/util/getDeviceInfo";
 
-import { useUser, useSetUser, useBusy, useToast } from '@/components/ui/layout/context/AppContext';
+import { useUser, useSetUser, useBusy, useToast } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
 

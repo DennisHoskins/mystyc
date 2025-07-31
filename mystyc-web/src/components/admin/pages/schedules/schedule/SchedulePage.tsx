@@ -6,7 +6,7 @@ import { Schedule } from 'mystyc-common/schemas';
 import { getSchedule } from '@/server/actions/admin/schedules';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import ScheduleDetailsPanel from './ScheduleDetailsPanel';

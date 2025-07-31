@@ -8,7 +8,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { getUserContent } from '@/server/actions/admin/users';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 import ContentTable from '@/components/admin/pages/contents/ContentTable';
 

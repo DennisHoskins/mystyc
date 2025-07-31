@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from "../ui/layout/context/AppContext"; 
+import { useUser } from "../ui/context/AppContext"; 
 import WebsiteHeader from "@/components/website/WebsiteHeader";
 import ScrollWrapper from "@/components/ui/layout/scroll/ScrollWrapper";
 import WebsiteFooter from "@/components/website/WebsiteFooter";

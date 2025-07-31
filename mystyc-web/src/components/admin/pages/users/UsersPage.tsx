@@ -9,7 +9,7 @@ import { getUsersSummaryStats, getAllUsers, getUsers, getPlusUsers } from '@/ser
 import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import UsersBreadcrumbs from './UsersBreadcrumbs';

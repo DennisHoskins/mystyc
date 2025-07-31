@@ -6,7 +6,7 @@ import { DeviceSession } from '@/interfaces';
 import { getDeviceSession } from '@/server/actions/admin/devices';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import DeviceIcon from '@/components/admin/ui/icons/DeviceIcon';
 import DeviceDetailsPanel from './DeviceDetailsPanel';

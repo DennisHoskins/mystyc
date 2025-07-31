@@ -11,6 +11,7 @@ interface TransitionProps {
   className?: string;
   keyPrefix?: string;
   usePathnameKey?: boolean;
+  doTransition?: boolean;
 }
 
 // Preset variants
@@ -43,7 +44,8 @@ export default function BaseTransition({
   transitionConfig = { duration: 0.25, ease: "easeInOut" },
   className = "",
   keyPrefix = "transition",
-  usePathnameKey = false
+  usePathnameKey = false,
+  doTransition = true,
 }: TransitionProps) {
   const [showing, setShowing] = useState(true);
   const pathname = usePathname();
@@ -68,7 +70,7 @@ export default function BaseTransition({
         <motion.div
           key={key}
           variants={variants}
-          initial="initial"
+          initial={doTransition ? 'initial' : ''}
           animate="animate"
           exit="exit"
           transition={transitionConfig}

@@ -11,7 +11,7 @@ import { getSubscriptionsSummaryStats, getPayments } from '@/server/actions/admi
 import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import SubscriptionsBreadcrumbs from './SubscriptionsBreadcrumbs';

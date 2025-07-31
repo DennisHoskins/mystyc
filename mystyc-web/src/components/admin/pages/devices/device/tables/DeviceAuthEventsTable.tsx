@@ -8,7 +8,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { getDeviceAuthEvents } from '@/server/actions/admin/devices';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AuthenticationsTable from '@/components/admin/pages/authentications/AuthenticationsTable';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 

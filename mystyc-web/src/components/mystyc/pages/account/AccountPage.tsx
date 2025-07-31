@@ -9,7 +9,7 @@ import { handleSessionError } from '@/util/sessionErrorHandler';
 import { useTransitionRouter } from "@/hooks/useTransitionRouter";
 import { logger } from "@/util/logger";
 
-import { useUser, useSetUser, useInitialized, useBusy, useToast } from "@/components/ui/layout/context/AppContext";
+import { useUser, useSetUser, useInitialized, useBusy, useToast } from "@/components/ui/context/AppContext";
 import Card from "@/components/ui/Card";
 import Heading from "@/components/ui/Heading";
 import Button from "@/components/ui/Button";

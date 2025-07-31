@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
-  inset: 0;
   z-index: 100;
+  inset: 0;
   display: flex;
   flex-grow: 1;
   align-items: center;

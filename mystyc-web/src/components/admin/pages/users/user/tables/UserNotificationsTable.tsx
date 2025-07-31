@@ -8,7 +8,7 @@ import { getUserNotifications } from '@/server/actions/admin/users';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import NotificationsTable from '@/components/admin/pages/notifications/NotificationsTable';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 

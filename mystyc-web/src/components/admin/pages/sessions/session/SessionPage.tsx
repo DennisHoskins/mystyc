@@ -7,7 +7,7 @@ import { Session } from '@/interfaces';
 import { getSession } from '@/server/actions/admin/sessions';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionDetailsPanel from './SessionDetailsPanel';

@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/components/ui/layout/context/AppContext';
+import { useToast } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import { useInitialized, useUser, useClearUser, useBusy } from '@/components/ui/layout/context/AppContext';
+import { useInitialized, useUser, useClearUser, useBusy } from '@/components/ui/context/AppContext';
 import { logger } from '@/util/logger';
 
 export default function LogoutPage() {
@@ -35,6 +35,7 @@ export default function LogoutPage() {
       .then(() => {
         clearUser();
         showToast("You have been Logged Out", "success");
+        router.replace("/");
       })
       .catch((err: any) => {
         logger.error('Logout error:', err);

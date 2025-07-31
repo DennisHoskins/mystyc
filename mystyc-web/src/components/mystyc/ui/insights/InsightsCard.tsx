@@ -7,7 +7,7 @@ import { AppUser } from '@/interfaces/app/app-user.interface';
 import { getUserContent } from '@/server/actions/user';
 import { getDeviceInfo } from "@/util/getDeviceInfo";
 
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import { Content } from 'mystyc-common/schemas/content.schema';
 import { logger } from '@/util/logger';
 

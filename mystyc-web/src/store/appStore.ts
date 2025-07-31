@@ -11,9 +11,8 @@ export interface AppState {
   toasts: { id: string; message: string; type: 'success' | 'error' | 'info'; timestamp: number }[];
   hasHydrated: boolean;
 
-  // Transition state
-  transition: 'none' | 'app' | 'page';
-  transitionWorking: boolean;
+  // Modal state
+  isModalShowing: boolean;
 
   // Admin state
   sidebarCollapsed: boolean;
@@ -29,9 +28,8 @@ export interface AppState {
   setHasHydrated: (isHydrated: boolean) => void;
   clearAppState: () => void;
 
-  // Transition actions
-  setTransition: (transition: 'none' | 'app' | 'page') => void;
-  setTransitionWorking: (working: boolean) => void;
+  // Modal actions
+  setModalShowing: (isModalShowing: boolean) => void;
 
   // Admin actions
   setSidebarCollapsed: (collapsed: boolean) => void;
@@ -47,9 +45,8 @@ const initialState = {
   toasts: [],
   hasHydrated: false,
 
-  // Transition initial state
-  transition: 'none' as 'none' | 'app' | 'page',
-  transitionWorking: false,
+  // Modal initial state
+  isModalShowing: false,
 
   // Admin initial state
   sidebarCollapsed: false,
@@ -91,9 +88,8 @@ export const useAppStore = create<AppState>()(
       },
       setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
 
-      // Transition actions
-      setTransition: (transition: 'none' | 'app' | 'page') => set({ transition }),
-      setTransitionWorking: (working) => set({ transitionWorking: working }),
+      // Modal actions
+      setModalShowing: (isModalShowing) => set({ isModalShowing }),
 
       // Admin actions
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),

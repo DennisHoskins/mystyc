@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { useUser } from '@/components/ui/layout/context/AppContext';
+import { useUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import Main from '@/components/ui/layout/Main';
 import MystycHeader from "@/components/mystyc/MystycHeader";

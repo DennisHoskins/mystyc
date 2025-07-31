@@ -8,7 +8,7 @@ import { getDashboardStats } from '@/server/actions/admin/stats';
 import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';

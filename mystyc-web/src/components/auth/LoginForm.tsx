@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useSetUser, useBusy } from '@/components/ui/layout/context/AppContext';
+import { useSetUser, useBusy } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
@@ -31,6 +31,7 @@ export default function LoginForm() {
       const user = await signIn(email, password);
       if (!user) throw new Error('no user returned');
       setUser(user);
+      router.replace("/home");
     } catch (err: any) {
       setError(
         err.code === 500
@@ -76,10 +77,10 @@ export default function LoginForm() {
         </Button>
         <p className="text-center text-sm mt-4 text-gray-600">
           <span className="block">
-            <Link href="/password-reset" onClick={() => { router.replace("/password-reset") }}>Forgot your password?</Link>
+            <Link href="/password-reset" onClick={() => { router.replace("/password-reset", false)}}>Forgot your password?</Link>
           </span>
           <span className="block mt-1">
-            Don&apos;t have an account? <Link href="/register" onClick={() => { router.replace("/register") }}>Register</Link>
+            Don&apos;t have an account? <Link href="/register" onClick={() => {router.replace("/register", false)}}>Register</Link>
           </span>
         </p>
       </Form>

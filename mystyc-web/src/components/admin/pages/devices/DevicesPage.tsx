@@ -9,7 +9,7 @@ import { getDevicesSummaryStats, getDevices, getOnlineDevices, getOfflineDevices
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
-import { useBusy } from '@/components/ui/layout/context/AppContext';
+import { useBusy } from '@/components/ui/context/AppContext';
 import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import DevicesBreadcrumbs from './DevicesBreadcrumbs';
