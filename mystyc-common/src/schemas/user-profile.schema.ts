@@ -18,23 +18,37 @@ export const ZodiacSign = z.enum([
   'Pisces'
 ]);
 
+// Reusable base schemas
+const BaseNameSchema = z.string()
+  .min(1, "Name is required")
+  .max(50, "Name must be less than 50 characters")
+  .regex(/^[a-zA-Z\s\-'\.]+$/, "Can only contain letters, spaces, hyphens, and apostrophes")
+  .trim();
+
+const BasePersonSchema = z.object({
+  firstName: BaseNameSchema.optional(),
+  lastName: BaseNameSchema.optional(),
+});
+
 export const SubscriptionSchema = z.object({
-  level: z.nativeEnum(SubscriptionLevel),
+  level: z.nativeEnum(SubscriptionLevel, {
+    errorMap: () => ({ message: "Invalid subscription level" })
+  }),
   startDate: z.coerce.date().optional().nullable(),
-  creditBalance: z.number().min(0).default(0)
+  creditBalance: z.number().min(0, "Credit balance cannot be negative").default(0)
 });
 
 export const BirthLocationSchema = z.object({
-  placeId: z.string(),
-  name: z.string(),
-  formattedAddress: z.string(),
+  placeId: z.string().min(1, "Place ID is required"),
+  name: z.string().min(1, "Location name is required"),
+  formattedAddress: z.string().min(1, "Address is required"),
   coordinates: z.object({
-    lat: z.number(),
-    lng: z.number()
+    lat: z.number().min(-90).max(90, "Invalid latitude"),
+    lng: z.number().min(-180).max(180, "Invalid longitude")
   }),
   timezone: z.object({
-    name: z.string(),
-    offsetHours: z.number()
+    name: z.string().min(1, "Timezone name is required"),
+    offsetHours: z.number().min(-12).max(14, "Invalid timezone offset")
   })
 });
 
@@ -46,18 +60,14 @@ export const CreateUserProfileSchema = z.object({
   stripeCustomerId: z.string().optional()
 }).strict();
 
-export const UserProfileInputSchema = z.object({
+export const UserProfileInputSchema = BasePersonSchema.extend({
   firebaseUid: z.string().min(20).max(128),
   email: z.string().email().max(254),
-  firstName: z.string()
-    .min(1)
-    .max(50)
-    .trim(),
-  lastName: z.string()
-    .min(1)
-    .max(50)
-    .trim(),
-  dateOfBirth: z.coerce.date().optional().nullable(),
+  dateOfBirth: z.coerce.date()
+    .min(new Date('1900-01-01'), "Birth date cannot be before 1900")
+    .max(new Date(), "Birth date cannot be in the future")
+    .optional()
+    .nullable(),
   timeOfBirth: z.string()
     .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, "Time must be in HH:mm format")
     .optional(),

@@ -10,7 +10,7 @@ declare global {
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 
-import { PlaceResult } from '@/interfaces';
+import { PlaceResult } from '@/schemas/place-result.schema';
 import { logger } from '@/util/logger';
 import ComboInput from './ComboInput';
 

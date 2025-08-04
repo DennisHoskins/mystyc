@@ -65,10 +65,10 @@ export class UserProfile {
   roles!: UserRole[];  
 
   @Prop()
-  firstName!: string;
+  firstName?: string;
 
   @Prop()
-  lastName!: string;
+  lastName?: string;
 
   @Prop({ type: Date })
   dateOfBirth?: Date;

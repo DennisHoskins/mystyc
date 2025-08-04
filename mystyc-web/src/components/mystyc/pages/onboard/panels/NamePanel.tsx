@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
+import { UserProfileInputSchema } from 'mystyc-common/schemas/user-profile.schema';
 import { AppUser } from '@/interfaces/app/app-user.interface';
 import { DeviceInfo } from '@/interfaces/';
-import { UserProfileInputSchema } from 'mystyc-common/schemas/user-profile.schema';
 import { updateUserProfile } from '@/server/actions/userProfile';
 import { useUserStore } from '@/store/userStore';
 
@@ -20,83 +22,41 @@ interface NamePanelProps {
   setIsWorking: (working: boolean) => void;
 }
 
+type NameFormData = {
+  firstName?: string;
+  lastName?: string;
+};
+
 export default function NamePanel({ user, deviceInfo, setIsWorking }: NamePanelProps) {
   const { setUser } = useUserStore();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<{ firstName?: string[]; lastName?: string[] }>({});
   const [serverError, setServerError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setIsWorking(false);
-    // Pre-populate if user already has names
-    if (user.userProfile.firstName) setFirstName(user.userProfile.firstName);
-    if (user.userProfile.lastName) setLastName(user.userProfile.lastName);
-  }, [setIsWorking, user.userProfile.firstName, user.userProfile.lastName]);
-
-  if (!user) {
-    return null;
-  }
-
-  const validateField = (field: 'firstName' | 'lastName', value: string) => {
-    if (field === 'firstName') {
-      const result = UserProfileInputSchema.pick({ firstName: true }).safeParse({ firstName: value });
-      if (!result.success) {
-        const errors = result.error.flatten().fieldErrors;
-        setFieldErrors(prev => ({ ...prev, firstName: errors.firstName }));
-      } else {
-        setFieldErrors(prev => ({ ...prev, firstName: undefined }));
-      }
-    } else {
-      const result = UserProfileInputSchema.pick({ lastName: true }).safeParse({ lastName: value });
-      if (!result.success) {
-        const errors = result.error.flatten().fieldErrors;
-        setFieldErrors(prev => ({ ...prev, lastName: errors.lastName }));
-      } else {
-        setFieldErrors(prev => ({ ...prev, lastName: undefined }));
-      }
+  const { 
+    register, 
+    handleSubmit, 
+    watch,
+    formState: { errors, isValid }
+  } = useForm<NameFormData>({
+    resolver: zodResolver(UserProfileInputSchema.pick({ firstName: true, lastName: true })),
+    mode: 'onChange',
+    defaultValues: {
+      firstName: user.userProfile.firstName || '',
+      lastName: user.userProfile.lastName || ''
     }
-  };
+  });
 
-  const handleBlur = (field: 'firstName' | 'lastName', value: string) => {
-    if (value.trim()) {
-      validateField(field, value.trim());
-    }
-  };
+  // Watch values for real-time updates
+  const firstName = watch('firstName');
+  const lastName = watch('lastName');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setServerError(null);
-    
-    // Validate both required fields
-    const trimmedFirstName = firstName.trim();
-    const trimmedLastName = lastName.trim();
-    
-    const schema = UserProfileInputSchema.pick({ firstName: true, lastName: true });
-    const result = schema.safeParse({
-      firstName: trimmedFirstName,
-      lastName: trimmedLastName
-    });
-    
-    if (!result.success) {
-      const errors = result.error.flatten().fieldErrors;
-      setFieldErrors(errors);
-      return;
-    }
-
+  const onSubmit = async (data: NameFormData) => {
     try {
       setIsWorking(true);
-      
-      const updatedUser = await updateUserProfile(deviceInfo, {
-        firstName: trimmedFirstName,
-        lastName: trimmedLastName
-      });
-      
-      if (updatedUser) {
-        setUser(updatedUser);
+      const updatedUserProfile = await updateUserProfile(deviceInfo, data);
+      if (updatedUserProfile) {
+        user.userProfile = updatedUserProfile;          
+        setUser(user);
         window.dispatchEvent(new CustomEvent('wizard-next'));
-      } else {
-        throw new Error('No user data returned from server');
       }
     } catch (error) {
       setServerError(error instanceof Error ? error.message : 'Failed to update profile');
@@ -105,51 +65,35 @@ export default function NamePanel({ user, deviceInfo, setIsWorking }: NamePanelP
     }
   };
 
-  const hasFieldErrors = Object.values(fieldErrors).some(errors => errors && errors.length > 0);
-  const isFormValid = firstName.trim() && lastName.trim() && !hasFieldErrors;
-
   return (
     <FormLayout 
-      title="What's your name?"
-      subtitle={
-        <>
-          Tell me what you would like to be called.
-          <br />
-          Don&apos;t worry, we&apos;ll keep it private—just between us.
-        </>
-      } 
+      title="What's your name?" 
+      subtitle={<>Tell me what you would like to be called.<br />Don&apos;t worry, we&apos;ll keep it private—just between us.</>}
       error={serverError}
     >
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <TextInput
           id="firstName"
-          name="firstName"
-          type="text"
-          label='First Name'
+          label="First Name"
           autoComplete="given-name"
           value={firstName}
-          onChange={e => setFirstName(e.target.value)}
-          onBlur={e => handleBlur('firstName', e.target.value)}
-          error={fieldErrors.firstName?.[0]}
+          error={errors.firstName?.message}
           required
+          {...register('firstName')}
         />
         <TextInput
           id="lastName"
-          name="lastName"
-          type="text"
-          label='Last Name'
-          autoComplete="family-name"
+          label="Last Name"
+          autoComplete="family-name" 
           value={lastName}
-          onChange={e => setLastName(e.target.value)}
-          onBlur={e => handleBlur('lastName', e.target.value)}
-          error={fieldErrors.lastName?.[0]}
+          error={errors.lastName?.message}
           required
+          {...register('lastName')}
         />
         
         <Button
           type="submit"
-          disabled={!isFormValid}
-          loadingContent="Working..."
+          disabled={!isValid}
           className="py-3 w-auto min-w-28 self-end flex items-center justify-center"
         >
           Next

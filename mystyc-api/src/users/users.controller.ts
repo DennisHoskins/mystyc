@@ -115,12 +115,11 @@ export class UsersController {
   @Throttle({ default: { limit: 100, ttl: 600000 } })
   async updateProfile(
     @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface, 
-    @Body() body: z.infer<typeof UpdateUserProfileSchema>
+    @Body(new ZodValidationPipe(UpdateUserProfileSchema)) body: z.infer<typeof UpdateUserProfileSchema>
   ): Promise<UserProfile> {
     this.logger.info('Updating profile via PATCH /update-profile', { 
       uid: firebaseUserFromDecorator.uid,
       updateFields: Object.keys(body),
-      rawBody: body 
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);

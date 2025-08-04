@@ -25,7 +25,7 @@ export default function FormLabel({
       )}
       {...props}
     >
-      {error || children}
+      {children}{error && " " + error.toLowerCase()}
       {required && !error && <span className="text-red-500 ml-1">*</span>}
     </label>
   );

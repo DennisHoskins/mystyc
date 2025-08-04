@@ -1,37 +1,47 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ChevronRight } from 'lucide-react'
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { ChevronRight } from 'lucide-react';
 
-import { AppUser } from '@/interfaces/app/app-user.interface'
-import { DeviceInfo, PlaceResult } from '@/interfaces/'
-import { updateUserProfile } from '@/server/actions/userProfile'
-import { useUserStore } from '@/store/userStore'
+import { AppUser } from '@/interfaces/app/app-user.interface';
+import { DeviceInfo } from '@/interfaces/';
+import { PlaceResultSchema } from '@/schemas/place-result.schema';
+import { updateUserProfile } from '@/server/actions/userProfile';
+import { useUserStore } from '@/store/userStore';
 
-import FormLayout from '@/components/ui/form/FormLayout'
-import Form from '@/components/ui/form/Form'
-import PlacesSearchInput from '@/components/ui/form/PlacesSearchInput'
-import Button from '@/components/ui/Button'
+import FormLayout from '@/components/ui/form/FormLayout';
+import Form from '@/components/ui/form/Form';
+import PlacesSearchInput from '@/components/ui/form/PlacesSearchInput';
+import Button from '@/components/ui/Button';
 
 interface CityPanelProps {
   user: AppUser;
-  setIsWorking: (working: boolean) => void;
   deviceInfo: DeviceInfo;
+  setIsWorking: (working: boolean) => void;
 }
 
-export default function CityPanel({ user, setIsWorking, deviceInfo }: CityPanelProps) {
+const CitySchema = z.object({
+  selectedPlace: PlaceResultSchema.optional().refine(val => val !== undefined, "Please select your birth city")
+});
+
+type CityFormData = z.infer<typeof CitySchema>;
+
+export default function CityPanel({ user, deviceInfo, setIsWorking }: CityPanelProps) {
   const { setUser } = useUserStore();
-  const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<{ place?: string[] }>({});
   const [serverError, setServerError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setIsWorking(false);
-    // Pre-populate if user already has birth location
-    if (user.userProfile.birthLocation) {
-      // Create a mock PlaceResult from existing birth location data
-      // This won't be perfect but will show the location name
-      const mockPlaceResult: PlaceResult = {
+  const { 
+    control,
+    handleSubmit, 
+    formState: { errors, isValid }
+  } = useForm<CityFormData>({
+    resolver: zodResolver(CitySchema),
+    mode: 'onChange',
+    defaultValues: {
+      selectedPlace: user.userProfile.birthLocation ? {
         place_id: user.userProfile.birthLocation.placeId,
         name: user.userProfile.birthLocation.name,
         formatted_address: user.userProfile.birthLocation.formattedAddress,
@@ -41,62 +51,20 @@ export default function CityPanel({ user, setIsWorking, deviceInfo }: CityPanelP
             lng: user.userProfile.birthLocation.coordinates.lng
           }
         }
-      };
-      setSelectedPlace(mockPlaceResult);
+      } : undefined
     }
-  }, [setIsWorking, user.userProfile.birthLocation]);
+  });
 
-  if (!user) {
-    return null;
-  }
-
-  const validatePlace = (place: PlaceResult | null) => {
-    if (!place) {
-      setFieldErrors({ place: ['Please select your birth city'] });
-      return false;
-    }
-
-    // Basic validation - ensure required properties exist
-    if (!place.place_id || !place.name || !place.formatted_address || 
-        !place.geometry?.location?.lat || !place.geometry?.location?.lng) {
-      setFieldErrors({ place: ['Invalid location selected'] });
-      return false;
-    }
-
-    setFieldErrors({ place: undefined });
-    return true;
-  };
-
-  const handlePlaceChange = (place: PlaceResult | null) => {
-    setSelectedPlace(place);
-    if (place) {
-      validatePlace(place);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setServerError(null);
-    
-    // Validate place selection
-    if (!validatePlace(selectedPlace)) {
-      return;
-    }
-
+  const onSubmit = async (data: CityFormData) => {
     try {
       setIsWorking(true);
-      
-      const profileUpdate = {
-        selectedPlace: selectedPlace!,
-      };
-      
-      const updatedUser = await updateUserProfile(deviceInfo, profileUpdate);
-      
-      if (updatedUser) {
-        setUser(updatedUser);
+      const updatedUserProfile = await updateUserProfile(deviceInfo, {
+        selectedPlace: data.selectedPlace
+      });
+      if (updatedUserProfile) {
+        user.userProfile = updatedUserProfile;
+        setUser(user);
         window.dispatchEvent(new CustomEvent('wizard-next'));
-      } else {
-        throw new Error('No user data returned from server');
       }
     } catch (error) {
       setServerError(error instanceof Error ? error.message : 'Failed to update birth location');
@@ -105,36 +73,32 @@ export default function CityPanel({ user, setIsWorking, deviceInfo }: CityPanelP
     }
   };
 
-  const hasFieldErrors = Object.values(fieldErrors).some(errors => errors && errors.length > 0);
-  const isFormValid = selectedPlace && !hasFieldErrors;
-
   return (
     <FormLayout
       title="Where were you born?"
-      subtitle={
-        <>
-          We use your birth city to fine-tune your chart.
-          <br />
-          No need for an exact address—just the city works.
-        </>
-      }
+      subtitle={<>We use your birth city to fine-tune your chart.<br />No need for an exact address—just the city works.</>}
       error={serverError}
     >
-      <Form onSubmit={handleSubmit}>
-        <PlacesSearchInput
-          id="birthCity"
-          name="birthCity"
-          label="Enter the city you were born in"
-          value={selectedPlace}
-          onChange={handlePlaceChange}
-          placeholder="Start typing city name..."
-          error={fieldErrors.place?.[0]}
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="selectedPlace"
+          control={control}
+          render={({ field }) => (
+            <PlacesSearchInput
+              id="birthCity"
+              name="birthCity"
+              label="Enter the city you were born in"
+              value={field.value || null}
+              onChange={(place) => field.onChange(place || undefined)}
+              placeholder="Start typing city name..."
+              error={errors.selectedPlace?.message}
+            />
+          )}
         />
 
         <Button
           type="submit"
-          disabled={!isFormValid}
-          loadingContent="Working..."
+          disabled={!isValid}
           className="py-3 w-auto min-w-28 self-end flex items-center justify-center"
         >
           Next
@@ -142,5 +106,5 @@ export default function CityPanel({ user, setIsWorking, deviceInfo }: CityPanelP
         </Button>
       </Form>
     </FormLayout>
-  )
+  );
 }

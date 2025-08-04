@@ -13,6 +13,10 @@ import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/sche
 import { logger } from '@/common/util/logger';
 import { UserProfileDocument } from './schemas/user-profile.schema';
 
+// Define validation schemas once at module level
+const CREATE_USER_VALIDATION = CreateUserProfileSchema;
+const UPDATE_PROFILE_VALIDATION = UpdateUserProfileSchema;
+
 @Injectable()
 export class UserProfilesService {
   constructor(@InjectModel('UserProfile') private userModel: Model<UserProfileDocument>) {}
@@ -218,13 +222,9 @@ export class UserProfilesService {
       email: createUserDto.email,
     }, 'UserProfileService');
 
-    const validation = CreateUserProfileSchema.safeParse(createUserDto);
-    if (!validation.success) {
-      throw validation.error;
-    }
-
     try {
-      const newUser = new this.userModel(createUserDto);
+      const validatedData = CREATE_USER_VALIDATION.parse(createUserDto);
+      const newUser = new this.userModel(validatedData);
       const savedUser = await newUser.save();
 
       logger.info('User profile created successfully', {
@@ -234,6 +234,14 @@ export class UserProfilesService {
 
       return this.transformToUserProfile(savedUser);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        logger.error('User profile validation failed', {
+          firebaseUid: createUserDto.firebaseUid,
+          errors: error.flatten().fieldErrors,
+        }, 'UserProfileService');
+        throw new ConflictException('Invalid user data provided');
+      }
+
       logger.error('Failed to create user profile', {
         firebaseUid: createUserDto.firebaseUid,
         error,

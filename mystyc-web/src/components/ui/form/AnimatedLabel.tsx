@@ -45,7 +45,7 @@ export default function AnimatedLabel({ htmlFor, label, error, value }: Animated
           : 'top-1/2 -translate-y-1/2 text-sm'
       )}
     >
-      {error == null && label}
+      {label}
     </FormLabel>
   );
 }

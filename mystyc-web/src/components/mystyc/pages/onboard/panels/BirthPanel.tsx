@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
+import { UserProfileInputSchema } from 'mystyc-common/schemas/user-profile.schema';
 import { AppUser } from '@/interfaces/app/app-user.interface';
 import { DeviceInfo } from '@/interfaces/';
-import { UserProfileInputSchema } from 'mystyc-common/schemas/user-profile.schema';
 import { updateUserProfile } from '@/server/actions/userProfile';
 import { useUserStore } from '@/store/userStore';
 
@@ -21,126 +23,66 @@ interface BirthPanelProps {
   setIsWorking: (working: boolean) => void;
 }
 
+// Match your schema's optional fields
+type BirthFormData = {
+  dateOfBirth?: Date | null;
+  timeOfBirth?: string;
+  hasTimeOfBirth?: boolean;
+};
+
 export default function BirthPanel({ user, deviceInfo, setIsWorking }: BirthPanelProps) {
   const { setUser } = useUserStore();
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [timeOfBirth, setTimeOfBirth] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{ dateOfBirth?: string[]; timeOfBirth?: string[] }>({});
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const { 
+    register, 
+    handleSubmit, 
+    watch,
+    setValue,
+    formState: { errors, isValid }
+  } = useForm<BirthFormData>({
+    resolver: zodResolver(UserProfileInputSchema.pick({ 
+      dateOfBirth: true, 
+      timeOfBirth: true,
+      hasTimeOfBirth: true 
+    })),
+    mode: 'onChange',
+    defaultValues: {
+      dateOfBirth: user.userProfile.dateOfBirth ? 
+        new Date(user.userProfile.dateOfBirth) : null,
+      timeOfBirth: user.userProfile.timeOfBirth || '',
+      hasTimeOfBirth: user.userProfile.hasTimeOfBirth || false
+    }
+  });
+
+  // Watch values for real-time updates
+  const dateOfBirth = watch('dateOfBirth');
+  const timeOfBirth = watch('timeOfBirth');
+
+  // Convert date to string for DateInput
+  const dateString = dateOfBirth ? 
+    new Date(dateOfBirth).toISOString().split('T')[0] : '';
+
+  // Auto-set hasTimeOfBirth based on whether time is provided
   useEffect(() => {
-    setIsWorking(false);
-    // Pre-populate if user already has birth data
-    if (user.userProfile.dateOfBirth) {
-      // Convert Date to YYYY-MM-DD format for date input
-      const date = new Date(user.userProfile.dateOfBirth);
-      const formattedDate = date.toISOString().split('T')[0];
-      setDateOfBirth(formattedDate);
-    }
-    if (user.userProfile.timeOfBirth) {
-      setTimeOfBirth(user.userProfile.timeOfBirth);
-    }
-  }, [setIsWorking, user.userProfile.dateOfBirth, user.userProfile.timeOfBirth]);
+    setValue('hasTimeOfBirth', Boolean(timeOfBirth?.trim()));
+  }, [timeOfBirth, setValue]);
 
-  if (!user) {
-    return null;
-  }
-
-  const validateField = (field: 'dateOfBirth' | 'timeOfBirth', value: string) => {
-    if (field === 'dateOfBirth') {
-      if (!value) {
-        setFieldErrors(prev => ({ ...prev, dateOfBirth: ['Date of birth is required'] }));
-        return;
-      }
-      
-      const result = UserProfileInputSchema.pick({ dateOfBirth: true }).safeParse({ 
-        dateOfBirth: new Date(value) 
-      });
-      
-      if (!result.success) {
-        const errors = result.error.flatten().fieldErrors;
-        setFieldErrors(prev => ({ ...prev, dateOfBirth: errors.dateOfBirth }));
-      } else {
-        setFieldErrors(prev => ({ ...prev, dateOfBirth: undefined }));
-      }
-    } else if (field === 'timeOfBirth') {
-      // Time is optional, but if provided, must be valid format
-      if (value && value.trim()) {
-        const result = UserProfileInputSchema.pick({ timeOfBirth: true }).safeParse({ 
-          timeOfBirth: value.trim() 
-        });
-        
-        if (!result.success) {
-          const errors = result.error.flatten().fieldErrors;
-          setFieldErrors(prev => ({ ...prev, timeOfBirth: errors.timeOfBirth }));
-        } else {
-          setFieldErrors(prev => ({ ...prev, timeOfBirth: undefined }));
-        }
-      } else {
-        // Empty time is valid, will default to 12:00
-        setFieldErrors(prev => ({ ...prev, timeOfBirth: undefined }));
-      }
-    }
-  };
-
-  const handleBlur = (field: 'dateOfBirth' | 'timeOfBirth', value: string) => {
-    validateField(field, value);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setServerError(null);
-    
-    // Validate required date
-    if (!dateOfBirth.trim()) {
-      setFieldErrors({ dateOfBirth: ['Date of birth is required'] });
-      return;
-    }
-
-    // Validate both fields
-    const birthDate = new Date(dateOfBirth);
-    const trimmedTime = timeOfBirth.trim();
-    
-    // Validate date
-    const dateResult = UserProfileInputSchema.pick({ dateOfBirth: true }).safeParse({
-      dateOfBirth: birthDate
-    });
-    
-    if (!dateResult.success) {
-      const errors = dateResult.error.flatten().fieldErrors;
-      setFieldErrors(prev => ({ ...prev, dateOfBirth: errors.dateOfBirth }));
-      return;
-    }
-
-    // Validate time if provided
-    if (trimmedTime) {
-      const timeResult = UserProfileInputSchema.pick({ timeOfBirth: true }).safeParse({
-        timeOfBirth: trimmedTime
-      });
-      
-      if (!timeResult.success) {
-        const errors = timeResult.error.flatten().fieldErrors;
-        setFieldErrors(prev => ({ ...prev, timeOfBirth: errors.timeOfBirth }));
-        return;
-      }
-    }
-
+  const onSubmit = async (data: BirthFormData) => {
     try {
       setIsWorking(true);
       
-      const profileUpdate: any = {
-        dateOfBirth: birthDate,
-        timeOfBirth: trimmedTime || "", // Empty string will be handled by server action
-        // hasTimeOfBirth will be set by server action based on whether timeOfBirth is empty
+      const submitData = {
+        dateOfBirth: data.dateOfBirth,
+        timeOfBirth: data.timeOfBirth || "12:00", // Default to noon if empty
+        hasTimeOfBirth: Boolean(data.timeOfBirth?.trim())
       };
       
-      const updatedUser = await updateUserProfile(deviceInfo, profileUpdate);
-      
-      if (updatedUser) {
-        setUser(updatedUser);
+      const updatedUserProfile = await updateUserProfile(deviceInfo, submitData);
+      if (updatedUserProfile) {
+        user.userProfile = updatedUserProfile;
+        setUser(user);
         window.dispatchEvent(new CustomEvent('wizard-next'));
-      } else {
-        throw new Error('No user data returned from server');
       }
     } catch (error) {
       setServerError(error instanceof Error ? error.message : 'Failed to update birth information');
@@ -149,50 +91,38 @@ export default function BirthPanel({ user, deviceInfo, setIsWorking }: BirthPane
     }
   };
 
-  const hasFieldErrors = Object.values(fieldErrors).some(errors => errors && errors.length > 0);
-  const isFormValid = dateOfBirth.trim() && !hasFieldErrors;
-
   return (
     <FormLayout 
       title="When were you born?"
-      subtitle={
-        <>
-          Your birth date and time shape your astrological profile.
-          <br />
-          If you&apos;re not sure of the time, take your best guess.
-        </>
-      } 
+      subtitle={<>Your birth date and time shape your astrological profile.<br />If you&apos;re not sure of the time, take your best guess.</>}
       error={serverError}
     >
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <DateInput
           id="dateOfBirth"
-          name="dateOfBirth"
           label='Date of Birth'
           autoComplete="bday"
           placeholder="Enter the day you were born"
-          value={dateOfBirth}
-          onChange={e => setDateOfBirth(e.target.value)}
-          onBlur={e => handleBlur('dateOfBirth', e.target.value)}
-          error={fieldErrors.dateOfBirth?.[0]}
+          value={dateString}
+          error={errors.dateOfBirth?.message}
           required
+          {...register('dateOfBirth', {
+            setValueAs: (value: string) => value ? new Date(value) : null
+          })}
         />
         <TimeInput
           id="timeOfBirth"
-          name="timeOfBirth"
           label='Time of Birth'
           autoComplete="off"
           placeholder="Enter the time you were born (optional)"
-          value={timeOfBirth}
-          onChange={e => setTimeOfBirth(e.target.value)}
-          onBlur={e => handleBlur('timeOfBirth', e.target.value)}
-          error={fieldErrors.timeOfBirth?.[0]}
+          value={timeOfBirth || ''}
+          error={errors.timeOfBirth?.message}
+          {...register('timeOfBirth')}
         />
         
         <Button
           type="submit"
-          disabled={!isFormValid}
-          loadingContent="Working..."
+          disabled={!isValid}
           className="py-3 w-auto min-w-28 self-end flex items-center justify-center"
         >
           Next
