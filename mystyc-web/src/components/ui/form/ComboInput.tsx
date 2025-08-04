@@ -1,5 +1,13 @@
-import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from '@headlessui/react';
+'use client'
+
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxOptions,
+  ComboboxOption
+} from '@headlessui/react';
 import clsx from 'clsx';
+import { forwardRef, Ref } from 'react';
 
 import AnimatedLabel from './AnimatedLabel';
 
@@ -21,30 +29,44 @@ interface ComboInputProps<T> {
   footer?: React.ReactNode;
 }
 
-export default function ComboInput<T>({
-  id,
-  name,
-  label,
-  error,
-  value,
-  onChange,
-  displayValue,
-  onInputChange,
-  suggestions,
-  getSuggestionKey,
-  renderSuggestion,
-  placeholder = '',
-  disabled = false,
-  className,
-  footer
-}: ComboInputProps<T>) {
+const ComboInput = forwardRef<HTMLInputElement, ComboInputProps<any>>(function ComboInput<T>(
+  {
+    id,
+    name,
+    label,
+    error,
+    value,
+    onChange,
+    displayValue,
+    onInputChange,
+    suggestions,
+    getSuggestionKey,
+    renderSuggestion,
+    placeholder = '',
+    disabled = false,
+    className,
+    footer
+  }: ComboInputProps<T>,
+  ref: Ref<HTMLInputElement>
+) {
+
+console.log(value);
+
   return (
     <div className='text-left mb-4'>
       <Combobox value={value} onChange={onChange}>
         <div className="relative">
-          {label && <AnimatedLabel htmlFor={id} label={label} value={displayValue == null ? undefined : " "} error={error} />}
-          
+          {label && (
+            <AnimatedLabel
+              htmlFor={id}
+              label={label}
+              value={value ? value.toString() : undefined}
+              error={error}
+            />
+          )}
+
           <ComboboxInput
+            ref={ref}
             id={id}
             name={name}
             className={clsx(
@@ -74,11 +96,13 @@ export default function ComboInput<T>({
                 {renderSuggestion(suggestion)}
               </ComboboxOption>
             ))}
-            
+
             {footer && suggestions.length > 0 && footer}
           </ComboboxOptions>
         </div>
       </Combobox>
     </div>
-  )
-}
+  );
+});
+
+export default ComboInput;

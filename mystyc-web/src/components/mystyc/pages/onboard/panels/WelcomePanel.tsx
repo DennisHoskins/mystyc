@@ -19,7 +19,6 @@ export default function WelcomePanel({ user } : { user: AppUser }) {
 
   return (
     <FormLayout 
-      title='Welcome to mystyc'
       subtitle={
         <>
           Let&apos;s unlock what the stars say about you.
@@ -34,8 +33,9 @@ export default function WelcomePanel({ user } : { user: AppUser }) {
       <Form onSubmit={handleSubmit}>
         <Button
           type="submit"
+          autoFocus
           loadingContent="Working..."
-          className="mt-6 py-3 w-auto min-w-40 self-center flex items-center justify-center !rounded-full"
+          className="py-3 w-auto min-w-40 self-center flex items-center justify-center !rounded-full"
         >
           Get Started
           <ChevronRight className='h-4 w-4 ml-2 -mr-1' strokeWidth={3} />

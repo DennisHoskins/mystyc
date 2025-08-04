@@ -75,7 +75,6 @@ export default function CityPanel({ user, deviceInfo, setIsWorking }: CityPanelP
 
   return (
     <FormLayout
-      title="Where were you born?"
       subtitle={<>We use your birth city to fine-tune your chart.<br />No need for an exact address—just the city works.</>}
       error={serverError}
     >

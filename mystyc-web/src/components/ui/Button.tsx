@@ -1,6 +1,6 @@
 'use client'
 
-import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { ButtonHTMLAttributes, ReactNode, forwardRef, Ref } from 'react';
 import clsx from 'clsx';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -10,16 +10,19 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loadingContent?: ReactNode;
 };
 
-export default function Button({
-  children,
-  className,
-  variant = 'primary',
-  size = 'md',
-  loading = false,
-  loadingContent,
-  disabled,
-  ...props
-}: ButtonProps) {
+const Button = forwardRef(function Button(
+  {
+    children,
+    className,
+    variant = 'primary',
+    size = 'md',
+    loading = false,
+    loadingContent,
+    disabled,
+    ...props
+  }: ButtonProps,
+  ref: Ref<HTMLButtonElement>
+) {
   const base =
     'rounded-md text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-80';
 
@@ -36,6 +39,7 @@ export default function Button({
 
   return (
     <button
+      ref={ref}
       className={clsx(base, sizeStyles[size], variants[variant], className)}
       disabled={loading || disabled}
       {...props}
@@ -43,4 +47,6 @@ export default function Button({
       {loading ? loadingContent ?? 'Loading...' : children}
     </button>
   );
-}
+});
+
+export default Button;

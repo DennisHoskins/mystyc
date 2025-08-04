@@ -93,7 +93,6 @@ export default function BirthPanel({ user, deviceInfo, setIsWorking }: BirthPane
 
   return (
     <FormLayout 
-      title="When were you born?"
       subtitle={<>Your birth date and time shape your astrological profile.<br />If you&apos;re not sure of the time, take your best guess.</>}
       error={serverError}
     >
@@ -101,6 +100,7 @@ export default function BirthPanel({ user, deviceInfo, setIsWorking }: BirthPane
         <DateInput
           id="dateOfBirth"
           label='Date of Birth'
+          autoFocus
           autoComplete="bday"
           placeholder="Enter the day you were born"
           value={dateString}

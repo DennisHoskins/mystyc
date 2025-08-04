@@ -424,6 +424,29 @@ export class UsersController {
     return content;
   }
 
+  /**
+   * Gets user astrology data
+   * @param firebaseUserFromDecorator - Firebase user from auth guard
+   * @returns Promise<{user: User | null}> - Updated user object
+   */
+  @Post('calculate-astrology')
+  @UseGuards(FirebaseAuthGuard)
+  async getAstrologyData(
+    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
+    @Body() body: { deviceInfo?: any }
+  ): Promise<User | null> {
+    this.logger.debug('Getting astrology data via GET /calculate-astrology', { 
+      uid: firebaseUserFromDecorator.uid 
+    });
+
+    const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
+    const user = await this.userService.getUser(firebaseUser);
+
+    user.userProfile.zodiacSign = "Pisces";
+
+    return user;
+  }
+
   private transformFirebaseUser(decodedToken: any): FirebaseUserInterface {
     return {
       uid: decodedToken.uid,

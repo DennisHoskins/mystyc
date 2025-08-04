@@ -67,7 +67,6 @@ export default function NamePanel({ user, deviceInfo, setIsWorking }: NamePanelP
 
   return (
     <FormLayout 
-      title="What's your name?" 
       subtitle={<>Tell me what you would like to be called.<br />Don&apos;t worry, we&apos;ll keep it private—just between us.</>}
       error={serverError}
     >
@@ -75,6 +74,7 @@ export default function NamePanel({ user, deviceInfo, setIsWorking }: NamePanelP
         <TextInput
           id="firstName"
           label="First Name"
+          autoFocus
           autoComplete="given-name"
           value={firstName}
           error={errors.firstName?.message}

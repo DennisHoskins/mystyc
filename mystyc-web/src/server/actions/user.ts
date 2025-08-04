@@ -90,6 +90,32 @@ export async function getUserContent(deviceInfo: DeviceInfo): Promise<Content | 
   }, deviceInfo, 'getUserContent');
 }
 
+export async function getUserAstrologyData(deviceInfo: DeviceInfo, user: User): Promise<User | null> {
+  return withSession(async (session) => {
+    logger.log('[getUserAstrologyData] Fetching astrology data');
+
+    if (!session.authToken) {
+      throw new Error(`Failed to fetch user: No Auth Token`);
+    }
+    
+    const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/calculate-astrology`, {
+      method: 'POST',
+      headers: {
+        'Authorization': authTokenManager.createAuthHeader(session.authToken),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ deviceInfo, firebaseUid: user.firebaseUser.uid })
+    });
+
+    if (!nestResponse.ok) {
+      logger.error('[getUserAstrologyData] Failed to fetch astrology data:', nestResponse.status);
+      throw new Error(`Failed to fetch content: ${nestResponse.status}`);
+    }
+
+    return nestResponse.json();
+  }, deviceInfo, 'getUserAstrologyData');
+}
+
 export async function getBillingPortal(deviceInfo: DeviceInfo): Promise<{ portalUrl: string } | null> {
   return withSession(async (session) => {
     logger.log('[getBillingPortal] Getting billing portal URL');

@@ -6,11 +6,12 @@ import { AppUser } from '@/interfaces/app/app-user.interface';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import Card from '@/components/ui/Card';
 import WorkingEye from '@/components/ui/working/WorkingEye';
+import Heading from '@/components/ui/Heading';
 import FormWizardLayout from '@/components/ui/form/FormWizardLayout';
 import NamePanel from '@/components/mystyc/pages/onboard/panels/NamePanel';
 import BirthPanel from '@/components/mystyc/pages/onboard/panels/BirthPanel';
 import CityPanel from '@/components/mystyc/pages/onboard/panels/CityPanel';
-import SuccessPanel from '@/components/mystyc/pages/onboard/panels/SuccessPanel';
+import ZodiacPanel from '@/components/mystyc/pages/onboard/panels/ZodiacPanel';
 import WelcomePanel from '@/components/mystyc/pages/onboard/panels/WelcomePanel';
 
 export default function OnboardingPage({ user } : { user: AppUser }) {
@@ -21,11 +22,11 @@ export default function OnboardingPage({ user } : { user: AppUser }) {
 
   // For now, always show welcome (virgin visit)
   const steps = [
-    { component: WelcomePanel, props: { user } },
-    { component: NamePanel, props: { user, deviceInfo, setIsWorking } },
-    { component: BirthPanel, props: { user, deviceInfo, setIsWorking } },
-    { component: CityPanel, props: { user, deviceInfo, setIsWorking } },
-    { component: SuccessPanel, props: { user, deviceInfo, setIsWorking } }
+    { component: WelcomePanel, props: { user }, title: 'Welcome to mystyc!' },
+    { component: NamePanel, props: { user, deviceInfo, setIsWorking }, title: 'What is your name?' },
+    { component: BirthPanel, props: { user, deviceInfo, setIsWorking }, title: 'When were you born?' },
+    { component: CityPanel, props: { user, deviceInfo, setIsWorking }, title: 'Where were you born?' },
+    { component: ZodiacPanel, props: { user, deviceInfo, setIsWorking } }
   ];
 
   useEffect(() => {
@@ -45,12 +46,16 @@ export default function OnboardingPage({ user } : { user: AppUser }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center -mt-20 w-full p-4">
       <Card className='w-full md:max-w-lg text-center space-y-4 p-6 pt-10'>
-        <WorkingEye scale={1.75} className='mt-6 mb-6' isWorking={isWorking} />
-        <FormWizardLayout 
-          steps={steps}
-          currentStep={currentStep}
-          className={`min-h-[400px] ${isWorking ? "opacity-50" : ''}`}
-        />
+        <div className='flex flex-col h-[36em]'>
+          <WorkingEye scale={1.75} className='pt-10 pb-10' isWorking={isWorking} />
+          <div className={`flex flex-col ${isWorking && 'opacity-50'}`}>
+            {steps[currentStep]?.title && <Heading level={3} className='mb-8'>{steps[currentStep].title}</Heading>}        
+            <FormWizardLayout 
+              steps={steps}
+              currentStep={currentStep}
+            />
+          </div>
+        </div>
       </Card>
     </div>
   );

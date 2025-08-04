@@ -17,20 +17,26 @@ export default function FormLayout({
   children,
 }: FormLayoutProps) {
   return (
-    <div className='flex flex-col w-full space-y-6'>
+    <div className='flex flex-col w-full space-y-4'>
 
-      <div className="text-gray-500 text-base font-medium">
-        <strong>{title}</strong>
-      </div>
+      {title &&
+        <div className="text-gray-500 text-base font-medium">
+          <strong>{title}</strong>
+        </div>
+      }
 
-      <div className="text-gray-500 text-sm">
-        {subtitle}
-      </div>
+      {subtitle &&
+        <div className="text-gray-500 text-sm flex flex-col">
+          {subtitle}
+        </div>
+      }
 
       {error && <FormError message={error} />}
       {success && <FormSuccess message={success} />}
 
-      {children}
+      <span className={`${error || success ? "" : "!mt-10"}`}>
+        {children}
+      </span>        
     </div>
   );
 }

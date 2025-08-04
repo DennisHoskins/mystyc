@@ -20,19 +20,24 @@ export default function AnimatedLabel({ htmlFor, label, error, value }: Animated
   useEffect(() => {
     const input = document.getElementById(htmlFor) as HTMLInputElement;
     if (!input) return;
-    
+
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
-    
+
+    // CHECK IMMEDIATELY
+    if (document.activeElement === input) {
+      setIsFocused(true);
+    }
+
     input.addEventListener('focus', handleFocus);
     input.addEventListener('blur', handleBlur);
-    
+
     return () => {
       input.removeEventListener('focus', handleFocus);
       input.removeEventListener('blur', handleBlur);
     };
   }, [htmlFor]);
-  
+
   const isLabelFloated = isFocused || hasValue;  
   return (
     <FormLabel
