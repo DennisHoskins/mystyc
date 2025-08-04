@@ -3,9 +3,10 @@
 import { useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useSetUser, useBusy } from '@/components/ui/context/AppContext';
+import { useSetUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import { logger } from '@/util/logger';
+import AuthLayout from '@/components/auth/AuthLayout';
 import FormLayout from '@/components/ui/form/FormLayout';
 import Link from '@/components/ui/Link';
 import Form from '@/components/ui/form/Form';
@@ -15,7 +16,6 @@ import Button from '@/components/ui/Button';
 export default function RegisterForm() {
   const { register } = useAuth();
   const setUser = useSetUser();
-  const { setBusy } = useBusy();
   const router = useTransitionRouter();
 
   const [isWorking, setIsWorking] = useState(false);
@@ -26,7 +26,6 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setBusy(500);
     setIsWorking(true);
     try {
       const user = await register(email, password);
@@ -43,56 +42,60 @@ export default function RegisterForm() {
           setError('Registration failed. Please try again.');
       }
     } finally {
-      setBusy(false);
       setIsWorking(false);
     }
   };
 
   return (
-    <FormLayout
-      subtitle="Create an account to begin your journey..."
-      error={error}
-    >
-      <Form onSubmit={handleSubmit}>
-        <TextInput
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <TextInput
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+    <AuthLayout isWorking={isWorking}>
+      <FormLayout
+        title="Create an account to begin your journey..."
+        error={error}
+      >
+        <Form onSubmit={handleSubmit}>
+          <TextInput
+            id="email"
+            name="email"
+            type="email"
+            label="Email address"
+            disabled={isWorking}
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <TextInput
+            id="password"
+            name="password"
+            type="password"
+            label="Password"
+            disabled={isWorking}
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-        <Button
-          type="submit"
-          loading={isWorking}
-          loadingContent="Creating Account..."
-          className="w-full"
-        >
-          Create Account
-        </Button>
+          <Button
+            type="submit"
+            loading={isWorking}
+            disabled={isWorking}
+            loadingContent="Creating Account..."
+            className="w-full"
+          >
+            Create Account
+          </Button>
 
-        <p className="text-center text-sm mt-4 text-gray-600">
-          <span className="block">
-            Already have an account? <Link href="/login" onClick={() => router.replace("/login", false)}>Sign In</Link>
-          </span>
-          <span className="block mt-1">
-            <Link href="/password-reset" onClick={() => router.replace("/password-reset", false)}>Forgot your password?</Link>
-          </span>
-        </p>
-      </Form>
-    </FormLayout>
+          <p className="text-center text-sm mt-4 text-gray-600">
+            <span className="block">
+              Already have an account? <Link href="/login" onClick={() => router.replace("/login", false)}>Sign In</Link>
+            </span>
+            <span className="block mt-1">
+              <Link href="/password-reset" onClick={() => router.replace("/password-reset", false)}>Forgot your password?</Link>
+            </span>
+          </p>
+        </Form>
+      </FormLayout>
+    </AuthLayout>      
   );
 }

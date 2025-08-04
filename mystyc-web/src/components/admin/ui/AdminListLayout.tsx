@@ -117,7 +117,7 @@ export default function AdminListLayout({
       )}
 
       {tableContent && (
-        <div className='space-y-4 flex-1 flex flex-col grow min-h-0 overflow-hidden'>  
+        <div className='space-y-4 flex-1 flex flex-col grow min-h-0'>  
           {Array.isArray(tableContent) ? (
             tableContent.map((content, index) => (
               <Card key={index} className='grow min-h-0 overflow-hidden'>

@@ -1,3 +1,5 @@
+'use client'
+
 import { LabelHTMLAttributes } from 'react';
 import clsx from 'clsx';
 
@@ -15,7 +17,7 @@ export default function FormLabel({
   return (
     <label
       className={clsx(
-        'block text-sm font-medium text-gray-700 mb-1',
+        'text-gray-400 pointer-events-none z-10',
         className
       )}
       {...props}

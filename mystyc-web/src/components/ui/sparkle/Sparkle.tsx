@@ -24,7 +24,7 @@ export default function Sparkle({ user } : { user?: AppUser | null }) {
   }, [isPlus, prevIsPlus]);
 
   const getClassName = () => {
-    if (!animationType) return '';
+    if (!animationType) return isPlus ? styles.plus : '';
     switch (animationType) {
       case 'login-plus':
         return styles.loginPlus;
@@ -33,7 +33,7 @@ export default function Sparkle({ user } : { user?: AppUser | null }) {
       case 'downgrade':
         return styles.downgrade;
       default:
-        return '';
+        return isPlus ? styles.plus : '';
     }
   };
 

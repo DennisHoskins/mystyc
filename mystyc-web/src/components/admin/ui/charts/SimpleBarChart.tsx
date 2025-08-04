@@ -34,7 +34,7 @@ export default function SimpleBarChart({
   fontSize = 12
 }: SimpleBarChartProps) {
   return (
-    <div className='flex flex-col flex-1 bg-gray-50 pt-2 rounded-md'>
+    <div className='flex flex-col flex-1 bg-gray-100 pt-2 rounded-md'>
       {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mb-2">{title}</h4>}
       <ResponsiveContainer width="100%" height={height} className="grow">
         <BarChart 

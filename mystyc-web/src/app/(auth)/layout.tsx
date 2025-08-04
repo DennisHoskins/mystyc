@@ -7,7 +7,6 @@ import { useAppStore } from '@/store/appStore';
 import { useInitialized, useUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 import WebsiteLayout from "@/components/website/WebsiteLayout";
-import AuthLayout from '@/components/auth/AuthLayout';
 import Modal from '@/components/ui/modal/Modal';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -49,9 +48,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <WebsiteLayout />
       <Modal isOpen={true} onClose={handleCloseModal}>
-        <AuthLayout>
-          {children}
-        </AuthLayout>        
+        {children}
       </Modal>
     </>
   );

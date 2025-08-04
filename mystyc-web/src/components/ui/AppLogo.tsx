@@ -1,5 +1,6 @@
 'use client'
 
+import styles from './working/Working.module.css';
 import IconEye from '@/components/ui/icons/IconEye';
 import Sparkle from './sparkle/Sparkle';
 import { AppUser } from '@/interfaces/app/app-user.interface';
@@ -7,19 +8,23 @@ import { AppUser } from '@/interfaces/app/app-user.interface';
 type AppLogoProps = {
   orientation?: 'vertical' | 'horizontal';
   showText?: boolean;
+  showSparkle?: boolean;
   user?: AppUser | null;
   subheading?: string;
   scale?: number;
   className?: string;
+  isWorking?: boolean
 };
 
 export default function AppLogo({
   orientation = 'vertical',
   showText = true,
+  showSparkle = false,
   user,
   subheading,
   scale = 1,
   className = '',
+  isWorking = false
 }: AppLogoProps) {
   const isVertical = orientation === 'vertical';
   const iconSize = 50 * scale;
@@ -28,11 +33,13 @@ export default function AppLogo({
 
   return (
     <div className={`flex ${isVertical ? 'flex-col items-center' : 'flex-row items-center'} ${className}`}>
-      <IconEye size={iconSize} className="text-gray-500" />
+
+      <IconEye size={iconSize} className={` ${isWorking ? "text-gray-900 " + styles.animatePingSoft : 'text-gray-500'} `} />
+
       {showText && (
         <div className={`${isVertical ? 'text-center' : 'ml-1'}`}>
-          <div style={{ fontSize: titleSize }} className="font-bold tracking-wide text-gray-900 flex items-center">
-            mystyc<Sparkle user={user} />
+          <div style={{ fontSize: titleSize }} className={`font-bold tracking-wide ${isWorking ? "text-gray-300" : "text-gray-500"} flex items-center`}>
+            mystyc {showSparkle && <Sparkle user={user} />}
           </div>
           {subheading && (
             <div style={{ fontSize: subSize }} className="text-gray-500 mt-4">

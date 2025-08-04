@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from 'react';
 
 import { useAppStore } from '@/store/appStore';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter'; 
-import AuthLayout from '@/components/auth/AuthLayout';
 import Modal from "@/components/ui/modal/Modal";
 
 export default function Template({ children, modal } : { children: React.ReactNode, modal: React.ReactNode }) {
@@ -50,9 +49,7 @@ export default function Template({ children, modal } : { children: React.ReactNo
       {children}
       {showModal &&
         <Modal isOpen={true} doTransition={doTransition} onClose={handleCloseModal}>
-          <AuthLayout>
-            {modal}
-          </AuthLayout>
+          {modal}
         </Modal>
       }
     </>      

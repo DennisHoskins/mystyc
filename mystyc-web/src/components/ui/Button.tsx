@@ -21,7 +21,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const base =
-    'rounded-md text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50';
+    'rounded-md text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-80';
 
   const sizeStyles = {
     sm: 'px-3 py-1 text-sm',

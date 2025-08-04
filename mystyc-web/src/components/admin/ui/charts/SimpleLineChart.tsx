@@ -34,7 +34,7 @@ export default function SimpleLineChart({
   showDots = false
 }: SimpleLineChartProps) {
   return (
-    <div className='flex flex-col flex-1 bg-gray-50 rounded-md pb-4'>
+    <div className='flex flex-col flex-1 bg-gray-100 rounded-md pb-4'>
       {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mt-2 mb-2">{title}</h4>}
       {data && (
         <ResponsiveContainer minWidth={10} minHeight={10} width="100%" height={height} className="grow min-h-1">

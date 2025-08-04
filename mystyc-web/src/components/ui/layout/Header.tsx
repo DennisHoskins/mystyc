@@ -20,10 +20,10 @@ export default function Header() {
   }, [pathname, setClassName]);
 
   return (
-    <header className="flex w-full bg-white px-4 py-3 shadow-sm relative z-[50]">
+    <header className="flex w-full bg-white px-4 py-3 shadow-sm border border-gray-100 relative z-[50]">
       <nav className={`flex w-full mx-auto items-center ${className} transition-[max-width] duration-300 ease-in-out`}>
         <Link href="/" className="flex items-center hover:!no-underline">
-          <AppLogo orientation="horizontal" showText user={user} />
+          <AppLogo orientation="horizontal" showText user={user} showSparkle={true} />
         </Link>
         <div className="flex space-x-4 ml-auto">
           {user

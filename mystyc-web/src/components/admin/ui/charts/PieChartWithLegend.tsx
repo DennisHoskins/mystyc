@@ -29,7 +29,7 @@ export default function PieChartWithLegend({
   height = '100%'
 }: PieChartWithLegendProps) {
   return (
-    <div className='flex flex-col flex-1 bg-gray-50 py-2 rounded-md'>
+    <div className='flex flex-col flex-1 bg-gray-100 py-2 rounded-md'>
       {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mb-2">{title}</h4>}
       <div className="flex items-center justify-between grow">
         {data &&

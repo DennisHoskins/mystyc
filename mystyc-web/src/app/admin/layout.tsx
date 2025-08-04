@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 
 import { useUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
-import AdminTransition from '@/components/ui/transition/AdminTransition';
 import AdminHomeLayout from '@/components/admin/AdminHomeLayout';
 import AdminLayout from '@/components/admin/AdminLayout';
 
@@ -13,7 +12,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useUser();
   const router = useTransitionRouter();
-
   const isAdminHome = pathname === '/admin';
 
   useEffect(() => {
@@ -27,10 +25,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const Layout = isAdminHome ? AdminHomeLayout : AdminLayout;
 
   return (
-    <AdminTransition>
-      <Layout>
-        {children}
-      </Layout>
-    </AdminTransition>
+    <Layout>
+      {children}
+    </Layout>
   );
 }

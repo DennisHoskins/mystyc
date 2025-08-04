@@ -19,7 +19,7 @@ export default function WebsiteHeader() {
       <Button
         variant="primary"
         onClick={() => router.push('/register', false)}
-        className="text-sm font-medium"
+        className="text-sm font-medium !rounded-full !px-6"
       >
         Sign Up
       </Button>

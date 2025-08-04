@@ -12,7 +12,7 @@ export default function Form({
 }: FormProps) {
   return (
     <form
-      className={clsx(className)}
+      className={`flex flex-col ` + clsx(className)}
       {...props}
     >
       {children}

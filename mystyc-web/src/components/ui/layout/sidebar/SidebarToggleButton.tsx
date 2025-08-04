@@ -14,7 +14,7 @@ export default function SidebarToggleButton({
   return (
     <button
       onClick={onToggle}
-      className="hidden lg:flex absolute -right-2.5 top-2.5 z-10 h-6 w-6 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
+      className="hidden lg:flex absolute -right-3 top-6 z-10 h-6 w-6 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
     >
       {isCollapsed ? (
         <ChevronRight className="h-4 w-4 text-gray-600" />
