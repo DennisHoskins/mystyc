@@ -6,7 +6,7 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
 export default function WelcomeCard({ user } : { user: AppUser }) {
-  const fullName = user.userProfile?.fullName || user.firebaseUser?.displayName || 'User';
+  const fullName = (user.userProfile?.firstName && user.userProfile?.lastName) ? user.userProfile?.firstName + " " + user.userProfile?.lastName : user.firebaseUser?.displayName || 'User';
   const birthday = formatDateForDisplay(user.userProfile?.dateOfBirth);
 
   return (

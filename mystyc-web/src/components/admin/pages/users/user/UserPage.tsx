@@ -41,7 +41,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Users', href: '/admin/users' },
-    { label: user ? `${user.fullName || user.email}` : `${firebaseUid}`},
+    { label: user ? `${(user.firstName && user.lastName) ? user.firstName + " " + user.lastName : user.email}` : `${firebaseUid}`},
   ], [user, firebaseUid]);
 
   return (
@@ -50,7 +50,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       onRetry={loadUser}
       breadcrumbs={breadcrumbs}
       icon={<UserIcon size={6} userProfile={user} />}
-      title={user && user.fullName ? user.fullName : `Unknown User`}
+      title={user && (user.firstName && user.lastName) ? user.firstName + " " + user.lastName : `Unknown User`}
       headerContent={<UserDetailsPanel user={user} />}
       sectionsContent={[<UserSubscriptionCard key='subscriptions' user={user} />]}
       sidebarContent={<UserProfilePanel user={user} />}

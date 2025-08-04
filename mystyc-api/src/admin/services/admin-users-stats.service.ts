@@ -110,12 +110,12 @@ export class AdminUsersStatsService {
       sortOrder: 'desc'
     });
     
-    const usersWithFullName = allUsers.filter(user => user.fullName && user.fullName.trim()).length;
+    const usersWithFullName = allUsers.filter(user => user.firstName && user.firstName.trim() && user.lastName && user.lastName.trim()).length;
     const usersWithDateOfBirth = allUsers.filter(user => user.dateOfBirth).length;
     const usersWithZodiacSign = allUsers.filter(user => user.zodiacSign && user.zodiacSign.trim()).length;
     
     const usersWithAllFields = allUsers.filter(user => 
-      user.fullName && user.fullName.trim() &&
+      user.firstName && user.firstName.trim() && user.lastName && user.lastName.trim() &&
       user.dateOfBirth &&
       user.zodiacSign && user.zodiacSign.trim()
     ).length;

@@ -9,6 +9,7 @@ import FormLabel from './FormLabel';
 type TextInputProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   label?: string;
+  error?: string;
   animate?: boolean;
 };
 
@@ -16,6 +17,7 @@ export default function TextInput({
   id,
   name,
   label,
+  error,
   className,
   animate = true,
   value,
@@ -26,7 +28,7 @@ export default function TextInput({
   return (
     <div className='text-left mb-4'>
       <div className="relative">
-        {label && animate ? <AnimatedLabel htmlFor={id} label={label} /> : <FormLabel htmlFor={id} className='absolute left-3 top-2 text-xs'>{label}</FormLabel> }
+        {label && animate ? <AnimatedLabel htmlFor={id} label={label} value={value} error={error} /> : <FormLabel htmlFor={id} className='absolute left-3 top-2 text-xs' error={error}>{label}</FormLabel> }
         <input
           ref={inputRef}
           id={id}

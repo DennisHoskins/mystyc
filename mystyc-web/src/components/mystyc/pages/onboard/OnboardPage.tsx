@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { AppUser } from '@/interfaces/app/app-user.interface';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
 import Card from '@/components/ui/Card';
 import WorkingEye from '@/components/ui/working/WorkingEye';
 import FormWizardLayout from '@/components/ui/form/FormWizardLayout';
@@ -16,13 +17,15 @@ export default function OnboardingPage({ user } : { user: AppUser }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isWorking, setIsWorking] = useState(false);
 
+  const deviceInfo = getDeviceInfo();
+
   // For now, always show welcome (virgin visit)
   const steps = [
     { component: WelcomePanel, props: { user } },
-    { component: NamePanel, props: { user, setIsWorking } },
-    { component: BirthPanel, props: { user, setIsWorking } },
-    { component: CityPanel, props: { user, setIsWorking } },
-    { component: SuccessPanel, props: { user, setIsWorking } }
+    { component: NamePanel, props: { user, deviceInfo, setIsWorking } },
+    { component: BirthPanel, props: { user, deviceInfo, setIsWorking } },
+    { component: CityPanel, props: { user, deviceInfo, setIsWorking } },
+    { component: SuccessPanel, props: { user, deviceInfo, setIsWorking } }
   ];
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export default function OnboardingPage({ user } : { user: AppUser }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center -mt-20 w-full p-4">
       <Card className='w-full md:max-w-lg text-center space-y-4 p-6 pt-10'>
-        <WorkingEye scale={1.2} className='mt-6 mb-6' isWorking={isWorking} />
+        <WorkingEye scale={1.75} className='mt-6 mb-6' isWorking={isWorking} />
         <FormWizardLayout 
           steps={steps}
           currentStep={currentStep}

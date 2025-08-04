@@ -4,7 +4,8 @@ import Stripe from 'stripe';
 import { z } from 'zod';
 import { FirebaseUser, User, Device, validateUserSafe } from 'mystyc-common/schemas/';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants/';
-import { LoginRegisterRequestSchema, LogoutRequestSchema, CreateUserProfileSchema } from 'mystyc-common/schemas/requests';
+import { LoginRegisterRequestSchema, LogoutRequestSchema } from 'mystyc-common/schemas/requests';
+import { CreateUserProfileSchema } from 'mystyc-common/schemas/user-profile.schema';
 
 import { logger } from '@/common/util/logger';
 import { DevicesService } from '@/devices/devices.service';

@@ -7,23 +7,12 @@ declare global {
   let google: any;
 }
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { Loader } from '@googlemaps/js-api-loader'
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { Loader } from '@googlemaps/js-api-loader';
 
+import { PlaceResult } from '@/interfaces';
 import { logger } from '@/util/logger';
-import ComboInput from './ComboInput'
-
-interface PlaceResult {
-  formatted_address: string
-  geometry: {
-    location: {
-      lat: number
-      lng: number
-    }
-  }
-  place_id: string
-  name: string
-}
+import ComboInput from './ComboInput';
 
 interface Suggestion {
   text: string
@@ -31,33 +20,61 @@ interface Suggestion {
 }
 
 interface PlacesSearchInputProps {
-  id: string
-  name: string
-  label?: string
-  value: PlaceResult | null
-  onChange: (place: PlaceResult | null) => void
-  placeholder?: string
-  className?: string
+  id: string;
+  name: string;
+  label?: string;
+  error?: string | null;
+  value: PlaceResult | null;
+  onChange: (place: PlaceResult | null) => void;
+  placeholder?: string;
+  className?: string;
 }
 
 export default function PlacesSearchInput({
   id,
   name,
   label,
+  error,
   value,
   onChange,
   placeholder = "Start typing...",
   className
 }: PlacesSearchInputProps) {
-  const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null)
-  const [query, setQuery] = useState('')
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
+  const [query, setQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   
-  const sessionToken = useRef<any>(null)
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const sessionToken = useRef<any>(null);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   logger.info(value);
+
+  // Sync incoming value prop to internal state
+  useEffect(() => {
+    if (value) {
+      setQuery(value.formatted_address || value.name || '');
+      setSelectedSuggestion({
+        text: value.name,
+        placePrediction: {
+          text: { text: value.name },
+          toPlace: () => ({
+            fetchFields: async () => {},
+            formattedAddress: value.formatted_address,
+            location: {
+              lat: () => value.geometry.location.lat,
+              lng: () => value.geometry.location.lng,
+            },
+            id: value.place_id,
+            displayName: value.name,
+          }),
+        }
+      });
+    } else {
+      setQuery('');
+      setSelectedSuggestion(null);
+    }
+  }, [value]);
 
   // Initialize Google Maps
   useEffect(() => {
@@ -65,27 +82,26 @@ export default function PlacesSearchInput({
       const loader = new Loader({
         apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
         version: 'weekly',
-      })
+      });
 
       try {
-        const { AutocompleteSessionToken} = 
-          await loader.importLibrary('places') as any
+        const { AutocompleteSessionToken } = await loader.importLibrary('places') as any;
         
-        sessionToken.current = new AutocompleteSessionToken()
-        setIsLoaded(true)
+        sessionToken.current = new AutocompleteSessionToken();
+        setIsLoaded(true);
       } catch (error) {
-        console.error('Error loading Places library:', error)
+        console.error('Error loading Places library:', error);
       }
     }
 
-    initPlaces()
+    initPlaces();
   }, [])
 
   // Search function
   const searchPlaces = useCallback(async (searchQuery: string) => {
     if (!sessionToken.current || searchQuery.length < 2) {
-      setSuggestions([])
-      return
+      setSuggestions([]);
+      return;
     }
 
     try {
@@ -100,51 +116,51 @@ export default function PlacesSearchInput({
         },
       }
 
-      const { suggestions } = await (window as any).google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request)
+      const { suggestions } = await (window as any).google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
 
       const cityResults = suggestions
         .filter((suggestion: any) => suggestion.placePrediction)
         .map((suggestion: any) => ({
           text: suggestion.placePrediction.text.text,
           placePrediction: suggestion.placePrediction
-        }))
+        }));
 
-      setSuggestions(cityResults)
+      setSuggestions(cityResults);
     } catch (error) {
-      console.error('Error fetching suggestions:', error)
-      setSuggestions([])
+      console.error('Error fetching suggestions:', error);
+      setSuggestions([]);
     }
-  }, [])
+  }, []);
 
   // Handle query change with debouncing
   const handleQueryChange = useCallback((value: string) => {
-    setQuery(value)
+    setQuery(value);
 
     if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current)
+      clearTimeout(debounceTimer.current);
     }
 
     debounceTimer.current = setTimeout(() => {
       searchPlaces(value)
     }, 300)
-  }, [searchPlaces])
+  }, [searchPlaces]);
 
   // Handle place selection
   const handlePlaceSelect = useCallback(async (suggestion: Suggestion | null) => {
-    setSelectedSuggestion(suggestion)
+    setSelectedSuggestion(suggestion);
     
     if (!suggestion) {
-      onChange(null)
-      setQuery('')
-      return
+      onChange(null);
+      setQuery('');
+      return;
     }
 
     try {
-      const place = suggestion.placePrediction.toPlace()
+      const place = suggestion.placePrediction.toPlace();
       
       await place.fetchFields({
         fields: ['displayName', 'formattedAddress', 'location', 'id']
-      })
+      });
 
       const placeResult: PlaceResult = {
         formatted_address: place.formattedAddress,
@@ -158,16 +174,16 @@ export default function PlacesSearchInput({
         name: place.displayName,
       }
 
-      onChange(placeResult)
-      setQuery(place.formattedAddress)
-      setSuggestions([])
+      onChange(placeResult);
+      setQuery(place.formattedAddress);
+      setSuggestions([]);
 
       // Create new session token
-      sessionToken.current = new (window as any).google.maps.places.AutocompleteSessionToken()
+      sessionToken.current = new (window as any).google.maps.places.AutocompleteSessionToken();
     } catch (error) {
-      console.error('Error getting place details:', error)
+      console.error('Error getting place details:', error);
     }
-  }, [onChange])
+  }, [onChange]);
 
   const footer = (
     <div className="px-3 py-1 text-xs text-gray-400 bg-gray-50 border-t border-gray-100 text-right">
@@ -180,6 +196,7 @@ export default function PlacesSearchInput({
       id={id}
       name={name}
       label={label}
+      error={error}
       value={selectedSuggestion}
       onChange={handlePlaceSelect}
       displayValue={() => query}
@@ -192,5 +209,5 @@ export default function PlacesSearchInput({
       className={className}
       footer={footer}
     />
-  )
+  );
 }

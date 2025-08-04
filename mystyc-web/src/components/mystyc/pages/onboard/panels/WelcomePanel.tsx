@@ -19,12 +19,12 @@ export default function WelcomePanel({ user } : { user: AppUser }) {
 
   return (
     <FormLayout 
-      title="Welcome to Mystyc!"
+      title='Welcome to mystyc'
       subtitle={
         <>
-          Let’s unlock what the stars say about you.
+          Let&apos;s unlock what the stars say about you.
           <br />
-          We’ll ask for a few details to build your birth chart.
+          To begin, we need a few details so we can build your birth chart.
           <br />
           <br />
           It&apos;ll only take a minute...
@@ -38,7 +38,7 @@ export default function WelcomePanel({ user } : { user: AppUser }) {
           className="mt-6 py-3 w-auto min-w-40 self-center flex items-center justify-center !rounded-full"
         >
           Get Started
-          <ChevronRight className='h-4 w-4 ml-2 -mr-1 mt-[1.5px]' strokeWidth={3} />
+          <ChevronRight className='h-4 w-4 ml-2 -mr-1' strokeWidth={3} />
         </Button>
       </Form>
     </FormLayout>

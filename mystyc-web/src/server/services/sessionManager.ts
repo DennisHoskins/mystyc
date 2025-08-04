@@ -112,6 +112,11 @@ export const sessionManager = {
       return null;
     }
 
+    if (!deviceInfo) {
+      logger.error('[sessionManager] No deviceInfo provided for device calculation');
+      return null;
+    }
+
     const fingerprint = extractDeviceFingerprint(request);
     const deviceId = generateDeviceId(fingerprint, deviceInfo);
     logger.log('[sessionManager] Calculated device ID:', deviceId.substring(0, 8));

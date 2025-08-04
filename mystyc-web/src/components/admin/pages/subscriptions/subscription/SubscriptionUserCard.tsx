@@ -46,7 +46,7 @@ export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: st
       <AdminDetailGrid cols={3} className='mt-4'>
         <AdminDetailField
           label="Full Name"
-          value={user?.fullName}
+          value={user?.firstName + " " + user?.lastName}
           href={`/admin/users/${user?.firebaseUid}`}
         />
         <AdminDetailField

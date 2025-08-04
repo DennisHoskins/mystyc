@@ -5,8 +5,9 @@ import Stripe from 'stripe';
 
 import { z } from 'zod';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
-import { UserProfile, ZodiacSignType, UserProfileInputSchema } from 'mystyc-common/schemas';
-import { CreateUserProfileSchema, UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
+import { UserProfile, ZodiacSignType, UserProfileInputSchema, BirthLocation } from 'mystyc-common/schemas';
+import { UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
+import { CreateUserProfileSchema } from 'mystyc-common/schemas/user-profile.schema';
 import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
@@ -217,7 +218,7 @@ export class UserProfilesService {
       email: createUserDto.email,
     }, 'UserProfileService');
 
-    const validation = UserProfileInputSchema.safeParse(createUserDto);
+    const validation = CreateUserProfileSchema.safeParse(createUserDto);
     if (!validation.success) {
       throw validation.error;
     }
@@ -299,9 +300,15 @@ export class UserProfilesService {
 
     // Create new Stripe customer
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    
+    // Combine firstName and lastName for Stripe customer name
+    const customerName = userProfile.firstName && userProfile.lastName 
+      ? `${userProfile.firstName} ${userProfile.lastName}` 
+      : userProfile.firstName || userProfile.lastName || undefined;
+      
     const customer = await stripe.customers.create({
       email: userProfile.email,
-      name: userProfile.fullName || undefined,
+      name: customerName,
       metadata: { 
         firebaseUid,
         source: 'mystyc-api'
@@ -502,8 +509,12 @@ export class UserProfilesService {
       id: doc._id.toString(),
       firebaseUid: doc.firebaseUid,
       email: doc.email,
-      fullName: doc.fullName,
+      firstName: doc.firstName,
+      lastName: doc.lastName,
       dateOfBirth: doc.dateOfBirth,
+      timeOfBirth: doc.timeOfBirth,
+      hasTimeOfBirth: doc.hasTimeOfBirth,
+      birthLocation: doc.birthLocation as BirthLocation | undefined,
       zodiacSign: doc.zodiacSign as ZodiacSignType,
       roles: doc.roles,
       stripeCustomerId: doc.stripeCustomerId,

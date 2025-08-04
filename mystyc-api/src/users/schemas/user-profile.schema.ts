@@ -16,28 +16,74 @@ export class Subscription {
   creditBalance!: number;
 }
 
+@Schema()
+export class BirthLocation {
+  @Prop({ required: true })
+  placeId!: string;
+
+  @Prop({ required: true })
+  name!: string;
+
+  @Prop({ required: true })
+  formattedAddress!: string;
+
+  @Prop({
+    type: {
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true }
+    },
+    required: true,
+    index: '2dsphere'
+  })
+  coordinates!: {
+    lat: number;
+    lng: number;
+  };
+
+  @Prop({
+    type: {
+      name: { type: String, required: true },
+      offsetHours: { type: Number, required: true }
+    },
+    required: true
+  })
+  timezone!: {
+    name: string;
+    offsetHours: number;
+  };
+}
+
 @Schema({ timestamps: true, collection: 'userProfiles' })
 export class UserProfile {
   @Prop({ required: true })
   firebaseUid!: string;
 
   @Prop()
-  emailAddress!: string;
+  email!: string;
   
   @Prop({ type: [String], enum: UserRole, default: [UserRole.USER], required: true })
   roles!: UserRole[];  
 
   @Prop()
-  fullName!: string;
+  firstName!: string;
+
+  @Prop()
+  lastName!: string;
 
   @Prop({ type: Date })
-  dateOfBirth!: Date;
+  dateOfBirth?: Date;
 
   @Prop()
-  zodiacSign!: string;
+  timeOfBirth?: string;
+
+  @Prop({ type: Boolean, default: false })
+  hasTimeOfBirth!: boolean;
+
+  @Prop({ type: BirthLocation })
+  birthLocation?: BirthLocation;
 
   @Prop()
-  email!: string;
+  zodiacSign?: string;
 
   @Prop({ type: Subscription, default: () => ({}) })
   subscription!: Subscription;
@@ -63,9 +109,17 @@ UserProfileSchema.index({ roles: 1, createdAt: -1 }); // Admin users over time
 UserProfileSchema.index({ updatedAt: -1 }); // Activity tracking
 
 // Profile completion stats indexes
-UserProfileSchema.index({ fullName: 1, createdAt: -1 }); // Users with names
+UserProfileSchema.index({ firstName: 1, createdAt: -1 }); // Users with first names
+UserProfileSchema.index({ lastName: 1, createdAt: -1 }); // Users with last names
 UserProfileSchema.index({ dateOfBirth: 1, createdAt: -1 }); // Users with birthdays  
+UserProfileSchema.index({ 'birthLocation.placeId': 1, createdAt: -1 }); // Users with birth locations
 UserProfileSchema.index({ zodiacSign: 1, createdAt: -1 }); // Users with zodiac signs
+
+// Birthday messaging indexes
+UserProfileSchema.index({ dateOfBirth: 1 }); // General birthday queries
+
+// Geospatial indexes for birth location
+UserProfileSchema.index({ 'birthLocation.coordinates': '2dsphere' }); // Geospatial queries
 
 // Subscription-related indexes
 UserProfileSchema.index({ 'subscription.level': 1 }); // Find users by subscription tier

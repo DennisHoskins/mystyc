@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { UserProfileInputSchema } from "../user-profile.schema";
 import { SubscriptionLevel } from '../../constants/subscription-levels.enum';
 
-export const CreateUserProfileSchema = UserProfileInputSchema.strict();
-
 export const UpdateUserProfileSchema = UserProfileInputSchema.partial().omit({
   firebaseUid: true,
   roles: true

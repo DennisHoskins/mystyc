@@ -21,7 +21,7 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
       <AdminDetailGrid cols={1} className='mt-4'>
         <AdminDetailField
           label="Full Name"
-          value={user && (user.fullName || 'Not set')}
+          value={user && ((user.firstName && user.lastName) ? user.firstName + " " + user.lastName : 'Not set')}
         />
         <AdminDetailField
           label="Date of Birth"

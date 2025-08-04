@@ -86,7 +86,7 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid?: string | n
       <div className="flex items-center space-x-4">
         <Avatar size={'medium'} icon={<UserIcon userProfile={user} />} />
         <div className='overflow-hidden'>
-          <Heading level={5}>{user.fullName || 'Unknown User'}</Heading>
+          <Heading level={5}>{(user.firstName && user.lastName) ? user.firstName + " " + user.lastName :  'Unknown User'}</Heading>
           <Heading level={6}>FirebaseUid: <Link href={`/admin/users/${user.firebaseUid}`}>{user.firebaseUid}</Link></Heading>
         </div>
       </div>

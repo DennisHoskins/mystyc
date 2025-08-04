@@ -66,7 +66,7 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
       <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={<UserIcon userProfile={user} />} />
         <div>
-          <Heading level={5}>{user.fullName || 'Unknown User'}</Heading>
+          <Heading level={5}>{user.firstName + '' + user.lastName || 'Unknown User'}</Heading>
         </div>
       </div>
 

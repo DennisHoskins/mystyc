@@ -28,7 +28,7 @@ export default function AuthLayout({ children, isWorking = false } : { children:
 
   return (
     <div className="w-full min-h-[28em] flex flex-col">
-      <WorkingEye scale={1.2} className='py-6' isWorking={isWorking} />
+      <WorkingEye scale={1.75} className='py-6' isWorking={isWorking} />
       <div className={`${isWorking ? "opacity-50 pointer-events-none" : ""}`}>
         {children}
       </div>

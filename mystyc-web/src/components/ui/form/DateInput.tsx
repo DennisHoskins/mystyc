@@ -7,12 +7,14 @@ import FormLabel from './FormLabel';
 
 type DateInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
+  error?: string | null;
 };
 
 export default function DateInput({
   id,
   name,
   label,
+  error,
   className,
   value,
   ...props
@@ -32,7 +34,7 @@ export default function DateInput({
   return (
     <div className='text-left mb-4'>
       <div className="relative">
-        {label && <FormLabel htmlFor={id} className='absolute left-3 top-2 text-xs'>{label}</FormLabel>}
+        {label && <FormLabel htmlFor={id} className='absolute left-3 top-2 text-xs' error={error}>{label}</FormLabel>}
         <input
           id={id}
           name={name}

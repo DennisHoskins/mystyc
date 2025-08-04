@@ -1,28 +1,31 @@
-import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from '@headlessui/react'
-import clsx from 'clsx'
-import AnimatedLabel from './AnimatedLabel'
+import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from '@headlessui/react';
+import clsx from 'clsx';
+
+import AnimatedLabel from './AnimatedLabel';
 
 interface ComboInputProps<T> {
-  id: string
-  name: string
-  label?: string
-  value: T | null
-  onChange: (value: T | null) => void
-  displayValue: (item: T | null) => string
-  onInputChange: (value: string) => void
-  suggestions: T[]
-  getSuggestionKey: (item: T, index: number) => string | number
-  renderSuggestion: (item: T) => React.ReactNode
-  placeholder?: string
-  disabled?: boolean
-  className?: string
-  footer?: React.ReactNode
+  id: string;
+  name: string;
+  label?: string;
+  error?: string | null;
+  value: T | null;
+  onChange: (value: T | null) => void;
+  displayValue: (item: T | null) => string;
+  onInputChange: (value: string) => void;
+  suggestions: T[];
+  getSuggestionKey: (item: T, index: number) => string | number;
+  renderSuggestion: (item: T) => React.ReactNode;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  footer?: React.ReactNode;
 }
 
 export default function ComboInput<T>({
   id,
   name,
   label,
+  error,
   value,
   onChange,
   displayValue,
@@ -39,7 +42,7 @@ export default function ComboInput<T>({
     <div className='text-left mb-4'>
       <Combobox value={value} onChange={onChange}>
         <div className="relative">
-          {label && <AnimatedLabel htmlFor={id} label={label} />}
+          {label && <AnimatedLabel htmlFor={id} label={label} value={displayValue == null ? undefined : " "} error={error} />}
           
           <ComboboxInput
             id={id}

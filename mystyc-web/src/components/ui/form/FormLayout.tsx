@@ -20,7 +20,7 @@ export default function FormLayout({
     <div className='flex flex-col w-full space-y-6'>
 
       <div className="text-gray-500 text-base font-medium">
-        {title}
+        <strong>{title}</strong>
       </div>
 
       <div className="text-gray-500 text-sm">

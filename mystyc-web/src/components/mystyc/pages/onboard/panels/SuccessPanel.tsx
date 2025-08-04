@@ -13,6 +13,8 @@ export default function SuccessPanel({ user, setIsWorking } : { user: AppUser, s
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    setIsWorking(true);
+    
     setTimeout(() => {
       setIsWorking(false);
       setIsReady(true);

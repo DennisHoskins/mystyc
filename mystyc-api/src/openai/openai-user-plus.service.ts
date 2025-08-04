@@ -25,7 +25,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
   async onModuleInit(): Promise<void> {}
 
   getEnhancedPrompt(date: string, userProfile: UserProfile): string {
-    const name = userProfile.fullName || "Mystical Seeker";
+    const name = userProfile.firstName || "Mystical Seeker";
     const zodiacSign = userProfile.zodiacSign || "Unknown";
     const birthDate = userProfile.dateOfBirth 
       ? userProfile.dateOfBirth.toISOString().split('T')[0] 
@@ -95,7 +95,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
         }
 
         // Enhanced content formatting for plus users
-        content.title = `${userProfile.fullName || 'Mystical Seeker'}: ${title}`;
+        content.title = `${userProfile.firstName || 'Mystical Seeker'}: ${title}`;
         content.message = message;
         content.imageUrl = this.getEnhancedImageUrl(date, userProfile);
         content.linkUrl = 'https://mystyc.app/plus';
@@ -201,7 +201,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
       }
 
       // No recent plus content available - create personalized generic fallback
-      const name = userProfile.fullName || 'Mystical Seeker';
+      const name = userProfile.firstName || 'Mystical Seeker';
       const zodiacSign = userProfile.zodiacSign || 'the cosmos';
 
       content.title = `${name}: Your Mystical Destiny Awaits`;
@@ -245,7 +245,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
   }
 
   private formatPlusContentData(title: string, message: string, userProfile: UserProfile): Array<{key: string, value: string}> {
-    const name = userProfile.fullName || 'Mystical Seeker';
+    const name = userProfile.firstName || 'Mystical Seeker';
     const zodiacSign = userProfile.zodiacSign || 'Unknown';
     
     return [

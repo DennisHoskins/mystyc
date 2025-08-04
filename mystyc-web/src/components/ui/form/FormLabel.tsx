@@ -5,11 +5,13 @@ import clsx from 'clsx';
 
 type FormLabelProps = LabelHTMLAttributes<HTMLLabelElement> & {
   children: React.ReactNode;
+  error?: string | null;
   required?: boolean;
 };
 
 export default function FormLabel({
   children,
+  error,
   className,
   required = false,
   ...props
@@ -17,13 +19,14 @@ export default function FormLabel({
   return (
     <label
       className={clsx(
-        'text-gray-400 pointer-events-none z-10',
+        'pointer-events-none z-10',
+        error ? 'text-red-500' : 'text-gray-400',
         className
       )}
       {...props}
     >
-      {children}
-      {required && <span className="text-red-500 ml-1">*</span>}
+      {error || children}
+      {required && !error && <span className="text-red-500 ml-1">*</span>}
     </label>
   );
 }
