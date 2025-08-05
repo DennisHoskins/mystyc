@@ -18,7 +18,7 @@ export default function UserDetailsPanel({ user }: { user?: UserProfile | null }
         />
         <AdminDetailField
           label="Name"
-          value={user?.firstName + "" + user?.lastName}
+          value={user?.firstName + " " + user?.lastName}
         />
         <AdminDetailField
           label="Contact Information"

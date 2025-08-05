@@ -10,8 +10,9 @@ import { useBusy } from '@/components/ui/context/AppContext';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import UserDetailsPanel from './UserDetailsPanel';
-import UserProfilePanel from './UserProfilePanel';
-import UserSubscriptionCard from './UserSubscriptionCard';
+import UserSubscriptionPanel from './UserSubscriptionPanel';
+import UserProfileCard from './UserProfileCard';
+import UserStarSignCard from './UserStarSignCard';
 import UserTabCard from './UserTabCard';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
@@ -52,9 +53,12 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       icon={<UserIcon size={6} userProfile={user} />}
       title={user && (user.firstName && user.lastName) ? user.firstName + " " + user.lastName : `Unknown User`}
       headerContent={<UserDetailsPanel user={user} />}
-      sectionsContent={[<UserSubscriptionCard key='subscriptions' user={user} />]}
-      sidebarContent={<UserProfilePanel user={user} />}
-      mainContent={<UserTabCard firebaseUid={user && user.firebaseUid} />}
+      sectionsContent={[<UserProfileCard key='user-profile' user={user} />]}
+      sidebarContent={<UserSubscriptionPanel key='subscriptions' user={user} />}
+      mainContent={[
+        <UserStarSignCard key='star-sign' user={user} />,
+        <UserTabCard key='user-tables' firebaseUid={user && user.firebaseUid} />
+      ]}
     />
   );    
 }

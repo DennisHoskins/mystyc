@@ -16,16 +16,38 @@ export function formatDateForApi(date: Date | null | undefined): string | undefi
   return date instanceof Date ? date.toISOString().slice(0, 10) : undefined;
 }
 
-export function formatDateForDisplay(dateValue: string | Date | null | undefined): string | null {
+export function formatDateForDisplay(dateValue: string | Date | null | undefined, showTime = true): string | null {
+  if (!dateValue) return null;
+  
+  const parsedDate = parseApiDate(dateValue);
+  if (!parsedDate || isNaN(parsedDate.getTime())) return null;
+
+  if (!showTime) {
+    return new Intl.DateTimeFormat(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC',
+    }).format(parsedDate);
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZone: 'UTC',
+  }).format(parsedDate);
+}
+
+export function formatTimeForDisplay(dateValue: string | Date | null | undefined): string | null {
   if (!dateValue) return null;
   
   const parsedDate = parseApiDate(dateValue);
   if (!parsedDate || isNaN(parsedDate.getTime())) return null;
 
   return new Intl.DateTimeFormat(undefined, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
     timeZone: 'UTC',

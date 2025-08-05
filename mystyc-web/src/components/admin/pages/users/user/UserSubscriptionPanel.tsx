@@ -2,17 +2,18 @@ import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
+import SubscriptionsIcon from '@/components/admin/ui/icons/SubscriptionsIcon';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
-import UserProfileIcon from '@/components/admin/ui/icons/UserProfileIcon';
 
-export default function UserProfilePanel({ user }: { user?: UserProfile | null }) {
+export default function UserSubscriptionPanel({ user }: { user?: UserProfile | null }) {
+
   return (
     <div className='flex flex-col'>
       <div className="flex items-center space-x-2 mb-4">
-        <Avatar size={'small'} icon={UserProfileIcon} />
+        <Avatar size={'small'} icon={SubscriptionsIcon} />
         <div>
-          <Heading level={5}>Profile</Heading>
+          <Heading level={5}>Subscription</Heading>
         </div>
       </div>
 
@@ -20,20 +21,20 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
 
       <AdminDetailGrid cols={1} className='mt-4'>
         <AdminDetailField
-          label="Full Name"
-          value={user && ((user.firstName && user.lastName) ? user.firstName + " " + user.lastName : 'Not set')}
+          label="Subscription Level"
+          value={user?.subscription.level}
         />
         <AdminDetailField
-          label="Date of Birth"
-          value={user && (user.dateOfBirth ? formatDateForDisplay(user.dateOfBirth) : 'Not set')}
+          label="Stripe Customer Id"
+          value={user?.stripeCustomerId}
         />
         <AdminDetailField
-          label="Time of Birth"
-          value={user && (user.dateOfBirth ? formatDateForDisplay(user.dateOfBirth) : 'Not set')}
+          label="Start Date"
+          value={user && user.subscription.startDate ? formatDateForDisplay(user.subscription.startDate) : ""}
         />
         <AdminDetailField
-          label="Sun Sign"
-          value={user && (user.astrology?.sunSign || 'Not set')}
+          label="Credit Balance"
+          value={user ? user.subscription.creditBalance || "0" : ""}
         />
       </AdminDetailGrid>
     </div>
