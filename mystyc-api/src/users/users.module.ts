@@ -6,6 +6,7 @@ import { DevicesModule } from '@/devices/devices.module';
 import { AuthEventsModule } from '@/auth-events/auth-events.module';
 import { ContentModule } from '@/content/content.module';
 import { OpenAIModule } from '@/openai/openai.module';
+import { HoroscopeModule } from '@/horoscope/horoscope.module';
 
 import { UsersController } from './users.controller';
 
@@ -28,6 +29,7 @@ import { UserProfileSchema } from './schemas/user-profile.schema';
     AuthEventsModule,
     forwardRef(() => ContentModule),
     OpenAIModule,
+    HoroscopeModule,
     MongooseModule.forFeature([
       { name: "UserProfile", schema: UserProfileSchema, collection: 'userProfiles'},
       { name: Content.name, schema: ContentSchema },

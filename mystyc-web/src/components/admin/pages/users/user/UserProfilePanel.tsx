@@ -32,8 +32,8 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
           value={user && (user.dateOfBirth ? formatDateForDisplay(user.dateOfBirth) : 'Not set')}
         />
         <AdminDetailField
-          label="Zodiac Sign"
-          value={user && (user.zodiacSign || 'Not set')}
+          label="Sun Sign"
+          value={user && (user.astrology?.sunSign || 'Not set')}
         />
       </AdminDetailGrid>
     </div>

@@ -9,7 +9,7 @@ import { AppUser } from '@/interfaces/app/app-user.interface';
 const transformUserToAppUser = (user: User): AppUser => ({
   ...user,
   isAdmin: user.userProfile.roles.includes(UserRole.ADMIN),
-  isOnboard: user.userProfile.zodiacSign != null,
+  isOnboard: user.userProfile.astrology != null,
   isPlus: user.userProfile.subscription.level == 'plus'
 });
 

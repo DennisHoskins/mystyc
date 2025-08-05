@@ -53,6 +53,27 @@ export class BirthLocation {
   };
 }
 
+@Schema()
+export class Astrology {
+  @Prop({ type: String, required: true })
+  sunSign!: string;
+
+  @Prop({ type: String, required: true })
+  moonSign!: string;
+
+  @Prop({ type: String, required: true })
+  risingSign!: string;
+
+  @Prop({ type: String, required: true })
+  venusSign!: string;
+
+  @Prop({ type: String, required: true })
+  marsSign!: string;
+
+  @Prop({ type: Date, default: Date.now, required: true })
+  createdAt!: Date;
+}
+
 @Schema({ timestamps: true, collection: 'userProfiles' })
 export class UserProfile {
   @Prop({ required: true })
@@ -82,8 +103,8 @@ export class UserProfile {
   @Prop({ type: BirthLocation })
   birthLocation?: BirthLocation;
 
-  @Prop()
-  zodiacSign?: string;
+  @Prop({ type: Astrology })
+  astrology?: Astrology;
 
   @Prop({ type: Subscription, default: () => ({}) })
   subscription!: Subscription;
@@ -113,7 +134,7 @@ UserProfileSchema.index({ firstName: 1, createdAt: -1 }); // Users with first na
 UserProfileSchema.index({ lastName: 1, createdAt: -1 }); // Users with last names
 UserProfileSchema.index({ dateOfBirth: 1, createdAt: -1 }); // Users with birthdays  
 UserProfileSchema.index({ 'birthLocation.placeId': 1, createdAt: -1 }); // Users with birth locations
-UserProfileSchema.index({ zodiacSign: 1, createdAt: -1 }); // Users with zodiac signs
+UserProfileSchema.index({ 'astrology.sunSign': 1, createdAt: -1 }); // Users with astrology data
 
 // Birthday messaging indexes
 UserProfileSchema.index({ dateOfBirth: 1 }); // General birthday queries

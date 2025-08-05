@@ -52,6 +52,15 @@ export const BirthLocationSchema = z.object({
   })
 });
 
+export const AstrologySchema = z.object({
+  sunSign: ZodiacSign,
+  moonSign: ZodiacSign,
+  risingSign: ZodiacSign,
+  venusSign: ZodiacSign,
+  marsSign: ZodiacSign,
+  createdAt: z.date()
+});
+
 export const CreateUserProfileSchema = z.object({
   firebaseUid: z.string().min(20).max(128),
   email: z.string().email().max(254),
@@ -73,7 +82,7 @@ export const UserProfileInputSchema = BasePersonSchema.extend({
     .optional(),
   hasTimeOfBirth: z.boolean().default(false),
   birthLocation: BirthLocationSchema.optional(),
-  zodiacSign: ZodiacSign.optional(),
+  astrology: AstrologySchema.optional(),
   roles: z.array(z.nativeEnum(UserRole)).min(1),
   subscription: SubscriptionSchema,
   stripeCustomerId: z.string().optional()
@@ -90,6 +99,7 @@ export type UserProfileInput = z.input<typeof UserProfileInputSchema>;
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 export type ZodiacSignType = z.infer<typeof ZodiacSign>;
 export type BirthLocation = z.infer<typeof BirthLocationSchema>;
+export type Astrology = z.infer<typeof AstrologySchema>;
 
 export const validateCreateUserProfile = (data: unknown) => 
   validateWithError(CreateUserProfileSchema, data, { schema: 'CreateUserProfile' });

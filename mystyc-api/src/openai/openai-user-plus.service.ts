@@ -26,7 +26,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
 
   getEnhancedPrompt(date: string, userProfile: UserProfile): string {
     const name = userProfile.firstName || "Mystical Seeker";
-    const zodiacSign = userProfile.zodiacSign || "Unknown";
+    const zodiacSign = userProfile.astrology?.sunSign || "Unknown";
     const birthDate = userProfile.dateOfBirth 
       ? userProfile.dateOfBirth.toISOString().split('T')[0] 
       : "Unknown";
@@ -202,7 +202,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
 
       // No recent plus content available - create personalized generic fallback
       const name = userProfile.firstName || 'Mystical Seeker';
-      const zodiacSign = userProfile.zodiacSign || 'the cosmos';
+      const zodiacSign = userProfile.astrology?.sunSign || 'the cosmos';
 
       content.title = `${name}: Your Mystical Destiny Awaits`;
       content.message = `Dear ${name}, the universe has aligned special energies for you today. As a ${zodiacSign}, your intuitive powers are heightened. Trust your inner wisdom.`;
@@ -246,7 +246,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
 
   private formatPlusContentData(title: string, message: string, userProfile: UserProfile): Array<{key: string, value: string}> {
     const name = userProfile.firstName || 'Mystical Seeker';
-    const zodiacSign = userProfile.zodiacSign || 'Unknown';
+    const zodiacSign = userProfile.astrology?.sunSign || 'Unknown';
     
     return [
       { key: 'Personal Insight', value: title },
@@ -275,7 +275,7 @@ export class OpenAIUserPlusService extends OpenAICoreService {
       'Pisces': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4'
     };
 
-    const zodiacSign = userProfile.zodiacSign;
+    const zodiacSign = userProfile.astrology?.sunSign;
     if (zodiacSign && zodiacImages[zodiacSign]) {
       return zodiacImages[zodiacSign];
     }

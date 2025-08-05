@@ -18,6 +18,7 @@ import { logger, createServiceLogger } from '@/common/util/logger';
 import { UserContentService } from '@/content/user-content.service';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
+import { HoroscopeService } from '@/horoscope/horoscope.service'; 
 
 @Controller('users')
 export class UsersController {
@@ -27,6 +28,7 @@ export class UsersController {
     private readonly userService: UsersService,
     private readonly userProfileService: UserProfilesService,
     private readonly userContentService: UserContentService,
+    private readonly horoscopeService: HoroscopeService,
   ) {}
 
   /**
@@ -425,9 +427,9 @@ export class UsersController {
   }
 
   /**
-   * Gets user astrology data
+   * Gets user astrology data - calculates if missing, returns if exists
    * @param firebaseUserFromDecorator - Firebase user from auth guard
-   * @returns Promise<{user: User | null}> - Updated user object
+   * @returns Promise<User | null> - User object with astrology data
    */
   @Post('calculate-astrology')
   @UseGuards(FirebaseAuthGuard)
@@ -435,14 +437,72 @@ export class UsersController {
     @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
     @Body() body: { deviceInfo?: any }
   ): Promise<User | null> {
-    this.logger.debug('Getting astrology data via GET /calculate-astrology', { 
+    this.logger.debug('Getting astrology data via POST /calculate-astrology', { 
       uid: firebaseUserFromDecorator.uid 
     });
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
     const user = await this.userService.getUser(firebaseUser);
 
-    user.userProfile.zodiacSign = "Pisces";
+    // Check if astrology data already exists
+    if (user.userProfile.astrology) {
+      this.logger.debug('Astrology data already exists, returning cached data', {
+        uid: firebaseUser.uid,
+        createdAt: user.userProfile.astrology.createdAt
+      });
+      return user;
+    }
+
+    // Calculate astrology if user has complete birth data
+    if (user.userProfile.dateOfBirth && 
+        user.userProfile.timeOfBirth && 
+        user.userProfile.birthLocation) {
+      try {
+        const coreAstrology = await this.horoscopeService.calculateCoreAstrology(
+          user.userProfile.dateOfBirth,
+          user.userProfile.timeOfBirth,
+          user.userProfile.birthLocation.timezone.name,
+          user.userProfile.birthLocation.coordinates
+        );
+        
+        // Update user profile with calculated astrology data
+        const updatedProfile = await this.userProfileService.updateProfile(
+          firebaseUser.uid,
+          firebaseUser.email!,
+          { 
+            astrology: {
+              sunSign: coreAstrology.sunSign,
+              moonSign: coreAstrology.moonSign,
+              risingSign: coreAstrology.risingSign,
+              venusSign: coreAstrology.venusSign,
+              marsSign: coreAstrology.marsSign,
+              createdAt: new Date()
+            }
+          }
+        );
+        
+        user.userProfile = updatedProfile;
+        
+        this.logger.info('Astrology data calculated and stored successfully', {
+          uid: firebaseUser.uid,
+          astrology: coreAstrology
+        });
+        
+      } catch (error) {
+        this.logger.error('Failed to calculate astrology data', {
+          uid: firebaseUser.uid,
+          error
+        });
+        throw error;
+      }
+    } else {
+      this.logger.warn('Incomplete birth data for astrology calculation', {
+        uid: firebaseUser.uid,
+        hasDateOfBirth: !!user.userProfile.dateOfBirth,
+        hasTimeOfBirth: !!user.userProfile.timeOfBirth,
+        hasBirthLocation: !!user.userProfile.birthLocation
+      });
+    }
 
     return user;
   }

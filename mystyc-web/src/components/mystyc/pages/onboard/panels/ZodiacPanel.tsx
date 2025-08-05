@@ -85,7 +85,7 @@ export default function SuccessPanel({ user, deviceInfo, setIsWorking }: Success
 
   return (
     <>
-      <Heading level={3} className='mb-16'>{isReady ? `Welcome to mystyc, ${updatedUser?.userProfile.zodiacSign}` : "Building your star chart"}</Heading>
+      <Heading level={3} className='mb-16'>{isReady ? `Welcome to mystyc, ${updatedUser?.userProfile.astrology?.sunSign}` : "Building your star chart"}</Heading>
       <FormLayout
         subtitle={isReady 
           ? <>

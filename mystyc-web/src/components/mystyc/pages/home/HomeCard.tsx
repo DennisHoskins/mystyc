@@ -19,7 +19,7 @@ export default function WelcomeCard({ user } : { user: AppUser }) {
           🎂 <strong>Birthday:</strong> {birthday}
         </Text>
         <Text className="mt-2">
-          🔮 <strong>Zodiac Sign:</strong> {user.userProfile.zodiacSign}
+          🔮 <strong>Zodiac Sign:</strong> {user.userProfile.astrology?.sunSign}
         </Text>
       </div>
     </Card>

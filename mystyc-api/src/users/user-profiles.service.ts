@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 
 import { z } from 'zod';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
-import { UserProfile, ZodiacSignType, UserProfileInputSchema, BirthLocation } from 'mystyc-common/schemas';
+import { UserProfile, Astrology, BirthLocation } from 'mystyc-common/schemas';
 import { UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
 import { CreateUserProfileSchema } from 'mystyc-common/schemas/user-profile.schema';
 import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
@@ -523,7 +523,7 @@ export class UserProfilesService {
       timeOfBirth: doc.timeOfBirth,
       hasTimeOfBirth: doc.hasTimeOfBirth,
       birthLocation: doc.birthLocation as BirthLocation | undefined,
-      zodiacSign: doc.zodiacSign as ZodiacSignType,
+      astrology: doc.astrology as Astrology | undefined,
       roles: doc.roles,
       stripeCustomerId: doc.stripeCustomerId,
       subscription: doc.subscription,
