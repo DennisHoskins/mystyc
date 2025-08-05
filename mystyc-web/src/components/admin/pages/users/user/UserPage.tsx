@@ -12,7 +12,7 @@ import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import UserDetailsPanel from './UserDetailsPanel';
 import UserSubscriptionPanel from './UserSubscriptionPanel';
 import UserProfileCard from './UserProfileCard';
-import UserStarSignCard from './UserStarSignCard';
+import UserAstrologyCard from './UserAstrologyCard';
 import UserTabCard from './UserTabCard';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
@@ -56,7 +56,7 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       sectionsContent={[<UserProfileCard key='user-profile' user={user} />]}
       sidebarContent={<UserSubscriptionPanel key='subscriptions' user={user} />}
       mainContent={[
-        <UserStarSignCard key='star-sign' user={user} />,
+        <UserAstrologyCard key='star-sign' user={user} />,
         <UserTabCard key='user-tables' firebaseUid={user && user.firebaseUid} />
       ]}
     />

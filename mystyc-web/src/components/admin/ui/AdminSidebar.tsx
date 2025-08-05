@@ -22,7 +22,7 @@ export default function AdminSidebar({
     { icon: <Globe />, label: 'Traffic', href: '/admin/traffic' },
     { icon: <Sparkle />, label: 'OpenAI Usage', href: '/admin/openai' },
     { icon: <CircleDollarSign />, label: 'Subscriptions', href: '/admin/subscriptions' },
-    { icon: <SunMoon />, label: 'Horoscopes', href: '/admin/horoscopes' },
+    { icon: <SunMoon />, label: 'Astrology', href: '/admin/astrology' },
     { icon: <BookOpenText />, label: 'Content', href: '/admin/content' },
     { icon: <Clock />, label: 'Schedules', href: '/admin/schedules' },
     { icon: <Users />, label: 'Users', href: '/admin/users' },

@@ -1,6 +1,6 @@
 'use client'
 
-import { LayoutDashboard, Clock, CircleDollarSign, BookOpenText, Globe, Sparkle, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
+import { LayoutDashboard, Clock, CircleDollarSign, SunMoon, BookOpenText, Globe, Sparkle, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
@@ -32,6 +32,10 @@ export default function AdminMenu() {
         <MenuItem onClick={() => router.push('/admin/subscriptions')}>
           <CircleDollarSign className="inline-block mr-2 h-4 w-4" />
           Subscriptions
+        </MenuItem>
+        <MenuItem onClick={() => router.push('/admin/astrology')}>
+          <SunMoon className="inline-block mr-2 h-4 w-4" />
+          Astrology
         </MenuItem>
         <MenuItem onClick={() => router.push('/admin/content')}>
           <BookOpenText className="inline-block mr-2 h-4 w-4" />

@@ -14,7 +14,7 @@ export interface CoreAstrology {
 }
 
 @Injectable()
-export class HoroscopeService {
+export class AstrologyService {
   constructor() {
     // Set ephemeris path - try multiple possible locations
     const possiblePaths = [
@@ -34,10 +34,10 @@ export class HoroscopeService {
     }
     
     if (ephePath) {
-      logger.debug('Setting Swiss Ephemeris path', { ephePath }, 'HoroscopeService');
+      logger.debug('Setting Swiss Ephemeris path', { ephePath }, 'AstrologyService');
       swisseph.swe_set_ephe_path(ephePath);
     } else {
-      logger.warn('No ephemeris files found, using built-in approximations', {}, 'HoroscopeService');
+      logger.warn('No ephemeris files found, using built-in approximations', {}, 'AstrologyService');
       // Swiss Ephemeris will fall back to built-in Moshier ephemeris
     }
   }
@@ -62,7 +62,7 @@ export class HoroscopeService {
       timeOfBirth,
       timezoneName,
       coordinates
-    }, 'HoroscopeService');
+    }, 'AstrologyService');
 
     try {
       // Validate inputs
@@ -70,7 +70,7 @@ export class HoroscopeService {
 
       // Calculate historical timezone offset for birth date
       const timezoneOffset = this.getHistoricalTimezoneOffset(dateOfBirth, timezoneName);
-      logger.debug('Timezone offset calculated', { timezoneOffset }, 'HoroscopeService');
+      logger.debug('Timezone offset calculated', { timezoneOffset }, 'AstrologyService');
       
       // Parse time of birth
       const [hours, minutes] = timeOfBirth.split(':').map(Number);
@@ -86,7 +86,7 @@ export class HoroscopeService {
       
       logger.debug('Birth moment before timezone adjustment', { 
         birthMomentUTC: birthMomentUTC.toISOString() 
-      }, 'HoroscopeService');
+      }, 'AstrologyService');
       
       // Adjust for timezone offset
       birthMomentUTC.setHours(birthMomentUTC.getHours() - timezoneOffset);
@@ -94,7 +94,7 @@ export class HoroscopeService {
       logger.debug('Birth moment after timezone adjustment', { 
         birthMomentUTC: birthMomentUTC.toISOString(),
         adjustedBy: -timezoneOffset + ' hours'
-      }, 'HoroscopeService');
+      }, 'AstrologyService');
       
       // Calculate Julian day
       const julianDay = await this.calculateJulianDay(birthMomentUTC);
@@ -122,7 +122,7 @@ export class HoroscopeService {
         coreAstrology,
         julianDay,
         timezoneOffset
-      }, 'HoroscopeService');
+      }, 'AstrologyService');
       
       return coreAstrology;
     } catch (error) {
@@ -131,7 +131,7 @@ export class HoroscopeService {
         timeOfBirth,
         timezoneName,
         error
-      }, 'HoroscopeService');
+      }, 'AstrologyService');
       
       throw new Error(`Core astrology calculation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -227,10 +227,10 @@ export class HoroscopeService {
         logger.debug('Calculating Julian day', { 
           year, month, day, hour,
           utcDate: date.toISOString()
-        }, 'HoroscopeService');
+        }, 'AstrologyService');
         
         swisseph.swe_julday(year, month, day, hour, swisseph.SE_GREG_CAL, (julday: any) => {
-          logger.debug('Julian day result', { julday, type: typeof julday }, 'HoroscopeService');
+          logger.debug('Julian day result', { julday, type: typeof julday }, 'AstrologyService');
           
           if (typeof julday !== 'number' || isNaN(julday)) {
             reject(new Error(`Invalid Julian day calculation: ${julday}`));
@@ -247,13 +247,13 @@ export class HoroscopeService {
   private async getPlanetPosition(julianDay: number, planet: number): Promise<number> {
     return new Promise((resolve, reject) => {
       try {
-        logger.debug('Calculating planet position', { julianDay, planet }, 'HoroscopeService');
+        logger.debug('Calculating planet position', { julianDay, planet }, 'AstrologyService');
         
         // Use Moshier flag for built-in ephemeris
         const flag = swisseph.SEFLG_MOSEPH; 
         
         swisseph.swe_calc_ut(julianDay, planet, flag, (result: any) => {
-          logger.debug('Swiss Ephemeris result', { result, type: typeof result, planet }, 'HoroscopeService');
+          logger.debug('Swiss Ephemeris result', { result, type: typeof result, planet }, 'AstrologyService');
           
           if (!result) {
             reject(new Error('No result from Swiss Ephemeris'));
@@ -284,7 +284,7 @@ export class HoroscopeService {
             return;
           }
           
-          logger.debug('Planet longitude calculated', { longitude, planet }, 'HoroscopeService');
+          logger.debug('Planet longitude calculated', { longitude, planet }, 'AstrologyService');
           resolve(longitude);
         });
       } catch (error) {
@@ -296,13 +296,13 @@ export class HoroscopeService {
   private async getRisingSign(julianDay: number, latitude: number, longitude: number): Promise<number> {
     return new Promise((resolve, reject) => {
       try {
-        logger.debug('Calculating rising sign', { julianDay, latitude, longitude }, 'HoroscopeService');
+        logger.debug('Calculating rising sign', { julianDay, latitude, longitude }, 'AstrologyService');
         
         // Use Placidus house system (most common)
         const houseSystem = 'P';
         
         swisseph.swe_houses(julianDay, latitude, longitude, houseSystem, (result: any) => {
-          logger.debug('House calculation result', { result, type: typeof result }, 'HoroscopeService');
+          logger.debug('House calculation result', { result, type: typeof result }, 'AstrologyService');
           
           if (!result) {
             reject(new Error('No result from house calculation'));
@@ -333,7 +333,7 @@ export class HoroscopeService {
             return;
           }
           
-          logger.debug('Rising sign calculated', { ascendant }, 'HoroscopeService');
+          logger.debug('Rising sign calculated', { ascendant }, 'AstrologyService');
           resolve(ascendant);
         });
       } catch (error) {

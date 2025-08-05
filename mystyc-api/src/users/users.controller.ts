@@ -18,7 +18,7 @@ import { logger, createServiceLogger } from '@/common/util/logger';
 import { UserContentService } from '@/content/user-content.service';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
-import { HoroscopeService } from '@/horoscope/horoscope.service'; 
+import { AstrologyService } from '@/astrology/astrology.service'; 
 
 @Controller('users')
 export class UsersController {
@@ -28,7 +28,7 @@ export class UsersController {
     private readonly userService: UsersService,
     private readonly userProfileService: UserProfilesService,
     private readonly userContentService: UserContentService,
-    private readonly horoscopeService: HoroscopeService,
+    private readonly astrologyService: AstrologyService,
   ) {}
 
   /**
@@ -458,7 +458,7 @@ export class UsersController {
         user.userProfile.timeOfBirth && 
         user.userProfile.birthLocation) {
       try {
-        const coreAstrology = await this.horoscopeService.calculateCoreAstrology(
+        const coreAstrology = await this.astrologyService.calculateCoreAstrology(
           user.userProfile.dateOfBirth,
           user.userProfile.timeOfBirth,
           user.userProfile.birthLocation.timezone.name,

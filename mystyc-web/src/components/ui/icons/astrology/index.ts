@@ -15,7 +15,7 @@ import Capricorn from './Capricorn';
 import Aquarius from './Aquarius';
 import Pisces from './Pisces';
 
-const zodiacIcons: Record<string, () => JSX.Element> = {
+const astrologyIcons: Record<string, () => JSX.Element> = {
   aries: () => React.createElement(Aries),
   taurus: () => React.createElement(Taurus),
   gemini: () => React.createElement(Gemini),
@@ -30,4 +30,4 @@ const zodiacIcons: Record<string, () => JSX.Element> = {
   pisces: () => React.createElement(Pisces),
 };
 
-export default zodiacIcons;
+export default astrologyIcons;

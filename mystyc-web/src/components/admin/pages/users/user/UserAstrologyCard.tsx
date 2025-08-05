@@ -9,7 +9,7 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
-import zodiacIcons from '@/components/ui/icons/zodiac';
+import zodiacIcons from '@/components/ui/icons/astrology';
 
 export default function UserStarSignCard({ user }: { user?: UserProfile | null }) {
 
@@ -24,7 +24,7 @@ export default function UserStarSignCard({ user }: { user?: UserProfile | null }
       <div className="flex items-center space-x-2 mb-4">
         <Avatar size={'small'} icon={<SunMoon className='w-6 h-6' />} />
         <div className='flex items-end w-full'>
-          <Heading level={5} className='flex-1'>Star Signs</Heading>
+          <Heading level={5} className='flex-1'>Astrology</Heading>
           <Text variant='small'>Created: {formatDateForComponent(user?.astrology?.createdAt)}</Text>
         </div>
       </div>

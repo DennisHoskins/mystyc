@@ -10,12 +10,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
-import HoroscopeIcon from '@/components/admin/ui/icons/HoroscopeIcon';
+import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 // import SchedulesTimezonesTable from './SchedulesTimezonesTable';
 // import SchedulesTable from './SchedulesTable';
 // import SchedulesDashboard from './SchedulesDashboard';
 
-export default function HoroscopesPage() {
+export default function AstrologyPage() {
   const { setBusy } = useBusy();
   // const { setBusy, isBusy } = useBusy();
   // const [stats, setStats] = useState<ScheduleStats | null>(null);
@@ -26,7 +26,7 @@ export default function HoroscopesPage() {
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
-    { label: 'Horoscopes' },
+    { label: 'Astrology' },
   ];
 
   const loadData = useCallback(async () => {
@@ -39,14 +39,14 @@ export default function HoroscopesPage() {
 
     //  setStats(stats);
     } catch (err) {
-      logger.error('Failed to load horoscope stats:', err);
-      setError('Failed to load horoscope stats. Please try again.');
+      logger.error('Failed to load astrology stats:', err);
+      setError('Failed to load astrology stats. Please try again.');
     } finally {
       setBusy(false);
     }
   }, [setBusy]);
 
-  const loadHoroscopes = useCallback(async (page: number) => {
+  const loadAstrology = useCallback(async (page: number) => {
     try {
       setError(null);
       setBusy(1000);
@@ -59,8 +59,8 @@ export default function HoroscopesPage() {
       // setData(response);
       // setCurrentPage(page);
     } catch (err) {
-      logger.error('Failed to load horoscopes:', err);
-      setError('Failed to load horoscopes. Please try again.');
+      logger.error('Failed to load astrology:', err);
+      setError('Failed to load astrology. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -68,18 +68,18 @@ export default function HoroscopesPage() {
 
   useEffect(() => {
     loadData();
-    loadHoroscopes(0);
-  }, [loadData, loadHoroscopes]);
+    loadAstrology(0);
+  }, [loadData, loadAstrology]);
 
   return (
    <AdminListLayout
       error={error}
       onRetry={() => {
         loadData();
-        loadHoroscopes(0);
+        loadAstrology(0);
       }}
       breadcrumbs={breadcrumbs}
-      icon={HoroscopeIcon}
+      icon={AstrologyIcon}
       description=""
       sideContent={<></>}
       itemContent={<></>}
