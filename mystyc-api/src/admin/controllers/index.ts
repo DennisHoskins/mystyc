@@ -11,6 +11,10 @@ export { AdminUsersContentController } from './admin-content-users.controller';
 export { AdminUsersPlusContentController } from './admin-content-users-plus.controller';
 export { AdminSchedulesController } from './admin-schedules.controller';
 export { AdminScheduleExecutionsController } from './admin-schedule-executions.controller';
+export { AdminPlanetaryPositionsController } from './admin-planetary-positions.controller';
+export { AdminElementInteractionsController } from './admin-element-interactions.controller';
+export { AdminModalityInteractionsController } from './admin-modality-interactions.controller';
+export { AdminPlanetInteractionsController } from './admin-planet-interactions.controller';
 
 export { AdminStatsController } from './stats/admin-stats.controller';
 export { AdminUsersStatsController } from './stats/admin-users-stats.controller';

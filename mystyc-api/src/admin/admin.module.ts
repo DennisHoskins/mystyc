@@ -15,7 +15,11 @@ import {
   AdminSchedulesController,
   AdminScheduleExecutionsController,
   AdminNotificationsController,
-  
+  AdminPlanetaryPositionsController,
+  AdminElementInteractionsController,
+  AdminModalityInteractionsController,
+  AdminPlanetInteractionsController,
+
   AdminStatsController,
   AdminUsersStatsController,
   AdminDevicesStatsController,

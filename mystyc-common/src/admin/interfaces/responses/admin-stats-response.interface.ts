@@ -9,6 +9,7 @@ import { ContentStats } from '../stats/admin-content-stats.interface'
 import { ScheduleStats } from '../stats/admin-schedule-stats.interface'
 import { ScheduleExecutionStats } from '../stats/admin-schedule-execution-stats.interface'
 import { SubscriptionStats } from '../stats/admin-subscription-stats.interface'
+import { AstrologyStats } from '../stats/admin-astrology-stats.interface'
 
 export interface AdminStatsResponse {
   users: UserStats,
@@ -20,11 +21,6 @@ export interface AdminStatsResponse {
   schedule: ScheduleStats & {
     executions: ScheduleExecutionStats;
   },
-  subscriptions: SubscriptionStats
-}
-
-export interface AdminStatsResponseWithQuery<T> {
-  data: T;
-  query?: Partial<AdminStatsQuery>;
-  queryString?: string;
+  subscriptions: SubscriptionStats,
+  astrology: AstrologyStats
 }

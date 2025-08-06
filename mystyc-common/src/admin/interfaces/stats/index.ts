@@ -8,3 +8,4 @@ export * from './admin-subscription-stats.interface';
 export * from './admin-traffic-stats.interface';
 export * from './admin-user-stats.interface';
 export * from './admin-device-stats.interface';
+export * from './admin-astrology-stats.interface';

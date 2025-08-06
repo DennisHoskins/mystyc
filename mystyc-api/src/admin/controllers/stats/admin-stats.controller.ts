@@ -18,6 +18,7 @@ import { AdminContentStatsService } from '@/admin/services/admin-content-stats.s
 import { AdminSchedulesStatsService } from '@/admin/services/admin-schedules-stats.service';
 import { AdminScheduleExecutionsStatsService } from '@/admin/services/admin-schedule-executions-stats.service';
 import { AdminSubscriptionsStatsService } from '@/admin/services/admin-subscriptions-stats.service';
+import { AdminAstrologyStatsService } from '@/admin/services/admin-astrology-stats.service';
 
 @Controller('admin/stats')
 export class AdminStatsController {
@@ -32,6 +33,7 @@ export class AdminStatsController {
     private readonly adminScheduleStatsService: AdminSchedulesStatsService,
     private readonly adminScheduleExecutionStatsService: AdminScheduleExecutionsStatsService,
     private readonly adminSubscriptionStatsService: AdminSubscriptionsStatsService,
+    private readonly adminAstrologyStatsService: AdminAstrologyStatsService,
   ) {}
 
   @Get()
@@ -57,7 +59,9 @@ export class AdminStatsController {
       // OpenAI
       currentMonthlyUsage, openaiSummary, monthlyUsage, contentTypeUsage,
       // Subscriptions
-      subscriptionsSummary, subscriptionsRevenue, subscriptionsLifecycle, subscriptionsPaymentHealth
+      subscriptionsSummary, subscriptionsRevenue, subscriptionsLifecycle, subscriptionsPaymentHealth,
+      // Astrology
+      astrologySummary, astrologyInteractions, astrologyDistribution
     ] = await Promise.all([
       // Users
       this.adminUsersStatsService.getRegistrationStats(query),
@@ -105,6 +109,11 @@ export class AdminStatsController {
       this.adminSubscriptionStatsService.getRevenueStats(query),
       this.adminSubscriptionStatsService.getLifecycleStats(query),
       this.adminSubscriptionStatsService.getPaymentHealthStats(query),
+
+      // Astrology
+      this.adminAstrologyStatsService.getSummaryStats(query),
+      this.adminAstrologyStatsService.getInteractionStats(query),
+      this.adminAstrologyStatsService.getKnowledgeDistributionStats(query)
     ]);
 
     return {
@@ -115,12 +124,8 @@ export class AdminStatsController {
       content: { summary: contentSummary, sources, generation, timeline },
       schedule: { summary: scheduleSummary, performance, failures, executions },
       openai: { currentMonthlyUsage, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage },
-      subscriptions: { 
-        summary: subscriptionsSummary, 
-        revenue: subscriptionsRevenue, 
-        lifecycle: subscriptionsLifecycle, 
-        paymentHealth: subscriptionsPaymentHealth 
-      }
+      subscriptions: { summary: subscriptionsSummary, revenue: subscriptionsRevenue, lifecycle: subscriptionsLifecycle, paymentHealth: subscriptionsPaymentHealth },
+      astrology: { summary: astrologySummary, interactions: astrologyInteractions, distribution: astrologyDistribution }
     };
   }
 }
