@@ -9,7 +9,7 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
-import zodiacIcons from '@/components/ui/icons/astrology';
+import zodiacIcons from '@/components/ui/icons/astrology/zodiac';
 
 export default function UserStarSignCard({ user }: { user?: UserProfile | null }) {
 

@@ -9,6 +9,7 @@ import { NotificationsModule } from '@/notifications/notifications.module';
 import { ContentModule } from '@/content/content.module';
 import { OpenAIModule } from '@/openai/openai.module';
 import { PaymentsModule } from './payments/payments.module';
+import { AstrologyModule } from './astrology/astrology.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PaymentsModule } from './payments/payments.module';
     ContentModule,
     OpenAIModule,
     PaymentsModule,
+    AstrologyModule,
   ],
   exports: [
     FirebaseModule,
@@ -32,6 +34,7 @@ import { PaymentsModule } from './payments/payments.module';
     ContentModule,
     OpenAIModule,
     PaymentsModule,
+    AstrologyModule,
   ],
 })
 export class AppServicesModule {}

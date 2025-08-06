@@ -2,21 +2,7 @@ import { z } from 'zod';
 import { UserRole } from '../constants/roles.enum';
 import { SubscriptionLevel } from '../constants/subscription-levels.enum';
 import { validateWithError, validateSafely } from '../util/validation';
-
-export const ZodiacSign = z.enum([
-  'Aries',
-  'Taurus', 
-  'Gemini',
-  'Cancer',
-  'Leo',
-  'Virgo',
-  'Libra',
-  'Scorpio',
-  'Sagittarius',
-  'Capricorn',
-  'Aquarius',
-  'Pisces'
-]);
+import { ZodiacSign } from './astrology-knowledge.schema';
 
 // Reusable base schemas
 const BaseNameSchema = z.string()

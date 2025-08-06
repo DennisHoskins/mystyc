@@ -11,13 +11,9 @@ import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
-// import SchedulesTimezonesTable from './SchedulesTimezonesTable';
-// import SchedulesTable from './SchedulesTable';
-// import SchedulesDashboard from './SchedulesDashboard';
 
 export default function AstrologyPage() {
-  const { setBusy } = useBusy();
-  // const { setBusy, isBusy } = useBusy();
+  const { setBusy, isBusy } = useBusy();
   // const [stats, setStats] = useState<ScheduleStats | null>(null);
   // const [data, setData] = useState<AdminListResponse<Schedule> | null>(null);
   // const [error, setError] = useState<string | null>(null);

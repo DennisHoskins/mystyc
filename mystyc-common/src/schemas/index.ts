@@ -10,5 +10,6 @@ export * from './notification.schema';
 export * from './content.schema';
 export * from './payment-history.schema';
 export * from './openai-usage.schema';
+export * from './astrology-knowledge.schema';
 
 export * from './requests';
