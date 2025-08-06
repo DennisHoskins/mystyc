@@ -9,12 +9,6 @@ export class PlanetaryPosition {
   @Prop({ required: true, enum: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'], index: true })
   sign!: string;
 
-  @Prop({ required: true, enum: ['Fire', 'Earth', 'Air', 'Water'], index: true })
-  element!: string;
-
-  @Prop({ required: true, enum: ['Cardinal', 'Fixed', 'Mutable'], index: true })
-  modality!: string;
-
   @Prop({ required: true, minlength: 50, maxlength: 1000 })
   description!: string;
 
@@ -33,5 +27,3 @@ export const PlanetaryPositionSchema = SchemaFactory.createForClass(PlanetaryPos
 
 // Indexes
 PlanetaryPositionSchema.index({ planet: 1, sign: 1 }, { unique: true });
-PlanetaryPositionSchema.index({ element: 1 });
-PlanetaryPositionSchema.index({ modality: 1 });

@@ -12,6 +12,12 @@ export { AdminUsersPlusContentController } from './admin-content-users-plus.cont
 export { AdminSchedulesController } from './admin-schedules.controller';
 export { AdminScheduleExecutionsController } from './admin-schedule-executions.controller';
 export { AdminAstrologyController } from './admin-astrology.controller';
+export { AdminSignsController } from './admin-signs.controller';
+export { AdminPlanetsController } from './admin-planets.controller';
+export { AdminElementsController } from './admin-elements.controller';
+export { AdminEnergyTypesController } from './admin-energy-types.controller';
+export { AdminModalitiesController } from './admin-modalities.controller';
+export { AdminDynamicsController } from './admin-dynamics.controller';
 export { AdminPlanetaryPositionsController } from './admin-planetary-positions.controller';
 export { AdminElementInteractionsController } from './admin-element-interactions.controller';
 export { AdminModalityInteractionsController } from './admin-modality-interactions.controller';

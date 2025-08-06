@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { AstrologySummary } from 'mystyc-common/admin';
-import { getAstrolgySummary } from '@/server/actions/admin/astrology';
+import { getAstrologySummary } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
@@ -26,7 +26,7 @@ export default function AstrologyPage() {
       setError(null);
       setBusy(1000);
 
-      const summaryData = await getAstrolgySummary({deviceInfo: getDeviceInfo()});
+      const summaryData = await getAstrologySummary({deviceInfo: getDeviceInfo()});
       setSummary(summaryData);
     } catch (err) {
       logger.error('Failed to load astrology summary:', err);
@@ -43,6 +43,8 @@ export default function AstrologyPage() {
   const retryAll = () => {
     loadSummary();
   };
+
+  console.log(summary);
 
   return (
     <AdminListLayout

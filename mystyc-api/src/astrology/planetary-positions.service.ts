@@ -69,8 +69,6 @@ export class PlanetaryPositionsService {
       _id: doc._id?.toString(),
       planet: doc.planet as any,
       sign: doc.sign as any,
-      element: doc.element as any,
-      modality: doc.modality as any,
       description: doc.description,
       keywords: doc.keywords,
       energyType: doc.energyType,

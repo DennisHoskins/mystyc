@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { AstrologySummary } from 'mystyc-common/admin';
-import { getAstrolgySummary } from '@/server/actions/admin/astrology';
+import { getAstrologySummary } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import TabPanel, { Tab } from '@/components/ui/TabPanel';
@@ -19,7 +19,7 @@ export default function AstrologyTabPanel() {
   useEffect(() => {
     const loadSummary = async () => {
       try {
-        const summaryData = await getAstrolgySummary({deviceInfo: getDeviceInfo()});
+        const summaryData = await getAstrologySummary({deviceInfo: getDeviceInfo()});
         setSummary(summaryData);
       } catch (err) {
         logger.error('Failed to load astrology summary:', err);

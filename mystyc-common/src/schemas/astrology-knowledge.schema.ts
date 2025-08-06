@@ -12,8 +12,6 @@ export const DynamicType = z.enum(['harmony', 'tension', 'complementary', 'ampli
 export const PlanetaryPositionInputSchema = z.object({
   planet: PlanetType,
   sign: ZodiacSign,
-  element: ElementType,
-  modality: ModalityType,
   description: z.string().min(50).max(1000).trim(),
   keywords: z.array(z.string().min(1).trim()).min(3).max(10),
   energyType: z.string().min(1).max(50).trim()

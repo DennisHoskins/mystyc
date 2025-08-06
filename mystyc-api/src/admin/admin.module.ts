@@ -16,6 +16,12 @@ import {
   AdminScheduleExecutionsController,
   AdminNotificationsController,
   AdminAstrologyController,
+  AdminSignsController,
+  AdminPlanetsController,
+  AdminElementsController,
+  AdminModalitiesController,
+  AdminDynamicsController,
+  AdminEnergyTypesController,  
   AdminPlanetaryPositionsController,
   AdminElementInteractionsController,
   AdminModalityInteractionsController,
@@ -54,6 +60,12 @@ import { ContentSchema } from '@/content/schemas/content.schema';
 import { OpenAIUsageSchema } from '@/openai/schemas/openai-usage.schema';
 import { ScheduleSchema } from '@/schedules/schemas/schedule.schema';
 import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.schema';
+import { SignSchema } from '@/astrology/schemas/sign.schema';
+import { PlanetSchema } from '@/astrology/schemas/planet.schema';
+import { ElementSchema } from '@/astrology/schemas/element.schema';
+import { ModalitySchema } from '@/astrology/schemas/modality.schema';
+import { DynamicSchema } from '@/astrology/schemas/dynamic.schema';
+import { EnergyTypeSchema } from '@/astrology/schemas/energy-type.schema';
 import { PaymentHistorySchema } from '@/payments/schemas/payment-history.schema';
 import { ElementInteractionSchema } from '@/astrology/schemas/element-interaction.schema';
 import { ModalityInteractionSchema } from '@/astrology/schemas/modality-interaction.schema'; 
@@ -73,6 +85,12 @@ import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.
       { name: 'Schedule', schema: ScheduleSchema },
       { name: 'ScheduleExecution', schema: ScheduleExecutionSchema },
       { name: 'PaymentHistory', schema: PaymentHistorySchema },
+      { name: 'Sign', schema: SignSchema },
+      { name: 'Planet', schema: PlanetSchema },
+      { name: 'Element', schema: ElementSchema },
+      { name: 'Modality', schema: ModalitySchema },
+      { name: 'Dynamic', schema: DynamicSchema },
+      { name: 'EnergyType', schema: EnergyTypeSchema },      
       { name: 'ElementInteraction', schema: ElementInteractionSchema },
       { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
       { name: 'PlanetInteraction', schema: PlanetInteractionSchema },
@@ -94,6 +112,12 @@ controllers: [
     AdminScheduleExecutionsController,
     AdminNotificationsController,
     AdminAstrologyController,
+    AdminSignsController,
+    AdminPlanetsController,  
+    AdminElementsController,
+    AdminModalitiesController,
+    AdminDynamicsController,
+    AdminEnergyTypesController,    
     AdminPlanetaryPositionsController,
     AdminElementInteractionsController,
     AdminModalityInteractionsController,

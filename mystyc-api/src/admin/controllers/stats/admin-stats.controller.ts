@@ -60,9 +60,9 @@ export class AdminStatsController {
       currentMonthlyUsage, openaiSummary, monthlyUsage, contentTypeUsage,
       // Subscriptions
       subscriptionsSummary, subscriptionsRevenue, subscriptionsLifecycle, subscriptionsPaymentHealth,
-      // Astrology
-      astrologySummary, astrologyInteractions, astrologyDistribution
-    ] = await Promise.all([
+      // Astrology - ONLY SUMMARY NOW
+      astrologySummary
+    ] = await Promise.all([  
       // Users
       this.adminUsersStatsService.getRegistrationStats(query),
       this.adminUsersStatsService.getProfileCompletionStats(query),
@@ -112,8 +112,6 @@ export class AdminStatsController {
 
       // Astrology
       this.adminAstrologyStatsService.getSummaryStats(query),
-      this.adminAstrologyStatsService.getInteractionStats(query),
-      this.adminAstrologyStatsService.getKnowledgeDistributionStats(query)
     ]);
 
     return {
@@ -125,7 +123,7 @@ export class AdminStatsController {
       schedule: { summary: scheduleSummary, performance, failures, executions },
       openai: { currentMonthlyUsage, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage },
       subscriptions: { summary: subscriptionsSummary, revenue: subscriptionsRevenue, lifecycle: subscriptionsLifecycle, paymentHealth: subscriptionsPaymentHealth },
-      astrology: { summary: astrologySummary, interactions: astrologyInteractions, distribution: astrologyDistribution }
+      astrology: { summary: astrologySummary }
     };
   }
 }
