@@ -11,7 +11,7 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 interface PlanetaryPositionsTableProps {
   label?: string;
   data?: PlanetaryPosition[];
-  pagination?: Pagination;
+  pagination?: Pagination | null;
   loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
@@ -56,7 +56,7 @@ export function PlanetaryPositionsTable({
 interface ElementInteractionsTableProps {
   label?: string;
   data?: ElementInteraction[];
-  pagination?: Pagination;
+  pagination?: Pagination | null;
   loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
@@ -100,7 +100,7 @@ export function ElementInteractionsTable({
 interface ModalityInteractionsTableProps {
   label?: string;
   data?: ModalityInteraction[];
-  pagination?: Pagination;
+  pagination?: Pagination | null;
   loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
@@ -144,7 +144,7 @@ export function ModalityInteractionsTable({
 interface PlanetInteractionsTableProps {
   label?: string;
   data?: PlanetInteraction[];
-  pagination?: Pagination;
+  pagination?: Pagination | null;
   loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;

@@ -1,6 +1,6 @@
 'use server'
 
-import { AdminListResponse, BaseAdminQuery } from 'mystyc-common/admin';
+import { AdminListResponse, BaseAdminQuery, AstrologySummary } from 'mystyc-common/admin';
 import { 
   PlanetaryPosition,
   ElementInteraction,
@@ -11,6 +11,14 @@ import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { logger } from '@/util/logger';
 import { withAdminAuth } from '@/server/util/admin/withAdminAuth';
 import { nestGet } from '@/server/util/admin/nestClient';
+
+// Astrology Summary
+export async function getAstrolgySummary(params: { deviceInfo: DeviceInfo }) {
+  return withAdminAuth(async (session) => {
+    logger.log('[getAstrologySummary] Fetching astrology summary');
+    return nestGet<AstrologySummary>(session, 'admin/astrology/summary');
+  }, params);
+}
 
 // Planetary Positions
 export async function getPlanetaryPositions(params: {

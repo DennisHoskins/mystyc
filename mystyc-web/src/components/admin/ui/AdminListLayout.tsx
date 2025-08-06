@@ -69,7 +69,7 @@ export default function AdminListLayout({
 
   return (
     <div className='grow w-full min-h-0 flex flex-col p-4'>
-      <div className="flex flex-col sm:flex-row mb-4">
+      <div className="flex flex-col sm:flex-row mb-4 overflow-hidden grow">
         <Card className='grow'>
           <div className='flex space-x-3 items-center mb-4'>
             {icon && (
@@ -89,7 +89,7 @@ export default function AdminListLayout({
 
           <hr />
 
-          <div className='w-full flex mt-4 mb-2'>
+          <div className='w-full grow flex mt-4 mb-2 overflow-hidden'>
             {headerContent ? (
               <>{headerContent}</>
             ) : (
@@ -98,10 +98,12 @@ export default function AdminListLayout({
             
           </div>
         </Card>
-
-        <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
-          {sideContent}
-        </Card>
+        
+        {sideContent &&
+          <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
+            {sideContent}
+          </Card>
+        }
       </div>
 
       {itemContent && (
