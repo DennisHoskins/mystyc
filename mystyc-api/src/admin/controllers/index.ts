@@ -26,3 +26,4 @@ export { AdminOpenAIStatsController } from './stats/admin-openai-stats.controlle
 export { AdminSchedulesStatsController } from './stats/admin-schedules-stats.controller';
 export { AdminScheduleExecutionsStatsController } from './stats/admin-schedule-executions-stats.controller';
 export { AdminSubscriptionsStatsController } from './stats/admin-subscription-stats.controller';
+export { AdminAstrologyStatsController } from './stats/admin-astrology-stats.controller';

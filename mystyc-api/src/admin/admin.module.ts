@@ -29,7 +29,8 @@ import {
   AdminScheduleExecutionsStatsController,
   AdminContentStatsController,
   AdminOpenAIStatsController,
-  AdminSubscriptionsStatsController
+  AdminSubscriptionsStatsController,
+  AdminAstrologyStatsController,
 } from './controllers';
 
 import { AppServicesModule } from '../app-services.module';
@@ -41,6 +42,8 @@ import { AdminContentStatsService } from './services/admin-content-stats.service
 import { AdminOpenAIStatsService } from './services/admin-openai-stats.service';
 import { AdminSchedulesStatsService } from './services/admin-schedules-stats.service';
 import { AdminScheduleExecutionsStatsService } from './services/admin-schedule-executions-stats.service';
+import { AdminSubscriptionsStatsService } from './services/admin-subscriptions-stats.service';
+import { AdminAstrologyStatsService } from './services/admin-astrology-stats.service';
 
 import { UserProfileSchema } from '@/users/schemas/user-profile.schema';
 import { DeviceSchema } from '@/devices/schemas/device.schema';
@@ -51,7 +54,10 @@ import { OpenAIUsageSchema } from '@/openai/schemas/openai-usage.schema';
 import { ScheduleSchema } from '@/schedules/schemas/schedule.schema';
 import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.schema';
 import { PaymentHistorySchema } from '@/payments/schemas/payment-history.schema';
-import { AdminSubscriptionsStatsService } from './services/admin-subscriptions-stats.service';
+import { ElementInteractionSchema } from '@/astrology/schemas/element-interaction.schema';
+import { ModalityInteractionSchema } from '@/astrology/schemas/modality-interaction.schema'; 
+import { PlanetInteractionSchema } from '@/astrology/schemas/planet-interaction.schema';
+import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.schema';
 
 @Module({
   imports: [
@@ -66,6 +72,10 @@ import { AdminSubscriptionsStatsService } from './services/admin-subscriptions-s
       { name: 'Schedule', schema: ScheduleSchema },
       { name: 'ScheduleExecution', schema: ScheduleExecutionSchema },
       { name: 'PaymentHistory', schema: PaymentHistorySchema },
+      { name: 'ElementInteraction', schema: ElementInteractionSchema },
+      { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
+      { name: 'PlanetInteraction', schema: PlanetInteractionSchema },
+      { name: 'PlanetaryPosition', schema: PlanetaryPositionSchema },
     ])
   ],
 controllers: [
@@ -82,6 +92,10 @@ controllers: [
     AdminSchedulesController,
     AdminScheduleExecutionsController,
     AdminNotificationsController,
+    AdminPlanetaryPositionsController,
+    AdminElementInteractionsController,
+    AdminModalityInteractionsController,
+    AdminPlanetInteractionsController,
     
     AdminStatsController,
     AdminUsersStatsController,
@@ -92,7 +106,8 @@ controllers: [
     AdminScheduleExecutionsStatsController,
     AdminContentStatsController,
     AdminOpenAIStatsController,
-    AdminSubscriptionsStatsController
+    AdminSubscriptionsStatsController,
+    AdminAstrologyStatsController,
   ],
   providers: [
     AdminUsersStatsService,
@@ -103,7 +118,8 @@ controllers: [
     AdminContentStatsService,
     AdminSchedulesStatsService,
     AdminScheduleExecutionsStatsService,
-    AdminSubscriptionsStatsService
+    AdminSubscriptionsStatsService,
+    AdminAstrologyStatsService
   ]
 })
 export class AdminModule {}
