@@ -137,20 +137,6 @@ export class AstrologyService {
     }
   }
 
-  /**
-   * Calculates zodiac sign based on birth data (backwards compatibility)
-   * @deprecated Use calculateCoreAstrology instead
-   */
-  async calculateZodiacSign(
-    dateOfBirth: Date,
-    timeOfBirth: string,
-    timezoneName: string,
-    coordinates: { lat: number; lng: number }
-  ): Promise<ZodiacSignType> {
-    const coreAstrology = await this.calculateCoreAstrology(dateOfBirth, timeOfBirth, timezoneName, coordinates);
-    return coreAstrology.sunSign;
-  }
-
   private validateInputs(
     dateOfBirth: Date,
     timeOfBirth: string,
