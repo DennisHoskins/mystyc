@@ -10,7 +10,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
-import { PlanetaryPositionsTable } from '../AstrologyTables';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface AstrologyPlanetaryPositionsTableProps {
   isActive?: boolean;
@@ -30,6 +30,7 @@ export default function AstrologyPlanetaryPositionsTable({ isActive = false }: A
       setError(null);
 
       const listQuery = getDefaultListQuery(page);
+      listQuery.sortBy = "planet";
       const response = await getPlanetaryPositions({deviceInfo: getDeviceInfo(), ...listQuery});
 
       setPlanetaryPositions(response.data);
@@ -60,14 +61,26 @@ export default function AstrologyPlanetaryPositionsTable({ isActive = false }: A
     )
   }
 
+  const columns: Column<PlanetaryPosition>[] = [
+    { key: 'planet', header: 'Planet' },
+    { key: 'sign', header: 'Sign' },
+    { key: 'element', header: 'Element' },
+    { key: 'modality', header: 'Modality' },
+    { key: 'energyType', header: 'Energy Type' },
+    { key: 'keywords', header: 'Keywords', render: (p) => p.keywords.slice(0, 3).join(', ') + (p.keywords.length > 3 ? '...' : '') },
+  ];
+
   return (
-    <PlanetaryPositionsTable
+    <AdminTable<PlanetaryPosition>
       data={planetaryPositions}
-      pagination={pagination}
+      columns={columns}
       loading={isBusy || !hasLoaded}
       currentPage={currentPage}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={loadPlanetaryPositions}
       onRefresh={() => loadPlanetaryPositions(currentPage)}
+      emptyMessage="No Planetary Positions found."
     />
   );
 }

@@ -10,7 +10,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
-import { PlanetInteractionsTable } from '../AstrologyTables';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface AstrologyPlanetInteractionsTableProps {
   isActive?: boolean;
@@ -30,6 +30,7 @@ export default function AstrologyPlanetInteractionsTable({ isActive = false }: A
       setError(null);
 
       const listQuery = getDefaultListQuery(page);
+      listQuery.sortBy = "planet1";
       const response = await getPlanetInteractions({deviceInfo: getDeviceInfo(), ...listQuery});
 
       setPlanetInteractions(response.data);
@@ -60,14 +61,25 @@ export default function AstrologyPlanetInteractionsTable({ isActive = false }: A
     )
   }
 
+  const columns: Column<PlanetInteraction>[] = [
+    { key: 'planet1', header: 'Planet 1' },
+    { key: 'planet2', header: 'Planet 2' },
+    { key: 'dynamic', header: 'Dynamic' },
+    { key: 'energyType', header: 'Energy Type' },
+    { key: 'keywords', header: 'Keywords', render: (p) => p.keywords.slice(0, 3).join(', ') + (p.keywords.length > 3 ? '...' : '') },
+  ];
+
   return (
-    <PlanetInteractionsTable
+    <AdminTable<PlanetInteraction>
       data={planetInteractions}
-      pagination={pagination}
+      columns={columns}
       loading={isBusy || !hasLoaded}
       currentPage={currentPage}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={loadPlanetInteractions}
       onRefresh={() => loadPlanetInteractions(currentPage)}
+      emptyMessage="No Planet Interactions found."
     />
   );
 }

@@ -68,9 +68,9 @@ export default function AdminListLayout({
   }
 
   return (
-    <div className='grow w-full min-h-0 flex flex-col p-4'>
-      <div className="flex flex-col sm:flex-row mb-4 overflow-hidden grow">
-        <Card className='grow'>
+    <div className='grow w-full min-h-0 flex flex-col p-4 pb-0'>
+      <div className="flex flex-col sm:flex-row overflow-hidden grow">
+        <Card className='grow mb-10'>
           <div className='flex space-x-3 items-center mb-4'>
             {icon && (
               <div className='mt-1'>

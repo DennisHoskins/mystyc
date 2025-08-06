@@ -10,7 +10,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
-import { ElementInteractionsTable } from '../AstrologyTables';
+import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface AstrologyElementInteractionsTableProps {
   isActive?: boolean;
@@ -30,6 +30,7 @@ export default function AstrologyElementInteractionsTable({ isActive = false }: 
       setError(null);
 
       const listQuery = getDefaultListQuery(page);
+      listQuery.sortBy = "element1";
       const response = await getElementInteractions({deviceInfo: getDeviceInfo(), ...listQuery});
 
       setElementInteractions(response.data);
@@ -60,14 +61,25 @@ export default function AstrologyElementInteractionsTable({ isActive = false }: 
     )
   }
 
+  const columns: Column<ElementInteraction>[] = [
+    { key: 'element1', header: 'Element 1' },
+    { key: 'element2', header: 'Element 2' },
+    { key: 'dynamic', header: 'Dynamic' },
+    { key: 'energyType', header: 'Energy Type' },
+    { key: 'keywords', header: 'Keywords', render: (e) => e.keywords.slice(0, 3).join(', ') + (e.keywords.length > 3 ? '...' : '') },
+  ];
+
   return (
-    <ElementInteractionsTable
+    <AdminTable<ElementInteraction>
       data={elementInteractions}
-      pagination={pagination}
+      columns={columns}
       loading={isBusy || !hasLoaded}
       currentPage={currentPage}
+      totalPages={pagination?.totalPages}
+      hasMore={pagination?.hasMore}
       onPageChange={loadElementInteractions}
       onRefresh={() => loadElementInteractions(currentPage)}
+      emptyMessage="No Element Interactions found."
     />
   );
 }
