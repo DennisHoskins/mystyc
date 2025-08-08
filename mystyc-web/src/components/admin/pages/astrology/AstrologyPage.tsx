@@ -9,7 +9,7 @@ import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
-import AstrologyTabPanel from './AstrologyTabPanel';
+import AstrologyDetailsPanel from './AstrologyDetailsPanel';
 
 export default function AstrologyPage() {
   const { setBusy } = useBusy();
@@ -52,7 +52,7 @@ export default function AstrologyPage() {
       onRetry={retryAll}
       breadcrumbs={breadcrumbs}
       icon={AstrologyIcon}
-      headerContent={<AstrologyTabPanel key='astrology-tabs' />}
+      headerContent={<AstrologyDetailsPanel />}
     />   
   );
 }

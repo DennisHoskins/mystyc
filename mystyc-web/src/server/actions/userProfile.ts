@@ -1,32 +1,11 @@
 'use server'
 
-import { headers } from 'next/headers';
-
 import { UserProfile, UserProfileInput } from 'mystyc-common/schemas/';
-import { DeviceInfo, Session } from '@/interfaces/';
+import { DeviceInfo } from '@/interfaces/';
 import { PlaceResult } from '@/schemas/place-result.schema';
-import { sessionManager } from '@/server/services/sessionManager';
 import { authTokenManager } from '@/server/services/authTokenManager';
 import { logger } from '@/util/logger';
-
-async function withSession<T>(
-  action: (session: Session) => Promise<T>,
-  deviceInfo: DeviceInfo,
-  actionName: string
-): Promise<T | null> {
-  const headersList = await headers();
-  
-  try {
-    const session = await sessionManager.getCurrentSession(headersList, deviceInfo);
-    if (!session) {
-      logger.log(`[${actionName}] No Current Session`);
-      return null;
-    }
-    return action(session);
-  } catch (err) {
-    throw err;
-  }
-}
+import { withSession } from '../util/withSession';
 
 // Type for form data that might include PlaceResult
 interface ProfileUpdateData extends Partial<UserProfileInput> {

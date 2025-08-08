@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { Sign } from 'mystyc-common/schemas';
 
 import { logger } from '@/common/util/logger';
 import { SignDocument } from './schemas/sign.schema';
@@ -12,6 +13,37 @@ export class SignsService {
   constructor(
     @InjectModel('Sign') private signModel: Model<SignDocument>
   ) {}
+
+  /**
+   * Finds sign by name, returns null if not found (admin use)
+   * @param sign - sign name as string
+   * @returns Promise<Sign | null> - Sign if found, null if not found
+   */
+  async findByName(name: string): Promise<Sign | null> {
+    logger.debug('Finding sign by name', { name }, 'SignsService');
+
+    try {
+      const sign = await this.signModel.findOne({ sign: name });
+
+      if (!sign) {
+        logger.debug('Sign not found', { name }, 'SignsService');
+        return null;
+      }
+
+      logger.debug('Sign found', {
+        sign: sign.sign,
+      }, 'SignsService');
+
+      return this.transformToInterface(sign);
+    } catch (error) {
+      logger.error('Failed to find sign by name', {
+        name,
+        error
+      }, 'SignsService');
+
+      return null;
+    }
+  }
 
   /**
    * @returns number - Retrieves sign records total

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { Element } from 'mystyc-common/schemas';
 
 import { logger } from '@/common/util/logger';
 import { ElementDocument } from './schemas/element.schema';
@@ -12,6 +13,37 @@ export class ElementsService {
   constructor(
     @InjectModel('Element') private elementModel: Model<ElementDocument>
   ) {}
+
+  /**
+   * Finds element by name, returns null if not found (admin use)
+   * @param element - element name as string
+   * @returns Promise<Element | null> - Element if found, null if not found
+   */
+  async findByName(name: string): Promise<Element | null> {
+    logger.debug('Finding element by name', { name }, 'ElementsService');
+
+    try {
+      const element = await this.elementModel.findOne({ element: name });
+
+      if (!element) {
+        logger.debug('Element not found', { name }, 'ElementsService');
+        return null;
+      }
+
+      logger.debug('Element found', {
+        element: element.element,
+      }, 'ElementsService');
+
+      return this.transformToInterface(element);
+    } catch (error) {
+      logger.error('Failed to find element by name', {
+        name,
+        error
+      }, 'ElementsService');
+
+      return null;
+    }
+  }
 
   /**
    * @returns number - Retrieves element records total

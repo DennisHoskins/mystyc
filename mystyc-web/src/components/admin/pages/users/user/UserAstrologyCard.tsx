@@ -1,4 +1,3 @@
-import { JSX } from 'react';
 import { SunMoon } from 'lucide-react';
 
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
@@ -9,16 +8,9 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
-import zodiacIcons from '@/components/ui/icons/astrology/zodiac';
+import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 
 export default function UserStarSignCard({ user }: { user?: UserProfile | null }) {
-
-  function getZodiacIcon(sign?: string | null): JSX.Element | undefined {
-    if (!sign) return undefined;
-    const iconFn = zodiacIcons[sign.toLowerCase()];
-    return iconFn?.();
-  }
-
   return (
     <Card className='flex flex-col'>
       <div className="flex items-center space-x-2 mb-4">

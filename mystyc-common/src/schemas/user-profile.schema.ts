@@ -83,7 +83,6 @@ export const UserProfileSchema = UserProfileInputSchema.extend({
 export type CreateUserProfileInput = z.infer<typeof CreateUserProfileSchema>;
 export type UserProfileInput = z.input<typeof UserProfileInputSchema>;
 export type UserProfile = z.infer<typeof UserProfileSchema>;
-export type ZodiacSignType = z.infer<typeof ZodiacSign>;
 export type BirthLocation = z.infer<typeof BirthLocationSchema>;
 export type Astrology = z.infer<typeof AstrologySchema>;
 

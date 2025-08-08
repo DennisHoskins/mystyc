@@ -31,3 +31,9 @@ const zodiacIcons: Record<string, () => JSX.Element> = {
 };
 
 export default zodiacIcons;
+
+export function getZodiacIcon(sign?: string | null): JSX.Element | undefined {
+  if (!sign) return undefined;
+  const iconFn = zodiacIcons[sign.toLowerCase()];
+  return iconFn?.();
+}

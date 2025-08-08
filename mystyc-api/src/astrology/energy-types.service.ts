@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { EnergyType } from 'mystyc-common/schemas';
 
 import { logger } from '@/common/util/logger';
 import { EnergyTypeDocument } from './schemas/energy-type.schema';
@@ -12,6 +13,37 @@ export class EnergyTypesService {
   constructor(
     @InjectModel('EnergyType') private energyTypeModel: Model<EnergyTypeDocument>
   ) {}
+
+  /**
+   * Finds energyType by name, returns null if not found (admin use)
+   * @param energyType - energyType name as string
+   * @returns Promise<EnergyType | null> - EnergyType if found, null if not found
+   */
+  async findByName(name: string): Promise<EnergyType | null> {
+    logger.debug('Finding energyType by name', { name }, 'EnergyTypesService');
+
+    try {
+      const energyType = await this.energyTypeModel.findOne({ energyType: name });
+
+      if (!energyType) {
+        logger.debug('EnergyType not found', { name }, 'EnergyTypesService');
+        return null;
+      }
+
+      logger.debug('EnergyType found', {
+        energyType: energyType.energyType,
+      }, 'EnergyTypesService');
+
+      return this.transformToInterface(energyType);
+    } catch (error) {
+      logger.error('Failed to find energyType by name', {
+        name,
+        error
+      }, 'EnergyTypesService');
+
+      return null;
+    }
+  }
 
   /**
    * @returns number - Retrieves energy type records total

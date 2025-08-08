@@ -66,8 +66,8 @@ export default function AdminItemLayout({
   if (!sidebarContent) {
     return (
       <div className='grow w-full min-h-0 flex flex-col p-4'>
-        <Card>
-          <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
+        <Card className='flex-1 flex flex-col overflow-y-auto'>
+          <div className='flex space-x-3 items-center mb-4'>
             {icon && (
               <div className='mt-1'>
                 <Avatar size={'small'} icon={icon} />
@@ -82,7 +82,7 @@ export default function AdminItemLayout({
 
           <hr />
 
-          <div className="mt-4">
+          <div className="mt-4 flex-1 flex flex-col overflow-hidden">
             {headerContent}
           </div>
         </Card>

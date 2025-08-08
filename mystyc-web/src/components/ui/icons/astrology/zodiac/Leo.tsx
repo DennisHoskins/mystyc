@@ -2,12 +2,11 @@
 
 import React from 'react';
 
-export default function Leo({ size = 20, className = '' }: { size?: number; className?: string }) {
+export default function Leo({ className = 'w-10 h-10' }: { className?: string }) {
   return (
     <svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width={size}
       viewBox="-50 -50 500 500"
       preserveAspectRatio="xMidYMid meet"
       className={className}

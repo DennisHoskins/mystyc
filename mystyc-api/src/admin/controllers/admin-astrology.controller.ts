@@ -18,9 +18,6 @@ import { ModalityInteractionsService } from '@/astrology/modality-interactions.s
 import { PlanetInteractionsService } from '@/astrology/planet-interactions.service';
 import { PlanetaryPositionsService } from '@/astrology/planetary-positions.service';
 
-import { logger } from '@/common/util/logger';
-import { AdminController } from './admin.controller';
-
 @Controller('admin/astrology')
 export class AdminAstrologyController {
   protected serviceName = 'Astrology';

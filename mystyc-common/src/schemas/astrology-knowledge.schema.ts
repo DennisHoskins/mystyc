@@ -12,9 +12,9 @@ export const DynamicType = z.enum(['harmony', 'tension', 'complementary', 'ampli
 export const PlanetaryPositionInputSchema = z.object({
   planet: PlanetType,
   sign: ZodiacSign,
+  energyType: z.string().min(1).max(50).trim(),
   description: z.string().min(50).max(1000).trim(),
   keywords: z.array(z.string().min(1).trim()).min(3).max(10),
-  energyType: z.string().min(1).max(50).trim()
 }).strict();
 
 export const PlanetaryPositionSchema = PlanetaryPositionInputSchema.extend({
@@ -72,6 +72,11 @@ export const PlanetInteractionSchema = PlanetInteractionInputSchema.extend({
 });
 
 // Type exports
+export type ZodiacSignType = z.infer<typeof ZodiacSign>;
+export type ElementType = z.infer<typeof ElementType>;
+export type PlanetType = z.infer<typeof PlanetType>;
+export type ModalityType = z.infer<typeof ModalityType>;
+export type DynamicType = z.infer<typeof DynamicType>;
 export type PlanetaryPosition = z.infer<typeof PlanetaryPositionSchema>;
 export type PlanetaryPositionInput = z.infer<typeof PlanetaryPositionInputSchema>;
 export type ElementInteraction = z.infer<typeof ElementInteractionSchema>;
