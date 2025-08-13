@@ -31,16 +31,16 @@ export default function SimpleBarChart({
   layout = 'horizontal',
   tooltipLabel,
   showYAxis = false,
-  fontSize = 12
+  fontSize = 8
 }: SimpleBarChartProps) {
   return (
     <div className='flex flex-col flex-1 bg-gray-100 pt-2 rounded-md'>
-      {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mb-2">{title}</h4>}
+      {label && <h4 className="text-sm font-bold text-gray-700 ml-2">{title}</h4>}
       <ResponsiveContainer width="100%" height={height} className="grow">
         <BarChart 
           data={data} 
           layout={layout == 'horizontal' ? 'horizontal' : 'vertical'}
-          margin={{ left: 20, right: 20 }}
+          margin={{ left: 10, right: 10 }}
         >
           <XAxis 
             type={layout == 'horizontal' ? 'category' : 'number'}

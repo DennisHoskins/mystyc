@@ -1,34 +1,70 @@
+import { useState, useEffect, useCallback } from 'react';
 import { AlarmClockCheck, Bell, Globe, Users, UserPlus } from 'lucide-react';
-
 import { Content } from 'mystyc-common/schemas/';
-import { Pagination } from 'mystyc-common/admin';
+import { AdminListResponse, BaseAdminQuery } from 'mystyc-common/admin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { logger } from '@/util/logger';
+import { useBusy } from '@/components/ui/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
+type ContentServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<Content>>;
+
 interface ContentsTableProps {
-  icon?: IconComponent,
-  label?: string,
-  data?: Content[];
-  pagination?: Pagination;
-  loading?: boolean;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-  onRefresh: () => void;
+  icon?: IconComponent;
+  label?: string;
+  serverAction: ContentServerAction;
+  onRefresh?: () => void;
   contentType: 'all' | 'notifications' | 'website' | 'users' | 'users-plus';
 }
 
 export default function ContentsTable({
   icon,
   label,
-  data,
-  pagination,
-  loading = false,
-  currentPage,
-  onPageChange,
+  serverAction,
   onRefresh,
   contentType
 }: ContentsTableProps) {
+  const { setBusy, isBusy } = useBusy();
+  const [data, setData] = useState<AdminListResponse<Content> | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadContents = useCallback(async (page: number) => {
+    try {
+      setError(null);
+      setBusy(1000);
+
+      const listQuery = getDefaultListQuery(page);
+      const response = await serverAction({deviceInfo: getDeviceInfo(), ...listQuery});
+
+      setData(response);
+      setCurrentPage(page);
+    } catch (err) {
+      logger.error('Failed to load content:', err);
+      setError('Failed to load content. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }, [serverAction, setBusy]);
+
+  const handlePageChange = (page: number) => {
+    loadContents(page);
+  };
+
+  const handleRefresh = () => {
+    loadContents(0);
+    if (onRefresh) {
+      onRefresh();
+    }
+  };
+
+  useEffect(() => {
+    loadContents(0);
+  }, [loadContents]);
+
   const baseColumns: Column<Content>[] = [
     { key: 'date', header: 'Created', link: (u) => `/admin/content/${u._id}`, 
       render: (u) =>
@@ -129,19 +165,23 @@ export default function ContentsTable({
     return columns;
   };
 
+  if (error) {
+    return <div className="text-red-600">Error: {error}</div>;
+  }
+
   return (
     <AdminTable<Content>
       icon={icon}
       label={label}
-      data={data}
+      data={data?.data}
       columns={getColumns()}
-      loading={loading}
+      loading={isBusy}
       currentPage={currentPage}
-      totalPages={pagination?.totalPages}
-      totalItems={pagination?.totalItems}
-      hasMore={pagination?.hasMore}
-      onPageChange={onPageChange}
-      onRefresh={onRefresh}
+      totalPages={data?.pagination?.totalPages || 0}
+      totalItems={data?.pagination?.totalItems || 0}
+      hasMore={data?.pagination?.hasMore || false}
+      onPageChange={handlePageChange}
+      onRefresh={handleRefresh}
       emptyMessage="No Content found."
     />
   );

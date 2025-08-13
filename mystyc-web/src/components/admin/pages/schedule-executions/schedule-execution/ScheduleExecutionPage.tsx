@@ -10,7 +10,6 @@ import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import ScheduleExecutionDetailsPanel from './ScheduleExecutionDetailsPanel';
-import ScheduleExecutionTabCard from './ScheduleExecutionTabCard';
 
 export default function ScheduleExecutionPage({ executionId }: { executionId: string }) {
   const { setBusy } = useBusy();
@@ -51,7 +50,7 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
       icon={<ScheduleIcon size={6} variant='schedule-execution' />}
       title={execution?.eventName || `Schedule Execution`}
       headerContent={<ScheduleExecutionDetailsPanel execution={execution} />}
-      mainContent={<ScheduleExecutionTabCard executionId={executionId} />}
+      // mainContent={<ScheduleExecutionTabCard executionId={executionId} />}
     />
   );
 }

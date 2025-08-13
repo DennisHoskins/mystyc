@@ -9,6 +9,7 @@ import { logger } from '@/common/util/logger';
 import { Modality } from 'mystyc-common/schemas';
 
 import { ModalitiesService } from '@/astrology/modalities.service';
+import { SignsService } from '@/astrology/signs.service';
 import { AdminController } from './admin.controller';
 
 function isErrorWithStatus(e: unknown): e is { status: number } {
@@ -24,7 +25,10 @@ function isErrorWithStatus(e: unknown): e is { status: number } {
 export class AdminModalitiesController extends AdminController<Modality> {
   protected serviceName = 'Modalities';
   
-  constructor(protected service: ModalitiesService) {
+  constructor(
+    protected service: ModalitiesService,
+    private readonly signsService: SignsService,
+  ) {
     super();
   }
 

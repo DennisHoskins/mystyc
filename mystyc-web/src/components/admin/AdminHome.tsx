@@ -17,6 +17,8 @@ import DashboardIcon from '@/components/admin/ui/icons/DashboardIcon'
 import AdminError from '@/components/admin/ui/AdminError';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import SessionsDashboard from './pages/sessions/SessionsDashboard';
+import Capsule from '../ui/Capsule';
+import { MonitorCheck, MonitorSmartphone, UserPlus, Users } from 'lucide-react';
 
 export default function AdminHome() {
   const { setBusy } = useBusy();
@@ -49,37 +51,63 @@ export default function AdminHome() {
   if (error) {
     return(
       <>
-        <Card className='mb-4'>
-          <div className='flex space-x-3 items-center mb-4'>
-            <div className='mt-1'>
-              <Avatar size={'medium'} icon={<DashboardIcon />} />
-            </div>
+        <Card className='mb-4 space-y-4'>
+          <div className='flex space-x-3 items-center'>
+            <Avatar size={'medium'} icon={<DashboardIcon />} />
             <Heading level={2}>Admin</Heading>
           </div>
           <hr />
-          <Text className='mt-4 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <Text className='flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <AdminError 
+            title={"Unable to load dashboard"}
+            error={error} 
+            onRetry={loadDashboard}
+          />
         </Card>
-        <AdminError 
-          title={"Unable to load dashboard"}
-          error={error} 
-          onRetry={loadDashboard}
-        />
       </>
     );
   }
 
   return(
-    <div className='flex-1 flex flex-col p-4 w-full'>
+    <div className='flex-1 flex flex-col p-4 pb-0 w-full'>
       <div className="flex flex-col sm:flex-row mb-4">
-        <Card className='grow'>
-          <div className='flex space-x-3 items-center mb-4'>
-            <div className='mt-1'>
-              <Avatar size={'small'} icon={<DashboardIcon />} />
-            </div>
+        <Card className='grow space-y-2'>
+          <div className='flex space-x-3 items-center'>
+            <Avatar size={'small'} icon={<DashboardIcon />} />
             <Heading level={3}>Admin</Heading>
           </div>
           <hr />
-          <Text className='mt-4 mb-2 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <Text className='mb-2 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <ul className='flex space-x-2'>
+            <li>
+              <Capsule
+                label={`All Users ${stats?.users.profiles.totalUsers}`}
+                href='/admin/users?all'
+                icon={<Users className='w-3 h-3' />}
+              />
+            </li>
+            <li>
+              <Capsule
+                label={`Plus Users ${stats?.subscriptions.summary.totalSubscriptions}`}
+                href='/admin/users?plus'
+                icon={<UserPlus className='w-3 h-3' />}
+              />
+            </li>
+            <li>
+              <Capsule
+                label={`All Devices ${stats?.devices.platforms.totalDevices}`}
+                href='/admin/devices?all'
+                icon={<MonitorSmartphone className='w-3 h-3' />}
+              />
+            </li>
+            <li>
+              <Capsule
+                label={`Online Devices ${stats?.devices.fcmTokens.totalDevices}`}
+                href='/admin/devices?online'
+                icon={<MonitorCheck className='w-3 h-3' />}
+              />
+            </li>
+          </ul>
         </Card>
         <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
           <SessionsDashboard 

@@ -12,6 +12,8 @@ import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import { getPlanetIcon } from '@/components/ui/icons/astrology/planets';
 import PlanetDetailsPanel from './PlanetDetailsPanel';
 import EnergyTypeDetailsCard from '../../energy-types/energy-type/EnergyTypeDetailsCard';
+import PlanetInteractionsPanel from '../../planet-interactions/PlanetInteractionsPanel';
+import PlanetaryPlanetPositionsCard from '../../planetary-positions/PlanetaryPlanetPositionsCard';
 
 export default function PlanetPage({ planet } : { planet: PlanetType }) {
   const { setBusy } = useBusy();
@@ -22,7 +24,7 @@ export default function PlanetPage({ planet } : { planet: PlanetType }) {
     { label: 'Admin', href: '/admin' },
     { label: 'Astrology', href: '/admin/astrology' },
     { label: 'Planets', href: '/admin/astrology/planets' },
-    { label: planet.toWellFormed() },
+    { label: planet },
   ];
 
   const loadPlanet = useCallback(async () => {
@@ -52,7 +54,13 @@ export default function PlanetPage({ planet } : { planet: PlanetType }) {
       icon={getPlanetIcon(planet)}
       title={planetData?.planet || "Planet"}
       headerContent={<PlanetDetailsPanel planet={planetData} />}
-      mainContent={<EnergyTypeDetailsCard energyType={planetData?.energyType || null} />}
+      sideContent={<PlanetInteractionsPanel key='planet-interactions' planet={planet} />}
+      itemsContent={[
+        <div key='energy-planet' className='flex flex-col space-y-4 w-full'>
+          <EnergyTypeDetailsCard key='energy-type' energyType={planetData?.energyType || null} />
+          <PlanetaryPlanetPositionsCard planet={planet} />
+        </div>
+      ]}
     />
   );
 }

@@ -6,9 +6,10 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from 'mystyc-common/constants';
 import { logger } from '@/common/util/logger';
 
-import { Element } from 'mystyc-common/schemas';
+import { Element, Sign } from 'mystyc-common/schemas';
 
 import { ElementsService } from '@/astrology/elements.service';
+import { SignsService } from '@/astrology/signs.service';
 import { AdminController } from './admin.controller';
 
 function isErrorWithStatus(e: unknown): e is { status: number } {
@@ -24,7 +25,10 @@ function isErrorWithStatus(e: unknown): e is { status: number } {
 export class AdminElementsController extends AdminController<Element> {
   protected serviceName = 'Elements';
   
-  constructor(protected service: ElementsService) {
+  constructor(
+    protected service: ElementsService,
+    private readonly signsService: SignsService
+  ) {
     super();
   }
 
@@ -59,6 +63,36 @@ export class AdminElementsController extends AdminController<Element> {
       }
       
       logger.error('Failed to get element', {
+        element,
+        error
+      }, 'AdminElementsController');
+      
+      throw error;
+    }
+  }
+
+  /**
+   * Finds all signs for a specific element
+   * @param element - Element name
+   * @returns Promise<Sign[]> - Array of signs for that element
+   */
+  @Get('signs/:element')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getElementSigns(@Param('element') element: string): Promise<Sign[]> {
+    logger.info('Admin fetching signs for element', { element }, 'AdminElementsController');
+    
+    try {
+      const signs = await this.signsService.findByElement(element);
+      
+      logger.info('Element signs retrieved successfully', { 
+        element,
+        count: signs.length
+      }, 'AdminElementsController');
+      
+      return signs;
+    } catch (error) {
+      logger.error('Failed to get element signs', {
         element,
         error
       }, 'AdminElementsController');

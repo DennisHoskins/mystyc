@@ -16,12 +16,8 @@ export default function AdminDashboardHeader({
   link,
 }: AdminDashboardHeaderProps) {
   return (
-    <div className='flex flex-col sm:flex-row sm:space-x-3 items-center space-y-2 sm:space-y-0 mb-4'>
-      {icon && (
-        <div className='mt-1'>
-          <Avatar size={'small'} icon={icon} />
-        </div>
-      )}
+    <div className='flex flex-col sm:flex-row sm:space-x-3 items-center sm:space-y-0'>
+      {icon && <Avatar size={'small'} icon={icon} />}
       {link ? (
         <Link href={link}>
           <Heading level={3}>{title}</Heading>

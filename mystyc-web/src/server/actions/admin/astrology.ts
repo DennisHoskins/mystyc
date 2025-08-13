@@ -94,6 +94,16 @@ export async function getElement(params: {
   }, params);
 }
 
+export async function getElementSigns(params: {
+  deviceInfo: DeviceInfo;
+  element: ElementType;
+}) {
+  return withAdminAuth(async (session, { element }) => {
+    logger.log('[getElement] Fetching element signs:', element);
+    return nestGet<Sign[]>(session, `admin/elements/signs/${element}`);
+  }, params);
+}
+
 // Modalities
 export async function getModalities(params: {
   deviceInfo: DeviceInfo;
@@ -112,6 +122,16 @@ export async function getModality(params: {
   return withAdminAuth(async (session, { modality }) => {
     logger.log('[getModality] Fetching modality:', modality);
     return nestGet<Modality>(session, `admin/modalities/${modality}`);
+  }, params);
+}
+
+export async function getModalitySigns(params: {
+  deviceInfo: DeviceInfo;
+  modality: ModalityType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { modality }) => {
+    logger.log('[getModalitySigns] Fetching modality signs by modality:' + modality);
+    return nestGet<Sign[]>(session, `admin/signs/modalities/${modality}`);
   }, params);
 }
 
@@ -169,13 +189,34 @@ export async function getPlanetaryPositions(params: {
   }, params);
 }
 
+export async function getPlanetaryPosition(params: {
+  deviceInfo: DeviceInfo;
+  planet: PlanetType;
+  sign: ZodiacSignType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { planet, sign }) => {
+    logger.log('[getPlanetaryPosition] Fetching planetary position:' + planet + "-" + sign);
+    return nestGet<PlanetaryPosition>(session, `admin/planetary-positions/planetary-position/${planet}/${sign}`);
+  }, params);
+}
+
 export async function getPlanetaryPositionsBySign(params: {
   deviceInfo: DeviceInfo;
   sign: ZodiacSignType;
 } & Partial<BaseAdminQuery>) {
   return withAdminAuth(async (session, { sign }) => {
     logger.log('[getPlanetaryPositionsBySign] Fetching planetary positions by sign:' + sign);
-    return nestGet<PlanetaryPosition[]>(session, `admin/planetary-positions/${sign}`);
+    return nestGet<PlanetaryPosition[]>(session, `admin/planetary-positions/signs/${sign}`);
+  }, params);
+}
+
+export async function getPlanetaryPositionsByPlanet(params: {
+  deviceInfo: DeviceInfo;
+  planet: PlanetType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { planet }) => {
+    logger.log('[getPlanetaryPositionsByPlanet] Fetching planetary positions by planet:' + planet);
+    return nestGet<PlanetaryPosition[]>(session, `admin/planetary-positions/planets/${planet}`);
   }, params);
 }
 
@@ -190,6 +231,37 @@ export async function getElementInteractions(params: {
   }, params);
 }
 
+export async function getElementInteraction(params: {
+  deviceInfo: DeviceInfo;
+  element1: ElementType;
+  element2: ElementType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { element1, element2 }) => {
+    logger.log('[getElementInteraction] Fetching element interactions by elements:' + element1 + "-" + element2);
+    return nestGet<ElementInteraction>(session, `admin/element-interactions/element-interaction/${element1}/${element2}`);
+  }, params);
+}
+
+export async function getElementInteractionsByElement(params: {
+  deviceInfo: DeviceInfo;
+  element: ElementType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { element }) => {
+    logger.log('[getElementInteractionsByElement] Fetching element interactions by element:' + element);
+    return nestGet<ElementInteraction[]>(session, `admin/element-interactions/elements/${element}`);
+  }, params);
+}
+
+export async function getElementInteractionsByDynamic(params: {
+  deviceInfo: DeviceInfo;
+  dynamic: DynamicType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { dynamic }) => {
+    logger.log('[getElementInteractionsByDynamic] Fetching element interactions by dynamic:' + dynamic);
+    return nestGet<ElementInteraction[]>(session, `admin/element-interactions/dynamics/${dynamic}`);
+  }, params);
+}
+
 // Modality Interactions
 export async function getModalityInteractions(params: {
   deviceInfo: DeviceInfo;
@@ -201,6 +273,37 @@ export async function getModalityInteractions(params: {
   }, params);
 }
 
+export async function getModalityInteraction(params: {
+  deviceInfo: DeviceInfo;
+  modality1: ModalityType;
+  modality2: ModalityType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { modality1, modality2 }) => {
+    logger.log('[getModalityInteraction] Fetching modality interactions by modalities:' + modality1 + "-" + modality2);
+    return nestGet<ModalityInteraction>(session, `admin/modality-interactions/modality-interaction/${modality1}/${modality2}`);
+  }, params);
+}
+
+export async function getModalityInteractionsByModality(params: {
+  deviceInfo: DeviceInfo;
+  modality: ModalityType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { modality }) => {
+    logger.log('[getModalityInteractionsByModality] Fetching modality interactions by modality:' + modality);
+    return nestGet<ModalityInteraction[]>(session, `admin/modality-interactions/modalities/${modality}`);
+  }, params);
+}
+
+export async function getModalityInteractionsByDynamic(params: {
+  deviceInfo: DeviceInfo;
+  dynamic: DynamicType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { dynamic }) => {
+    logger.log('[getModalityInteractionsByDynamic] Fetching modality interactions by dynamic:' + dynamic);
+    return nestGet<ModalityInteraction[]>(session, `admin/modality-interactions/dynamics/${dynamic}`);
+  }, params);
+}
+
 // Planet Interactions
 export async function getPlanetInteractions(params: {
   deviceInfo: DeviceInfo;
@@ -209,5 +312,36 @@ export async function getPlanetInteractions(params: {
     logger.log('[getPlanetInteractions] Fetching planet interactions');
     const { deviceInfo, ...query } = fullParams;
     return nestGet<AdminListResponse<PlanetInteraction>>(session, 'admin/planet-interactions', query);
+  }, params);
+}
+
+export async function getPlanetInteraction(params: {
+  deviceInfo: DeviceInfo;
+  planet1: PlanetType;
+  planet2: PlanetType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { planet1, planet2 }) => {
+    logger.log('[getPlanetInteraction] Fetching planet interactions by planets:' + planet1 + "-" + planet2);
+    return nestGet<PlanetInteraction>(session, `admin/planet-interactions/planet-interaction/${planet1}/${planet2}`);
+  }, params);
+}
+
+export async function getPlanetInteractionsByPlanet(params: {
+  deviceInfo: DeviceInfo;
+  planet: PlanetType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { planet }) => {
+    logger.log('[getPlanetInteractionsByPlanet] Fetching planet interactions by planet:' + planet);
+    return nestGet<PlanetInteraction[]>(session, `admin/planet-interactions/planets/${planet}`);
+  }, params);
+}
+
+export async function getPlanetInteractionsByDynamic(params: {
+  deviceInfo: DeviceInfo;
+  dynamic: DynamicType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { dynamic }) => {
+    logger.log('[getPlanetInteractionsByDynamic] Fetching planet interactions by dynamic:' + dynamic);
+    return nestGet<PlanetInteraction[]>(session, `admin/planet-interactions/dynamics/${dynamic}`);
   }, params);
 }

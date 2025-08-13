@@ -53,10 +53,8 @@ export default function TrafficPage() {
       icon={<TrafficIcon size={6} />}
       title="Website Traffic Analytics"
       headerContent={<TrafficDetailsPanel trafficStats={trafficStats} />}
-      sidebarContent={<TrafficSidebarPanel trafficStats={trafficStats} />}
-      sectionsContent={[
-        <TrafficAnalyticsCard key='analytics' trafficStats={trafficStats} />
-      ]}
+      sideContent={<TrafficSidebarPanel trafficStats={trafficStats} />}
+      itemsContent={[<TrafficAnalyticsCard key='analytics' trafficStats={trafficStats} />]}
       mainContent={<TrafficMainCard trafficStats={trafficStats} />}
     />
   );

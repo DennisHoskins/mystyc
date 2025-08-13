@@ -4,23 +4,21 @@ import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function DynamicDetailsPanel({ dynamic }: { dynamic?: Dynamic | null }) {
   return (
-    <div className='space-y-4'>
-      <AdminDetailGrid cols={3}>
-        <AdminDetailField
-          label="Score"
-          value={dynamic?.scoreValue}
-        />
-      </AdminDetailGrid>
-      <AdminDetailGrid cols={1}>
-        <AdminDetailField
-          label="Keywords"
-          value={"[" + dynamic?.keywords.join(", ") + "]"}
-        />
-        <AdminDetailField
-          label="Description"
-          value={dynamic?.description}
-        />
-      </AdminDetailGrid>
-    </div>
+    <AdminDetailGrid cols={1} className='!gap-1'>
+      <AdminDetailField
+        value={dynamic?.description}
+        type='description'
+      />
+      <AdminDetailField
+        label="Score"
+        inline={true}
+        text={dynamic?.scoreValue.toString()}
+      />
+      <AdminDetailField
+        label="Keywords"
+        inline={true}
+        text={dynamic?.keywords && "[" + dynamic?.keywords.join(", ") + "]"}
+      />
+    </AdminDetailGrid>
   );
 }

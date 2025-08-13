@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       fontSize: {
-        'base': '15px',
+        'base': '12px',
       },
       maxWidth: {
         'content': '80rem'

@@ -8,7 +8,7 @@ const TableHead = forwardRef<
   <th
     ref={ref}
     className={clsx(
-      'px-2 text-left align-middle font-medium text-gray-500 [&:has([role=checkbox])]:pr-0',
+      'px-2 text-left align-middle font-bold text-gray-500 [&:has([role=checkbox])]:pr-0',
       className
     )}
     {...props}

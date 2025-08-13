@@ -5,21 +5,15 @@ import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 export default function ElementDetailsPanel({ element }: { element?: Element | null }) {
   return (
     <div className='space-y-4'>
-      <AdminDetailGrid cols={3}>
+      <AdminDetailGrid cols={1} className='!gap-1'>
         <AdminDetailField
-          label="Energy Type"
-          value={element?.energyType}
-          href={`/admin/astrology/energy-types/${element?.energyType}`}
-        />
-      </AdminDetailGrid>
-      <AdminDetailGrid cols={1}>
-        <AdminDetailField
-          label="Keywords"
-          value={"[" + element?.keywords.join(", ") + "]"}
-        />
-        <AdminDetailField
-          label="Description"
           value={element?.description}
+          type='description'
+        />
+        <AdminDetailField
+          label='Keywords'
+          inline={true}
+          text={element?.keywords && "[" + element?.keywords.join(", ") + "]"}
         />
       </AdminDetailGrid>
     </div>

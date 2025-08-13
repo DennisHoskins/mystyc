@@ -42,7 +42,7 @@ export default function KeyStatsGrid({ stats }: KeyStatsGridProps) {
             <div className={`text-2xl h-8 font-bold ${stat.color || 'text-blue-600'}`}>
               {formatNumber(stat.value)}
             </div>
-            <div className="text-sm text-gray-500">{stat.label}</div>
+            <div className="text-[10px] text-gray-500">{stat.label}</div>
           </div>
         ))}
       </div>

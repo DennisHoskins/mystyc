@@ -3,19 +3,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-import { AuthEvent } from 'mystyc-common/schemas/';
-import { AuthEventStats, AuthEventsSummary, AdminListResponse } from 'mystyc-common/admin';
+import { AuthEventStats, AuthEventsSummary } from 'mystyc-common/admin';
 import { getAuthEventsSummaryStats, getAuthEvents, getAuthEventsByType } from '@/server/actions/admin/auth-events';
-import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import TabHeader, { Tab } from '@/components/ui/tabs/TabHeader';
+import TabPanel, { TabContent } from '@/components/ui/tabs/TabPanel';
 import AuthenticationsBreadcrumbs from './AuthenticationsBreadcrumbs';
 import AuthenticationDashboard from './AuthenticationDashboard';
 import AuthenticationsDashboardGrid from './AuthenticationsDashboardGrid';
-import AuthenticationsSummaryPanel from './AuthenticationsSummaryPanel';
 import AuthenticationsTable from './AuthenticationsTable';
 
 export type AuthenticationView = 'summary' | 'all' | 'create' | 'login' | 'logout' | 'server-logout';
@@ -25,26 +25,28 @@ export default function AuthenticationsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [stats, setStats] = useState<AuthEventStats | null>(null);
   const [summary, setSummary] = useState<AuthEventsSummary | null>(null);
-  const [data, setData] = useState<AdminListResponse<AuthEvent> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
 
-  const getCurrentView = (): AuthenticationView => {
+  const getCurrentView = useCallback((): AuthenticationView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('create')) return 'create';
     if (searchParams.has('login')) return 'login';
     if (searchParams.has('logout')) return 'logout';
     if (searchParams.has('server-logout')) return 'server-logout';
     return 'summary';
-  };
-  const currentView = getCurrentView();
-  const breadcrumbs = AuthenticationsBreadcrumbs({ currentView, onClick: () => { router.push("authentication"); }});
-  const showAuthTable = currentView !== 'summary';
+  }, [searchParams]);
 
-  const handleClick = (view: AuthenticationView) => {
+  const [activeTab, setActiveTab] = useState<string>(getCurrentView());
+
+  const breadcrumbs = AuthenticationsBreadcrumbs({ currentView: activeTab as AuthenticationView, onClick: () => { router.push("authentication"); }});
+
+  const handleTabChange = (tabId: string) => {
+    const view = tabId as AuthenticationView;
+    setActiveTab(tabId);
+    
     if (view === 'summary') {
       router.push(pathname);
       return;
@@ -71,55 +73,139 @@ export default function AuthenticationsPage() {
     }
   }, [setBusy]);
 
-  const loadAuthEvents = useCallback(async (page: number) => {
-    try {
-      if (!showAuthTable) {
-        return;
-      }
-
-      setError(null);
-      setBusy(1000);
-
-      const listQuery = getDefaultListQuery(page);
-      let response: AdminListResponse<AuthEvent>;
-      
-      switch (currentView) {
-        case 'create':
-          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "create", ...listQuery});
-          break;
-        case 'login':
-          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "login", ...listQuery});
-          break;
-        case 'logout':
-          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "logout", ...listQuery});
-          break;
-        case 'server-logout':
-          response = await getAuthEventsByType({deviceInfo: getDeviceInfo(), type: "server-logout", ...listQuery});
-          break;
-        case 'all':
-        default:
-          response = await getAuthEvents({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-      }
-
-      setData(response);
-      setCurrentPage(page);
-    } catch (err) {
-      logger.error('Failed to load auth events:', err);
-      setError('Failed to load auth events. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  }, [showAuthTable, setBusy, currentView]);
-
-  useEffect(() => {
-    if (currentView == 'create' || currentView == 'login' || currentView == 'logout' || currentView == 'server-logout' || currentView == 'all') loadAuthEvents(0);
-    else loadData();
-  }, [loadData, loadAuthEvents, currentView]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    setActiveTab(getCurrentView());
+  }, [searchParams, getCurrentView]);
+
+  // Server action wrapper functions
+  const getAllAuthEvents = useCallback((params: any) => {
+    return getAuthEvents(params);
+  }, []);
+
+  const getCreateEvents = useCallback((params: any) => {
+    return getAuthEventsByType({...params, type: "create"});
+  }, []);
+
+  const getLoginEvents = useCallback((params: any) => {
+    return getAuthEventsByType({...params, type: "login"});
+  }, []);
+
+  const getLogoutEvents = useCallback((params: any) => {
+    return getAuthEventsByType({...params, type: "logout"});
+  }, []);
+
+  const getServerLogoutEvents = useCallback((params: any) => {
+    return getAuthEventsByType({...params, type: "server-logout"});
+  }, []);
+
+  const getSummaryCount = () => {
+    if (!summary) return null;
+    return summary?.total || 0;
+  };
+
+  const tabs: Tab[] = [
+    {
+      id: 'summary',
+      label: 'Summary',
+      count: getSummaryCount()
+    },
+    {
+      id: 'all',
+      label: 'All Events',
+      count: summary?.total || 0
+    },
+    {
+      id: 'create',
+      label: 'Create',
+      count: summary?.create || 0
+    },
+    {
+      id: 'login',
+      label: 'Login',
+      count: summary?.login || 0
+    },
+    {
+      id: 'logout',
+      label: 'Logout',
+      count: summary?.logout || 0
+    },
+    {
+      id: 'server-logout',
+      label: 'Server Logout',
+      count: summary?.serverLogout || 0
+    }
+  ];
+
+  const tabContents: TabContent[] = [
+    {
+      id: 'summary',
+      content: (
+        <div className='flex-1 flex flex-col overflow-hidden'>
+          <AuthenticationsDashboardGrid stats={stats} />
+          <div className='flex-1 flex'>
+            <AuthenticationDashboard 
+              key={'duration'}
+              stats={stats} 
+              charts={['duration']}
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'all',
+      content: (
+        <AuthenticationsTable
+          serverAction={getAllAuthEvents}
+          onRefresh={loadData}
+        />
+      )
+    },
+    {
+      id: 'create',
+      content: (
+        <AuthenticationsTable
+          serverAction={getCreateEvents}
+          onRefresh={loadData}
+          hideEventTypeColumn={true}
+        />
+      )
+    },
+    {
+      id: 'login',
+      content: (
+        <AuthenticationsTable
+          serverAction={getLoginEvents}
+          onRefresh={loadData}
+          hideEventTypeColumn={true}
+        />
+      )
+    },
+    {
+      id: 'logout',
+      content: (
+        <AuthenticationsTable
+          serverAction={getLogoutEvents}
+          onRefresh={loadData}
+          hideEventTypeColumn={true}
+        />
+      )
+    },
+    {
+      id: 'server-logout',
+      content: (
+        <AuthenticationsTable
+          serverAction={getServerLogoutEvents}
+          onRefresh={loadData}
+          hideEventTypeColumn={true}
+        />
+      )
+    }
+  ];
 
   return (
    <AdminListLayout
@@ -129,10 +215,10 @@ export default function AuthenticationsPage() {
       icon={AuthenticationIcon}
       description="Track user login and logout events, monitor authentication patterns, and review access history"
       headerContent={
-        <AuthenticationsSummaryPanel 
-          summary={summary}
-          handleClick={handleClick}
-          currentView={currentView}
+        <TabHeader 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
       }
       sideContent={
@@ -141,32 +227,11 @@ export default function AuthenticationsPage() {
           charts={['stats']}
         />
       }
-      itemContent={
-        showAuthTable == false && <AuthenticationsDashboardGrid stats={stats} />
-      }
-      tableContent={
-        <>
-          {showAuthTable ?
-            (
-              <AuthenticationsTable
-                loading = {isBusy}
-                data={data?.data}
-                pagination={data?.pagination}
-                currentPage={currentPage}
-                onPageChange={() => loadAuthEvents(currentPage)}
-                onRefresh={() => loadAuthEvents(0)}
-              />
-            ) : (
-              <div className='flex-1 flex'>
-                <AuthenticationDashboard 
-                  key={'duration'}
-                  stats={stats} 
-                  charts={['duration']}
-                />
-              </div>
-            )
-          }
-        </>
+      mainContent={
+        <TabPanel 
+          tabs={tabContents}
+          activeTab={activeTab}
+        />
       }
     />
   );

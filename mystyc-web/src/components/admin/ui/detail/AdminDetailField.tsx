@@ -3,11 +3,18 @@
 import { ReactNode } from 'react';
 
 import Text from '@/components/ui/Text';
+import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 
 interface AdminDetailFieldProps {
-  label: string;
+  label?: string;
+  inline?: boolean;
+  heading?: string | string[];
+  headinghref?: string | string[];
+  headingicon?: React.ReactNode | React.ReactNode[] | null;
+  headingtag?: React.ReactNode | null;
   icon?: React.ReactNode | null;
+  type?: 'text' | 'description';
   value?: string | ReactNode | null;
   href?: string | null;
   text?: string | null;
@@ -15,30 +22,88 @@ interface AdminDetailFieldProps {
   active?: boolean;
 }
 
-export default function AdminDetailField({ label, icon, value, href, onClick, active = false, text }: AdminDetailFieldProps) {
+export default function AdminDetailField({ 
+  label, 
+  inline = false, 
+  heading, 
+  headingicon, 
+  headinghref, 
+  headingtag, 
+  icon, 
+  type = 'text', 
+  value, 
+  href, 
+  onClick, 
+  active = false, 
+  text 
+}: AdminDetailFieldProps) {
+
+  const className = type == 'text' ? 'truncate min-h-2' : 'h-auto';
+
+  // Helper function to safely get array item or single value
+  const getArrayItem = <T,>(item: T | T[] | null | undefined, index: number): T | null => {
+    if (!item) return null;
+    if (Array.isArray(item)) {
+      return item[index] || null;
+    }
+    return index === 0 ? item : null;
+  };
+
+  // Convert single values to arrays for consistent handling
+  const headingArray = Array.isArray(heading) ? heading : heading ? [heading] : [];
+  const headinghrefArray = Array.isArray(headinghref) ? headinghref : headinghref ? [headinghref] : [];
+  const headingiconArray = Array.isArray(headingicon) ? headingicon : headingicon ? [headingicon] : [];
+
   return (
-    <div className='overflow-hidden'>
-      <Text variant="small" className="font-light text-gray-500">
-        {label}
-      </Text>
+    <div className={`overflow-hidden`}>
+      {(label && !inline) &&
+        <Text variant="small" className="text-gray-500 font-bold">
+          {label}
+        </Text>
+      }
 
-      <div className='flex items-center'>
+      {heading && headingArray.length > 0 && (
+        <div className='flex items-baseline flex-wrap gap-2'>
+          {headingArray.map((headingItem, index) => (
+            <div key={index} className='flex items-baseline'>
+              <Link 
+                href={getArrayItem(headinghrefArray, index) || ''} 
+                className="font-light text-gray-500 flex items-center space-x-2"
+              >
+                {getArrayItem(headingiconArray, index)}
+                <Heading level={4}>
+                  {headingItem}
+                </Heading>
+                {index < headingArray.length - 1 && <span className='m-x-2'>-</span>}
+              </Link>
+              {index === headingArray.length - 1 && headingtag}
+            </div>
+          ))}
+        </div>          
+      )}
 
+      <div className='flex flex-col'>
         {icon}
 
         {href ? (
           <Link 
             href={href} 
             onClick={onClick} 
-            className={`block truncate min-h-6 underline-offset-2 text-black ${active && "font-bold underline"}`}
+            className={`block ${className} underline-offset-2 text-gray-500 text-base ${active && "font-bold underline"}`}
           >
             {value || ''}
           </Link>
         ) : (
-          <div className={`block truncate min-h-6 text-black ${active && "font-bold underline underline-offset-2"}`}>{value || ''}</div>
+          <div className={`block ${className} text-gray-500 text-base ${active && "font-bold underline underline-offset-2"}`}>
+            {value || ''}
+          </div>
         )}
 
-        {text && <Text variant='small' className='text-gray-400'>{text}</Text>}
+        {text && (
+          <Text className={`text-gray-400 text-xs`}>
+            {label && inline ? <strong>{label}</strong> : ''}  {text}
+          </Text>
+        )}
       </div>
     </div>
   );

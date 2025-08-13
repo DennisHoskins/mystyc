@@ -28,6 +28,47 @@ export class AdminSignsController extends AdminController<Sign> {
     super();
   }
 
+
+  /**
+   * Finds signs by modality
+   * @param modality - Modality name (Cardinal, Fixed, etc)
+   * @returns Promise<Sign[]> - Array of signs
+   * @throws NotFoundException when no signs found for the modality
+   */
+  @Get('modalities/:modality')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getSignsByModality(@Param('modality') modality: string): Promise<Sign[]> {
+    logger.info('Admin fetching signs by modality', { modality }, 'AdminSignsController');
+    
+    try {
+      const result = await this.service.findByModality(modality);
+      
+      if (!result || result.length === 0) {
+        logger.warn('No signs found for modality', { modality }, 'AdminSignsController');
+        throw new NotFoundException(`No signs found for modality: ${modality}`);
+      }
+
+      logger.info('Modality signs retrieved successfully', { 
+        modality,
+        count: result.length
+      }, 'AdminSignsController');
+      
+      return result;
+    } catch (error) {
+      if (isErrorWithStatus(error) && error.status === 404) {
+        throw error;
+      }
+      
+      logger.error('Failed to get signs by modality', {
+        modality,
+        error
+      }, 'AdminSignsController');
+      
+      throw error;
+    }
+  }  
+
   /**
    * Finds sign by name, throws NotFoundException if not found (admin use)
    * @param sign - Sign name

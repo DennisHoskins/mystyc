@@ -15,26 +15,26 @@ interface BreadcrumbsProps {
   separator?: React.ReactNode;
   className?: string;
   level?: 1 | 2 | 3 | 4 | 5 | 6;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export default function Breadcrumbs({ 
   items, 
   separator = '/', 
   className = '',
-  level = 3,
+  level = 2,
   size
 }: BreadcrumbsProps) {
   const router = useTransitionRouter();
 
   // Default sizes based on level if no size specified
   const defaultSizes: Record<number, BreadcrumbsProps['size']> = {
-    1: '3xl',
-    2: '2xl', 
-    3: 'xl',
-    4: 'lg',
-    5: 'md',
-    6: 'sm',
+    1: '2xl',
+    2: 'xl', 
+    3: 'lg',
+    4: 'md',
+    5: 'sm',
+    6: 'xs',
   };
 
   const actualSize = size || defaultSizes[level];
@@ -43,10 +43,9 @@ export default function Breadcrumbs({
     xs: 'text-xs font-semibold',
     sm: 'text-sm font-semibold', 
     md: 'text-base font-semibold',
-    lg: 'text-lg font-medium',
-    xl: 'text-xl font-semibold',
+    lg: 'text-lg font-bold',
+    xl: 'text-xl font-bold',
     '2xl': 'text-2xl font-bold',
-    '3xl': 'text-3xl font-bold tracking-tight',
   };
 
   const baseSizeClass = sizeClasses[actualSize!];
@@ -74,7 +73,7 @@ export default function Breadcrumbs({
                 <a
                   href={item.href}
                   onClick={(e) => handleClick(item, e)}
-                  className={`${baseSizeClass} text-blue-600 hover:text-blue-800 hover:underline`}
+                  className={`${baseSizeClass} hover:underline`}
                 >
                   {item.label}
                 </a>

@@ -10,15 +10,11 @@ export default function UserDetailsPanel({ user }: { user?: UserProfile | null }
   };
 
   return (
-    <div className='space-y-4'>
-      <AdminDetailGrid cols={3}>
+    <div className='space-y-4 flex-1 grow'>
+      <AdminDetailGrid cols={2}>
         <AdminDetailField
           label="Firebase Uid"
           value={user?.firebaseUid}
-        />
-        <AdminDetailField
-          label="Name"
-          value={user?.firstName + " " + user?.lastName}
         />
         <AdminDetailField
           label="Contact Information"
@@ -27,6 +23,10 @@ export default function UserDetailsPanel({ user }: { user?: UserProfile | null }
         <AdminDetailField
           label="Roles & Permissions"
           value={user && formatUserRoles(user.roles)}
+        />
+        <AdminDetailField
+          label="Subscription Level"
+          value={user?.subscription.level}
         />
         <AdminDetailField
           label="Account Created"

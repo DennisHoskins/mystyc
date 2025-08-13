@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import SubscriptionPage from '@/components/admin/pages/subscriptions/subscription/SubscriptionPage';
 
-export default function Page({ params }: { params: Promise<{ subscriptionId: string; }> }) {
-  const { subscriptionId } = use(params);
+export default async function Page({ params }: { params: Promise<{ subscriptionId: string; }> }) {
+  const { subscriptionId } = await params;
   return <SubscriptionPage subscriptionId={subscriptionId} />;
 }

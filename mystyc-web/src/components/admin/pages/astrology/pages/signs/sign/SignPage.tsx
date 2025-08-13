@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { Sign, ZodiacSignType } from 'mystyc-common/schemas';
-import { getSign, getElement } from '@/server/actions/admin/astrology';
+import { getSign } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
@@ -14,6 +14,7 @@ import SignDetailsPanel from './SignDetailsPanel';
 import ElementDetailsCard from '../../elements/element/ElementDetailsCard';
 import ModalityDetailsCard from '../../modalities/modality/ModalityDetailsCard';
 import EnergyTypeDetailsCard from '../../energy-types/energy-type/EnergyTypeDetailsCard';
+import PlanetarySignPositionsPanel from '../../planetary-positions/PlanetarySignPositionsPanel';
 
 export default function SignPage({ sign } : { sign: ZodiacSignType }) {
   const { setBusy } = useBusy();
@@ -24,14 +25,13 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
     { label: 'Admin', href: '/admin' },
     { label: 'Astrology', href: '/admin/astrology' },
     { label: 'Signs', href: '/admin/astrology/signs' },
-    { label: sign.toWellFormed() },
+    { label: sign },
   ];
 
   const loadSign = useCallback(async () => {
     try {
       setError(null);
       setBusy(1000);
-
       const signData = await getSign({deviceInfo: getDeviceInfo(), sign});
       setSign(signData);
     } catch (err) {
@@ -53,14 +53,14 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
       breadcrumbs={breadcrumbs}
       icon={getZodiacIcon(sign)}
       title={signData?.sign || "Sun Sign"}
-      headerContent={<SignDetailsPanel sign={signData} />}
-      mainContent={[
-        <div key='element-modality' className='grid grid-cols-3 gap-4'>
+      headerContent={<SignDetailsPanel sign={signData} showLinks={false} />}
+      sideContent={<PlanetarySignPositionsPanel sign={sign} />}
+      itemsContent={[
+        <div key='sign-content' className='flex flex-col w-full flex-1 space-y-4'>
           <ElementDetailsCard key='element' element={signData?.element || null} />
           <ModalityDetailsCard key='modality' modality={signData?.modality || null} />
-          <EnergyTypeDetailsCard key='energy-type' energyType={signData?.energyType || null} />
-        </div>,
-        
+          <EnergyTypeDetailsCard key='energy-type' energyType={signData?.energyType || null} className='flex-1 grow' />
+        </div>
       ]}
     />
   );

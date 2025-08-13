@@ -62,17 +62,13 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
   };
 
   return (
-    <div className='flex flex-col'>
-      <div className="flex items-center space-x-2 mb-4">
+    <div className='flex flex-col space-y-2'>
+      <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={<UserIcon userProfile={user} />} />
-        <div>
-          <Heading level={5}>{user.firstName + '' + user.lastName || 'Unknown User'}</Heading>
-        </div>
+        <Heading level={5}>User</Heading>
       </div>
-
       <hr />
-
-      <AdminDetailGrid cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1}>
         <AdminDetailField
           label="Firebase Uid"
           value={user.firebaseUid}

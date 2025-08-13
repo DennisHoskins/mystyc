@@ -9,11 +9,13 @@ import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import Card from '@/components/ui/Card';
+import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import SchedulesTimezonesTable from './SchedulesTimezonesTable';
 import SchedulesTable from './SchedulesTable';
 import SchedulesDashboard from './SchedulesDashboard';
+import Text from '@/components/ui/Text';
 
 export default function SchedulesPage() {
   const { setBusy, isBusy } = useBusy();
@@ -68,23 +70,22 @@ export default function SchedulesPage() {
   }, [loadData, loadSchedules]);
 
   return (
-   <AdminListLayout
+   <AdminItemLayout
+      title="Schedules"
+      headerContent={<Text>Manage scheduled tasks and automation rules, monitor execution status and configure timing settings</Text>}
       error={error}
       onRetry={() => {
         loadData();
         loadSchedules(0);
       }}
       breadcrumbs={breadcrumbs}
-      icon={ScheduleIcon}
-      description="Manage scheduled tasks and automation rules, monitor execution status and configure timing settings"
+      icon={<ScheduleIcon size={3} />}
       sideContent={
-         <SchedulesDashboard 
-           stats={stats} 
-           charts={['stats']}
-         />
-       }
-      itemContent={[
-        <div key='info' className='space-y-4 grow flex flex-col'>
+        <div className='flex-1 flex flex-col space-y-4'>
+          <SchedulesDashboard 
+            stats={stats} 
+            charts={['stats']}
+          />
           <SchedulesDashboard 
             key={'health'}
             stats={stats} 
@@ -95,31 +96,42 @@ export default function SchedulesPage() {
             stats={stats} 
             charts={['today']}
           />
-        </div>,
-        <SchedulesDashboard 
-          key={'events'}
-          stats={stats} 
-          charts={['events']}
-        />,
-        <SchedulesDashboard 
-          key={'status'}
-          stats={stats} 
-          charts={['status']}
-        />,
+        </div>
+       }
+      itemsContent={[
+        <Card key='stats' className='grow grid grid-cols-3 gap-4 !space-y-0'>
+          <SchedulesDashboard 
+            className='col-span-2'
+            key={'events'}
+            stats={stats} 
+            charts={['events']}
+          />
+          <SchedulesDashboard 
+            key={'status'}
+            stats={stats} 
+            charts={['status']}
+          />
+        </Card>
       ]}
-      tableContent={[
-        <SchedulesTimezonesTable key='timezones' />,
-        <SchedulesTable
-          key='schedules'
-          label="Schedules"
-          data={data?.data}
-          pagination={data?.pagination}
-          loading={isBusy}
-          currentPage={currentPage}
-          onPageChange={loadSchedules}
-          onRefresh={() => loadSchedules(0)}
-        />
-      ]}
+      mainContent={
+        <div className='grid grid-cols-2 gap-4 flex-1 grow'>
+          <Card className='grow min-h-0 overflow-hidden flex'>
+            <SchedulesTimezonesTable key='timezones' />
+          </Card>
+          <Card className='grow min-h-0 overflow-hidden flex'>
+            <SchedulesTable
+              key='schedules'
+              label="Schedules"
+              data={data?.data}
+              pagination={data?.pagination}
+              loading={isBusy}
+              currentPage={currentPage}
+              onPageChange={loadSchedules}
+              onRefresh={() => loadSchedules(0)}
+            />
+          </Card>
+        </div>
+      }
     />   
   );
 }

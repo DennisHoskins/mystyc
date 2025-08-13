@@ -8,7 +8,7 @@ export default function TrafficSidebarPanel({ trafficStats }: { trafficStats?: T
         data={trafficStats} 
         charts={['stats']}
       />
-      <TrafficDashboard 
+      <TrafficDashboard
         data={trafficStats} 
         charts={['pages']}
         layout={'vertical'}

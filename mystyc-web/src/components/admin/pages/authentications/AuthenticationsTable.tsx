@@ -1,38 +1,81 @@
-'use client'
-
+import { useState, useEffect, useCallback } from 'react';
 import { AuthEvent } from 'mystyc-common/schemas/';
-import { Pagination } from 'mystyc-common/admin';
-
+import { AdminListResponse, BaseAdminQuery } from 'mystyc-common/admin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { logger } from '@/util/logger';
+import { useBusy } from '@/components/ui/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
-
 import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
+type AuthEventServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<AuthEvent>>;
+
 interface AuthenticationsTableProps {
-  icon?: IconComponent,
-  label?: string,
-  data?: AuthEvent[];
-  pagination?: Pagination | null;
-  loading?: boolean;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-  onRefresh: () => void;
+  icon?: IconComponent;
+  label?: string;
+  serverAction?: AuthEventServerAction;
+  onRefresh?: () => void;
   hideUserColumn?: boolean;
   hideEventTypeColumn?: boolean;
+  authEvents?: AdminListResponse<AuthEvent> | null;
 }
 
 export default function AuthenticationsTable({
   icon,
   label,
-  data,
-  pagination,
-  loading = false,
-  currentPage,
-  onPageChange,
+  serverAction,
   onRefresh,
   hideUserColumn = false,
-  hideEventTypeColumn = false
+  hideEventTypeColumn = false,
+  authEvents
 }: AuthenticationsTableProps) {
+  const { setBusy, isBusy } = useBusy();
+  const [data, setData] = useState<AdminListResponse<AuthEvent> | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadAuthEvents = useCallback(async (page: number) => {
+    if (!serverAction) {
+      return;
+    }
+    try {
+      setError(null);
+      setBusy(1000);
+
+      const listQuery = getDefaultListQuery(page);
+      const response = await serverAction({deviceInfo: getDeviceInfo(), ...listQuery});
+
+      setData(response);
+      setCurrentPage(page);
+    } catch (err) {
+      logger.error('Failed to load auth events:', err);
+      setError('Failed to load auth events. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }, [serverAction, setBusy]);
+
+  const handlePageChange = (page: number) => {
+    loadAuthEvents(page);
+  };
+
+  const handleRefresh = () => {
+    loadAuthEvents(0);
+    if (onRefresh) {
+      onRefresh();
+    }
+  };
+
+  useEffect(() => {
+    if (authEvents) {
+      setData(authEvents);
+      setCurrentPage(0);
+      return;
+    }
+    loadAuthEvents(0);
+  }, [loadAuthEvents, authEvents, setData]);
+
   const baseColumns: Column<AuthEvent>[] = [
     { key: 'deviceName', header: 'Device', link: (e) => `/admin/devices/${e.deviceId}`, render: (e) => e.deviceName || 'Unnamed Device' },
     { key: 'timestamp', header: 'Timestamp', align: 'right', link: (e) => `/admin/authentication/${e._id}`, render: (e) => formatDateForDisplay(e.clientTimestamp) || '-' },
@@ -65,19 +108,23 @@ export default function AuthenticationsTable({
   
   columns.push(...baseColumns);
 
+  if (error) {
+    return <div className="text-red-600">Error: {error}</div>;
+  }
+
   return (
     <AdminTable<AuthEvent>
       icon={icon}
       label={label}
-      data={data}
+      data={data?.data}
       columns={columns}
-      loading={loading}
+      loading={isBusy}
       currentPage={currentPage}
-      totalPages={pagination?.totalPages || 0}
-      totalItems={pagination?.totalItems || 0}
-      hasMore={pagination?.hasMore || false}
-      onPageChange={onPageChange}
-      onRefresh={onRefresh}
+      totalPages={data?.pagination?.totalPages || 0}
+      totalItems={data?.pagination?.totalItems || 0}
+      hasMore={data?.pagination?.hasMore || false}
+      onPageChange={handlePageChange}
+      onRefresh={handleRefresh}
       emptyMessage="No Authentication Events found."
     />
   );

@@ -58,7 +58,7 @@ function LinkCell({ href, children }: LinkCellProps) {
 interface AdminTableProps<T> {
   icon?: IconComponent | React.ReactNode;
   label?: string;
-  data?: T[];
+  data?: T[] | null;
   columns: Column<T>[];
   getRowId?: (row: T) => string;
   loading?: boolean;
@@ -176,7 +176,7 @@ export default function AdminTable<T>({
             </TableRow>
           ))}
           
-          {loading == false && data && data.length == 0 && (
+          {loading == false && (!data || data.length == 0) && (
             <TableRow>
               <TableCell colSpan={columns.length}>
                 {emptyMessage}

@@ -3,47 +3,46 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-import { Notification } from 'mystyc-common/schemas/';
-import { NotificationStats, AdminStatsQuery, AdminListResponse } from 'mystyc-common/admin';
+import { NotificationStats, AdminStatsQuery } from 'mystyc-common/admin';
 import { getNotificationStats, getNotifications } from '@/server/actions/admin/notifications';
-import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import TabHeader, { Tab } from '@/components/ui/tabs/TabHeader';
+import TabPanel, { TabContent } from '@/components/ui/tabs/TabPanel';
 import NotificationsBreadcrumbs from './NotificationsBreadcrumbs';
 import NotificationsDashboard from './NotificationsDashboard';
 import NotificationsDashboardGrid from './NotificationsDashboardGrid';
-import NotificationsSummaryPanel from './NotificationsSummaryPanel';
 import NotificationsTable from './NotificationsTable';
 
-export type NotificationView = 'summary' | 'all' | 'scheduled' | 'user' | 'broadcast';
+export type NotificationView = 'summary' | 'all';
 
 export default function NotificationsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [stats, setStats] = useState<NotificationStats | null>(null);
-  const [data, setData] = useState<AdminListResponse<Notification> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
 
-  const getCurrentView = (): NotificationView => {
+  const getCurrentView = useCallback((): NotificationView => {
     if (searchParams.has('all')) return 'all';
-    if (searchParams.has('scheduled')) return 'scheduled';
-    if (searchParams.has('user')) return 'user';
-    if (searchParams.has('broadcast')) return 'broadcast';
     return 'summary';
-  };
-  const currentView = getCurrentView();
-  const breadcrumbs = NotificationsBreadcrumbs({ currentView, onClick: () => { router.push("notifications"); }});
-  const showNotificationTable = currentView !== 'summary';
+  }, [searchParams]);
 
-  const handleClick = (view: NotificationView) => {
+  const [activeTab, setActiveTab] = useState<string>(getCurrentView());
+
+  const breadcrumbs = NotificationsBreadcrumbs({ currentView: activeTab as NotificationView, onClick: () => { router.push("notifications"); }});
+
+  const handleTabChange = (tabId: string) => {
+    const view = tabId as NotificationView;
+    setActiveTab(tabId);
+    
     if (view === 'summary') {
       router.push(pathname);
       return;
@@ -70,42 +69,58 @@ export default function NotificationsPage() {
     }
   }, [setBusy]);
 
-  const loadNotifications = useCallback(async (page: number) => {
-    try {
-      if (!showNotificationTable) {
-        return;
-      }
-
-      setError(null);
-      setBusy(1000);
-
-      const listQuery = getDefaultListQuery(page);
-      let response: AdminListResponse<Notification>;
-      
-      switch (currentView) {
-        default:
-          response = await getNotifications({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-      }
-
-      setData(response);
-      setCurrentPage(page);
-    } catch (err) {
-      logger.error('Failed to load notifications:', err);
-      setError('Failed to load notifications. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  }, [showNotificationTable, setBusy, currentView]);
-
-  useEffect(() => {
-    if (currentView == 'scheduled' || currentView == 'user' || currentView == 'broadcast' || currentView == 'all') loadNotifications(0);
-    else loadData();
-  }, [loadData, loadNotifications, currentView]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    setActiveTab(getCurrentView());
+  }, [searchParams, getCurrentView]);
+
+  // Server action wrapper function
+  const getAllNotifications = useCallback((params: any) => {
+    return getNotifications(params);
+  }, []);
+
+  const tabs: Tab[] = [
+    {
+      id: 'summary',
+      label: 'Summary',
+    },
+    {
+      id: 'all',
+      label: 'All Notifications',
+      count: stats?.type.totalNotifications || 0
+    }
+  ];
+
+  const tabContents: TabContent[] = [
+    {
+      id: 'summary',
+      content: (
+        <div className='flex-1 flex flex-col overflow-hidden'>
+          <NotificationsDashboardGrid query={query} stats={stats} />
+          <div className='flex-1 flex'>
+            <NotificationsDashboard 
+              key={'volume'}
+              query={query}
+              stats={stats} 
+              charts={['volume']}
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'all',
+      content: (
+        <NotificationsTable
+          serverAction={getAllNotifications}
+          onRefresh={loadData}
+        />
+      )
+    }
+  ];
 
   return (
    <AdminListLayout
@@ -115,11 +130,10 @@ export default function NotificationsPage() {
       icon={NotificationIcon}
       description="View sent push notifications, message history, and delivery status for user communications"
       headerContent={
-        <NotificationsSummaryPanel 
-          query={query}
-          stats={stats}
-          handleClick={handleClick}
-          currentView={currentView}
+        <TabHeader 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
       }
       sideContent={
@@ -129,33 +143,11 @@ export default function NotificationsPage() {
           charts={['stats']}
         />
       }
-      itemContent={
-        showNotificationTable == false && <NotificationsDashboardGrid query={query} stats={stats} />
-      }
-      tableContent={
-        <>
-          {showNotificationTable ?
-            (
-              <NotificationsTable
-                loading = {isBusy}
-                data={data?.data}
-                currentPage={currentPage}
-                pagination={data?.pagination}
-                onPageChange={() => loadNotifications(currentPage)}
-                onRefresh={() => loadNotifications(0)}
-              />
-            ) : (
-              <div className='flex-1 flex'>
-                <NotificationsDashboard 
-                  key={'volume'}
-                  query={query}
-                  stats={stats} 
-                  charts={['volume']}
-                />
-              </div>
-            )
-          }
-        </>
+      mainContent={
+        <TabPanel 
+          tabs={tabContents}
+          activeTab={activeTab}
+        />
       }
     />
   );

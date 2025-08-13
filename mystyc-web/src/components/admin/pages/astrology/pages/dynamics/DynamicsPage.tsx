@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { Icon } from 'lucide-react';
+import { yinYang } from '@lucide/lab';
 
 import { Dynamic } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin';
@@ -9,9 +11,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import DynamicsTable from './DynamicsTable';
 
 export default function DynamicsPage() {
@@ -31,7 +31,7 @@ export default function DynamicsPage() {
       setError(null);
       setBusy(1000);
       const listQuery = getDefaultListQuery(page);
-      listQuery.sortBy == "dynamic";
+      listQuery.sortBy = "dynamic";
       const dynamics = await getDynamics({deviceInfo: getDeviceInfo(), ...listQuery});
       setData(dynamics);
       setCurrentPage(page);
@@ -52,7 +52,7 @@ export default function DynamicsPage() {
       error={error}
       onRetry={() => loadDynamics(0)}
       breadcrumbs={breadcrumbs}
-      icon={<AstrologyIcon />}
+      icon={<Icon iconNode={yinYang} className='w-3 h-3' />}
       title={"Energy Types"}
       headerContent={
         <DynamicsTable 

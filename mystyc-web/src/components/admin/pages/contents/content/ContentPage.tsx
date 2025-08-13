@@ -7,13 +7,11 @@ import { getContent } from '@/server/actions/admin/content';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import ContentDetailsPanel from './ContentDetailsPanel';
 import ContentGenerationPanel from './ContentGenerationPanel';
 import ContentDataCard from './ContentDataCard';
-import ContentPreviewCard from './ContentPreviewCard';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
   const { setBusy } = useBusy();
@@ -46,20 +44,17 @@ export default function ContentPage({ contentId }: { contentId: string }) {
   ], [content]);
 
   return (
-    <ScrollWrapper>
-      <div className='flex flex-col'>
-        <AdminItemLayout
-          error={error}
-          onRetry={loadContent}
-          breadcrumbs={breadcrumbs}
-          icon={<ContentIcon size={6}/>}
-          title={content?.title ?? "Content"}
-          headerContent={<ContentDetailsPanel content={content} />}
-          sidebarContent={<ContentGenerationPanel content={content} />}
-          sectionsContent={[<ContentDataCard key='data' content={content} />]}
-          mainContent={<ContentPreviewCard content={content} />}
-        />
-      </div>
-    </ScrollWrapper>
+    <div className='flex flex-col grow'>
+      <AdminItemLayout
+        error={error}
+        onRetry={loadContent}
+        breadcrumbs={breadcrumbs}
+        icon={<ContentIcon size={6}/>}
+        title={content?.title ?? "Content"}
+        headerContent={<ContentDetailsPanel content={content} />}
+        sideContent={<ContentGenerationPanel content={content} />}
+        itemsContent={[<ContentDataCard key='data' content={content} />]}
+      />
+    </div>
   );    
 }

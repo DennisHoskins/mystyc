@@ -1,5 +1,4 @@
 import { ContentStats } from 'mystyc-common/admin/interfaces/stats';
-import Card from "@/components/ui/Card";
 import ContentDashboard from "./ContentDashboard";
 
 export default function ContentsDashboardGrid({
@@ -9,20 +8,20 @@ export default function ContentsDashboardGrid({
 }) {
   return (
     <div className='flex-1 grid grid-cols-3 gap-4 h-[15em] mb-4'>
-      <Card className='col-span-2 flex-1 flex'>
+      <div className='col-span-2 flex flex-col pb-2'>
         <ContentDashboard
           key={'timeline'}
           stats={stats} 
           charts={['timeline']}
         />
-      </Card>
-      <Card>
+      </div>
+      <div className='flex flex-col pb-2'>
         <ContentDashboard 
           key={'coverage'}
           stats={stats} 
           charts={['coverage']}
         />
-      </Card>        
+      </div>
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function PieChartWithLegend({
 }: PieChartWithLegendProps) {
   return (
     <div className='flex flex-col flex-1 bg-gray-100 py-2 rounded-md'>
-      {label && <h4 className="text-sm font-medium text-gray-700 ml-4 mb-2">{title}</h4>}
+      {label && <h4 className="text-sm font-bold text-gray-700 ml-2">{title}</h4>}
       <div className="flex items-center justify-between grow">
         {data &&
           <ResponsiveContainer width="50%" height={height}>

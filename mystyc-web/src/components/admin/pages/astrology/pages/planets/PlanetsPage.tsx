@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { MoonStar } from 'lucide-react';
 
 import { Planet } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin';
@@ -11,7 +12,6 @@ import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import PlanetsTable from './PlanetsTable';
 
 export default function PlanetsPage() {
@@ -52,7 +52,7 @@ export default function PlanetsPage() {
       error={error}
       onRetry={() => loadPlanets(0)}
       breadcrumbs={breadcrumbs}
-      icon={<AstrologyIcon />}
+      icon={<MoonStar className='w-3 h-3' />}
       title={"Planets"}
       headerContent={
         <PlanetsTable 

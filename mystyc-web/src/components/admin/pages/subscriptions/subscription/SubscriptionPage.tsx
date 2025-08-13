@@ -52,7 +52,7 @@ export default function SubscriptionPage({ subscriptionId }: { subscriptionId: s
       icon={<SubscriptionsIcon size={6} />}
       title={payment?.stripeInvoiceId ?? "Payment"}
       headerContent={<SubscriptionDetailsPanel payment={payment} />}
-      sidebarContent={<SubscriptionStripeCard key='stripe' payment={payment} />}
+      sideContent={<SubscriptionStripeCard key='stripe' payment={payment} />}
       mainContent={<SubscriptionUserCard firebaseUid={payment?.firebaseUid} />}
     />
   );

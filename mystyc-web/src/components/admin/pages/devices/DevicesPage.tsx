@@ -3,19 +3,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-import { Device } from 'mystyc-common/schemas/';
-import { DeviceStats, DevicesSummary, AdminListResponse } from 'mystyc-common/admin';
+import { DeviceStats, DevicesSummary } from 'mystyc-common/admin';
 import { getDevicesSummaryStats, getDevices, getOnlineDevices, getOfflineDevices } from '@/server/actions/admin/devices';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
-import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import TabHeader, { Tab } from '@/components/ui/tabs/TabHeader';
+import TabPanel, { TabContent } from '@/components/ui/tabs/TabPanel';
 import DevicesBreadcrumbs from './DevicesBreadcrumbs';
 import DevicesDashboard from './DevicesDashboard';
 import DevicesDashboardGrid from './DevicesDashboardGrid';
-import DevicesSummaryPanel from './DevicesSummaryPanel';
 import DevicesTable from './DevicesTable';
 
 export type DeviceView = 'summary' | 'all' | 'online' | 'offline';
@@ -25,24 +25,26 @@ export default function DevicesPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [stats, setStats] = useState<DeviceStats | null>(null);
   const [summary, setSummary] = useState<DevicesSummary | null>(null);
-  const [data, setData] = useState<AdminListResponse<Device> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
 
-  const getCurrentView = (): DeviceView => {
+  const getCurrentView = useCallback((): DeviceView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('online')) return 'online';
     if (searchParams.has('offline')) return 'offline';
     return 'summary';
-  };
-  const currentView = getCurrentView();
-  const breadcrumbs = DevicesBreadcrumbs({ currentView, onClick: () => { router.push("devices"); }});
-  const showDeviceTable = currentView !== 'summary';
+  }, [searchParams]);
 
-  const handleClick = (view: DeviceView) => {
+  const [activeTab, setActiveTab] = useState<string>(getCurrentView());
+
+  const breadcrumbs = DevicesBreadcrumbs({ currentView: activeTab as DeviceView, onClick: () => { router.push("devices"); }});
+
+  const handleTabChange = (tabId: string) => {
+    const view = tabId as DeviceView;
+    setActiveTab(tabId);
+    
     if (view === 'summary') {
       router.push(pathname);
       return;
@@ -69,49 +71,90 @@ export default function DevicesPage() {
     }
   }, [setBusy]);
 
-  const loadDevices = useCallback(async (page: number) => {
-    try {
-      if (!showDeviceTable) {
-        return;
-      }
-
-      setError(null);
-      setBusy(1000);
-
-      const listQuery = getDefaultListQuery(page);
-      let response: AdminListResponse<Device>;
-
-      switch (currentView) {
-        case 'online':
-          response = await getOnlineDevices({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'offline':
-          response = await getOfflineDevices({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'all':
-        default:
-          response = await getDevices({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-      }
-
-      setData(response);
-      setCurrentPage(page);
-    } catch (err) {
-      logger.error('Failed to load devices:', err);
-      setError('Failed to load devices. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  }, [showDeviceTable, setBusy, currentView]);
-
-  useEffect(() => {
-    if (currentView == 'online' || currentView == 'offline' || currentView == 'all') loadDevices(0);
-    else loadData();
-  }, [loadData, loadDevices, currentView]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    setActiveTab(getCurrentView());
+  }, [searchParams, getCurrentView]);
+
+  const getSummaryCount = () => {
+    if (!summary) return null;
+    const total = summary?.total || 0;
+    const online = summary?.online || 0;
+    if (total === 0) return "0%";
+    const percentage = (online / total * 100).toFixed(1);
+    return `${percentage}%`;
+  };
+
+  const tabs: Tab[] = [
+    {
+      id: 'summary',
+      label: 'Summary',
+      count: getSummaryCount()
+    },
+    {
+      id: 'all',
+      label: 'All Devices',
+      count: summary?.total || 0
+    },
+    {
+      id: 'online',
+      label: 'Online',
+      count: summary?.online || 0
+    },
+    {
+      id: 'offline',
+      label: 'Offline',
+      count: summary?.offline || 0
+    }
+  ];
+
+  const tabContents: TabContent[] = [
+    {
+      id: 'summary',
+      content: (
+        <div className='flex-1 flex flex-col overflow-hidden'>
+          <DevicesDashboardGrid stats={stats} />
+          <div className='flex-1 flex'>
+            <DevicesDashboard 
+              key={'browsers'}
+              stats={stats} 
+              charts={['browsers']}
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'all',
+      content: (
+        <DevicesTable
+          serverAction={getDevices}
+          onRefresh={loadData}
+        />
+      )
+    },
+    {
+      id: 'online',
+      content: (
+        <DevicesTable
+          serverAction={getOnlineDevices}
+          onRefresh={loadData}
+        />
+      )
+    },
+    {
+      id: 'offline',
+      content: (
+        <DevicesTable
+          serverAction={getOfflineDevices}
+          onRefresh={loadData}
+        />
+      )
+    }
+  ];
 
   return (
    <AdminListLayout
@@ -120,10 +163,10 @@ export default function DevicesPage() {
       breadcrumbs={breadcrumbs}
       icon={DevicesIcon}
       headerContent={
-        <DevicesSummaryPanel 
-          summary={summary}
-          handleClick={handleClick}
-          currentView={currentView}
+        <TabHeader 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
       }
       sideContent={
@@ -132,32 +175,11 @@ export default function DevicesPage() {
           charts={['stats']}
         />
       }
-      itemContent={
-        showDeviceTable == false && <DevicesDashboardGrid stats={stats} />
-      }
-      tableContent={
-        <>
-          {showDeviceTable ?
-            (
-              <DevicesTable
-                loading = {isBusy}
-                data={data?.data}
-                currentPage={currentPage}
-                pagination={data?.pagination}
-                onPageChange={() => loadDevices(currentPage)}
-                onRefresh={() => loadDevices(0)}
-              />
-            ) : (
-              <div className='flex-1 flex'>
-                <DevicesDashboard 
-                  key={'browsers'}
-                  stats={stats} 
-                  charts={['browsers']}
-                />
-              </div>
-            )
-          }
-        </>
+      mainContent={
+        <TabPanel 
+          tabs={tabContents}
+          activeTab={activeTab}
+        />
       }
     />
   );

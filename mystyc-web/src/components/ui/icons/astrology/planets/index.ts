@@ -9,19 +9,19 @@ import Mercury from './Mercury';
 import Mars from './Mars';
 import Venus from './Venus';
 
-const planetIcons: Record<string, () => JSX.Element> = {
-  sun: () => React.createElement(Sun),
-  moon: () => React.createElement(Moon),
-  rising: () => React.createElement(Rising),
-  mercury: () => React.createElement(Mercury),
-  mars: () => React.createElement(Mars),
-  venus: () => React.createElement(Venus),
+const planetIcons: Record<string, (className?: string) => JSX.Element> = {
+  sun: (className) => React.createElement(Sun, { className }),
+  moon: (className) => React.createElement(Moon, { className }),
+  rising: (className) => React.createElement(Rising, { className }),
+  mercury: (className) => React.createElement(Mercury, { className }),
+  mars: (className) => React.createElement(Mars, { className }),
+  venus: (className) => React.createElement(Venus, { className }),
 };
 
 export default planetIcons;
 
-export function getPlanetIcon(element?: string | null): JSX.Element | undefined {
+export function getPlanetIcon(element?: string | null, className?: string): JSX.Element | undefined {
   if (!element) return undefined;
   const iconFn = planetIcons[element.toLowerCase()];
-  return iconFn?.();
+  return iconFn?.(className);
 }

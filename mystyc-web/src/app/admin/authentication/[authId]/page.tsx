@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import AuthenticationPage from '@/components/admin/pages/authentications/authentication/AuthenticationPage';
 
-export default function Page({ params }: { params: Promise<{ authId: string; }> }) {
-  const { authId } = use(params);
+export default async function Page({ params }: { params: Promise<{ authId: string; }> }) {
+  const { authId } = await params;
   return <AuthenticationPage authId={authId} />;
 }

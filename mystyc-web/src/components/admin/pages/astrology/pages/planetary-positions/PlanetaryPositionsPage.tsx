@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { Eclipse } from 'lucide-react';
 
 import { PlanetaryPosition } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin';
@@ -9,9 +10,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import PlanetaryPositionsTable from './PlanetaryPositionsTable';
 
 export default function PlanetaryPositionsPage() {
@@ -52,7 +51,7 @@ export default function PlanetaryPositionsPage() {
       error={error}
       onRetry={() => loadPlanetaryPositions(0)}
       breadcrumbs={breadcrumbs}
-      icon={<AstrologyIcon />}
+      icon={<Eclipse className='w-3 h-3' />}
       title={"Planets"}
       headerContent={
         <PlanetaryPositionsTable 

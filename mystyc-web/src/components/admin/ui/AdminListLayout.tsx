@@ -22,7 +22,7 @@ interface AdminListLayoutProps {
   headerContent?: ReactNode;
   sideContent?: ReactNode;
   itemContent?: ReactNode | ReactNode[];
-  tableContent?: ReactNode | ReactNode[];
+  mainContent?: ReactNode | ReactNode[];
 }
 
 export default function AdminListLayout({ 
@@ -36,16 +36,16 @@ export default function AdminListLayout({
   headerContent,
   sideContent, 
   itemContent, 
-  tableContent 
+  mainContent 
 }: AdminListLayoutProps) {
 
   const gridCols = Array.isArray(itemContent) && itemContent && itemContent.length > 0 ? itemContent.length : 1;
 
   if (error) {
     return (
-      <div className="flex-1 w-full flex flex-col p-4">
-        <Card className='grow mb-4'>
-          <div className='flex space-x-3 items-center mb-4'>
+      <div className='grow w-full flex p-4 pb-0'>
+        <Card className="grow w-full flex flex-col">
+          <div className='flex space-x-3 items-center'>
             {icon && (
               <div className='mt-1'>
                 <Avatar size={'medium'} icon={icon} />
@@ -57,80 +57,77 @@ export default function AdminListLayout({
               <Heading level={3}>{title}</Heading>
             )}
           </div>
+          <hr />
+          <AdminError 
+            title={"Unable to load data"}
+            error={error} 
+            onRetry={onRetry}
+          />
         </Card>
-        <AdminError 
-          title={"Unable to load data"}
-          error={error} 
-          onRetry={onRetry}
-        />
       </div>
     );
   }
 
   return (
-    <div className='grow w-full min-h-0 flex flex-col p-4 pb-0'>
-      <div className="flex flex-col sm:flex-row overflow-hidden grow">
-        <Card className='grow mb-10'>
-          <div className='flex space-x-3 items-center mb-4'>
-            {icon && (
-              <div className='mt-1'>
-                <Avatar size={'small'} icon={icon} />
+    <div className='grow w-full flex p-4 pb-0'>
+      <Card className="grow w-full flex flex-col">
+
+        <div className='flex w-full grow'>
+
+          <div className='flex flex-col w-full space-y-2'>
+            <div className='flex space-x-3 items-center'>
+              {icon && (
+                <div className='mt-1'>
+                  <Avatar size={'small'} icon={icon} />
+                </div>
+              )}
+              {breadcrumbs ? (
+                <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
+              ) : (
+                <Heading level={3}>{title}</Heading>
+              )}
+              <div className='flex-1 flex justify-end'>
+                {button}
               </div>
-            )}
-            {breadcrumbs ? (
-              <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
-            ) : (
-              <Heading level={3}>{title}</Heading>
-            )}
-            <div className='flex-1 flex justify-end'>
-              {button}
+            </div>
+
+            <hr />
+
+            <div className='w-full grow flex overflow-hidden'>
+              {headerContent ? (
+                <>{headerContent}</>
+              ) : (
+                <>{description && <Text>{description}</Text>}</>
+              )}
             </div>
           </div>
-
-          <hr />
-
-          <div className='w-full grow flex mt-4 mb-2 overflow-hidden'>
-            {headerContent ? (
-              <>{headerContent}</>
-            ) : (
-              <>{description && <Text>{description}</Text>}</>
-            )}
             
-          </div>
-        </Card>
-        
-        {sideContent &&
-          <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
-            {sideContent}
-          </Card>
-        }
-      </div>
+          {sideContent &&
+            <div className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64 flex'>
+              {sideContent}
+            </div>
+          }
 
-      {itemContent && (
-        Array.isArray(itemContent) ? (
-          <div className={`grid grid-cols-1 md:grid-cols-${gridCols} gap-4 mb-4`}>
-            {itemContent.map((item, index) => (
-              <Card key={index}>{item}</Card>
-            ))}
-          </div>
-        ) : (
-          <>{itemContent}</>
-        )
-      )}
-
-      {tableContent && (
-        <div className='space-y-4 flex-1 flex flex-col grow min-h-0'>  
-          {Array.isArray(tableContent) ? (
-            tableContent.map((content, index) => (
-              <Card key={index} className='grow min-h-0 overflow-hidden'>
-                {content}
-              </Card>
-            ))
-          ) : (
-            <Card className='grow min-h-0 overflow-hidden flex'>{tableContent}</Card>
-          )}
         </div>
-      )}
+
+        {itemContent && (
+          Array.isArray(itemContent) ? (
+            <div className={`grid grid-cols-1 md:grid-cols-${gridCols} gap-4 mb-4`}>
+              {itemContent.map((item, index) => (
+                <div key={index}>{item}</div>
+              ))}
+            </div>
+          ) : (
+            <>{itemContent}</>
+          )
+        )}
+
+        {mainContent && (
+          <div className='flex-1 grow min-h-0 flex flex-col'>  
+            {mainContent}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

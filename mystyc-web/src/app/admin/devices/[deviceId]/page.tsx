@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import DevicePage from '@/components/admin/pages/devices/device/DevicePage';
 
-export default function Page({ params }: { params: Promise<{ deviceId: string; }> }) {
-  const { deviceId } = use(params);
+export default async function Page({ params }: { params: Promise<{ deviceId: string; }> }) {
+  const { deviceId } = await params;
   return <DevicePage deviceId={deviceId} />;
 }

@@ -3,19 +3,19 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
-import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
-import { UserStats, UsersSummary, AdminListResponse, AdminStatsQuery } from 'mystyc-common/admin';
+import { UserStats, UsersSummary, AdminStatsQuery } from 'mystyc-common/admin';
 import { getUsersSummaryStats, getAllUsers, getUsers, getPlusUsers } from '@/server/actions/admin/users';
-import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import TabHeader, { Tab } from '@/components/ui/tabs/TabHeader';
+import TabPanel, { TabContent } from '@/components/ui/tabs/TabPanel';
 import UsersBreadcrumbs from './UsersBreadcrumbs';
 import UsersDashboard from './UsersDashboard';
 import UsersDashboardGrid from './UsersDashboardGrid';
-import UsersSummaryPanel from './UsersSummaryPanel';
 import UsersTable from './UsersTable';
 
 export type UserView = 'summary' | 'all' | 'users' | 'plus';
@@ -25,25 +25,27 @@ export default function UsersPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [summary, setSummary] = useState<UsersSummary | null>(null);
-  const [data, setData] = useState<AdminListResponse<UserProfile> | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const getCurrentView = (): UserView => {
+  const getCurrentView = useCallback((): UserView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('users')) return 'users';
     if (searchParams.has('plus')) return 'plus';
     return 'summary';
-  };
-  const currentView = getCurrentView();
-  const breadcrumbs = UsersBreadcrumbs({ currentView, onClick: () => { router.push("users"); }});
-  const showUserTable = currentView !== 'summary';
+  }, [searchParams]);
 
-  const handleClick = (view: UserView) => {
+  const [activeTab, setActiveTab] = useState<string>(getCurrentView());
+
+  const breadcrumbs = UsersBreadcrumbs({ currentView: activeTab as UserView, onClick: () => { router.push("users"); }});
+
+  const handleTabChange = (tabId: string) => {
+    const view = tabId as UserView;
+    setActiveTab(tabId);
+    
     if (view === 'summary') {
       router.push(pathname);
       return;
@@ -71,61 +73,106 @@ export default function UsersPage() {
     }
   }, [setBusy]);
 
-  const loadUsers = useCallback(async (page: number) => {
-    try {
-      if (!showUserTable) {
-        return;
-      }
-
-      setError(null);
-      setBusy(1000);
-
-      const listQuery = getDefaultListQuery(page);
-      let response: AdminListResponse<UserProfile>;
-      
-      switch (currentView) {
-        case 'plus':
-          response = await getPlusUsers({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'users':
-          response = await getUsers({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'all':
-        default:
-          response = await getAllUsers({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-      }
-
-      setData(response);
-      setCurrentPage(page);
-    } catch (err) {
-      logger.error('Failed to load users:', err);
-      setError('Failed to load users. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  }, [showUserTable, setBusy, currentView]);
-
-  useEffect(() => {
-    if (currentView == 'users' || currentView == 'plus' || currentView == 'all') loadUsers(0);
-    else loadData();
-  }, [loadData, loadUsers, currentView]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    setActiveTab(getCurrentView());
+  }, [searchParams, getCurrentView]);
+
+  const getSummaryCount = () => {
+    if (!summary) return null;
+    const total = summary?.total || 0;
+    const plus = summary?.plus || 0;
+    if (total === 0) return "0%";
+    const percentage = (plus / total * 100).toFixed(1);
+    return `${percentage}%`;
+  };
+
+  const tabs: Tab[] = [
+    {
+      id: 'summary',
+      label: 'Summary',
+      count: getSummaryCount()
+    },
+    {
+      id: 'all',
+      label: 'All Users',
+      count: summary?.total || 0
+    },
+    {
+      id: 'users',
+      label: 'Users',
+      count: summary?.users || 0
+    },
+    {
+      id: 'plus',
+      label: 'Plus',
+      count: summary?.plus || 0
+    }
+  ];
+
+  const tabContents: TabContent[] = [
+    {
+      id: 'summary',
+      content: (
+        <div className='flex-1 flex flex-col overflow-hidden'>
+          <UsersDashboardGrid query={query} stats={stats} />
+          <div className='flex-1 flex'>
+            <UsersDashboard 
+              key={'registrations'}
+              query={query} 
+              stats={stats} 
+              charts={['registrations']}
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'all',
+      content: (
+        <UsersTable
+          key='all'
+          serverAction={getAllUsers}
+          onRefresh={loadData}
+        />
+      )
+    },
+    {
+      id: 'users',
+      content: (
+        <UsersTable
+          key='users'
+          serverAction={getUsers}
+          onRefresh={loadData}
+        />
+      )
+    },
+    {
+      id: 'plus',
+      content: (
+        <UsersTable
+          key='plus'
+          serverAction={getPlusUsers}
+          onRefresh={loadData}
+        />
+      )
+    }
+  ];
+
   return (
-   <AdminListLayout
+    <AdminListLayout
       error={error}
       onRetry={loadData}
       breadcrumbs={breadcrumbs}
       icon={UsersIcon}
       headerContent={
-        <UsersSummaryPanel 
-          summary={summary}
-          handleClick={handleClick}
-          currentView={currentView}
+        <TabHeader 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
       }
       sideContent={
@@ -135,33 +182,11 @@ export default function UsersPage() {
           charts={['stats']}
         />
       }
-      itemContent={
-        showUserTable == false && <UsersDashboardGrid query={query} stats={stats} />
-      }
-      tableContent={
-        <>
-          {showUserTable ?
-            (
-              <UsersTable
-                loading = {isBusy}
-                data={data?.data}
-                pagination={data?.pagination}
-                currentPage={currentPage}
-                onPageChange={() => loadUsers(currentPage)}
-                onRefresh={() => loadUsers(0)}
-              />
-            ) : (
-              <div className='flex-1 flex'>
-                <UsersDashboard 
-                  key={'registrations'}
-                  query={query} 
-                  stats={stats} 
-                  charts={['registrations']}
-                />
-              </div>
-            )
-          }
-        </>
+      mainContent={
+        <TabPanel 
+          tabs={tabContents}
+          activeTab={activeTab}
+        />
       }
     />
   );

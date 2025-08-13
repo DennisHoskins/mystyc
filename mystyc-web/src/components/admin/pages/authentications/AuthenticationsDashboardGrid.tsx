@@ -1,5 +1,4 @@
 import { AuthEventStats } from 'mystyc-common/admin/interfaces/stats';
-import Card from "@/components/ui/Card";
 import AuthenticationDashboard from "./AuthenticationDashboard";
 
 export default function AuthenticationsDashboardGrid({
@@ -9,20 +8,20 @@ export default function AuthenticationsDashboardGrid({
 }) {
   return (
     <div className='flex-1 grid grid-cols-3 gap-4 h-[15em] mb-4'>
-      <Card className='col-span-2 flex-1 flex'>
+      <div className='col-span-2 flex flex-col pb-2'>
         <AuthenticationDashboard
           key={'peak'}
           stats={stats} 
           charts={['peak']}
         />
-      </Card>
-      <Card>
+      </div>
+      <div className='flex flex-col pb-2'>
         <AuthenticationDashboard 
           key={'events'}
           stats={stats} 
           charts={['events']}
         />
-      </Card>        
+      </div>
     </div>
   );
 }

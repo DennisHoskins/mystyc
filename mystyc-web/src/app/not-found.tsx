@@ -12,7 +12,7 @@ export default function NotFound() {
     <div className="flex flex-col flex-1 w-full h-fit justify-center items-center">
       <Card>
         <div className="text-center p-6">
-          <Heading level={1} size="3xl" className="sm:text-5xl">
+          <Heading level={1} size="xl" className="sm:text-5xl">
             Page Not Found
           </Heading>
           <Text className="mt-4">

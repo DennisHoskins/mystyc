@@ -8,12 +8,15 @@ import { getSession } from '@/server/actions/admin/sessions';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
+import Avatar from '@/components/ui/Avatar';
+import Heading from '@/components/ui/Heading';
+import UserProfileIcon from '@/components/admin/ui/icons/UserProfileIcon';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionDetailsPanel from './SessionDetailsPanel';
-import SessionTokensPanel from './SessionTokensPanel';
-import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
-import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
+import SessionTokensCard from './SessionTokensCard';
+import UserInfoPanel from '@/components/admin/pages/users/user/UserInfoPanel';
+import DeviceInfoPanel from '@/components/admin/pages/devices/device/DeviceInfoPanel';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
   const { setBusy } = useBusy();
@@ -58,11 +61,20 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       icon={<SessionIcon />}
       title={session ? `${session.email} - ${session.deviceName}` : ""}
       headerContent={<SessionDetailsPanel session={session} />}
-      sectionsContent={[
-        <UserInfoCard key='user' firebaseUid={session?.uid} />,
-        <DeviceInfoCard key='device' deviceId={session?.deviceId} onLoad={handleDeviceLoad} />
-      ]}
-      sidebarContent={<SessionTokensPanel session={session} device={device} />}
+      sideContent={
+        <div className='flex flex-col space-y-2'>
+          <div className='flex space-x-2'>
+            <Avatar size={'small'} icon={UserProfileIcon} />
+            <Heading level={3}>User</Heading>
+          </div>
+          <hr/ >
+          <div className='flex flex-col space-y-6'>
+            <UserInfoPanel key='user' firebaseUid={session?.uid} />
+            <DeviceInfoPanel key='device' deviceId={session?.deviceId} onLoad={handleDeviceLoad} />
+          </div>
+        </div>
+      }
+      itemsContent={[<SessionTokensCard key='tokens' session={session} device={device} />]}
     />
   );    
 }

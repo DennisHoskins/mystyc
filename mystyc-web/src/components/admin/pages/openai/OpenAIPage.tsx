@@ -9,7 +9,9 @@ import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import Card from '@/components/ui/Card';
+import Text from '@/components/ui/Text';
+import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import OpenAIUsageTable from './OpenAIUsageTable';
 import OpenAIDashboard from './OpenAIUsageDashboard';
@@ -67,47 +69,57 @@ export default function OpenAIPage() {
   }, [loadData, loadUsage]);
 
   return (
-   <AdminListLayout
+   <AdminItemLayout
+      title="OpenAI"
+      headerContent={
+        <Text >View OpenAI usage statistics and monitor API consumption across all content types</Text>
+      }
       error={error}
       onRetry={() => {
         loadData();
         loadUsage(0);
       }}
       breadcrumbs={breadcrumbs}
-      icon={ContentIcon}
-      description="View OpenAI usage statistics and monitor API consumption across all content types"
+      icon={<ContentIcon size={3} />}
       sideContent={
-        <OpenAIDashboard 
-          stats={stats} 
-          charts={['stats']}
-        />
+        <div className='flex-1 flex flex-col space-y-4'>
+          <OpenAIDashboard 
+            stats={stats} 
+            charts={['stats']}
+          />
+          <OpenAIDashboard 
+            key={'trends'}
+            stats={stats} 
+            charts={['budget']}
+          />
+        </div>
       }
-      itemContent={[
-        <OpenAIDashboard 
-          key={'budget'}
-          stats={stats} 
-          charts={['budget']}
-        />,
-        <OpenAIDashboard 
-          key={'types'}
-          stats={stats} 
-          charts={['content-types']}
-        />,
-        <OpenAIDashboard 
-          key={'trends'}
-          stats={stats} 
-          charts={['trends']}
-        />
+      itemsContent={[
+        <Card key='stats' className='grow grid grid-cols-3 gap-4 !space-y-0'>
+          <OpenAIDashboard 
+            className='col-span-2'
+            key={'budget'}
+            stats={stats} 
+            charts={['trends']}
+          />
+          <OpenAIDashboard 
+            key={'types'}
+            stats={stats} 
+            charts={['content-types']}
+          />
+        </Card>
       ]}
-      tableContent={
-        <OpenAIUsageTable 
-          data={data?.data}
-          pagination={data?.pagination}
-          loading={isBusy}
-          currentPage={currentPage}
-          onPageChange={loadUsage}
-          onRefresh={() => loadUsage(0)}
-        />
+      mainContent={
+        <Card className='grow flex flex-col'>
+          <OpenAIUsageTable 
+            data={data?.data}
+            pagination={data?.pagination}
+            loading={isBusy}
+            currentPage={currentPage}
+            onPageChange={loadUsage}
+            onRefresh={() => loadUsage(0)}
+          />
+        </Card>          
       }
     />   
   );

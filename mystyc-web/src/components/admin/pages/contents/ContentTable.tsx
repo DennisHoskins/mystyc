@@ -9,11 +9,11 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 interface ContentTableProps {
   icon?: IconComponent,
   label?: string,
-  data: Content[];
+  data?: Content[] | null;
   pagination?: Pagination | null;
-  loading: boolean;
-  currentPage: number;
-  onPageChange: (page: number) => void;
+  loading?: boolean;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
   onRefresh: () => void;
   hideSourceColumn?: boolean;
 }

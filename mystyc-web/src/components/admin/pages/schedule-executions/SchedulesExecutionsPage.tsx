@@ -9,10 +9,12 @@ import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import Card from '@/components/ui/Card';
+import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import SchedulesExecutionsTable from './SchedulesExecutionsTable';
 import SchedulesExecutionsDashboard from './SchedulesExecutionsDashboard';
+import Text from '@/components/ui/Text';
 
 export default function SchedulesExecutionsPage() {
   const { setBusy, isBusy } = useBusy();
@@ -70,7 +72,9 @@ export default function SchedulesExecutionsPage() {
   }, [loadData, loadSchedulesExecutions]);
 
   return (
-   <AdminListLayout
+   <AdminItemLayout
+      title="Schedule Executions"
+      headerContent={<Text>Monitor scheduled task executions, view performance metrics and track automation success rates</Text>}
       error={error}
       onRetry={() => {
         loadData();
@@ -78,44 +82,49 @@ export default function SchedulesExecutionsPage() {
       }}
       breadcrumbs={breadcrumbs}
       icon={<ScheduleIcon variant='schedule-execution' />}
-      description="Monitor scheduled task executions, view performance metrics and track automation success rates"
        sideContent={
-         <SchedulesExecutionsDashboard
-          query={query}
-           stats={stats} 
-           charts={['stats']}
-         />
-       }
-      itemContent={[
-        <SchedulesExecutionsDashboard
-          key={'performance'}
-          query={query}
-          stats={stats} 
-          charts={['performance']}
-        />,
-        <SchedulesExecutionsDashboard
-          key={'recent'}
-          query={query}
-          stats={stats} 
-          charts={['recent']}
-        />,
+        <div className='flex-1 flex flex-col space-y-4'>
+          <SchedulesExecutionsDashboard
+            query={query}
+            stats={stats} 
+            charts={['stats']}
+          />
         <SchedulesExecutionsDashboard
           key={'events'}
           query={query}
           stats={stats} 
           charts={['events']}
-        />,
-      ]}
-       tableContent={
-         <SchedulesExecutionsTable 
-           data={data?.data}
-           pagination={data?.pagination}
-           loading={isBusy}
-           currentPage={currentPage}
-           onPageChange={loadSchedulesExecutions}
-           onRefresh={() => loadSchedulesExecutions(0)}
-         />
+        />
+        </div>
        }
+      itemsContent={[
+        <Card key='stats' className='grow grid grid-cols-2 gap-4 !space-y-0'>
+          <SchedulesExecutionsDashboard
+            key={'performance'}
+            query={query}
+            stats={stats} 
+            charts={['performance']}
+          />
+          <SchedulesExecutionsDashboard
+            key={'recent'}
+            query={query}
+            stats={stats} 
+            charts={['recent']}
+          />
+        </Card>
+      ]}
+      mainContent={
+        <Card className='grow min-h-0 overflow-hidden flex'>
+          <SchedulesExecutionsTable 
+            data={data?.data}
+            pagination={data?.pagination}
+            loading={isBusy}
+            currentPage={currentPage}
+            onPageChange={loadSchedulesExecutions}
+            onRefresh={() => loadSchedulesExecutions(0)}
+          />
+        </Card>
+      }
     />   
   );
 }

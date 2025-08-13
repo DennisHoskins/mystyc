@@ -1,29 +1,76 @@
+import { useState, useEffect, useCallback } from 'react';
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
-import { Pagination } from 'mystyc-common/admin';
+import { AdminListResponse, BaseAdminQuery } from 'mystyc-common/admin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { logger } from '@/util/logger';
+import { useBusy } from '@/components/ui/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
+type PaymentServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<PaymentHistory>>;
+
 interface PaymentsTableProps {
   label?: string;
-  data?: PaymentHistory[];
-  pagination?: Pagination | null;
-  loading: boolean;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-  onRefresh: () => void;
-  hideUserColumn?: false;
+  serverAction?: PaymentServerAction;
+  onRefresh?: () => void;
+  hideUserColumn?: boolean;
+  payments?: AdminListResponse<PaymentHistory> | null;
 }
 
 export default function PaymentsTable({
   label,
-  data,
-  pagination,
-  loading,
-  currentPage,
-  onPageChange,
+  serverAction,
   onRefresh,
-  hideUserColumn = false
+  hideUserColumn = false,
+  payments
 }: PaymentsTableProps) {
+  const { setBusy, isBusy } = useBusy();
+  const [data, setData] = useState<AdminListResponse<PaymentHistory> | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadPayments = useCallback(async (page: number) => {
+    if (!serverAction) {
+      return;
+    }
+    try {
+      setError(null);
+      setBusy(1000);
+
+      const listQuery = getDefaultListQuery(page);
+      const response = await serverAction({deviceInfo: getDeviceInfo(), ...listQuery});
+
+      setData(response);
+      setCurrentPage(page);
+    } catch (err) {
+      logger.error('Failed to load payments:', err);
+      setError('Failed to load payments. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }, [serverAction, setBusy]);
+
+  const handlePageChange = (page: number) => {
+    loadPayments(page);
+  };
+
+  const handleRefresh = () => {
+    loadPayments(0);
+    if (onRefresh) {
+      onRefresh();
+    }
+  };
+
+  useEffect(() => {
+    if (payments) {
+      setData(payments);
+      setCurrentPage(0);
+      return;
+    }
+    loadPayments(0);
+  }, [loadPayments, payments, setData]);
+
   const baseColumns: Column<PaymentHistory>[] = [
     { key: 'datePaid', header: 'Date Paid', link: (e) => `/admin/subscriptions/${e._id}`, render: (e) => formatDateForDisplay(e.paidAt) },
     { key: 'amount', header: 'Amount', align: "right", link: (e) => `/admin/subscriptions/${e._id}`, render: (e) => "$" +  (e.amount / 100).toFixed(2) + " " + e.currency },
@@ -44,17 +91,22 @@ export default function PaymentsTable({
         userColumn
       ];
 
+  if (error) {
+    return <div className="text-red-600">Error: {error}</div>;
+  }
+
   return (
     <AdminTable<PaymentHistory>
       label={label}
-      data={data}
+      data={data?.data}
       columns={columns}
-      loading={loading}
+      loading={isBusy}
       currentPage={currentPage}
-      totalPages={pagination?.totalPages}
-      hasMore={pagination?.hasMore}
-      onPageChange={onPageChange}
-      onRefresh={onRefresh}
+      totalPages={data?.pagination?.totalPages || 0}
+      totalItems={data?.pagination?.totalItems || 0}
+      hasMore={data?.pagination?.hasMore || false}
+      onPageChange={handlePageChange}
+      onRefresh={handleRefresh}
       emptyMessage="No Payments found."
     />
   );

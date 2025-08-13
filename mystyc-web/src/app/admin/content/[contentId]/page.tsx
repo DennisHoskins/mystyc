@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import ContentPage from '@/components/admin/pages/contents/content/ContentPage';
 
-export default function Page({ params }: { params: Promise<{ contentId: string; }> }) {
-  const { contentId } = use(params);
+export default async function Page({ params }: { params: Promise<{ contentId: string; }> }) {
+  const { contentId } = await params;
   return <ContentPage contentId={contentId} />;
 }

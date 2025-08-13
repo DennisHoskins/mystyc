@@ -12,17 +12,15 @@ export default function ContentSidebarPanel({ content }: { content: Content | nu
   };
 
   return (
-    <div className='flex flex-col'>
-      <div className="flex items-center space-x-2 mb-4">
+    <div className='flex flex-col space-y-2'>
+      <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={OpenAIIcon} />
-        <div>
-          <Heading level={5}>Content Generation</Heading>
-        </div>
+        <Heading level={5}>Content Generation</Heading>
       </div>
 
       <hr/>
 
-      <AdminDetailGrid cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1}>
         <AdminDetailField
           label="Id"
           value={content?.openAIData?._id}
@@ -50,6 +48,30 @@ export default function ContentSidebarPanel({ content }: { content: Content | nu
         <AdminDetailField
           label="Cost"
           value={content && content.openAIData ? `$${content.openAIData.cost}` : ""}
+        />
+        <AdminDetailField
+          label="Sources"
+          value={content && content?.sources && content?.sources.length ? "[" + content.sources.join(', ') + "]" : ""}
+        />
+        <AdminDetailField
+          label="Source"
+          value={
+            content?.userId ? content?.userId : 
+            content?.executionId ? content?.executionId : 
+            content?.notificationId ? content?.notificationId : 
+            content ? "-" : ""
+          }
+          href={
+            content?.userId ? `/admin/users/${content?.userId}` :
+            content?.executionId ? `/admin/schedule-executions/${content?.executionId}` :
+            content?.notificationId ? `/admin/notifications/${content?.notificationId}` :
+            null
+          }
+        />
+        <AdminDetailField
+          label="Prompt"
+          type='description'
+          value={content?.openAIData?.prompt}
         />
      </AdminDetailGrid>
    </div>

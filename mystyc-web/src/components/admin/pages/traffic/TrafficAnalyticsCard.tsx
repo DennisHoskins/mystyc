@@ -1,26 +1,26 @@
-import { TrafficStats } from '@/interfaces/admin/stats';
 import Card from '@/components/ui/Card';
+import { TrafficStats } from '@/interfaces/admin/stats';
 import TrafficDashboard from './TrafficDashboard';
 
 export default function TrafficAnalyticsCard({ trafficStats }: { trafficStats?: TrafficStats | null }) {
   return (
-    <div className='grid grid-cols-3 gap-4'>
-      <Card className='flex-1 col-span-2'>
-        <div className='flex h-full min-h-[10em]'>
+    <Card className='grid grid-cols-3 gap-4 w-full !space-y-0 grow'>
+      <div className='flex-1 col-span-2'>
+        <div className='flex h-[10em]'>
           <TrafficDashboard 
             data={trafficStats} 
             charts={['visitors']}
           />
         </div>        
-      </Card>
-      <Card className='flex-1'>
-        <div className='flex h-full min-h-[10em]'>
+      </div>
+      <div className='flex-1'>
+        <div className='flex h-[10em]'>
           <TrafficDashboard 
             data={trafficStats} 
             charts={['browsers']}
           />
         </div>        
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 }

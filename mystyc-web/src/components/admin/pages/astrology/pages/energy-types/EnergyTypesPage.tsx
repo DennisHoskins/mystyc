@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { Zap } from 'lucide-react';
 
 import { EnergyType } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin';
@@ -11,7 +12,6 @@ import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import EnergyTypesTable from './EnergyTypesTable';
 
 export default function EnergyTypesPage() {
@@ -52,7 +52,7 @@ export default function EnergyTypesPage() {
       error={error}
       onRetry={() => loadEnergyTypes(0)}
       breadcrumbs={breadcrumbs}
-      icon={<AstrologyIcon />}
+      icon={<Zap className='w-3 h-3' />}
       title={"Energy Types"}
       headerContent={
         <EnergyTypesTable 

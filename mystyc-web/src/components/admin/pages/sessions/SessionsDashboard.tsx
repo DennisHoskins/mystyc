@@ -3,7 +3,7 @@ import { HeartPulse } from 'lucide-react'
 import { SessionStats } from '@/interfaces/admin/stats';
 import Link from '@/components/ui/Link';
 
-export default function SessionsDashboard({ stats } : { stats?: SessionStats | null | undefined }) {
+export default function SessionsDashboard({ stats, showDetails = true } : { stats?: SessionStats | null | undefined, showDetails?: boolean }) {
 
   const healthy = stats?.summary.totalSessions === stats?.summary.totalDevices;
   const difference = stats ? Math.abs(stats.summary.totalSessions - stats.summary.totalDevices) : 0;
@@ -42,9 +42,9 @@ export default function SessionsDashboard({ stats } : { stats?: SessionStats | n
   return(
     <Link 
       href="/admin/sessions"
-      className="flex flex-1 items-center space-x-4"
+      className="flex flex-1 space-x-4"
     >
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col grow">
         {/* Health Indicator */}
         <div className={`flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg ${healthStatus.bgColor}`}>
           <HeartPulse className={`w-6 h-6 mr-2 ${healthStatus.iconColor}`} />
@@ -67,22 +67,22 @@ export default function SessionsDashboard({ stats } : { stats?: SessionStats | n
           </div>
         </div>
 
-        {/* Session Details */}
-        {/* Large screens and small screens: Two column grid */}
-        <div className="mt-3 grid-cols-2 gap-3 text-sm grid md:hidden lg:grid">
-          <div className="bg-gray-50 px-3 py-1 rounded-md">
-            <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
-              Sessions:
-              <span className="text-sm font-bold text-blue-600 ml-2">{stats?.summary.totalSessions}</span>
-            </div>              
-          </div>
-          <div className="bg-gray-50 px-3 py-1 rounded-md">
-            <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
-              Devices:
-              <span className="ml-4 text-sm font-bold text-green-600">{stats?.summary.totalDevices}</span>
+        {showDetails &&
+          <div className="mt-3 grid-cols-2 gap-3 text-sm grid md:hidden lg:grid">
+            <div className="bg-gray-50 px-3 py-1 rounded-md">
+              <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
+                Sessions:
+                <span className="text-sm font-bold text-blue-600 ml-2">{stats?.summary.totalSessions}</span>
+              </div>              
+            </div>
+            <div className="bg-gray-50 px-3 py-1 rounded-md">
+              <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
+                Devices:
+                <span className="ml-4 text-sm font-bold text-green-600">{stats?.summary.totalDevices}</span>
+              </div>
             </div>
           </div>
-        </div>
+        }
 
         {/* Medium screens only: Single line format */}
         <div className="mt-3 hidden md:block lg:hidden">

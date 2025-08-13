@@ -2,30 +2,34 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { AdminListResponse } from 'mystyc-common/admin';
-import { Session } from '@/interfaces';
 import { SessionStats } from '@/interfaces/admin/stats';
-import { getSessionStats, getSessions } from '@/server/actions/admin/sessions';
-import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getSessions, getSessionStats, getSessionsDevices } from '@/server/actions/admin/sessions';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import TabHeader, { Tab } from '@/components/ui/tabs/TabHeader';
+import TabPanel, { TabContent } from '@/components/ui/tabs/TabPanel';
 import SessionsTable from './SessionsTable';
+import SessionDevicesTable from './SessionsDevicesTable';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionsDashboard from './SessionsDashboard';
 
 export default function SessionsPage() {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [stats, setStats] = useState<SessionStats | null>(null);
-  const [data, setData] = useState<AdminListResponse<Session> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [activeTab, setActiveTab] = useState<string>('sessions');
 
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
     { label: 'Sessions' },
   ];
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+  };
 
   const loadData = useCallback(async () => {
     try {
@@ -44,52 +48,76 @@ export default function SessionsPage() {
     }
   }, [setBusy]);
 
-  const loadSessions = useCallback(async (page: number) => {
-    try {
-      setError(null);
-      setBusy(1000);
-
-      const listQuery = getDefaultListQuery(page);
-      const response = await getSessions({deviceInfo: getDeviceInfo(), ...listQuery});
-
-      setData(response);
-      setCurrentPage(page);
-    } catch (err) {
-      logger.error('Failed to load sessions:', err);
-      setError('Failed to load sessions. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  }, [setBusy, ]);
-
   useEffect(() => {
     loadData();
-    loadSessions(0);
-  }, [loadData, loadSessions]);
+  }, [loadData]);
+
+  // Server action wrapper functions
+  const getAllSessions = useCallback((params: any) => {
+    return getSessions(params);
+  }, []);
+
+  const getAllSessionDevices = useCallback((params: any) => {
+    return getSessionsDevices(params);
+  }, []);
+
+  const tabs: Tab[] = [
+    {
+      id: 'sessions',
+      label: 'Sessions',
+      count: stats?.summary.totalSessions || 0
+    },
+    {
+      id: 'devices',
+      label: 'Devices',
+      count: stats?.summary.totalDevices || 0
+    }
+  ];
+
+  const tabContents: TabContent[] = [
+    {
+      id: 'sessions',
+      content: (
+        <SessionsTable
+          serverAction={getAllSessions}
+          onRefresh={loadData}
+        />
+      )
+    },
+    {
+      id: 'devices',
+      content: (
+        <SessionDevicesTable
+          serverAction={getAllSessionDevices}
+          onRefresh={loadData}
+        />
+      )
+    }
+  ];
 
   return (
     <AdminListLayout
       error={error}
-      onRetry={() => {
-        loadData();
-        loadSessions(0);
-      }}
+      onRetry={loadData}
       breadcrumbs={breadcrumbs}
       icon={SessionIcon}
-      description="View active user sessions and devices, monitor login activity, and manage session security settings"
-       sideContent={
-         <SessionsDashboard 
-           stats={stats} 
-         />
-       }
-      tableContent={
-        <SessionsTable 
-          data={data?.data}
-          pagination={data?.pagination}
-          loading={isBusy}
-          currentPage={currentPage}
-          onPageChange={loadSessions}
-          onRefresh={() => loadSessions(0)}
+      headerContent={
+        <TabHeader 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+      }
+      sideContent={
+        <SessionsDashboard 
+          stats={stats} 
+          showDetails={false}
+        />
+      }
+      mainContent={
+        <TabPanel 
+          tabs={tabContents}
+          activeTab={activeTab}
         />
       }
     />

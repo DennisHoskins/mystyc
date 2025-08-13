@@ -55,11 +55,11 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       icon={<NotificationIcon size={6} />}
       title={notification ? `${notification.sentBy}: ${notification.type}` : 'Unknown Notification'}
       headerContent={<NotificationDetailsPanel notification={notification} />}
-      sectionsContent={[
+      itemsContent={[
         <UserInfoCard key='user' firebaseUid={notification?.firebaseUid} />,
         <DeviceInfoCard key='device' deviceId={notification?.deviceId} />
       ]}
-      sidebarContent={<NotificationMessagePanel notification={notification} />}
+      sideContent={<NotificationMessagePanel notification={notification} />}
       mainContent={<NotificationGenerationCard key='generation' notification={notification} />}
     />
   );

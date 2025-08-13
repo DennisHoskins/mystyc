@@ -1,31 +1,77 @@
+import { useState, useEffect, useCallback } from 'react';
 import { AlarmClockCheck, Megaphone, User } from 'lucide-react';
-
 import { Notification } from 'mystyc-common/schemas';
-import { Pagination } from 'mystyc-common/admin';
+import { AdminListResponse, BaseAdminQuery } from 'mystyc-common/admin';
+import { getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { logger } from '@/util/logger';
+import { useBusy } from '@/components/ui/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
+type NotificationServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<Notification>>;
+
 interface NotificationsTableProps {
   label?: string;
-  data?: Notification[];
-  pagination?: Pagination | null;
-  loading: boolean;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-  onRefresh: () => void;
+  serverAction?: NotificationServerAction;
+  onRefresh?: () => void;
   hideUserColumn?: boolean;
+  notifications?: AdminListResponse<Notification> | null;
 }
 
 export default function NotificationsTable({
   label,
-  data,
-  pagination,
-  loading,
-  currentPage,
-  onPageChange,
+  serverAction,
   onRefresh,
-  hideUserColumn = false
+  hideUserColumn = false,
+  notifications
 }: NotificationsTableProps) {
+  const { setBusy, isBusy } = useBusy();
+  const [data, setData] = useState<AdminListResponse<Notification> | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadNotifications = useCallback(async (page: number) => {
+    if (!serverAction) {
+      return;
+    }
+    try {
+      setError(null);
+      setBusy(1000);
+
+      const listQuery = getDefaultListQuery(page);
+      const response = await serverAction({deviceInfo: getDeviceInfo(), ...listQuery});
+
+      setData(response);
+      setCurrentPage(page);
+    } catch (err) {
+      logger.error('Failed to load notifications:', err);
+      setError('Failed to load notifications. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }, [serverAction, setBusy]);
+
+  const handlePageChange = (page: number) => {
+    loadNotifications(page);
+  };
+
+  const handleRefresh = () => {
+    loadNotifications(0);
+    if (onRefresh) {
+      onRefresh();
+    }
+  };
+
+  useEffect(() => {
+    if (notifications) {
+      setData(notifications);
+      setCurrentPage(0);
+      return;
+    }
+    loadNotifications(0);
+  }, [loadNotifications, notifications, setData]);
+
   const baseColumns: Column<Notification>[] = [
     { key: 'event', header: 'Event', link: (e) => `/admin/notifications/${e._id}`, render: (e) => e.type || 'Unknown' },
     { key: 'deviceName', header: 'Device', link: (e) => `/admin/devices/${e.deviceId}`, render: (e) => e.deviceName || 'Unknown' },
@@ -62,18 +108,22 @@ export default function NotificationsTable({
         ...baseColumns.slice(1)
       ];
 
+  if (error) {
+    return <div className="text-red-600">Error: {error}</div>;
+  }
 
   return (
     <AdminTable<Notification>
       label={label}
-      data={data}
+      data={data?.data}
       columns={columns}
-      loading={loading}
+      loading={isBusy}
       currentPage={currentPage}
-      totalPages={pagination?.totalPages}
-      hasMore={pagination?.hasMore}
-      onPageChange={onPageChange}
-      onRefresh={onRefresh}
+      totalPages={data?.pagination?.totalPages || 0}
+      totalItems={data?.pagination?.totalItems || 0}
+      hasMore={data?.pagination?.hasMore || false}
+      onPageChange={handlePageChange}
+      onRefresh={handleRefresh}
       emptyMessage="No Notifications found."
     />
   );

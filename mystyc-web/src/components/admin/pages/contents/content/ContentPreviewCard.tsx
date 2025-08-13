@@ -9,24 +9,25 @@ import Text from '@/components/ui/Text';
 export default function ContentPreviewCard({ content }: { content: Content | null }) {
   return (
     <Card>
-      <div className="flex items-center space-x-2 mb-4">
+      <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={<Eye className='w-4 h-4'/>} />
         <div>
-          <Heading level={5}>Preview</Heading>
+          <Heading level={5}>Content</Heading>
         </div>
       </div>
 
       <hr/>
 
       {content?.status === 'failed' && content.error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <Heading level={6} className="text-red-700 mb-2">Generation Error</Heading>
           <Text className="text-red-600">{content.error}</Text>
         </div>
       )}
       
-      <div className="mt-4 space-y-4">
+      <div className="space-y-4">
         <div className="bg-gray-50 rounded-lg p-4">
+          
           <Heading level={5} className="mb-3">{content?.title}</Heading>
           <Text className="text-gray-700">{content?.message}</Text>
         </div>

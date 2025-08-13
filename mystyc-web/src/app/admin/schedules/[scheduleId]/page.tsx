@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import SchedulePage from '@/components/admin/pages/schedules/schedule/SchedulePage';
 
-export default function Page({ params }: { params: Promise<{ scheduleId: string; }> }) {
-  const { scheduleId } = use(params);
+export default async function Page({ params }: { params: Promise<{ scheduleId: string; }> }) {
+  const { scheduleId } = await params;
   return <SchedulePage scheduleId={scheduleId} />;
 }

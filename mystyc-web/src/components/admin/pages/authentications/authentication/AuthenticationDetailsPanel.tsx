@@ -5,11 +5,7 @@ import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function AuthenticationDetailsPanel({ authentication }: { authentication: AuthEvent | null }) {
   return (
-    <AdminDetailGrid cols={2}>
-      <AdminDetailField
-        label="Type"
-        value={authentication?.type}
-      />
+    <AdminDetailGrid cols={3}>
       <AdminDetailField
         label="TCP/IP Address"
         value={authentication?.ip}

@@ -1,6 +1,7 @@
 import { JSX } from 'react';
 
 import React from 'react';
+import { SunMoon } from 'lucide-react';
 
 import Aries from './Aries';
 import Taurus from './Taurus';
@@ -15,25 +16,26 @@ import Capricorn from './Capricorn';
 import Aquarius from './Aquarius';
 import Pisces from './Pisces';
 
-const zodiacIcons: Record<string, () => JSX.Element> = {
-  aries: () => React.createElement(Aries),
-  taurus: () => React.createElement(Taurus),
-  gemini: () => React.createElement(Gemini),
-  cancer: () => React.createElement(Cancer),
-  leo: () => React.createElement(Leo),
-  virgo: () => React.createElement(Virgo),
-  libra: () => React.createElement(Libra),
-  scorpio: () => React.createElement(Scorpio),
-  sagittarius: () => React.createElement(Sagittarius),
-  capricorn: () => React.createElement(Capricorn),
-  aquarius: () => React.createElement(Aquarius),
-  pisces: () => React.createElement(Pisces),
+const zodiacIcons: Record<string, (className?: string) => JSX.Element> = {
+  aries: (className) => React.createElement(Aries, { className }),
+  taurus: (className) => React.createElement(Taurus, { className }),
+  gemini: (className) => React.createElement(Gemini, { className }),
+  cancer: (className) => React.createElement(Cancer, { className }),
+  leo: (className) => React.createElement(Leo, { className }),
+  virgo: (className) => React.createElement(Virgo, { className }),
+  libra: (className) => React.createElement(Libra, { className }),
+  scorpio: (className) => React.createElement(Scorpio, { className }),
+  sagittarius: (className) => React.createElement(Sagittarius, { className }),
+  capricorn: (className) => React.createElement(Capricorn, { className }),
+  aquarius: (className) => React.createElement(Aquarius, { className }),
+  pisces: (className) => React.createElement(Pisces, { className }),
 };
 
 export default zodiacIcons;
 
-export function getZodiacIcon(sign?: string | null): JSX.Element | undefined {
-  if (!sign) return undefined;
+export function getZodiacIcon(sign?: string | null, className = "w-3 h-3"): JSX.Element | undefined {
+  if (!sign) return React.createElement(SunMoon, { className });
   const iconFn = zodiacIcons[sign.toLowerCase()];
-  return iconFn?.();
+  if (!iconFn) return React.createElement(SunMoon, { className });
+  return iconFn?.(className);
 }

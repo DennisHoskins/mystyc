@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { Expand } from 'lucide-react';
 
 import { Modality } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin';
@@ -9,9 +10,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import ModalitiesTable from './ModalitiesTable';
 
 export default function ModalitiesPage() {
@@ -52,7 +51,7 @@ export default function ModalitiesPage() {
       error={error}
       onRetry={() => loadModalities(0)}
       breadcrumbs={breadcrumbs}
-      icon={<AstrologyIcon />}
+      icon={<Expand className='w-3 h-3' />}
       title={"Modalities"}
       headerContent={
         <ModalitiesTable 

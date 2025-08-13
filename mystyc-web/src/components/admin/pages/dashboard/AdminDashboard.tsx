@@ -16,7 +16,7 @@ export default function AdminDashboard({ query, stats } : {
 }) {
   return(
     <>
-      <div className="mb-4 grid grid-cols-1 2xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 2xl:grid-cols-4 gap-4 mb-4">
         <div className='col-span-1 2xl:col-span-3'>
           <AdminDashboardTraffic stats={stats?.traffic} />
         </div>

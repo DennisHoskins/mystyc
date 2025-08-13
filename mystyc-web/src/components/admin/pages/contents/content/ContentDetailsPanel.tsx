@@ -37,27 +37,8 @@ export default function ContentDetailsPanel({ content }: { content: Content | nu
           value={content?.date}
         />
         <AdminDetailField
-          label="Sources"
-          value={content && content?.sources && content?.sources.length ? "[" + content.sources.join(', ') + "]" : ""}
-        />
-        <AdminDetailField
           label="Type"
           value={content?.type}
-        />
-        <AdminDetailField
-          label="Source"
-          value={
-            content?.userId ? content?.userId : 
-            content?.executionId ? content?.executionId : 
-            content?.notificationId ? content?.notificationId : 
-            content ? "-" : ""
-          }
-          href={
-            content?.userId ? `/admin/users/${content?.userId}` :
-            content?.executionId ? `/admin/schedule-executions/${content?.executionId}` :
-            content?.notificationId ? `/admin/notifications/${content?.notificationId}` :
-            null
-          }
         />
       </AdminDetailGrid>
     </div>

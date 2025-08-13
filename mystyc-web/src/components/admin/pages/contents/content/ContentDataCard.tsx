@@ -8,15 +8,9 @@ import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function ContentDataCard({ content }: { content: Content | null }) {
-
-  let data = null;
-  if (content?.data) {
-    data = "[" + content.data.map((d) => d.key).join(", ") + "]";
-  }
-
   return (
-    <Card>
-      <div className="flex items-center space-x-2 mb-4">
+    <Card className='flex-1 grow'>
+      <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={<Database className='w-4 h-4'/>} />
         <div>
           <Heading level={5}>Data</Heading>
@@ -25,20 +19,15 @@ export default function ContentDataCard({ content }: { content: Content | null }
 
       <hr/>
 
-      <AdminDetailGrid cols={1} className='mt-4'>
-        <AdminDetailField
-          label="Prompt"
-          value={content?.openAIData?.prompt}
-        />
-      </AdminDetailGrid>
-      <AdminDetailGrid cols={2} className='mt-4'>
+      <AdminDetailGrid cols={1}>
         <AdminDetailField
           label="Title"
           value={content?.title}
         />
         <AdminDetailField
           label="Message"
-          value={content && content.message.substring(0, 25) + "..."}
+          type='description'
+          value={content?.message}
         />
         <AdminDetailField
           label="Link Text"
@@ -50,14 +39,19 @@ export default function ContentDataCard({ content }: { content: Content | null }
           href={content?.linkUrl}
         />
         <AdminDetailField
-          label="Data"
-          value={data}
-        />
-        <AdminDetailField
           label="Image URL"
           value={content?.imageUrl && content.imageUrl.substring(0, 50) + '...'}
           href={content?.imageUrl}
         />
+        {content && content.data.map((d) => (
+          <Card key={d.key} className='!shadow-sm'>
+            <AdminDetailField
+              label={d.key}
+              value={d.value}
+              type='description'
+            />
+          </Card>
+        ))}
       </AdminDetailGrid>
     </Card>
   );

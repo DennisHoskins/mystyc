@@ -15,7 +15,7 @@ interface TrafficDashboardProps {
   label?: boolean;
 }
 
-export default function TrafficDashboard({ 
+export default function   TrafficDashboard({ 
   className,
   data, 
   charts = ['stats', 'visitors', 'pages', 'types', 'browsers', 'hourly', 'dayofweek', 'usertype'],
@@ -62,7 +62,7 @@ export default function TrafficDashboard({
   // Transform hourly visits for bar chart (top 6 hours)
   const hourlyData = data?.hourlyVisits
     .sort((a, b) => b.count - a.count)
-    .slice(0, 6)
+    .slice(0, 5)
     .map(hour => ({
       hour: `${hour.hour}:00`,
       visits: hour.count

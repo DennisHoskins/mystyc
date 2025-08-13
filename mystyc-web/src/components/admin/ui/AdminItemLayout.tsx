@@ -15,13 +15,13 @@ interface Breadcrumb {
 
 interface AdminItemLayoutProps {
   error?: string | null;
-  onRetry: () => void;
+  onRetry?: () => void;
   breadcrumbs: Breadcrumb[];
   icon: ReactNode;
   title: string;
   headerContent?: ReactNode | null;
-  sectionsContent?: ReactNode[] | null;
-  sidebarContent?: ReactNode | null;
+  itemsContent?: ReactNode[] | null;
+  sideContent?: ReactNode | null;
   mainContent?: ReactNode | null;
 }
 
@@ -32,47 +32,40 @@ export default function AdminItemLayout({
   icon,
   title,
   headerContent,
-  sectionsContent,
-  sidebarContent,
+  itemsContent,
+  sideContent,
   mainContent
 }: AdminItemLayoutProps) {
 
   if (error) {
     return (
-      <div className='grow min-h-0 flex flex-col mt-4 mr-4 mb-4'>
-        <Card className='mb-4'>
-          <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
-            {icon && (
-              <div className='mt-1'>
-                <Avatar size={'small'} icon={icon} />
-              </div>
-            )}
+      <div className='grow flex-1 min-h-0 flex flex-col mt-4 mr-4 ml-4'>
+        <Card className='flex-1'>
+          <div className='flex space-x-3 items-center overflow-hidden'>
+            {icon && <Avatar size={'small'} icon={icon} />}
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
               <Heading level={2}>{title}</Heading>
             )}
           </div>
+          <hr />
+          <AdminError 
+            title={title}
+            error={error} 
+            onRetry={onRetry}
+          />
         </Card>
-        <AdminError 
-          title={title}
-          error={error} 
-          onRetry={onRetry}
-        />
       </div>
     )
   }
 
-  if (!sidebarContent) {
+  if (!sideContent) {
     return (
-      <div className='grow w-full min-h-0 flex flex-col p-4'>
-        <Card className='flex-1 flex flex-col overflow-y-auto'>
-          <div className='flex space-x-3 items-center mb-4'>
-            {icon && (
-              <div className='mt-1'>
-                <Avatar size={'small'} icon={icon} />
-              </div>
-            )}
+      <div className='grow w-full min-h-0 flex flex-col p-4 pb-0'>
+        <Card className='flex flex-col overflow-hidden'>
+          <div className='flex space-x-3 items-center'>
+            {icon && <Avatar size={'small'} icon={icon} />}
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
@@ -87,14 +80,14 @@ export default function AdminItemLayout({
           </div>
         </Card>
 
-        {sectionsContent &&
-          <div className={`mt-4`}>
-            {sectionsContent}
+        {itemsContent &&
+          <div className={`mt-4 flex-1 w-full`}>
+            {itemsContent}
           </div>
         }
 
         {mainContent && (
-          <div className="mt-4 space-y-4 flex-1 flex flex-col">
+          <div className="mt-4 space-y-4 flex flex-col flex-1">
             {mainContent}
           </div>
         )}
@@ -102,22 +95,18 @@ export default function AdminItemLayout({
     );
   }
 
-  const hasX = sidebarContent != null;
-  const hasY = sectionsContent != null;
+  const hasX = sideContent != null;
+  const hasY = itemsContent != null;
   const gap = hasX && hasY ? "gap-4" : hasX ? "gap-x-4" : "gap-y-4"
-  const rows = sectionsContent ? 'row-span-2' : 'row-span-1';
+  const rows = itemsContent ? 'row-span-2' : 'row-span-1';
 
   return (
-    <div className='grow w-full min-h-0 flex flex-col p-4'>
-      <div className={`grid grid-cols-1 lg:grid-cols-3 ${gap} lg:space-y-0`}>
+    <div className='grow w-full min-h-0 flex flex-col p-4 pb-0'>
+      <div className={`flex-1 grid grid-cols-1 lg:grid-cols-3 ${gap} lg:space-y-0 grid-rows-[auto_1fr]`}>
 
-        <Card className={`order-1 lg:col-span-2`}>
-          <div className='flex space-x-3 items-center mb-4 overflow-hidden'>
-            {icon && (
-              <div className='mt-1'>
-                <Avatar size={'small'} icon={icon} />
-              </div>
-            )}
+        <Card className={`order-1 lg:col-span-2 h-auto`}>
+          <div className='flex space-x-3 items-center overflow-hidden'>
+            {icon && <Avatar size={'small'} icon={icon} />}
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
@@ -132,12 +121,17 @@ export default function AdminItemLayout({
           </div>
         </Card>
 
-        <Card className={`order-2 lg:col-span-1 ${rows}`}>
-          {sidebarContent}
-        </Card>
+        {Array.isArray(sideContent) 
+          ? <div className={`order-2 lg:col-span-1 ${rows} space-y-4 flex-1 grow flex flex-col`}>
+              {sideContent}
+            </div>
+          : <Card className={`order-2 lg:col-span-1 ${rows} mt-4 lg:mt-0`}>
+              {sideContent}
+            </Card>
+        }
 
-        <div className={`order-3 lg:col-span-2 space-y-4 flex-1 grow`}>
-          {sectionsContent}
+        <div className={`order-3 lg:col-span-2 space-y-4 flex-1 grow flex flex-col w-full`}>
+          {itemsContent}
         </div>
       </div>
 

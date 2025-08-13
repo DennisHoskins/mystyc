@@ -13,10 +13,10 @@ interface AdminTableHeaderProps {
 
 export default function AdminTableHeader({ icon, label, totalItems } : AdminTableHeaderProps){
   return (
-    <div className='flex justify-between items-center mb-2'>
+    <div className='flex justify-between items-center'>
       <div className='flex space-x-2 items-center'>
         {icon && <Avatar size={'small'} icon={icon} />}
-        <Heading level={5}>{label}</Heading>
+        <Heading level={4}>{label}</Heading>
       </div>
       {totalItems && <Badge total={totalItems} />}
     </div>

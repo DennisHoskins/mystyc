@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { Zap } from 'lucide-react';
 
 import { EnergyType } from 'mystyc-common/schemas';
 import { getEnergyType } from '@/server/actions/admin/astrology';
@@ -9,8 +10,8 @@ import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-//import { getEnergyTypeIcon } from '@/components/ui/icons/astrology/energyTypes';
 import EnergyTypeDetailsPanel from './EnergyTypeDetailsPanel';
+import { formatStringForDisplay } from '@/util/util';
 
 export default function EnergyTypePage({ energyType } : { energyType: string }) {
   const { setBusy } = useBusy();
@@ -21,7 +22,7 @@ export default function EnergyTypePage({ energyType } : { energyType: string }) 
     { label: 'Admin', href: '/admin' },
     { label: 'Astrology', href: '/admin/astrology' },
     { label: 'Energy Types', href: '/admin/astrology/energy-types' },
-    { label: energyType.toWellFormed() },
+    { label: formatStringForDisplay(energyType) },
   ];
 
   const loadEnergyType = useCallback(async () => {
@@ -48,8 +49,7 @@ export default function EnergyTypePage({ energyType } : { energyType: string }) 
       error={error}
       onRetry={loadEnergyType}
       breadcrumbs={breadcrumbs}
-      // icon={getEnergyTypeIcon(energyType)}
-      icon={null}
+      icon={<Zap className='w-3 h-3' />}
       title={energyTypeData?.energyType || "Energy Type"}
       headerContent={<EnergyTypeDetailsPanel energyType={energyTypeData} />}
     />

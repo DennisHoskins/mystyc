@@ -19,7 +19,7 @@ export default function AdminDashboardItemLayout({
   className,
 }: DashboardItemLayoutProps) {
   return (
-    <Card className={`@container grow ${className}`}>
+    <Card className={`@container grow ${className} space-y-2`}>
       <AdminDashboardHeader
         icon={icon}
         title={title}
@@ -28,7 +28,7 @@ export default function AdminDashboardItemLayout({
 
       <hr />
       
-      <div className="space-y-2 pt-4 flex flex-1 flex-col">
+      <div className="space-y-2 flex flex-1 flex-col pt-2">
         {children}
       </div>
     </Card>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { Atom } from 'lucide-react';
 
 import { ElementInteraction } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin';
@@ -9,12 +10,10 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import ElementInteractionsTable from './ElementInteractionsTable';
 
-export default function ElementsPage() {
+export default function ElementinteractionsPage() {
   const { setBusy } = useBusy();
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AdminListResponse<ElementInteraction> | null>(null);
@@ -52,7 +51,7 @@ export default function ElementsPage() {
       error={error}
       onRetry={() => loadElementInteractions(0)}
       breadcrumbs={breadcrumbs}
-      icon={<AstrologyIcon />}
+      icon={<Atom className='w-3 h-3' />}
       title={"Elements"}
       headerContent={
         <ElementInteractionsTable 

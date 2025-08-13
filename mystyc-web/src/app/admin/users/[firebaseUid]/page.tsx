@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import UserPage from '@/components/admin/pages/users/user/UserPage';
 
-export default function Page({ params }: { params: Promise<{ firebaseUid: string; }> }) {
-  const { firebaseUid } = use(params);
+export default async function Page({ params }: { params: Promise<{ firebaseUid: string; }> }) {
+  const { firebaseUid } = await params;
   return <UserPage firebaseUid={firebaseUid} />;
 }

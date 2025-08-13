@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import NotificationPage from '@/components/admin/pages/notifications/notification/NotificationPage';
 
-export default function Page({ params }: { params: Promise<{ notificationId: string; }> }) {
-  const { notificationId } = use(params);
+export default async function Page({ params }: { params: Promise<{ notificationId: string; }> }) {
+  const { notificationId } = await params;
   return <NotificationPage notificationId={notificationId} />;
 }

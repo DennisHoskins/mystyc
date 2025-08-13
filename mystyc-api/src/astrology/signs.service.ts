@@ -46,6 +46,60 @@ export class SignsService {
   }
 
   /**
+   * Finds all signs by element
+   * @param element - element name as string
+   * @returns Promise<Sign[]> - Array of signs for that element
+   */
+  async findByElement(element: string): Promise<Sign[]> {
+    logger.debug('Finding signs by element', { element }, 'SignsService');
+
+    try {
+      const signs = await this.signModel.find({ element: element }).exec();
+
+      logger.debug('Signs found by element', {
+        element,
+        count: signs.length
+      }, 'SignsService');
+
+      return signs.map(sign => this.transformToInterface(sign));
+    } catch (error) {
+      logger.error('Failed to find signs by element', {
+        element,
+        error
+      }, 'SignsService');
+
+      return [];
+    }
+  }
+
+  /**
+   * Finds all signs by modality
+   * @param modality - modality name as string
+   * @returns Promise<Sign[]> - Array of signs for that modality
+   */
+  async findByModality(modality: string): Promise<Sign[]> {
+    logger.debug('Finding signs by modality', { modality }, 'SignsService');
+
+    try {
+      const signs = await this.signModel.find({ modality: modality }).exec();
+
+      logger.debug('Signs found by modality', {
+        modality,
+        count: signs.length
+      }, 'SignsService');
+
+      return signs.map(sign => this.transformToInterface(sign));
+    } catch (error) {
+      logger.error('Failed to find signs by modality', {
+        modality,
+        error
+      }, 'SignsService');
+
+      return [];
+    }
+  }
+
+  /**
    * @returns number - Retrieves sign records total
    */
   async getTotal(): Promise<number> {

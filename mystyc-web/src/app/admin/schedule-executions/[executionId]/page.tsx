@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import ScheduleExecutionPage from '@/components/admin/pages/schedule-executions/schedule-execution/ScheduleExecutionPage';
 
-export default function Page({ params }: { params: Promise<{ executionId: string }> }) {
-  const { executionId } = use(params);
+export default async function Page({ params }: { params: Promise<{ executionId: string }> }) {
+  const { executionId } = await params;
   return <ScheduleExecutionPage executionId={executionId} />;
 }

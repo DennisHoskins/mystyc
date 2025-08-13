@@ -19,7 +19,7 @@ const gridClasses: Record<number, string> = {
 
 export default function AdminDetailGrid({ children, className, cols = 4 }: AdminDetailGridProps) {
   return (
-    <div className={`flex-1 grid ${gridClasses[cols] || gridClasses[4]} gap-4 ${className}`}>
+    <div className={`grid ${gridClasses[cols] || gridClasses[4]} gap-4 ${className}`}>
       {children}
     </div>
   );

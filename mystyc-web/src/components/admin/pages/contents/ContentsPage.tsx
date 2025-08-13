@@ -3,19 +3,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-import { Content } from 'mystyc-common/schemas/';
-import { ContentsSummary, ContentStats, AdminStatsQuery, AdminListResponse } from 'mystyc-common/admin';
+import { ContentsSummary, ContentStats, AdminStatsQuery } from 'mystyc-common/admin';
 import { getContentsSummaryStats, getContents, getNotificationsContents, getWebsiteContents, getUserContents, getUserPlusContents } from '@/server/actions/admin/content';
-import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery';
+import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import TabHeader, { Tab } from '@/components/ui/tabs/TabHeader';
+import TabPanel, { TabContent } from '@/components/ui/tabs/TabPanel';
 import ContentsBreadcrumbs from './ContentsBreadcrumbs';
 import ContentDashboard from './ContentDashboard';
 import ContentsDashboardGrid from './ContentsDashboardGrid';
-import ContentsSummaryPanel from './ContentsSummaryPanel';
 import ContentsTable from './ContentsTable';
 
 export type ContentView = 'summary' | 'all' | 'notifications' | 'website' | 'users' | 'users-plus';
@@ -25,27 +25,29 @@ export default function ContentsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [stats, setStats] = useState<ContentStats | null>(null);
   const [summary, setSummary] = useState<ContentsSummary | null>(null);
-  const [data, setData] = useState<AdminListResponse<Content> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
 
-  const getCurrentView = (): ContentView => {
+  const getCurrentView = useCallback((): ContentView => {
     if (searchParams.has('all')) return 'all';
     if (searchParams.has('notifications')) return 'notifications';
     if (searchParams.has('website')) return 'website';
     if (searchParams.has('users')) return 'users';
     if (searchParams.has('users-plus')) return 'users-plus';
     return 'summary';
-  };
-  const currentView = getCurrentView();
-  const breadcrumbs = ContentsBreadcrumbs({ currentView, onClick: () => { router.push("content"); }});
-  const showContentTable = currentView !== 'summary';
+  }, [searchParams]);
 
-  const handleClick = (view: ContentView) => {
+  const [activeTab, setActiveTab] = useState<string>(getCurrentView());
+
+  const breadcrumbs = ContentsBreadcrumbs({ currentView: activeTab as ContentView, onClick: () => { router.push("content"); }});
+
+  const handleTabChange = (tabId: string) => {
+    const view = tabId as ContentView;
+    setActiveTab(tabId);
+    
     if (view === 'summary') {
       router.push(pathname);
       return;
@@ -73,56 +75,135 @@ export default function ContentsPage() {
     }
   }, [setBusy]);
 
-  const loadContents = useCallback(async (page: number) => {
-    try {
-      if (!showContentTable) {
-        return;
-      }
-
-      setError(null);
-      setBusy(1000);
-
-      const listQuery = getDefaultListQuery(page);
-      let response: AdminListResponse<Content>;
-      
-      switch (currentView) {
-        case 'notifications':
-          response = await getNotificationsContents({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'website':
-          response = await getWebsiteContents({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'users':
-          response = await getUserContents({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'users-plus':
-          response = await getUserPlusContents({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        case 'all':
-          response = await getContents({deviceInfo: getDeviceInfo(), ...listQuery});
-          break;
-        default:
-          return;
-      }
-
-      setData(response);
-      setCurrentPage(page);
-    } catch (err) {
-      logger.error('Failed to load content:', err);
-      setError('Failed to load content. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  }, [showContentTable, setBusy, currentView]);
-
-  useEffect(() => {
-    if (currentView == 'notifications' || currentView == 'website' || currentView == 'users' || currentView == 'users-plus' || currentView == 'all') loadContents(0);
-    else loadData();
-  }, [loadData, loadContents, currentView]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    setActiveTab(getCurrentView());
+  }, [searchParams, getCurrentView]);
+
+  // Server action wrapper functions
+  const getAllContents = useCallback((params: any) => {
+    return getContents(params);
+  }, []);
+
+  const getAllNotificationsContents = useCallback((params: any) => {
+    return getNotificationsContents(params);
+  }, []);
+
+  const getAllWebsiteContents = useCallback((params: any) => {
+    return getWebsiteContents(params);
+  }, []);
+
+  const getAllUserContents = useCallback((params: any) => {
+    return getUserContents(params);
+  }, []);
+
+  const getAllUserPlusContents = useCallback((params: any) => {
+    return getUserPlusContents(params);
+  }, []);
+
+  const tabs: Tab[] = [
+    {
+      id: 'summary',
+      label: 'Summary',
+    },
+    {
+      id: 'all',
+      label: 'All Content',
+      count: summary?.total || 0
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      count: summary?.notifications || 0
+    },
+    {
+      id: 'website',
+      label: 'Website',
+      count: summary?.website || 0
+    },
+    {
+      id: 'users',
+      label: 'Users',
+      count: summary?.users || 0
+    },
+    {
+      id: 'users-plus',
+      label: 'Users Plus',
+      count: summary?.plus || 0
+    }
+  ];
+
+  const tabContents: TabContent[] = [
+    {
+      id: 'summary',
+      content: (
+        <div className='flex-1 flex flex-col overflow-hidden'>
+          <ContentsDashboardGrid stats={stats} />
+          <div className='flex-1 flex'>
+            <ContentDashboard 
+              key={'performance'}
+              query={query}
+              stats={stats} 
+              charts={['performance']}
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'all',
+      content: (
+        <ContentsTable
+          serverAction={getAllContents}
+          onRefresh={loadData}
+          contentType="all"
+        />
+      )
+    },
+    {
+      id: 'notifications',
+      content: (
+        <ContentsTable
+          serverAction={getAllNotificationsContents}
+          onRefresh={loadData}
+          contentType="notifications"
+        />
+      )
+    },
+    {
+      id: 'website',
+      content: (
+        <ContentsTable
+          serverAction={getAllWebsiteContents}
+          onRefresh={loadData}
+          contentType="website"
+        />
+      )
+    },
+    {
+      id: 'users',
+      content: (
+        <ContentsTable
+          serverAction={getAllUserContents}
+          onRefresh={loadData}
+          contentType="users"
+        />
+      )
+    },
+    {
+      id: 'users-plus',
+      content: (
+        <ContentsTable
+          serverAction={getAllUserPlusContents}
+          onRefresh={loadData}
+          contentType="users-plus"
+        />
+      )
+    }
+  ];
 
   return (
    <AdminListLayout
@@ -132,11 +213,10 @@ export default function ContentsPage() {
       icon={ContentIcon}
       description="Manage content entries: view, edit, and monitor generation status, sources, and performance metrics"
       headerContent={
-        <ContentsSummaryPanel 
-          summary={summary}
-          stats={stats}
-          handleClick={handleClick}
-          currentView={currentView}
+        <TabHeader 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
       }
       sideContent={
@@ -146,32 +226,11 @@ export default function ContentsPage() {
           charts={['stats']}
         />
       }
-      itemContent={showContentTable == false && <ContentsDashboardGrid stats={stats} />}
-      tableContent={
-        <>
-          {showContentTable ?
-            (
-              <ContentsTable
-                loading = {isBusy}
-                data={data?.data}
-                pagination={data?.pagination}
-                currentPage={currentPage}
-                onPageChange={() => loadContents(currentPage)}
-                onRefresh={() => loadContents(0)}
-                contentType={currentView}
-              />
-            ) : (
-              <div className='flex-1 flex'>
-                <ContentDashboard 
-                  key={'performance'}
-                  query={query}
-                  stats={stats} 
-                  charts={['performance']}
-                />
-              </div>
-            )
-          }
-        </>
+      mainContent={
+        <TabPanel 
+          tabs={tabContents}
+          activeTab={activeTab}
+        />
       }
     />
   );

@@ -6,11 +6,14 @@ import { Dynamic, DynamicType } from 'mystyc-common/schemas';
 import { getDynamic } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
+import { formatStringForDisplay } from '@/util/util';
 import { useBusy } from '@/components/ui/context/AppContext';
-
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-//import { getDynamicIcon } from '@/components/ui/icons/astrology/dynamics';
+import { getDynamicIcon } from '@/components/ui/icons/astrology/dynamics';
 import DynamicDetailsPanel from './DynamicDetailsPanel';
+import DynamicPlanetInteractionsCard from './DynamicPlanetInteractionsCard';
+import DynamicElementInteractionsPanel from './DynamicElementInteractionsPanel';
+import DynamicModalityInteractionsCard from './DynamicModalityInteractionsCard';
 
 export default function DynamicPage({ dynamic } : { dynamic: DynamicType }) {
   const { setBusy } = useBusy();
@@ -21,7 +24,7 @@ export default function DynamicPage({ dynamic } : { dynamic: DynamicType }) {
     { label: 'Admin', href: '/admin' },
     { label: 'Astrology', href: '/admin/astrology' },
     { label: 'Dynamics', href: '/admin/astrology/dynamics' },
-    { label: dynamic.toWellFormed() },
+    { label:  formatStringForDisplay(dynamic) },
   ];
 
   const loadDynamic = useCallback(async () => {
@@ -48,10 +51,16 @@ export default function DynamicPage({ dynamic } : { dynamic: DynamicType }) {
       error={error}
       onRetry={loadDynamic}
       breadcrumbs={breadcrumbs}
-      // icon={getDynamicIcon(dynamic)}
-      icon={null}
+      icon={getDynamicIcon(dynamic)}
       title={dynamicData?.dynamic || "Dynamic"}
       headerContent={<DynamicDetailsPanel dynamic={dynamicData} />}
+      sideContent={<DynamicElementInteractionsPanel dynamic={dynamic} />}
+      itemsContent={[
+        <div key='element-modality' className='flex flex-col space-y-4 w-full'>
+          <DynamicModalityInteractionsCard dynamic={dynamic} />
+          <DynamicPlanetInteractionsCard dynamic={dynamic} className='flex-1 grow' />
+        </div>          
+      ]}
     />
   );
 }

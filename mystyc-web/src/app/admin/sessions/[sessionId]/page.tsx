@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import SessionPage from '@/components/admin/pages/sessions/session/SessionPage';
 
-export default function Page({ params }: { params: Promise<{ sessionId: string; }> }) {
-  const { sessionId } = use(params);
+export default async function Page({ params }: { params: Promise<{ sessionId: string; }> }) {
+  const { sessionId } = await params;
   return <SessionPage sessionId={sessionId} />;
 }

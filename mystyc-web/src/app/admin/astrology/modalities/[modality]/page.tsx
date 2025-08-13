@@ -4,12 +4,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import ModalityPage from '@/components/admin/pages/astrology/pages/modalities/modality/ModalityPage';
 import { ModalityType } from 'mystyc-common';
 
-export default function Page({ params }: { params: Promise<{ modality: ModalityType; }> }) {
-  const { modality } = use(params);
+export default async function Page({ params }: { params: Promise<{ modality: ModalityType; }> }) {
+  const { modality } = await params;
   return <ModalityPage modality={modality} />;
 }

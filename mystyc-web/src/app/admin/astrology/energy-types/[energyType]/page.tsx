@@ -4,11 +4,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import EnergyTypePage from '@/components/admin/pages/astrology/pages/energy-types/energy-type/EnergyTypePage';
 
-export default function Page({ params }: { params: Promise<{ energyType: string; }> }) {
-  const { energyType } = use(params);
+export default async function Page({ params }: { params: Promise<{ energyType: string; }> }) {
+  const { energyType } = await params;
   return <EnergyTypePage energyType={energyType} />;
 }

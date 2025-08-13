@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { Expand } from 'lucide-react';
 
 import { ModalityInteraction } from 'mystyc-common/schemas';
 import { AdminListResponse } from 'mystyc-common/admin';
@@ -9,12 +10,10 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
-import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ModalityInteractionsTable from './ModalityInteractionsTable';
 
-export default function ModalitysPage() {
+export default function ModalitiesPage() {
   const { setBusy } = useBusy();
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AdminListResponse<ModalityInteraction> | null>(null);
@@ -48,12 +47,12 @@ export default function ModalitysPage() {
   }, [loadModalityInteractions]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadModalityInteractions(0)}
       breadcrumbs={breadcrumbs}
-      icon={<AstrologyIcon />}
-      title={"Modalitys"}
+      icon={<Expand className='w-3 h-3' />}
+      title={"Modalities"}
       headerContent={
         <ModalityInteractionsTable 
           modalityInteractions={data?.data}

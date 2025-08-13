@@ -4,12 +4,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title };
 }
 
-import { use } from 'react';
-
 import DynamicPage from '@/components/admin/pages/astrology/pages/dynamics/dynamic/DynamicPage';
 import { DynamicType } from 'mystyc-common';
 
-export default function Page({ params }: { params: Promise<{ dynamic: DynamicType; }> }) {
-  const { dynamic } = use(params);
+export default async function Page({ params }: { params: Promise<{ dynamic: DynamicType; }> }) {
+  const { dynamic } = await params;
   return <DynamicPage dynamic={dynamic} />;
 }
