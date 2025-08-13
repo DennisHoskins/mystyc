@@ -19,7 +19,7 @@ export default function Header() {
     const isAdmin = pathname.startsWith("/admin");
     if (isAdmin) setClassName("max-w-full");
     else setClassName("max-w-[80rem]");
-    if (user?.isOnboard || isAdmin) setHeaderClassName("opacity-1")
+    if (!user || user?.isOnboard || isAdmin) setHeaderClassName("opacity-1")
   }, [pathname, setClassName, setHeaderClassName, user]);
 
   return (

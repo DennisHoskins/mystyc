@@ -14,9 +14,10 @@ type UserServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<
 interface UsersTableProps {
   icon?: IconComponent;
   label?: string;
-  serverAction: UserServerAction;
+  serverAction?: UserServerAction;
   onRefresh?: () => void;
   hideSubscriptionColumn?: boolean;
+  users?: AdminListResponse<UserProfile> | null;
 }
 
 export default function UsersTable({
@@ -24,7 +25,8 @@ export default function UsersTable({
   label,
   serverAction,
   onRefresh,
-  hideSubscriptionColumn = false
+  hideSubscriptionColumn = false,
+  users
 }: UsersTableProps) {
   const { setBusy, isBusy } = useBusy();
   const [data, setData] = useState<AdminListResponse<UserProfile> | null>(null);
@@ -32,6 +34,9 @@ export default function UsersTable({
   const [error, setError] = useState<string | null>(null);
 
   const loadUsers = useCallback(async (page: number) => {
+    if (!serverAction) {
+      return;
+    }
     try {
       setError(null);
       setBusy(1000);
@@ -61,8 +66,13 @@ export default function UsersTable({
   };
 
   useEffect(() => {
+    if (users) {
+      setData(users);
+      setCurrentPage(0);
+      return;
+    }
     loadUsers(0);
-  }, [loadUsers]);
+  }, [loadUsers, users, setData]);
 
   const baseColumns: Column<UserProfile>[] = [
     { key: 'email', header: 'Email', link: (u) => `/admin/users/${u.firebaseUid}` },

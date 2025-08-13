@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md';
   loading?: boolean;
   loadingContent?: ReactNode;
 };
@@ -27,6 +27,7 @@ const Button = forwardRef(function Button(
     'rounded-md text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-80';
 
   const sizeStyles = {
+    xs: 'px-2 py-0 !text-[10px]',
     sm: 'px-3 py-1 text-sm',
     md: 'px-4 py-2 text-sm',
   };

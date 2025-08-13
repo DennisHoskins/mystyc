@@ -33,7 +33,6 @@ export class BirthLocation {
       lng: { type: Number, required: true }
     },
     required: true,
-    index: '2dsphere'
   })
   coordinates!: {
     lat: number;
@@ -138,9 +137,6 @@ UserProfileSchema.index({ 'astrology.sunSign': 1, createdAt: -1 }); // Users wit
 
 // Birthday messaging indexes
 UserProfileSchema.index({ dateOfBirth: 1 }); // General birthday queries
-
-// Geospatial indexes for birth location
-UserProfileSchema.index({ 'birthLocation.coordinates': '2dsphere' }); // Geospatial queries
 
 // Subscription-related indexes
 UserProfileSchema.index({ 'subscription.level': 1 }); // Find users by subscription tier

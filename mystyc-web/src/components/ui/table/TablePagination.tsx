@@ -26,20 +26,20 @@ export default function TablePagination({
     <div className="flex items-center gap-2">
       <Button
         variant="secondary"
-        size="sm"
+        size="xs"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 0 || loading}
       >
         Previous
       </Button>
       
-      <Text variant="small" className="px-2 min-w-28 text-center">
+      <Text variant="small" className="text-center !text-[10px]">
         {displayText}
       </Text>
       
       <Button
         variant="secondary"
-        size="sm"
+        size="xs"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={(!hasMore && !totalPages) || (totalPages && currentPage >= totalPages - 1) || loading}
       >

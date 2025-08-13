@@ -69,10 +69,10 @@ export default function AdminListLayout({
   }
 
   return (
-    <div className='grow w-full flex p-4 pb-0'>
-      <Card className="grow w-full flex flex-col">
+    <div className='w-full flex p-4 pb-0 grow'>
+      <Card className="grow w-full flex flex-col max-h-[calc(100dvh_-_125px)] overflow-hidden">
 
-        <div className='flex w-full grow'>
+        <div className='flex w-full'>
 
           <div className='flex flex-col w-full space-y-2'>
             <div className='flex space-x-3 items-center'>
@@ -123,7 +123,7 @@ export default function AdminListLayout({
         )}
 
         {mainContent && (
-          <div className='flex-1 grow min-h-0 flex flex-col'>  
+          <div className='flex-1 grow min-h-0 flex flex-col overflow-hidden'>  
             {mainContent}
           </div>
         )}

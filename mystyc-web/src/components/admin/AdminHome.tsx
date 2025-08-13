@@ -81,28 +81,36 @@ export default function AdminHome() {
           <ul className='flex space-x-2'>
             <li>
               <Capsule
-                label={`All Users ${stats?.users.profiles.totalUsers}`}
+                label={`All Users`}
+                total={stats?.users.profiles.totalUsers}
+                hasTotal={true}
                 href='/admin/users?all'
                 icon={<Users className='w-3 h-3' />}
               />
             </li>
             <li>
               <Capsule
-                label={`Plus Users ${stats?.subscriptions.summary.totalSubscriptions}`}
+                label={`Plus Users`}
+                total={stats?.subscriptions.summary.totalSubscriptions}
+                hasTotal={true}
                 href='/admin/users?plus'
                 icon={<UserPlus className='w-3 h-3' />}
               />
             </li>
             <li>
               <Capsule
-                label={`All Devices ${stats?.devices.platforms.totalDevices}`}
+                label={`All Devices`}
+                total={stats?.devices.platforms.totalDevices}
+                hasTotal={true}
                 href='/admin/devices?all'
                 icon={<MonitorSmartphone className='w-3 h-3' />}
               />
             </li>
             <li>
               <Capsule
-                label={`Online Devices ${stats?.devices.fcmTokens.totalDevices}`}
+                label={`Online Devices`}
+                total={stats?.devices.fcmTokens.totalDevices}
+                hasTotal={true}
                 href='/admin/devices?online'
                 icon={<MonitorCheck className='w-3 h-3' />}
               />

@@ -4,10 +4,12 @@ import Link from "./Link";
 interface CapsuleProps {
   icon?: React.ReactNode | null,
   label: string;
+  total?: number | string | null;
+  hasTotal?: boolean;
   href?: string;
 }
 
-export default function Capsule({ icon, label, href } : CapsuleProps) {
+export default function Capsule({ icon, label, total, hasTotal, href } : CapsuleProps) {
   if (!label) {
     return null;
   }
@@ -16,14 +18,16 @@ export default function Capsule({ icon, label, href } : CapsuleProps) {
 
   return(
     href ? (
-        <Link href={href} className={className}>
-          {icon && <span className="mr-1">{icon}</span>}
-          {formatStringForDisplay(label)}
+        <Link href={href} className={`flex ${className}`}>
+          <span className="block ml-1 mr-1">{icon}</span>
+          <span className="block">{formatStringForDisplay(label)}</span>
+          {hasTotal && <span className="block w-4 text-center">{total}</span>}
         </Link>
       ) : (
-        <div className={className}>
-          {icon && <span className="mr-1">{icon}</span>}
-          {formatStringForDisplay(label)}
+        <div className={`flex ${className}`}>
+          <span className="block ml-1 mr-1">{icon}</span>
+          <span className="block">{formatStringForDisplay(label)}</span>
+          {hasTotal && <span className="block w-4 text-center">{total}</span>}
         </div>
       )
   );
