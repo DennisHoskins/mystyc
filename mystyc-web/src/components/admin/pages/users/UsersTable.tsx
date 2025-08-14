@@ -76,8 +76,7 @@ export default function UsersTable({
 
   const baseColumns: Column<UserProfile>[] = [
     { key: 'email', header: 'Email', link: (u) => `/admin/users/${u.firebaseUid}` },
-    { key: 'uid', header: 'Id', link: (u) => `/admin/users/${u.firebaseUid}`, render: (u) => u.firebaseUid.substring(0, 15) + '...' },
-    { key: 'fullName', header: 'Name', render: (u) => (u.firstName && u.lastName) ? u.firstName + " " + u.lastName : 'Unnamed User' },
+    { key: 'fullName', header: 'Name', render: (u) => (u.firstName && u.lastName) ? u.firstName + " " + u.lastName : u.firebaseUid },
     { key: 'createdAt', header: 'Joined', align: 'right', render: (u) => formatDateForDisplay(u.createdAt) || '-' },
   ];
 

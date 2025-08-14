@@ -12,7 +12,7 @@ export default function AuthenticationsDashboardGrid({
         <AuthenticationDashboard
           key={'peak'}
           stats={stats} 
-          charts={['peak']}
+          charts={['duration']}
         />
       </div>
       <div className='flex flex-col pb-2'>

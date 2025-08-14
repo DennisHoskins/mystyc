@@ -14,10 +14,8 @@ export default function DeviceSessionCard({ deviceSession }: { deviceSession?: D
         <Avatar size={'small'} icon={SessionIcon} />
         <Heading level={5} className='flex-1'>Session</Heading>
       </div>
-
       <hr />
-
-      <AdminDetailGrid cols={1}>
+      <AdminDetailGrid cols={1} className='pt-1'>
         <AdminDetailField
           label="User"
           value={deviceSession?.session?.email}

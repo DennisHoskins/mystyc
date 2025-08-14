@@ -4,15 +4,26 @@ import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import UsersDashboard from '../users/UsersDashboard';
 
-export default function AdminDashboardUsers({ query, stats } : { 
+export default function AdminDashboardUsers({ query, stats, className } : { 
   query?: Partial<AdminStatsQuery> | null, 
-  stats?: UserStats | null 
+  stats?: UserStats | null,
+  className?: string
 }) {
   return (
     <AdminDashboardItemLayout
+      className={className}
       icon={<UsersIcon />}
       title="Users"
       link="/admin/users"
+      stats={
+        <Link href='/admin/users'>
+          <UsersDashboard 
+            query={query}
+            stats={stats}
+            charts={['stats']} 
+          />
+        </Link>
+      }
     >
       <Link
         className='flex-1 flex flex-col'
@@ -21,7 +32,7 @@ export default function AdminDashboardUsers({ query, stats } : {
         <UsersDashboard 
           query={query}
           stats={stats}
-          charts={['stats', 'registrations', 'activity']} 
+          charts={['registrations', 'activity']} 
           height={100}
         />
       </Link>

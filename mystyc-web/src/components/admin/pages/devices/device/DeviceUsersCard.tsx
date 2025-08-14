@@ -11,10 +11,9 @@ import AdminErrorPage from '@/components/admin/ui/AdminError';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 import Link from '@/components/ui/Link';
 import UsersIcon from '@/components/admin/ui/icons/UsersIcon';
-import Capsule from '@/components/ui/Capsule';
-import { formatStringForDisplay } from '@/util/util';
 
 export default function DeviceUsersCard({ deviceId, total }: { deviceId?: string | null, total?: number | null }) {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -56,7 +55,7 @@ export default function DeviceUsersCard({ deviceId, total }: { deviceId?: string
   }
 
   return (
-    <Card className='flex flex-col space-y-2'>
+    <Card>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={UsersIcon} />
         <Link href={`/admin/devices/${deviceId}/users`} className='flex w-full'>
@@ -66,21 +65,19 @@ export default function DeviceUsersCard({ deviceId, total }: { deviceId?: string
       {total &&
         <>
           <hr/ >
-          <div className='flex flex-col space-y-4'>
+          <div className='flex flex-col space-y-4 pt-1'>
             {users.map((user) => (
               <Link 
                 key={user.firebaseUid} 
                 href={`/admin/users/${user.firebaseUid}`}
                 className="flex !flex-row items-center space-x-4"
               >
-                <div className='overflow-hidden !mt-0'>
-                  <Heading level={5}>{user.email}</Heading>
-                  <Heading level={6} className='!text-[10px]'>{user.firebaseUid}</Heading>
-                  {user.subscription.level != "user" && <Capsule label={formatStringForDisplay(user.subscription.level)} />}
+                <div className='overflow-hidden'>
+                  <Heading level={6}>{user.email}</Heading>
+                  <Text variant='xs'>{user.firebaseUid}</Text>
                 </div>
               </Link>
             ))}
-            {total > 1 && <Capsule label={'Total ' + total} href={`/admin/devices/${deviceId}/users`} />}
           </div>        
         </>
       }

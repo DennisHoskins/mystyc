@@ -4,24 +4,35 @@ import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import NotificationsDashboard from '../notifications/NotificationsDashboard';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 
-export default function AdminDashboardNotifications({ query, stats } : { 
+export default function AdminDashboardNotifications({ query, stats, className } : { 
   query?: Partial<AdminStatsQuery> | null, 
-  stats?: NotificationStats | null 
+  stats?: NotificationStats | null,
+  className?: string 
 }) {
   return (
     <AdminDashboardItemLayout
+      className={className}
       icon={<NotificationIcon />}
       title="Notifications"
       link="/admin/notifications"
+      stats={
+        <Link href='/admin/notifications'>
+          <NotificationsDashboard 
+            query={query}
+            stats={stats}
+            charts={['stats']}
+          />
+        </Link>
+      }
     >
       <Link
-        className='flex-1 flex flex-col'
+        className='flex-1 flex'
         href='/admin/notifications'
       >
         <NotificationsDashboard 
           query={query}
           stats={stats}
-          charts={['stats', 'volume', 'platforms']}
+          charts={['volume', 'platforms']}
           height={100}
         />
       </Link>

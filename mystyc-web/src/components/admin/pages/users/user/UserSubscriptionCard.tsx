@@ -12,7 +12,7 @@ import { DollarSign } from 'lucide-react';
 
 export default function UserSubscriptionCard({ user }: { user?: UserProfile | null }) {
   return (
-    <Card className='flex flex-col space-y-2'>
+    <Card>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={SubscriptionsIcon} />
         <Link href={`/admin/users/${user?.firebaseUid}/subscription`} className='flex-1'>
@@ -25,7 +25,7 @@ export default function UserSubscriptionCard({ user }: { user?: UserProfile | nu
         />
       </div>
       <hr/ >
-      <AdminDetailGrid cols={2}>
+      <AdminDetailGrid cols={2} className='pt-1'>
         <AdminDetailField
           label="Subscription Level"
           value={user?.subscription.level}

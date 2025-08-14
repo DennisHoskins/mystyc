@@ -11,7 +11,7 @@ import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 
 export default function UserProfilePanel({ user }: { user?: UserProfile | null }) {
   return (
-    <div className='flex flex-col space-y-2'>
+    <div className='flex flex-col space-y-1'>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={UserProfileIcon} />
         <Link href={`/admin/users/${user?.firebaseUid}/astrology`} className='flex-1'>
@@ -24,7 +24,7 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
         />
       </div>
       <hr/ >
-      <AdminDetailGrid cols={3}>
+      <AdminDetailGrid cols={3} className='pt-1'>
         <AdminDetailField
           label="First Name"
           value={user && (user.firstName ? user.firstName : 'Not set')}

@@ -4,25 +4,35 @@ import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDashboard from '../authentications/AuthenticationDashboard';
 import Link from '@/components/ui/Link';
 
-export default function AdminDashboardAuthentications({ stats } : { 
-  stats?: AuthEventStats | null 
+export default function AdminDashboardAuthentications({ stats, className } : { 
+  stats?: AuthEventStats | null,
+  className?: string
 }) {
   return (
-      <AdminDashboardItemLayout
-        icon={<AuthenticationIcon />}
-        title="Authentication"
-        link="/admin/authentication"
-      >
-        <Link
-          className='flex-1 flex flex-col'
-          href='/admin/authentication'
-        >
+    <AdminDashboardItemLayout
+      className={className}
+      icon={<AuthenticationIcon />}
+      title="Authentication"
+      link="/admin/authentication"
+      stats={
+        <Link href='/admin/authentication'>
           <AuthenticationDashboard 
             stats={stats}
-            charts={['stats', 'peak', 'duration']}
-            height={100}
+            charts={['stats']}
           />
         </Link>
-      </AdminDashboardItemLayout>
-    );
-  }
+      }
+    >
+      <Link
+        className='flex-1 flex'
+        href='/admin/authentication'
+      >
+        <AuthenticationDashboard 
+          stats={stats}
+          charts={['peak', 'duration']}
+          height={100}
+        />
+      </Link>
+    </AdminDashboardItemLayout>
+  );
+}

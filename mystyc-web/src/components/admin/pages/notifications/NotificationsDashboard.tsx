@@ -44,8 +44,8 @@ export default function NotificationsDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats ? stats.delivery.totalNotifications ?? 0 : "", label: 'Total Sent', color: 'text-blue-600' },
-          { value: stats ? `${stats?.delivery.deliveryMetrics.successRate}%` : "", label: 'Success Rate', color: 'text-green-600' }
+          { value: stats ? stats.delivery.totalNotifications ?? 0 : "", label: 'Sent', color: 'text-blue-600' },
+          { value: stats ? `${stats?.delivery.deliveryMetrics.successRate}%` : "", label: 'Success', color: 'text-green-600' }
         ]} 
       />
     ),

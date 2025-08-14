@@ -7,10 +7,10 @@ import { getSchedule } from '@/server/actions/admin/schedules';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import ScheduleDetailsPanel from './ScheduleDetailsPanel';
-import ScheduleExecutionsCard from './ScheduleExecutionsCard';
+import ScheduleExecutionsPanel from './ScheduleExecutionsPanel';
 
 export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
   const { setBusy } = useBusy();
@@ -43,14 +43,14 @@ export default function SchedulePage({ scheduleId }: { scheduleId: string }) {
   ], [schedule, scheduleId]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={loadSchedule}
       breadcrumbs={breadcrumbs}
       icon={<ScheduleIcon size={6} />}
       title={schedule?.event_name || `Unknown Schedule`}
       headerContent={<ScheduleDetailsPanel schedule={schedule} />}
-      mainContent={<ScheduleExecutionsCard scheduleId={scheduleId} />}
+      mainContent={<ScheduleExecutionsPanel scheduleId={scheduleId} />}
     />
   );
 }

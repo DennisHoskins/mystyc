@@ -15,6 +15,7 @@ import Link from '@/components/ui/Link';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import Text from '@/components/ui/Text';
 import { formatDateForComponent } from '@/util/dateTime';
+import { formatStringForDisplay } from '@/util/util';
 
 export default function DeviceAuthEventsCard({ deviceId, total }: { deviceId?: string | null, total?: number | null }) {
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
@@ -56,7 +57,7 @@ export default function DeviceAuthEventsCard({ deviceId, total }: { deviceId?: s
   }
 
   return (
-    <Card className='flex flex-col space-y-2 flex-1'>
+    <Card className='flex-1'>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={AuthenticationIcon} />
         <Link href={`/admin/devices/${deviceId}/auth-events`} className='flex w-full'>
@@ -66,19 +67,16 @@ export default function DeviceAuthEventsCard({ deviceId, total }: { deviceId?: s
       {total ? (
         <>
           <hr/ >
-          <div className='flex flex-col space-y-4'>
-            {authEvents.map((event) => (
+          <div className='flex flex-col space-y-4 pt-1'>
+            {authEvents.map((authEvent) => (
               <Link 
-                key={event._id} 
-                href={`/admin/authEvents/${event._id}`}
+                key={authEvent._id} 
+                href={`/admin/authEvents/${authEvent._id}`}
                 className="flex !flex-row items-center space-x-4"
               >
-                <div className='overflow-hidden !mt-0'>
-                  <div className='flex space-x-1 items-baseline'>
-                    <Heading level={4}>{event.type}</Heading>
-                    <Heading level={6}>{event.email}</Heading>
-                  </div>
-                  <Text className='!text-[10px]'>{formatDateForComponent(event.timestamp)}</Text>
+                <div className='overflow-hidden'>
+                  <Heading level={6}>{formatStringForDisplay(authEvent.type.replace("-", " "))} - {authEvent.deviceName}</Heading>
+                  <Text variant='xs'>{formatDateForComponent(authEvent.timestamp)}</Text>
                 </div>
               </Link>
             ))}

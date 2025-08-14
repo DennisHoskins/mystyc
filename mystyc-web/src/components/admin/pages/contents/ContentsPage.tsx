@@ -112,27 +112,32 @@ export default function ContentsPage() {
     {
       id: 'all',
       label: 'All Content',
-      count: summary?.total || 0
+      count: summary?.total,
+      hasCount: true
     },
     {
       id: 'notifications',
       label: 'Notifications',
-      count: summary?.notifications || 0
+      count: summary?.notifications,
+      hasCount: true
     },
     {
       id: 'website',
       label: 'Website',
-      count: summary?.website || 0
+      count: summary?.website,
+      hasCount: true
     },
     {
       id: 'users',
       label: 'Users',
-      count: summary?.users || 0
+      count: summary?.users,
+      hasCount: true
     },
     {
       id: 'users-plus',
       label: 'Users Plus',
-      count: summary?.plus || 0
+      count: summary?.plus,
+      hasCount: true
     }
   ];
 
@@ -140,7 +145,7 @@ export default function ContentsPage() {
     {
       id: 'summary',
       content: (
-        <div className='flex-1 flex flex-col overflow-hidden'>
+        <div className='flex-1 flex flex-col space-y-2'>
           <ContentsDashboardGrid stats={stats} />
           <div className='flex-1 flex'>
             <ContentDashboard 

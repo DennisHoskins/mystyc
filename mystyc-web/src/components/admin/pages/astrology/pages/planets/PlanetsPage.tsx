@@ -11,7 +11,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import PlanetsTable from './PlanetsTable';
 
 export default function PlanetsPage() {
@@ -48,13 +48,13 @@ export default function PlanetsPage() {
   }, [loadPlanets]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadPlanets(0)}
       breadcrumbs={breadcrumbs}
       icon={<MoonStar className='w-3 h-3' />}
       title={"Planets"}
-      headerContent={
+      mainContent={
         <PlanetsTable 
           planets={data?.data}
           currentPage={currentPage}

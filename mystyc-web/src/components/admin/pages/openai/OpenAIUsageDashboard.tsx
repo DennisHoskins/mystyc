@@ -36,7 +36,7 @@ export default function OpenAIDashboard({
   // Transform content type usage for pie chart
   const contentTypeData = stats?.contentTypeUsage.usageByContentType.map(item => ({
     name: item.contentType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    value: item.requests,
+    value: item.costPercentage,
     percentage: item.costPercentage
   }));
 
@@ -51,8 +51,8 @@ export default function OpenAIDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats?.usageSummary.totalRequests ?? "", label: 'Total Requests', color: 'text-blue-600' },
-          { value: `${stats ? "$" + stats.currentMonthlyUsage.costUsed.toFixed(4) : ""}`, label: 'Cost Used', color: 'text-green-600' }
+          { value: stats?.usageSummary.totalRequests ?? "", label: 'Requests', color: 'text-blue-600' },
+          { value: `${stats ? "$" + stats.currentMonthlyUsage.costUsed.toFixed(3) : ""}`, label: 'Used', color: 'text-green-600' }
         ]} 
       />
     ),

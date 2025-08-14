@@ -12,15 +12,13 @@ export default function ContentSidebarPanel({ content }: { content: Content | nu
   };
 
   return (
-    <div className='flex flex-col space-y-2'>
+    <div className='flex flex-col space-y-1'>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={OpenAIIcon} />
         <Heading level={5}>Content Generation</Heading>
       </div>
-
       <hr/>
-
-      <AdminDetailGrid cols={1}>
+      <AdminDetailGrid cols={1} className='pt-1'>
         <AdminDetailField
           label="Id"
           value={content?.openAIData?._id}
@@ -53,6 +51,7 @@ export default function ContentSidebarPanel({ content }: { content: Content | nu
           label="Sources"
           value={content && content?.sources && content?.sources.length ? "[" + content.sources.join(', ') + "]" : ""}
         />
+
         <AdminDetailField
           label="Source"
           value={
@@ -68,6 +67,7 @@ export default function ContentSidebarPanel({ content }: { content: Content | nu
             null
           }
         />
+        
         <AdminDetailField
           label="Prompt"
           type='description'

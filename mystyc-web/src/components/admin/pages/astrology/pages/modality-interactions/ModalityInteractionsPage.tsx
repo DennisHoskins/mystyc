@@ -53,7 +53,7 @@ export default function ModalitiesPage() {
       breadcrumbs={breadcrumbs}
       icon={<Expand className='w-3 h-3' />}
       title={"Modalities"}
-      headerContent={
+      mainContent={
         <ModalityInteractionsTable 
           modalityInteractions={data?.data}
           currentPage={currentPage}

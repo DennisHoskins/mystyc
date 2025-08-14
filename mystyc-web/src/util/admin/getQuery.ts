@@ -1,6 +1,6 @@
 import { AdminStatsQuery, BaseAdminQuery } from 'mystyc-common/admin';
 
-const LIMIT = 20;
+const LIMIT = 50;
 
 export function getDefaultStatsQuery(): Partial<AdminStatsQuery> {
   const endDate = new Date();

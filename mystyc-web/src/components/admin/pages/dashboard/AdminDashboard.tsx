@@ -1,4 +1,4 @@
-import { AdminStatsQuery } from 'mystyc-common/admin';
+  import { AdminStatsQuery } from 'mystyc-common/admin';
 import { AdminStatsResponseExtended } from '@/interfaces/admin/stats';
 import AdminDashboardTraffic from './AdminDashboardTraffic';
 import AdminDashboardSubscriptions from './AdminDashboardSubscriptions';
@@ -15,42 +15,19 @@ export default function AdminDashboard({ query, stats } : {
   stats?: AdminStatsResponseExtended | null 
 }) {
   return(
-    <>
-      <div className="grid grid-cols-1 2xl:grid-cols-4 gap-4 mb-4">
-        <div className='col-span-1 2xl:col-span-3'>
-          <AdminDashboardTraffic stats={stats?.traffic} />
-        </div>
-        <div className='hidden 2xl:flex col-span-1'>
-          <AdminDashboardSubscriptions stats={stats?.subscriptions} />
-        </div>
-      </div>
+    <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <AdminDashboardTraffic stats={stats?.traffic} className='col-span-1 lg:col-span-12' />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 mb-4">
-        <div className='flex 2xl:hidden'>
-          <AdminDashboardSubscriptions stats={stats?.subscriptions} />
-        </div>
-        <div className='flex'>
-          <AdminDashboardOpenAI stats={stats?.openai} />
-        </div>
-        <div className='hidden 2xl:flex'>
-          <AdminDashboardSchedules stats={stats?.schedule} />
-        </div>
-        <div className='hidden 2xl:flex'>
-          <AdminDashboardContent stats={stats?.content} />
-        </div>
-      </div>
+      <AdminDashboardSchedules stats={stats?.schedule} className='col-span-1 lg:col-span-4 xl:col-span-3' />
+      <AdminDashboardContent stats={stats?.content} className='col-span-1 lg:col-span-8 xl:col-span-9' />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 2xl:hidden">
-        <AdminDashboardSchedules stats={stats?.schedule} />
-        <AdminDashboardContent stats={stats?.content} />
-      </div>
+      <AdminDashboardSubscriptions stats={stats?.subscriptions} className='col-span-1 lg:col-span-8' />
+      <AdminDashboardOpenAI stats={stats?.openai} className='col-span-1 lg:col-span-4' />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <AdminDashboardUsers query={query} stats={stats?.users} />
-        <AdminDashboardDevices stats={stats?.devices} />
-        <AdminDashboardNotifications query={query} stats={stats?.notifications} />
-        <AdminDashboardAuthentications stats={stats?.authEvents} />
-      </div>
-    </>
+      <AdminDashboardUsers query={query} stats={stats?.users} className='col-span-1 lg:col-span-6 xl:col-span-3' />
+      <AdminDashboardDevices stats={stats?.devices} className='col-span-1 lg:col-span-6 xl:col-span-3' />
+      <AdminDashboardNotifications query={query} stats={stats?.notifications} className='col-span-1 lg:col-span-6 xl:col-span-3' />
+      <AdminDashboardAuthentications stats={stats?.authEvents} className='col-span-1 lg:col-span-6 xl:col-span-3' />
+    </div>
   );
 };

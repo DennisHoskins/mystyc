@@ -40,10 +40,8 @@ export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: st
         <Avatar size={'small'} icon={<UserIcon userProfile={user} />} />
         <Heading level={5} className='flex-1'>User Details</Heading>
       </div>
-
       <hr />
-
-      <AdminDetailGrid cols={3} className='mt-4'>
+      <AdminDetailGrid cols={3} className='mt-1'>
         <AdminDetailField
           label="Full Name"
           value={user?.firstName + " " + user?.lastName}

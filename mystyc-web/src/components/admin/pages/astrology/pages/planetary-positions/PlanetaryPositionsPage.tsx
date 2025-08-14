@@ -10,7 +10,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import PlanetaryPositionsTable from './PlanetaryPositionsTable';
 
 export default function PlanetaryPositionsPage() {
@@ -47,13 +47,13 @@ export default function PlanetaryPositionsPage() {
   }, [loadPlanetaryPositions]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadPlanetaryPositions(0)}
       breadcrumbs={breadcrumbs}
       icon={<Eclipse className='w-3 h-3' />}
       title={"Planets"}
-      headerContent={
+      mainContent={
         <PlanetaryPositionsTable 
           planetaryPositions={data?.data}
           currentPage={currentPage}

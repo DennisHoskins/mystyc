@@ -1,19 +1,15 @@
 import { TrafficStats } from '@/interfaces/admin/stats';
-import Card from '@/components/ui/Card';
-import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
 import TrafficDashboard from './TrafficDashboard';
 
-export default function TrafficMainCard({ trafficStats }: { trafficStats?: TrafficStats | null }) {
+export default function TrafficMainPanel({ trafficStats }: { trafficStats?: TrafficStats | null }) {
   return (
-    <Card className="grid grid-cols-2 gap-4 flex-1 min-h-0 !space-y-0">
-      <div className='grow min-h-0 bg-gray-100 rounded-md p-2 pb-0 flex'>
+    <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 !space-y-0">
+
+      {/* <div className='grow min-h-0 bg-gray-100 rounded-md p-2 pb-0 flex'>
         <div className='flex-1 flex w-full grow'>
           <div className='grid grid-cols-3 gap-4 w-full min-h-0 grow'>
-
             <div className="flex flex-col justify-start space-y-2">
               <Heading level={4} className="text-blue-900">Day Of Week</Heading>
-
               {trafficStats && trafficStats.dayOfWeekVisits
                 .sort((a, b) => b.count - a.count)
                 .slice(0, 5)
@@ -33,14 +29,7 @@ export default function TrafficMainCard({ trafficStats }: { trafficStats?: Traff
                 </div>
               ))}
             </div>
-            
             <div className='col-span-2 flex grow min-h-0 max-h-[15em]'>
-              <TrafficDashboard 
-                data={trafficStats} 
-                charts={['dayofweek']}
-                layout={'vertical'}
-                label={false}
-              />
             </div>
           </div>
         </div>
@@ -73,16 +62,29 @@ export default function TrafficMainCard({ trafficStats }: { trafficStats?: Traff
             </div>
             
             <div className='col-span-2 flex grow min-h-0 max-h-[15em]'>
-              <TrafficDashboard 
-                data={trafficStats} 
-                charts={['hourly']}
-                layout={'vertical'}
-                label={false}
-              />
             </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </div> */}
+
+      <TrafficDashboard 
+        data={trafficStats} 
+        charts={['dayofweek']}
+        layout={'vertical'}
+      />
+
+      <TrafficDashboard 
+        data={trafficStats} 
+        charts={['hourly']}
+        layout={'vertical'}
+      />
+
+      <TrafficDashboard
+        data={trafficStats} 
+        charts={['pages']}
+        layout={'vertical'}
+      />
+
+    </div>
   );
 }

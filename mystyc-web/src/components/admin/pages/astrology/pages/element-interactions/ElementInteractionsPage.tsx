@@ -10,7 +10,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ElementInteractionsTable from './ElementInteractionsTable';
 
 export default function ElementinteractionsPage() {
@@ -47,13 +47,13 @@ export default function ElementinteractionsPage() {
   }, [loadElementInteractions]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadElementInteractions(0)}
       breadcrumbs={breadcrumbs}
       icon={<Atom className='w-3 h-3' />}
       title={"Elements"}
-      headerContent={
+      mainContent={
         <ElementInteractionsTable 
           elementInteractions={data?.data}
           currentPage={currentPage}

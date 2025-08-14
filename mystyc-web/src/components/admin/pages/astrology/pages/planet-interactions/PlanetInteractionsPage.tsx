@@ -53,7 +53,7 @@ export default function PlanetInteractionsPage() {
       breadcrumbs={breadcrumbs}
       icon={<MoonStar className='w-3 h-3' />}
       title={"Planets"}
-      headerContent={
+      mainContent={
         <PlanetInteractionsTable 
           planetInteractions={data?.data}
           currentPage={currentPage}

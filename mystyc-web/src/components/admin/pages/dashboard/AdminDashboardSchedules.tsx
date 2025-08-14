@@ -5,15 +5,24 @@ import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import SchedulesDashboard from '../schedules/SchedulesDashboard';
 import SchedulesExecutionsDashboard from '../schedule-executions/SchedulesExecutionsDashboard';
 
-export default function AdminDashboardSchedules({ stats } : { 
-  stats?: ScheduleStats & {executions: ScheduleExecutionStats} | null
+export default function AdminDashboardSchedules({ stats, className } : { 
+  stats?: ScheduleStats & {executions: ScheduleExecutionStats} | null,
+  className?: string
 }) {
   return (
     <AdminDashboardItemLayout
-      className='col-span-1 flex flex-col'
+      className={className}
       icon={<ScheduleIcon />}
       title="Schedules"
       link="/admin/schedules"
+      stats={
+        <Link href='/admin/schedule-executions'>
+          <SchedulesExecutionsDashboard
+            stats={stats?.executions}
+            charts={['stats']}
+          />
+        </Link>
+      }
     >
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className='flex-1 flex flex-col'>
@@ -37,10 +46,6 @@ export default function AdminDashboardSchedules({ stats } : {
             href='/admin/schedule-executions'
           >
             <div className='flex-1 flex flex-col space-y-4'>
-              <SchedulesExecutionsDashboard
-                stats={stats?.executions}
-                charts={['stats']}
-              />
               <SchedulesExecutionsDashboard
                 stats={stats?.executions}
                 charts={['today']}

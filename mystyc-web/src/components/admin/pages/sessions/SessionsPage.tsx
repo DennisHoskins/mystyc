@@ -65,12 +65,14 @@ export default function SessionsPage() {
     {
       id: 'sessions',
       label: 'Sessions',
-      count: stats?.summary.totalSessions || 0
+      count: stats?.summary.totalSessions,
+      hasCount: true
     },
     {
       id: 'devices',
       label: 'Devices',
-      count: stats?.summary.totalDevices || 0
+      count: stats?.summary.totalDevices,
+      hasCount: true
     }
   ];
 

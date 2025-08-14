@@ -12,7 +12,6 @@ import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDetailsPanel from './AuthenticationDetailsPanel';
 import AuthenticationUserPanel from './AuthenticationUserPanel';
-import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
   const { setBusy } = useBusy();
@@ -41,7 +40,7 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Authentication', href: '/admin/authentication' },
-    { label: authentication?.type ? formatStringForDisplay(authentication?.type) : "" },
+    { label: authentication?.type ? formatStringForDisplay(authentication?.type.replace("-", " ")) : "" },
   ], [authentication]);
 
   return (
@@ -53,7 +52,6 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       title={authentication?.type ?? "Authentication"}
       headerContent={<AuthenticationDetailsPanel authentication={authentication} />}
       sideContent={<AuthenticationUserPanel firebaseUid={authentication && authentication.firebaseUid} />}
-      itemsContent={[<DeviceInfoCard key='device' deviceId={authentication?.deviceId} className='flex-1 grow' />]}
     />
   );
 }

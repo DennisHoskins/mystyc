@@ -47,9 +47,7 @@ export default function DevicePage({ deviceId }: { deviceId: string }) {
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Devices', href: '/admin/devices' },
-    { 
-      label: deviceSession ? (deviceSession.device.deviceId || `Device ${deviceId}`) : ``
-    },
+    { label: deviceSession ? (deviceSession.device.deviceName || `${deviceId}`) : `` },
   ], [deviceSession, deviceId]);
 
   return (

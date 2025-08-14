@@ -8,12 +8,12 @@ import { getTrafficStats } from '@/server/actions/admin/stats';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon';
 import TrafficDetailsPanel from './TrafficDetailsPanel';
-import TrafficAnalyticsCard from './TrafficAnalyticsCard';
-import TrafficSidebarPanel from './TrafficSidebarPanel';
-import TrafficMainCard from './TrafficMainCard';
+import TrafficAnalyticsPanel from './TrafficAnalyticsPanel';
+import TrafficDashboard from './TrafficDashboard';
+import TrafficMainPanel from './TrafficMainPanel';
 
 export default function TrafficPage() {
   const { setBusy } = useBusy();
@@ -46,16 +46,21 @@ export default function TrafficPage() {
   ], []);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={loadTrafficStats}
       breadcrumbs={breadcrumbs}
       icon={<TrafficIcon size={6} />}
       title="Website Traffic Analytics"
       headerContent={<TrafficDetailsPanel trafficStats={trafficStats} />}
-      sideContent={<TrafficSidebarPanel trafficStats={trafficStats} />}
-      itemsContent={[<TrafficAnalyticsCard key='analytics' trafficStats={trafficStats} />]}
-      mainContent={<TrafficMainCard trafficStats={trafficStats} />}
+      sideContent={
+        <TrafficDashboard 
+          data={trafficStats} 
+          charts={['stats']}
+        />
+      }
+      itemsContent={[<TrafficAnalyticsPanel key='analytics' trafficStats={trafficStats} />]}
+      mainContent={<TrafficMainPanel trafficStats={trafficStats} />}
     />
   );
 }

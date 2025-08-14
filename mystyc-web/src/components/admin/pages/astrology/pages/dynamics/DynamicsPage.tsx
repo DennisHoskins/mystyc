@@ -11,7 +11,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import DynamicsTable from './DynamicsTable';
 
 export default function DynamicsPage() {
@@ -48,13 +48,13 @@ export default function DynamicsPage() {
   }, [loadDynamics]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadDynamics(0)}
       breadcrumbs={breadcrumbs}
       icon={<Icon iconNode={yinYang} className='w-3 h-3' />}
       title={"Energy Types"}
-      headerContent={
+      mainContent={
         <DynamicsTable 
           dynamics={data?.data}
           currentPage={currentPage}

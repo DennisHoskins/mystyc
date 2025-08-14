@@ -1,11 +1,13 @@
 import { forwardRef, HTMLAttributes } from 'react';
 import clsx from 'clsx';
 
+import styles from './Table.module.css';
+
 const TableHeader = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={clsx('h-6 w-full', className)} {...props} />
+  <thead ref={ref} className={clsx('h-6 w-full !bg-gray-100', styles.stickyHeader, className)} {...props} />
 ));
 
 TableHeader.displayName = 'TableHeader';

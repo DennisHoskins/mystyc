@@ -89,8 +89,8 @@ export default function SubscriptionsDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: `${stats ? "%" + stats.summary.currentMRR.toLocaleString() : ""}`, label: 'Current MRR', color: 'text-green-600' },
-          { value: stats ? stats.summary.totalSubscriptions : "", label: 'Active Subs', color: 'text-blue-600' }
+          { value: `${stats ? "%" + stats.summary.currentMRR.toLocaleString() : ""}`, label: 'MRR', color: 'text-green-600' },
+          { value: stats ? stats.summary.totalSubscriptions : "", label: 'Active', color: 'text-blue-600' }
         ]} 
       />
     ),
@@ -197,7 +197,7 @@ export default function SubscriptionsDashboard({
     <div className={`@container grow flex flex-col ${className}`}>
       <div className={`flex-1 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
         {charts.map((chartType) => (
-          <div key={chartType} className='flex h-full'>
+          <div key={chartType} className='flex h-full w-full'>
             {chartComponents[chartType]}
           </div>
         ))}

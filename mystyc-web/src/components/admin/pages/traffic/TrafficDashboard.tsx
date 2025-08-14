@@ -93,14 +93,14 @@ export default function   TrafficDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: data?.visitors ? data.visitors.totalVisits : "", label: 'Total Visits', color: 'text-blue-600' },
+          { value: data?.visitors ? data.visitors.totalVisits : "", label: 'Visits', color: 'text-blue-600' },
           { value: data?.visitors ? `${authPercentage}%` : "", label: 'Authenticated', color: 'text-green-600' }
         ]} 
       />
     ),
     visitors: (
       <SimpleLineChart 
-        title={`Visitor Trend (${data?.visitors.dailyVisits.length} days)`}
+        title={`Visitor Trend ${data ? "(" + data.visitors.dailyVisits.length + " days)" : ""}`}
         label={label}
         data={visitorData}
         dataKey="visits"
@@ -209,10 +209,10 @@ export default function   TrafficDashboard({
   };
 
   return (
-    <div className={`@container w-full flex flex-col grow min-h-0 ${className}`}>
+    <div className={`@container grow w-full flex flex-col min-h-0 ${className}`}>
       <div className={`grow min-h-0 flex flex-col @lg:grid grid-cols-${charts.length} gap-4`}>
         {charts.map((chartType) => (
-          <div key={chartType} className='flex h-full'>
+          <div key={chartType} className='flex h-full w-full'>
             {chartComponents[chartType]}
           </div>
         ))}

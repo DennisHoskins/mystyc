@@ -15,7 +15,7 @@ export default function TrafficDetailsPanel({ trafficStats }: { trafficStats?: T
 
   return (
     <>
-      <AdminDetailGrid cols={3}>
+      <AdminDetailGrid cols={3} className='w-full'>
         <AdminDetailField
           label="Total Visits"
           value={trafficStats && trafficStats.visitors.totalVisits.toLocaleString()}

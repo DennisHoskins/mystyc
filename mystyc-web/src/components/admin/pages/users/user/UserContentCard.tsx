@@ -9,12 +9,13 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
 import Card from '@/components/ui/Card';
+import Text from '@/components/ui/Text';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon'
-import Capsule from '@/components/ui/Capsule';
 import { formatDateForComponent } from '@/util/dateTime';
+import { formatStringForDisplay } from '@/util/util';
 
 export default function UserContentCard({ firebaseUid, total }: { firebaseUid?: string | null, total: number | null }) {
   const [content, setContent] = useState<Content[]>([]);
@@ -30,7 +31,7 @@ export default function UserContentCard({ firebaseUid, total }: { firebaseUid?: 
       setError(null);
 
       const listQuery = getDefaultListQuery(0);
-      listQuery.limit = 3;
+      listQuery.limit = 2;
       const response = await getUserContent({deviceInfo: getDeviceInfo(), firebaseUid, ...listQuery});
 
       setContent(response.data);
@@ -56,7 +57,7 @@ export default function UserContentCard({ firebaseUid, total }: { firebaseUid?: 
   }
 
   return (
-    <Card className='flex flex-col space-y-2'>
+    <Card>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={ContentIcon} />
         <Link href={`/admin/users/${firebaseUid}/content`} className='flex w-full'>
@@ -66,21 +67,20 @@ export default function UserContentCard({ firebaseUid, total }: { firebaseUid?: 
       {total &&
         <>
           <hr/ >
-          {content.map((content) => (
-            <Link 
-              key={content._id} 
-              href={`/admin/content/${content._id}`}
-              className="flex !flex-row items-center space-x-4"
-            >
-              <Avatar size={'medium'} icon={(props) => <ContentIcon {...props} />} />
-              <div className='overflow-hidden !mt-0'>
-                <Heading level={4}>{content.type}</Heading>
-                <Heading level={5}>Title: {content.title}</Heading>
-                <Capsule label={formatDateForComponent(content.date)} />
-              </div>
-            </Link>
-          ))}
-          {total > content.length && <Capsule label={'Total ' + total} href={`/admin/users/${firebaseUid}/content`} />}
+          <div className='flex flex-col space-y-4 pt-1'>
+            {content.map((content) => (
+              <Link 
+                key={content._id} 
+                href={`/admin/content/${content._id}`}
+                className="flex !flex-row items-center space-x-4"
+              >
+                <div className='overflow-hidden'>
+                  <Heading level={6}>{formatStringForDisplay(content.type.replace("_content", ""))} - {content.title}</Heading>
+                  <Text variant='xs'>{formatDateForComponent(content.generatedAt)}</Text>
+                </div>
+              </Link>
+            ))}
+          </div>
         </>
       }
     </Card>

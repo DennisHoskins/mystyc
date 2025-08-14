@@ -40,8 +40,8 @@ export default function DevicesDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats ? stats.platforms.totalDevices : "", label: 'Total Devices', color: 'text-blue-600' },
-          { value: stats ? `${stats.fcmTokens.fcmTokenCoverage + "%"}` : "", label: 'Push Enabled', color: 'text-green-600' }
+          { value: stats ? stats.platforms.totalDevices : "", label: 'Devices', color: 'text-blue-600' },
+          { value: stats ? `${stats.fcmTokens.fcmTokenCoverage + "%"}` : "", label: 'Push', color: 'text-green-600' }
         ]} 
       />
     ),

@@ -11,8 +11,11 @@ import AdminErrorPage from '@/components/admin/ui/AdminError';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 import Link from '@/components/ui/Link';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
+import { formatDateForComponent } from '@/util/dateTime';
+import { formatStringForDisplay } from '@/util/util';
 
 export default function DeviceNotificationsCard({ deviceId, total }: { deviceId?: string | null, total?: number | null }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -54,7 +57,7 @@ export default function DeviceNotificationsCard({ deviceId, total }: { deviceId?
   }
 
   return (
-    <Card className='flex flex-col space-y-2'>
+    <Card>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={NotificationIcon} />
         <Link href={`/admin/devices/${deviceId}/notifications`} className='flex w-full'>
@@ -64,16 +67,16 @@ export default function DeviceNotificationsCard({ deviceId, total }: { deviceId?
       {total ? (
         <>
           <hr/ >
-          <div className='flex flex-col space-y-4'>
+          <div className='flex flex-col space-y-4 pt-1'>
             {notifications.map((notification) => (
               <Link 
                 key={notification._id} 
                 href={`/admin/notifications/${notification._id}`}
                 className="flex !flex-row items-center space-x-4"
               >
-                <div className='overflow-hidden !mt-0'>
-                  <Heading level={5}>{notification.type}</Heading>
-                  <Heading level={6} className='!text-[10px]'>{notification.title}</Heading>
+                <div className='overflow-hidden'>
+                  <Heading level={6}>{formatStringForDisplay(notification.type)} - {notification.title}</Heading>
+                  <Text variant='xs'>{formatDateForComponent(notification.sentAt ? notification.sentAt : notification.createdAt)}</Text>
                 </div>
               </Link>
             ))}

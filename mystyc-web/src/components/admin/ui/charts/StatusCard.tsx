@@ -28,17 +28,17 @@ export default function StatusCard({
 }: StatusCardProps) {
   return (
     <div className="@container grow flex flex-col">
-      <div className={`inline-flex flex-1 items-center w-full p-4 rounded-lg ${backgroundColor}`}>
+      <div className={`inline-flex flex-1 items-center w-full p-2 rounded-lg ${backgroundColor}`}>
         
         {/* Stacked layout for very small containers (< 190px) */}
         <div className="@[190px]:hidden flex flex-col items-center justify-center text-center w-full">
           <Icon className={`w-6 h-6 mb-2 ${iconColor}`} />
           <div>
-            <div className={`overflow-hidden font-medium text-sm leading-relaxed ${textColor} flex`}>
+            <div className={`overflow-hidden font-medium text-xs leading-relaxed ${textColor} flex items-end`}>
               {shortText}
               {badge}
             </div>
-            <div className="text-xs text-gray-600 leading-relaxed">
+            <div className="text-[10px] text-gray-600 items-center leading-relaxed">
               {shortSubtext}
             </div>
           </div>

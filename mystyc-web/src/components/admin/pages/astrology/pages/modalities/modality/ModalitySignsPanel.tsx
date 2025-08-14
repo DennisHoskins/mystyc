@@ -37,7 +37,7 @@ export default function ModalitySignsPanel({ modality } : { modality: ModalityTy
   console.log(error);
 
   return (
-    <div className='space-y-2 grow'>
+    <>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={AstrologyIcon} />
         <div>
@@ -47,7 +47,7 @@ export default function ModalitySignsPanel({ modality } : { modality: ModalityTy
         </div>
       </div>
       <hr/ >
-      <div className='flex flex-col space-y-6'>
+      <div className='flex flex-col space-y-6 mt-1'>
         {data.map((item) => (
           <AdminDetailField 
             key={item.sign}
@@ -73,6 +73,6 @@ export default function ModalitySignsPanel({ modality } : { modality: ModalityTy
           />
         ))}        
       </div>
-    </div>
+    </>
   );
 }

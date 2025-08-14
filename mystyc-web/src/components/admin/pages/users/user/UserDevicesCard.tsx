@@ -11,9 +11,9 @@ import AdminErrorPage from '@/components/admin/ui/AdminError';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 import Link from '@/components/ui/Link';
 import DevicesIcon from '@/components/admin/ui/icons/DevicesIcon';
-import Capsule from '@/components/ui/Capsule';
 
 export default function UserDevicesCard({ firebaseUid, total }: { firebaseUid?: string | null, total: number | null }) {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -29,7 +29,7 @@ export default function UserDevicesCard({ firebaseUid, total }: { firebaseUid?: 
       setError(null);
 
       const listQuery = getDefaultListQuery(0);
-      listQuery.limit = 3;
+      listQuery.limit = 2;
       const response = await getUserDevices({deviceInfo: getDeviceInfo(), firebaseUid, ...listQuery});
 
       setDevices(response.data);
@@ -55,7 +55,7 @@ export default function UserDevicesCard({ firebaseUid, total }: { firebaseUid?: 
   }
 
   return (
-    <Card className='flex flex-col space-y-2'>
+    <Card>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={DevicesIcon} />
         <Link href={`/admin/users/${firebaseUid}/devices`} className='flex w-full'>
@@ -65,7 +65,7 @@ export default function UserDevicesCard({ firebaseUid, total }: { firebaseUid?: 
       {total &&
         <>
           <hr/ >
-          <div className='flex flex-col space-y-4'>
+          <div className='flex flex-col space-y-4 pt-1'>
             {devices.map((device) => (
               <Link 
                 key={device.deviceId} 
@@ -73,13 +73,11 @@ export default function UserDevicesCard({ firebaseUid, total }: { firebaseUid?: 
                 className="flex !flex-row items-center space-x-4"
               >
                 <div className='overflow-hidden !mt-0'>
-                  <Heading level={5}>{device.deviceName ? device.deviceName.split(" (")[0] : "Unknown Device"}</Heading>
-                  <Heading level={6} className='!text-[10px]'>{device.deviceId}</Heading>
-                  {device.fcmToken && <Capsule label="Online" />}
+                  <Heading level={6}>{device.deviceName ? device.deviceName.split(" (")[0] : "Unknown Device"}</Heading>
+                  <Text variant='xs'>{device.deviceId}</Text>
                 </div>
               </Link>
             ))}
-            {total > 1 && <Capsule label={'Total ' + total} href={`/admin/users/${firebaseUid}/devices`} />}
           </div>        
         </>
       }

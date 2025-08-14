@@ -56,19 +56,24 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
     )
   }
 
+  const formatUserName = (user: UserProfile) => {
+    if (!user.firstName && !user.lastName) return user.firebaseUid;
+    return user.firstName + " " + user.lastName;
+  }
+
   const formatUserRoles = (roles: string[]) => {
     if (!roles || roles.length === 0) return 'No roles assigned';
-    return roles.join(', ');
+    return "[" + roles.join(', ') + "]";
   };
 
   return (
-    <div className='flex flex-col space-y-2'>
+    <div className='flex flex-col space-y-1'>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={<UserIcon userProfile={user} />} />
-        <Heading level={5}>User</Heading>
+        <Heading level={5}>{formatUserName(user)}</Heading>
       </div>
       <hr />
-      <AdminDetailGrid cols={1}>
+      <AdminDetailGrid cols={1} className='pt-1'>
         <AdminDetailField
           label="Firebase Uid"
           value={user.firebaseUid}
@@ -82,6 +87,10 @@ export default function UserInfoCard({ firebaseUid }: { firebaseUid: string | nu
         <AdminDetailField
           label="Roles"
           value={formatUserRoles(user.roles)}
+        />
+        <AdminDetailField
+          label="Subscription"
+          value={user.subscription.level}
         />
       </AdminDetailGrid>
     </div>

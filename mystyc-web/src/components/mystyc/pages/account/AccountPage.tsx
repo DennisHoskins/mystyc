@@ -126,7 +126,7 @@ export default function AccountPage() {
 
   return (
     <div className="flex flex-1 justify-center items-center w-full">
-      <Card className='w-full md:max-w-lg text-center p-4 m-4 items-center space-y-6 flex flex-col'>
+      <Card className='w-full md:max-w-lg text-center p-4 m-4 items-center space-y-6'>
         <Heading level={2}>Account</Heading>
 
         {error && <FormError message={error} />}

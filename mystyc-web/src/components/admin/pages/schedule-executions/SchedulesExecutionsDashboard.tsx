@@ -63,8 +63,8 @@ export default function SchedulesExecutionsDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats ? stats.systemOverview.totalExecutions : "", label: 'Total Executions', color: 'text-blue-600' },
-          { value: stats ? `${stats.systemOverview.successRate}%` : "", label: 'Success Rate', color: 'text-green-600' }
+          { value: stats ? stats.systemOverview.totalExecutions : "", label: 'Executions', color: 'text-blue-600' },
+          { value: stats ? `${stats.systemOverview.successRate}%` : "", label: 'Success', color: 'text-green-600' }
         ]} 
       />
     ),

@@ -10,10 +10,7 @@ import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import NotificationDetailsPanel from './NotificationDetailsPanel';
-import NotificationGenerationCard from './NotificationGenerationCard';
-import NotificationMessagePanel from './NotificationMessagePanel';
-import UserInfoCard from '@/components/admin/pages/users/user/UserInfoCard';
-import DeviceInfoCard from '@/components/admin/pages/devices/device/DeviceInfoCard';
+import NotificationScheduleGenerationCard from './NotificationScheduleGenerationCard';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
   const { setBusy } = useBusy();
@@ -42,9 +39,7 @@ export default function NotificationPage({ notificationId }: { notificationId: s
   const breadcrumbs = useMemo(() => [
     { label: 'Admin', href: '/admin' },
     { label: 'Notifications', href: '/admin/notifications' },
-    { 
-      label: notification ? (notification._id || `Notification ${notificationId}`) : ``
-    },
+    { label: notification ? (notification._id || `Notification ${notificationId}`) : ``},
   ], [notification, notificationId]);
 
   return (
@@ -55,12 +50,7 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       icon={<NotificationIcon size={6} />}
       title={notification ? `${notification.sentBy}: ${notification.type}` : 'Unknown Notification'}
       headerContent={<NotificationDetailsPanel notification={notification} />}
-      itemsContent={[
-        <UserInfoCard key='user' firebaseUid={notification?.firebaseUid} />,
-        <DeviceInfoCard key='device' deviceId={notification?.deviceId} />
-      ]}
-      sideContent={<NotificationMessagePanel notification={notification} />}
-      mainContent={<NotificationGenerationCard key='generation' notification={notification} />}
+      itemsContent={[<NotificationScheduleGenerationCard key='generation' notification={notification} />]}
     />
   );
 }

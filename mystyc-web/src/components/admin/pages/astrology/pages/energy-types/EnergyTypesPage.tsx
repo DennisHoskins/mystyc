@@ -11,7 +11,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import EnergyTypesTable from './EnergyTypesTable';
 
 export default function EnergyTypesPage() {
@@ -48,13 +48,13 @@ export default function EnergyTypesPage() {
   }, [loadEnergyTypes]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadEnergyTypes(0)}
       breadcrumbs={breadcrumbs}
       icon={<Zap className='w-3 h-3' />}
       title={"Energy Types"}
-      headerContent={
+      mainContent={
         <EnergyTypesTable 
           energyTypes={data?.data}
           currentPage={currentPage}

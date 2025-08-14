@@ -89,26 +89,22 @@ export default function SubscriptionsPage() {
     return getPlusUsers(params);
   }, []);
 
-  const getSummaryCount = () => {
-    if (!summary) return null;
-    return summary?.totalSubscriptions || 0;
-  };
-
   const tabs: Tab[] = [
     {
       id: 'summary',
       label: 'Summary',
-      count: getSummaryCount()
     },
     {
       id: 'payments',
       label: 'Payments',
-      count: summary?.totalPayments || 0
+      count: summary?.totalPayments,
+      hasCount: true
     },
     {
       id: 'subscribers',
       label: 'Subscribers',
-      count: summary?.totalSubscriptions || 0
+      count: summary?.totalSubscriptions,
+      hasCount: true
     }
   ];
 
@@ -143,7 +139,7 @@ export default function SubscriptionsPage() {
         <UsersTable
           serverAction={getAllSubscribers}
           onRefresh={loadData}
-          hideSubscriptionColumn={false}
+          hideSubscriptionColumn={true}
         />
       )
     }

@@ -10,7 +10,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ModalitiesTable from './ModalitiesTable';
 
 export default function ModalitiesPage() {
@@ -47,13 +47,13 @@ export default function ModalitiesPage() {
   }, [loadModalities]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadModalities(0)}
       breadcrumbs={breadcrumbs}
       icon={<Expand className='w-3 h-3' />}
       title={"Modalities"}
-      headerContent={
+      mainContent={
         <ModalitiesTable 
           modalities={data?.data}
           currentPage={currentPage}

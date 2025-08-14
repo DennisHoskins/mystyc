@@ -69,7 +69,7 @@ export default function ElementInteractionPage({ interaction } : { interaction: 
       headerContent={<ElementInteractionDetailsPanel interaction={data} />}
       sideContent={<ElementInteractionElementsPanel interaction={data} />}
       itemsContent={[
-        <div key='energy-dynamic' className='flex flex-col w-full space-y-4'>
+        <div key='energy-dynamic' className='flex-1 flex flex-col w-full space-y-4'>
           <EnergyTypeDetailsCard energyType={data?.energyType} />
           <div className='flex-1 grow'>
             <DynamicDetailsCard dynamic={data?.dynamic} className='h-full' />

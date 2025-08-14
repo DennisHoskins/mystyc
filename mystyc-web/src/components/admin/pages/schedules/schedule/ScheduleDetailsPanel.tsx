@@ -5,7 +5,7 @@ import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function ScheduleDetailsPanel({ schedule }: { schedule?: Schedule | null }) {
   return (
-    <AdminDetailGrid cols={4}>
+    <AdminDetailGrid cols={4} className='pb-1'>
       <AdminDetailField
         label="Created"
         value={schedule ? (schedule.createdAt ? formatTimestampForComponent(new Date(schedule.createdAt).getTime()) : '-') : null}

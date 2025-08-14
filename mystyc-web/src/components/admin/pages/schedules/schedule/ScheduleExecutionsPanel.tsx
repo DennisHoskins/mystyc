@@ -9,10 +9,9 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
-import Card from '@/components/ui/Card';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
-export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: string }) {
+export default function ScheduleExecutionsPanel({ scheduleId }: { scheduleId: string }) {
   const [executions, setExecutions] = useState<AdminListResponse<ScheduleExecution> | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,26 +47,23 @@ export default function ScheduleExecutionsCard({ scheduleId }: { scheduleId: str
   }, [scheduleId, loadScheduleExecutions]);
 
   const columns: Column<ScheduleExecution>[] = [
-    { key: '_id', header: 'Id', link: (e) => `/admin/schedule-executions/${e._id}`},
-    { key: 'executedAt', header: 'Executed', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => formatDateForDisplay(e.executedAt) || '-' },
-    { key: 'localTime', header: 'Local Time', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => formatDateForDisplay(e.localTime) || '-' },
-    { key: 'status', header: 'Status', align: 'right', link: (e) => `/admin/schedule-executions/${e._id}`},
+    { key: 'executedAt', header: 'Executed', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => formatDateForDisplay(e.executedAt) || '-' },
+    { key: 'localTime', header: 'Local Time', link: (e) => `/admin/schedule-executions/${e._id}`, render: (e) => formatDateForDisplay(e.localTime) || '-' },
+    { key: 'status', header: 'Status', link: (e) => `/admin/schedule-executions/${e._id}`},
   ];
 
   return (
-    <Card className='grow'>
-      <AdminTable<ScheduleExecution>
-        data={executions?.data}
-        columns={columns}
-        loading={loading}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        hasMore={hasMore}
-        onPageChange={loadScheduleExecutions}
-        onRefresh={() => loadScheduleExecutions(currentPage)}
-        emptyMessage="No Executions found."
-      />
-    </Card>      
+    <AdminTable<ScheduleExecution>
+      data={executions?.data}
+      columns={columns}
+      loading={loading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      hasMore={hasMore}
+      onPageChange={loadScheduleExecutions}
+      onRefresh={() => loadScheduleExecutions(currentPage)}
+      emptyMessage="No Executions found."
+    />
   );
 }

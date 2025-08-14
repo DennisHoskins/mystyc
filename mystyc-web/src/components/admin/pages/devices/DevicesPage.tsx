@@ -92,22 +92,26 @@ export default function DevicesPage() {
     {
       id: 'summary',
       label: 'Summary',
-      count: getSummaryCount()
+      count: getSummaryCount(),
+      hasCount: true
     },
     {
       id: 'all',
       label: 'All Devices',
-      count: summary?.total || 0
+      count: summary?.total,
+      hasCount: true
     },
     {
       id: 'online',
       label: 'Online',
-      count: summary?.online || 0
+      count: summary?.online,
+      hasCount: true
     },
     {
       id: 'offline',
       label: 'Offline',
-      count: summary?.offline || 0
+      count: summary?.offline,
+      hasCount: true
     }
   ];
 

@@ -49,7 +49,7 @@ export default function DynamicPlanetInteractionsCard({ dynamic, className } : {
         </div>
       </div>
       <hr/ >
-      <div className='flex flex-col space-y-6'>
+      <div className='flex flex-col space-y-6 pt-1'>
         {data.map((item) => (
           <AdminDetailField 
             key={item.planet1}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { ScheduleExecution } from 'mystyc-common/schemas';
 import { ScheduleExecutionStats, AdminListResponse, AdminStatsQuery } from 'mystyc-common/admin';
@@ -9,14 +10,20 @@ import { getDefaultStatsQuery, getDefaultListQuery } from '@/util/admin/getQuery
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import Card from '@/components/ui/Card';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import TabHeader, { Tab } from '@/components/ui/tabs/TabHeader';
+import TabPanel, { TabContent } from '@/components/ui/tabs/TabPanel';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import SchedulesExecutionsTable from './SchedulesExecutionsTable';
 import SchedulesExecutionsDashboard from './SchedulesExecutionsDashboard';
-import Text from '@/components/ui/Text';
+
+export type ScheduleExecutionView = 'summary' | 'executions';
 
 export default function SchedulesExecutionsPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
   const { setBusy, isBusy } = useBusy();
   const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [stats, setStats] = useState<ScheduleExecutionStats | null>(null);
@@ -24,11 +31,30 @@ export default function SchedulesExecutionsPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
+  const getCurrentView = useCallback((): ScheduleExecutionView => {
+    if (searchParams.has('executions')) return 'executions';
+    return 'summary';
+  }, [searchParams]);
+
+  const [activeTab, setActiveTab] = useState<string>(getCurrentView());
+
   const breadcrumbs = [
     { label: 'Admin', href: '/admin' },
     { label: 'Schedules', href: '/admin/schedules' },
     { label: 'Schedules Executions' },
   ];
+
+  const handleTabChange = (tabId: string) => {
+    const view = tabId as ScheduleExecutionView;
+    setActiveTab(tabId);
+    
+    if (view === 'summary') {
+      router.push(pathname);
+      return;
+    }
+    const newUrl = `${pathname}?${view}`;
+    router.push(newUrl);
+  };
 
   const loadData = useCallback(async () => {
     try {
@@ -71,59 +97,91 @@ export default function SchedulesExecutionsPage() {
     loadSchedulesExecutions(0);
   }, [loadData, loadSchedulesExecutions]);
 
+  useEffect(() => {
+    setActiveTab(getCurrentView());
+  }, [searchParams, getCurrentView]);
+
+  const tabs: Tab[] = [
+    {
+      id: 'summary',
+      label: 'Summary',
+      hasCount: false
+    },
+    {
+      id: 'executions',
+      label: 'Executions',
+      count: data?.pagination?.totalItems,
+      hasCount: true
+    }
+  ];
+
+  const tabContents: TabContent[] = [
+    {
+      id: 'summary',
+      content: (
+        <div className='flex-1 flex flex-col space-y-4'>
+          <div className='flex-1 flex'>
+            <SchedulesExecutionsDashboard
+              key={'events'}
+              query={query}
+              stats={stats} 
+              charts={['events', 'performance']}
+            />
+          </div>
+          <div className='flex-1 flex'>
+            <SchedulesExecutionsDashboard
+              key={'recent'}
+              query={query}
+              stats={stats} 
+              charts={['recent']}
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'executions',
+      content: (
+        <SchedulesExecutionsTable 
+          data={data?.data}
+          pagination={data?.pagination}
+          loading={isBusy}
+          currentPage={currentPage}
+          onPageChange={loadSchedulesExecutions}
+          onRefresh={() => loadSchedulesExecutions(0)}
+        />
+      )
+    }
+  ];
+
   return (
-   <AdminItemLayout
-      title="Schedule Executions"
-      headerContent={<Text>Monitor scheduled task executions, view performance metrics and track automation success rates</Text>}
+   <AdminListLayout
       error={error}
       onRetry={() => {
         loadData();
         loadSchedulesExecutions(0);
       }}
       breadcrumbs={breadcrumbs}
-      icon={<ScheduleIcon variant='schedule-execution' />}
-       sideContent={
-        <div className='flex-1 flex flex-col space-y-4'>
-          <SchedulesExecutionsDashboard
-            query={query}
-            stats={stats} 
-            charts={['stats']}
-          />
+      icon={() => <ScheduleIcon variant='schedule-execution' />}
+      headerContent={
+        <TabHeader 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+      }
+      sideContent={
         <SchedulesExecutionsDashboard
-          key={'events'}
           query={query}
           stats={stats} 
-          charts={['events']}
+          charts={['stats']}
         />
-        </div>
-       }
-      itemsContent={[
-        <Card key='stats' className='grow grid grid-cols-2 gap-4 !space-y-0'>
-          <SchedulesExecutionsDashboard
-            key={'performance'}
-            query={query}
-            stats={stats} 
-            charts={['performance']}
-          />
-          <SchedulesExecutionsDashboard
-            key={'recent'}
-            query={query}
-            stats={stats} 
-            charts={['recent']}
-          />
-        </Card>
-      ]}
+      }
       mainContent={
-        <Card className='grow min-h-0 overflow-hidden flex'>
-          <SchedulesExecutionsTable 
-            data={data?.data}
-            pagination={data?.pagination}
-            loading={isBusy}
-            currentPage={currentPage}
-            onPageChange={loadSchedulesExecutions}
-            onRefresh={() => loadSchedulesExecutions(0)}
-          />
-        </Card>
+        <TabPanel 
+          tabs={tabContents}
+          activeTab={activeTab}
+        />
       }
     />   
   );

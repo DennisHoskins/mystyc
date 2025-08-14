@@ -9,7 +9,7 @@ const TableBody = forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={clsx(styles.tableBody, '[&_tr:last-child]:border-0 bg-gray-50', className)}
+    className={clsx(styles.tableBody, '[&_tr:last-child]:border-0 text-gray-600', className)}
     {...props}
   />
 ));

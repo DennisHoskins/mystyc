@@ -104,39 +104,45 @@ export default function AuthenticationsPage() {
 
   const getSummaryCount = () => {
     if (!summary) return null;
-    return summary?.total || 0;
+    return summary?.total;
   };
 
   const tabs: Tab[] = [
     {
       id: 'summary',
       label: 'Summary',
-      count: getSummaryCount()
+      count: getSummaryCount(),
+      hasCount: true
     },
     {
       id: 'all',
       label: 'All Events',
-      count: summary?.total || 0
+      count: summary?.total,
+      hasCount: true
     },
     {
       id: 'create',
       label: 'Create',
-      count: summary?.create || 0
+      count: summary?.create,
+      hasCount: true
     },
     {
       id: 'login',
       label: 'Login',
-      count: summary?.login || 0
+      count: summary?.login,
+      hasCount: true
     },
     {
       id: 'logout',
       label: 'Logout',
-      count: summary?.logout || 0
+      count: summary?.logout,
+      hasCount: true
     },
     {
       id: 'server-logout',
       label: 'Server Logout',
-      count: summary?.serverLogout || 0
+      count: summary?.serverLogout,
+      hasCount: true
     }
   ];
 
@@ -150,7 +156,7 @@ export default function AuthenticationsPage() {
             <AuthenticationDashboard 
               key={'duration'}
               stats={stats} 
-              charts={['duration']}
+              charts={['peak']}
             />
           </div>
         </div>

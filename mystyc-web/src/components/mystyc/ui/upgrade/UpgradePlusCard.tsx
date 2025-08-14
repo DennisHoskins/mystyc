@@ -10,7 +10,7 @@ export default function UpgradePlusCard() {
   const router = useTransitionRouter();
 
   return(
-    <Card className="">
+    <Card>
       <a
         href="/subscribe"
         onClick={() => router.push("/subscribe") }

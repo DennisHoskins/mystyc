@@ -7,15 +7,13 @@ import StripeIcon from '@/components/admin/ui/icons/StripeIcon';
 
 export default function SubscriptionStripeCard({ payment }: { payment?: PaymentHistory | null }) {
   return (
-    <div className='flex flex-col'>
-      <div className="flex items-center space-x-2 mb-4">
+    <div className='flex flex-col space-y-1'>
+      <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={StripeIcon} />
         <Heading level={5} className='flex-1'>Stripe Details</Heading>
       </div>
-
       <hr />
-
-      <AdminDetailGrid cols={1} className='mt-4'>
+      <AdminDetailGrid cols={1} className='mt-1'>
         <AdminDetailField
           label="Invoice Id"
           value={payment?.stripeInvoiceId}

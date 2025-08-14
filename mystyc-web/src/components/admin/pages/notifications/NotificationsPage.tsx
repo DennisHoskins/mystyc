@@ -90,7 +90,8 @@ export default function NotificationsPage() {
     {
       id: 'all',
       label: 'All Notifications',
-      count: stats?.type.totalNotifications || 0
+      count: stats?.type.totalNotifications,
+      hasCount: true
     }
   ];
 

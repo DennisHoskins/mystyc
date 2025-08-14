@@ -16,10 +16,8 @@ export default function ContentDataCard({ content }: { content: Content | null }
           <Heading level={5}>Data</Heading>
         </div>
       </div>
-
       <hr/>
-
-      <AdminDetailGrid cols={1}>
+      <AdminDetailGrid cols={1} className='pt-1'>
         <AdminDetailField
           label="Title"
           value={content?.title}

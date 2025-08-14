@@ -78,7 +78,6 @@ export default function AuthenticationsTable({
 
   const baseColumns: Column<AuthEvent>[] = [
     { key: 'deviceName', header: 'Device', link: (e) => `/admin/devices/${e.deviceId}`, render: (e) => e.deviceName || 'Unnamed Device' },
-    { key: 'timestamp', header: 'Timestamp', align: 'right', link: (e) => `/admin/authentication/${e._id}`, render: (e) => formatDateForDisplay(e.clientTimestamp) || '-' },
   ];
 
   const eventTypeColumn: Column<AuthEvent> = { 
@@ -101,6 +100,13 @@ export default function AuthenticationsTable({
   if (!hideEventTypeColumn) {
     columns.push(eventTypeColumn);
   }
+
+  columns.push({ 
+    key: 'timestamp', 
+    header: 'Timestamp', 
+    link: (e) => `/admin/authentication/${e._id}`, 
+    render: (e) => formatDateForDisplay(e.clientTimestamp) || '-' 
+  })  
   
   if (!hideUserColumn) {
     columns.push(userColumn);

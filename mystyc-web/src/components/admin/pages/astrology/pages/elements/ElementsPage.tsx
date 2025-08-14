@@ -10,7 +10,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import ElementsTable from './ElementsTable';
 
 export default function ElementsPage() {
@@ -47,13 +47,13 @@ export default function ElementsPage() {
   }, [loadElements]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadElements(0)}
       breadcrumbs={breadcrumbs}
       icon={<Atom className='w-3 h-3' />}
       title={"Energy Types"}
-      headerContent={
+      mainContent={
         <ElementsTable 
           elements={data?.data}
           currentPage={currentPage}

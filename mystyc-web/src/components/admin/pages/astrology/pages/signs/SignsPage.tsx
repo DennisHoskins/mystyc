@@ -10,7 +10,7 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 
-import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
+import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import SignsTable from './SignsTable';
 
@@ -48,13 +48,13 @@ export default function SignsPage() {
   }, [loadSigns]);
 
   return (
-    <AdminItemLayout
+    <AdminListLayout
       error={error}
       onRetry={() => loadSigns(0)}
       breadcrumbs={breadcrumbs}
       icon={<AstrologyIcon />}
       title={"Signs"}
-      headerContent={
+      mainContent={
         <SignsTable 
           signs={data?.data}
           currentPage={currentPage}

@@ -12,18 +12,16 @@ import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 
 export default function UserStarSignCard({ user }: { user?: UserProfile | null }) {
   return (
-    <Card className='flex flex-col'>
-      <div className="flex items-center space-x-2 mb-4">
+    <Card>
+      <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={<SunMoon className='w-6 h-6' />} />
         <div className='flex items-end w-full'>
           <Heading level={5} className='flex-1'>Astrology</Heading>
           <Text variant='small'>Created: {formatDateForComponent(user?.astrology?.createdAt)}</Text>
         </div>
       </div>
-
       <hr/ >
-
-      <AdminDetailGrid cols={5} className='mt-4'>
+      <AdminDetailGrid cols={5} className='mt-1'>
         <AdminDetailField
           label="Sun Sign"
           icon={getZodiacIcon(user?.astrology?.sunSign)}

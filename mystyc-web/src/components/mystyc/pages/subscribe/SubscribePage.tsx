@@ -66,7 +66,7 @@ export default function SubscribePage({ error } : { error?: string }) {
 
   return (
     <div className="flex flex-1 justify-center items-center w-full">
-      <Card className='w-full md:max-w-lg text-center p-4 m-4 items-center space-y-6 flex flex-col'>
+      <Card className='w-full md:max-w-lg text-center m-4 items-center space-y-6'>
         <div className="text-center items-center space-y-6 flex flex-col">
           <Heading level={2}>Get Mystyc Plus</Heading>
           <Text className="max-w-xl text-center">

@@ -22,7 +22,7 @@ export default function Breadcrumbs({
   items, 
   separator = '/', 
   className = '',
-  level = 2,
+  level = 3,
   size
 }: BreadcrumbsProps) {
   const router = useTransitionRouter();

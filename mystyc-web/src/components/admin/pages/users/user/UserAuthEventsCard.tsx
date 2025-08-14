@@ -15,7 +15,7 @@ import Link from '@/components/ui/Link';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon'
 import Text from '@/components/ui/Text';
 import { formatDateForComponent } from '@/util/dateTime';
-import Capsule from '@/components/ui/Capsule';
+import { formatStringForDisplay } from '@/util/util';
 
 export default function UserAuthEventCard({ firebaseUid, total }: { firebaseUid?: string | null, total: number | null }) {
   const [authEvents, setAuthEvents] = useState<AuthEvent[]>([]);
@@ -31,7 +31,7 @@ export default function UserAuthEventCard({ firebaseUid, total }: { firebaseUid?
       setError(null);
 
       const listQuery = getDefaultListQuery(0);
-      listQuery.limit = 3;
+      listQuery.limit = 2;
       const response = await getUserAuthEvents({deviceInfo: getDeviceInfo(), firebaseUid, ...listQuery});
 
       setAuthEvents(response.data);
@@ -57,7 +57,7 @@ export default function UserAuthEventCard({ firebaseUid, total }: { firebaseUid?
   }
 
   return (
-    <Card className='flex flex-col space-y-2 flex-1'>
+    <Card className='flex-1'>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={AuthenticationIcon} />
         <Link href={`/admin/users/${firebaseUid}/auth-events`} className='flex w-full'>
@@ -67,23 +67,19 @@ export default function UserAuthEventCard({ firebaseUid, total }: { firebaseUid?
       {total &&
         <>
           <hr/ >
-          <div className='space-y-4'>
+          <div className='space-y-4 pt-1'>
             {authEvents.map((authEvent) => (
               <Link 
                 key={authEvent._id} 
                 href={`/admin/authentication/${authEvent._id}`}
                 className="flex !flex-row items-center space-x-4"
               >
-                <div className='overflow-hidden !mt-0'>
-                  <div className='flex space-x-1 items-baseline'>
-                    <Heading level={4}>{authEvent.type}</Heading>
-                    <Heading level={6}>{authEvent.deviceName}</Heading>
-                  </div>
-                  <Text className='!text-[10px]'>{formatDateForComponent(authEvent.timestamp)}</Text>
+                <div className='overflow-hidden'>
+                  <Heading level={6}>{formatStringForDisplay(authEvent.type.replace("-", " "))} - {authEvent.deviceName}</Heading>
+                  <Text variant='xs'>{formatDateForComponent(authEvent.timestamp)}</Text>
                 </div>
               </Link>
             ))}
-            {total > authEvents.length && <Capsule label={'Total ' + total} href={`/admin/auth-events/${firebaseUid}/devices`} />}
           </div>
         </>
       }

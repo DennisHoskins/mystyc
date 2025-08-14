@@ -46,17 +46,19 @@ export default function SessionsDashboard({ stats, showDetails = true } : { stat
     >
       <div className="flex-1 flex flex-col grow">
         {/* Health Indicator */}
-        <div className={`flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg ${healthStatus.bgColor}`}>
-          <HeartPulse className={`w-6 h-6 mr-2 ${healthStatus.iconColor}`} />
+        <div className={`flex-1 inline-flex items-center justify-center px-3 ${showDetails ? 'py-2' : 'py-1'} rounded-lg ${healthStatus.bgColor}`}>
+          <HeartPulse className={`${showDetails ? 'w-6 h-6' : 'w-3 h-3'} mr-2 ${healthStatus.iconColor}`} />
           
           {/* Large screens and small screens: Full layout */}
           <div className="block md:hidden lg:block">
             <div className={`font-medium text-xs ${healthStatus.textColor}`}>
               {healthStatus.status}
             </div>
-            <div className="text-xs text-gray-600">
-              {healthStatus.message}
-            </div>
+            {showDetails &&
+              <div className="text-xs text-gray-600">
+                {healthStatus.message}
+              </div>
+            }
           </div>
           
           {/* Medium screens only: Compact horizontal layout */}
@@ -70,15 +72,15 @@ export default function SessionsDashboard({ stats, showDetails = true } : { stat
         {showDetails &&
           <div className="mt-3 grid-cols-2 gap-3 text-sm grid md:hidden lg:grid">
             <div className="bg-gray-50 px-3 py-1 rounded-md">
-              <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
+              <div className="font-medium text-xs h-4 text-gray-700 flex justify-center items-center">
                 Sessions:
-                <span className="text-sm font-bold text-blue-600 ml-2">{stats?.summary.totalSessions}</span>
+                <span className="text-sm w-4 font-bold text-blue-600 ml-2">{stats?.summary.totalSessions}</span>
               </div>              
             </div>
             <div className="bg-gray-50 px-3 py-1 rounded-md">
-              <div className="font-medium text-xs text-gray-700 flex justify-center items-center">
+              <div className="font-medium text-xs h-4 text-gray-700 flex justify-center items-center">
                 Devices:
-                <span className="ml-4 text-sm font-bold text-green-600">{stats?.summary.totalDevices}</span>
+                <span className="ml-4 w-4 text-sm font-bold text-green-600">{stats?.summary.totalDevices}</span>
               </div>
             </div>
           </div>

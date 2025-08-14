@@ -7,10 +7,10 @@ const Table = forwardRef<
   HTMLTableElement,
   HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className={`relative w-full flex-1 flex flex-col bg-gray-50 rounded-md overflow-hidden`}>
+  <div className={clsx('relative w-full flex-1 flex flex-col rounded-sm overflow-hidden border border-gray-100 shadow-inner', styles.tableWrapper)}>
     <table
       ref={ref}
-      className={clsx('w-full bg-gray-100 overflow-hidden caption-bottom text-xs', className)}
+      className={clsx('w-full caption-bottom text-xs', className)}
       {...props}
     />
   </div>

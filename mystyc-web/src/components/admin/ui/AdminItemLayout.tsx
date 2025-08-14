@@ -42,15 +42,15 @@ export default function AdminItemLayout({
       <div className='grow flex-1 min-h-0 flex flex-col mt-4 mr-4 ml-4'>
         <Card className='flex-1'>
           <div className='flex space-x-3 items-center overflow-hidden'>
-            {icon && <Avatar size={'small'} icon={icon} />}
+            {icon && <Avatar size={'small'} icon={icon} className='-mt-[2.5px]' />}
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
-              <Heading level={2}>{title}</Heading>
+              <Heading level={3}>{title}</Heading>
             )}
           </div>
           <hr />
-          <AdminError 
+          <AdminError
             title={title}
             error={error} 
             onRetry={onRetry}
@@ -61,31 +61,30 @@ export default function AdminItemLayout({
   }
 
   if (!sideContent) {
+
+    const headClass = itemsContent || mainContent ? "" : "flex-1";
+
     return (
       <div className='grow w-full min-h-0 flex flex-col p-4 pb-0'>
-        <Card className='flex flex-col overflow-hidden'>
-          <div className='flex space-x-3 items-center'>
-            {icon && <Avatar size={'small'} icon={icon} />}
+        <Card className={headClass}>
+          <div className='flex space-x-3 items-center overflow-hidden'>
+            {icon && <Avatar size={'small'} icon={icon} className='-mt-[2.5px]' />}
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
               <Heading level={3}>{title}</Heading>
             )}
           </div>
-
           <hr />
-
-          <div className="mt-4 flex-1 flex flex-col overflow-hidden">
+          <div className='pt-1'>
             {headerContent}
-          </div>
+          </div>            
         </Card>
-
         {itemsContent &&
-          <div className={`mt-4 flex-1 w-full`}>
+          <div className={`mt-4 flex-1 w-full grow flex`}>
             {itemsContent}
           </div>
         }
-
         {mainContent && (
           <div className="mt-4 space-y-4 flex flex-col flex-1">
             {mainContent}
@@ -98,29 +97,27 @@ export default function AdminItemLayout({
   const hasX = sideContent != null;
   const hasY = itemsContent != null;
   const gap = hasX && hasY ? "gap-4" : hasX ? "gap-x-4" : "gap-y-4"
-  const rows = itemsContent ? 'row-span-2' : 'row-span-1';
+  const rows = itemsContent || (!itemsContent && !mainContent) ? 'row-span-2' : 'row-span-1';
+  const rowClass = itemsContent || mainContent ? "h-auto" : "h-full row-span-2";
 
   return (
     <div className='grow w-full min-h-0 flex flex-col p-4 pb-0'>
       <div className={`flex-1 grid grid-cols-1 lg:grid-cols-3 ${gap} lg:space-y-0 grid-rows-[auto_1fr]`}>
 
-        <Card className={`order-1 lg:col-span-2 h-auto`}>
+        <Card className={`order-1 lg:col-span-2 ${rowClass}`}>
           <div className='flex space-x-3 items-center overflow-hidden'>
-            {icon && <Avatar size={'small'} icon={icon} />}
+            {icon && <Avatar size={'small'} icon={icon} className='-mt-[2.5px]' />}
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
               <Heading level={3}>{title}</Heading>
             )}
           </div>
-
           <hr />
-
-          <div className="space-y-1 mt-4">
+          <div className='pt-1'>
             {headerContent}
           </div>
         </Card>
-
         {Array.isArray(sideContent) 
           ? <div className={`order-2 lg:col-span-1 ${rows} space-y-4 flex-1 grow flex flex-col`}>
               {sideContent}
@@ -129,12 +126,12 @@ export default function AdminItemLayout({
               {sideContent}
             </Card>
         }
-
-        <div className={`order-3 lg:col-span-2 space-y-4 flex-1 grow flex flex-col w-full`}>
-          {itemsContent}
-        </div>
+        {itemsContent &&
+          <div className={`order-3 lg:col-span-2 space-y-4 flex-1 grow flex flex-col w-full`}>
+            {itemsContent}
+          </div>
+        }
       </div>
-
       {mainContent && (
         <div className="mt-4 space-y-4 grow min-h-0 flex flex-col">
           {mainContent}

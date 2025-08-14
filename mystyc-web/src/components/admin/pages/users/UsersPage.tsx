@@ -94,22 +94,26 @@ export default function UsersPage() {
     {
       id: 'summary',
       label: 'Summary',
-      count: getSummaryCount()
+      count: getSummaryCount(),
+      hasCount: true
     },
     {
       id: 'all',
       label: 'All Users',
-      count: summary?.total || 0
+      count: summary?.total,
+      hasCount: true
     },
     {
       id: 'users',
       label: 'Users',
-      count: summary?.users || 0
+      count: summary?.users,
+      hasCount: true
     },
     {
       id: 'plus',
       label: 'Plus',
-      count: summary?.plus || 0
+      count: summary?.plus,
+      hasCount: true
     }
   ];
 

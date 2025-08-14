@@ -15,17 +15,15 @@ export default function ContentPreviewCard({ content }: { content: Content | nul
           <Heading level={5}>Content</Heading>
         </div>
       </div>
-
       <hr/>
-
       {content?.status === 'failed' && content.error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-1">
           <Heading level={6} className="text-red-700 mb-2">Generation Error</Heading>
           <Text className="text-red-600">{content.error}</Text>
         </div>
       )}
       
-      <div className="space-y-4">
+      <div className="space-y-4 pt-1">
         <div className="bg-gray-50 rounded-lg p-4">
           
           <Heading level={5} className="mb-3">{content?.title}</Heading>

@@ -14,11 +14,8 @@ interface AdminPanelHeaderProps {
 }
 
 export default function AdminPanelHeader({ icon, type, typeHref, heading, href, tag }: AdminPanelHeaderProps) {
-
-console.log(tag);
-
   return(
-    <>
+    <div className='flex flex-col space-y-1 pb-1'>
       <div className="flex w-full items-center space-x-2">
         <Avatar size={'small'} icon={icon} />
         <div className='flex flex-row items-center flex-1 space-x-1'>
@@ -41,6 +38,6 @@ console.log(tag);
         {tag}
       </div>
       <hr />
-    </>
+    </div>
   );
 }

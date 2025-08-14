@@ -47,7 +47,7 @@ export default function AstrologyTabPanel() {
   })
 
   return (
-    <div className='flex flex-col w-full space-y-8'>
+    <div className='flex flex-col w-full space-y-8 mt-1'>
       <AdminPanelLink
         label="Signs"
         total={summary?.signs}

@@ -51,13 +51,13 @@ export default function AdminHome() {
   if (error) {
     return(
       <>
-        <Card className='mb-4 space-y-4'>
-          <div className='flex space-x-3 items-center'>
-            <Avatar size={'medium'} icon={<DashboardIcon />} />
-            <Heading level={2}>Admin</Heading>
+        <Card className='mb-4'>
+          <div className='flex space-x-3 items-center overflow-hidden flex-1'>
+            <Avatar size={'small'} icon={<DashboardIcon size={3}/>} className='-mt-[2.5px]' />
+            <Heading level={3}>Admin</Heading>
           </div>
           <hr />
-          <Text className='flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <Text className='flex-1 pt-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
           <AdminError 
             title={"Unable to load dashboard"}
             error={error} 
@@ -71,13 +71,13 @@ export default function AdminHome() {
   return(
     <div className='flex-1 flex flex-col p-4 pb-0 w-full'>
       <div className="flex flex-col sm:flex-row mb-4">
-        <Card className='grow space-y-2'>
+        <Card className='grow'>
           <div className='flex space-x-3 items-center'>
             <Avatar size={'small'} icon={<DashboardIcon />} />
             <Heading level={3}>Admin</Heading>
           </div>
           <hr />
-          <Text className='mb-2 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
+          <Text className='mb-2 pt-1 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
           <ul className='flex space-x-2'>
             <li>
               <Capsule

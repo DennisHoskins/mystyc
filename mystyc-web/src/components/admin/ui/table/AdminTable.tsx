@@ -48,7 +48,7 @@ function LinkCell({ href, children }: LinkCellProps) {
     <a 
       href={href} 
       onClick={handleClick}
-      className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+      className="hover:text-blue-800 hover:underline cursor-pointer"
     >
       {children}
     </a>

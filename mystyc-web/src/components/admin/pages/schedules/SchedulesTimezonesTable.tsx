@@ -82,7 +82,6 @@ export default function SchedulesTimeZonesTable() {
 
   return (
       <AdminTable<DisplayRow>
-        label="Timezones"
         data={displayData}
         columns={columns}
         loading={loading}

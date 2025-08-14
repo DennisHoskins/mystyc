@@ -40,8 +40,8 @@ export default function AuthenticationDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats?.summary.totalEvents ?? "", label: 'Total Events', color: 'text-blue-600' },
-          { value: stats?.pattern.loginFrequency.averageLoginsPerUser ?? "", label: 'Avg Logins/User', color: 'text-green-600' }
+          { value: stats?.summary.totalEvents ?? "", label: 'Events', color: 'text-blue-600' },
+          { value: stats?.pattern.loginFrequency.averageLoginsPerUser ?? "", label: 'Logins/User', color: 'text-green-600' }
         ]} 
       />
     ),

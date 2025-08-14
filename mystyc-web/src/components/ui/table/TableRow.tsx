@@ -8,7 +8,7 @@ const TableRow = forwardRef<
   <tr
     ref={ref}
     className={clsx(
-      'even:bg-gray-100 transition-colors data-[state=selected]:bg-gray-100',
+      'even:bg-gray-50 transition-colors data-[state=selected]:bg-gray-100',
       '[tbody_&]:hover:bg-[#dbeafe]',
       className
     )}

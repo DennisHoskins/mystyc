@@ -10,7 +10,7 @@ import TokensIcon from '@/components/admin/ui/icons/TokensIcon';
 
 export default function DeviceTokensCard({ session, device }: { session?: Session | null, device?: Device | null }) {
   return (
-    <Card className='flex flex-col flex-1 grow'>
+    <Card className='flex-1 grow'>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={TokensIcon} />
         <div>
@@ -18,7 +18,7 @@ export default function DeviceTokensCard({ session, device }: { session?: Sessio
         </div>
       </div>
       <hr />
-      <AdminDetailGrid cols={1}>
+      <AdminDetailGrid cols={1} className='pt-1'>
         <AdminDetailField
           label="Auth Token"
           value={session?.authToken}

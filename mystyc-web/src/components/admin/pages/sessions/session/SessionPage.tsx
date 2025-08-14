@@ -62,13 +62,13 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       title={session ? `${session.email} - ${session.deviceName}` : ""}
       headerContent={<SessionDetailsPanel session={session} />}
       sideContent={
-        <div className='flex flex-col space-y-2'>
+        <div className='flex flex-col space-y-1'>
           <div className='flex space-x-2'>
             <Avatar size={'small'} icon={UserProfileIcon} />
             <Heading level={3}>User</Heading>
           </div>
           <hr/ >
-          <div className='flex flex-col space-y-6'>
+          <div className='flex flex-col space-y-6 pt-1'>
             <UserInfoPanel key='user' firebaseUid={session?.uid} />
             <DeviceInfoPanel key='device' deviceId={session?.deviceId} onLoad={handleDeviceLoad} />
           </div>

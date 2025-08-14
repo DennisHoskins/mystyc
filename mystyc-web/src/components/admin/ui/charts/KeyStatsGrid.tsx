@@ -35,17 +35,15 @@ function formatNumber(value: string | number): string {
 
 export default function KeyStatsGrid({ stats }: KeyStatsGridProps) {
   return (
-    <div className="@container flex grow h-full">
-      <div className={`grow grid gap-4 grid-cols-1 @[200px]:grid-cols-2`}>
-        {stats.map((stat, index) => (
-          <div key={index} className="text-center bg-gray-100 py-2 rounded-md flex flex-col justify-center">
-            <div className={`text-2xl h-8 font-bold ${stat.color || 'text-blue-600'}`}>
-              {formatNumber(stat.value)}
-            </div>
-            <div className="text-[10px] text-gray-500">{stat.label}</div>
+    <div className={`flex w-full space-x-4 justify-center sm:justify-end`}>
+      {stats.map((stat, index) => (
+        <div key={index} className="text-center flex flex-col">
+          <div className={`text-sm h-4 font-bold ${stat.color || 'text-blue-600'}`}>
+            {formatNumber(stat.value)}
           </div>
-        ))}
-      </div>
-    </div>  
+          <div className="text-[8px] text-gray-500">{stat.label}</div>
+        </div>
+      ))}
+    </div>
   );
 }

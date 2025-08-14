@@ -60,8 +60,8 @@ export default function ContentDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: (stats && stats.summary) ? (stats.summary.totalContent) : "", label: 'Total Content', color: 'text-blue-600' },
-          { value: (stats && stats.summary) ? (`${stats.summary.successRate}%`) : "", label: 'Success Rate', color: 'text-green-600' }
+          { value: (stats && stats.summary) ? (stats.summary.totalContent) : "", label: 'Total', color: 'text-blue-600' },
+          { value: (stats && stats.summary) ? (`${stats.summary.successRate}%`) : "", label: 'Success', color: 'text-green-600' }
         ]} 
       />
     ),

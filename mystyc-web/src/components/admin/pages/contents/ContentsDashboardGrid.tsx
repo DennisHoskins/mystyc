@@ -7,7 +7,7 @@ export default function ContentsDashboardGrid({
   stats: ContentStats | null
 }) {
   return (
-    <div className='flex-1 grid grid-cols-3 gap-4 h-[15em] mb-4'>
+    <div className='flex-1 grid grid-cols-3 gap-4 h-[15em]'>
       <div className='col-span-2 flex flex-col pb-2'>
         <ContentDashboard
           key={'timeline'}

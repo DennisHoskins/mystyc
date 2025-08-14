@@ -38,7 +38,7 @@ export default function PlanetInteractionsPanel({ planet } : { planet: PlanetTyp
   console.log(error);
 
   return (
-    <div className='space-y-2 grow'>
+    <>
       <div className="flex items-center space-x-2">
         <Avatar size={'small'} icon={<MoonStar className='w-3 h-3' />} />
         <div>
@@ -48,7 +48,7 @@ export default function PlanetInteractionsPanel({ planet } : { planet: PlanetTyp
         </div>
       </div>
       <hr/ >
-      <div className='flex flex-col space-y-6'>
+      <div className='flex flex-col space-y-6 pt-1'>
         {data.map((item) => (
           <AdminDetailField 
             key={item.planet2}
@@ -79,6 +79,6 @@ export default function PlanetInteractionsPanel({ planet } : { planet: PlanetTyp
           />
         ))}        
       </div>
-    </div>
+    </>
   );
 }

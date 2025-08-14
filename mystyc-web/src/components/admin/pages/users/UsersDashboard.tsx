@@ -42,7 +42,7 @@ export default function UsersDashboard({
     stats: (
       <KeyStatsGrid 
         stats={[
-          { value: stats?.profiles.totalUsers || "", label: 'Total Users', color: 'text-blue-600' },
+          { value: stats?.profiles.totalUsers || "", label: 'Users', color: 'text-blue-600' },
           { value: `${stats ? stats?.profiles.completionPercentageRates.totalComplete + "%" : " %"}`, label: 'Complete', color: 'text-green-600' }
         ]} 
       />
