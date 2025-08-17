@@ -40,7 +40,7 @@ export default function ElementDetailsCard({ element } : { element?: ElementType
         href={'/admin/astrology/elements/' + element}
         tag={
           <Capsule
-            icon={<Energy size={3} />} 
+            icon={<Energy size={2} />} 
             label={elementData?.energyType || ''} 
             href={'/admin/astrology/energy-types/' + elementData?.energyType} 
           />

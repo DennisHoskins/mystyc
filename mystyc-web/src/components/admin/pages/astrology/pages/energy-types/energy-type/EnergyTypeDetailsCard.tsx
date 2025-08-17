@@ -42,7 +42,7 @@ export default function EnergyTypeDetailsCard({ energyType, className } : { ener
         href={'/admin/astrology/energy-types/' + energyType}
         tag={
           <Capsule
-            icon={getCategoryIcon(energyTypeData?.category, 'w-3 h-3')}
+            icon={getCategoryIcon(energyTypeData?.category, 'w-2 h-2')}
             label={`${energyTypeData?.category || null} / ${energyTypeData?.intensity || null}`} 
             href={'/admin/astrology/energy-types/' + energyType} 
           />

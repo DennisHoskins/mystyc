@@ -41,9 +41,9 @@ export default function AdminListLayout({
 
   if (error) {
     return (
-      <div className='grow w-full flex p-4 pb-0'>
+      <div className='grow w-full flex p-0 sm:p-1 sm:pb-0 sm:mr-2'>
         <Card className="grow w-full">
-          <div className='flex space-x-3 items-center overflow-hidden'>
+          <div className='flex space-x-3 items-center mb-2'>
             {icon && <Avatar size={'small'} icon={icon} className='-mt-[2.5px]' />}
             {breadcrumbs ? (
               <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
@@ -51,7 +51,6 @@ export default function AdminListLayout({
               <Heading level={3}>{title}</Heading>
             )}
           </div>
-          <hr />
           <AdminError 
             title={"Unable to load data"}
             error={error} 
@@ -63,12 +62,12 @@ export default function AdminListLayout({
   }
 
   return (
-    <div className='w-full flex p-4 pb-0 grow'>
-      <Card className="grow w-full max-h-[calc(100dvh_-_125px)] overflow-hidden">
+    <div className='w-full flex grow p-0 sm:p-1 sm:pb-0 sm:pr-2'>
+      <Card className="grow w-full max-h-[calc(100dvh_-_112px)] overflow-hidden">
         <div className='flex w-full'>
           <div className='flex flex-col w-full space-y-1'>
             <div className='flex flex-row w-full'>
-              <div className='flex space-x-3 items-center overflow-hidden flex-1'>
+              <div className='flex space-x-3 items-center flex-1'>
                 {icon && <Avatar size={'small'} icon={icon} className='-mt-[2.5px]' />}
                 {breadcrumbs ? (
                   <AdminBreadcrumbs breadcrumbs={breadcrumbs} />
@@ -77,24 +76,25 @@ export default function AdminListLayout({
                 )}
               </div>
               {sideContent &&
-                <div className='sm:ml-4 mt-4 sm:-mt-1 min-w-44 hidden sm:flex'>
+                <div className='sm:ml-1 mt-1 sm:-mt-1 min-w-44 hidden sm:flex'>
                   {sideContent}
                 </div>
               }
             </div>
-            <hr />
-            <div className='w-full grow flex flex-col overflow-hidden pt-1'>
-              {headerContent ? (
-                <>{headerContent}</>
-              ) : (
-                <>{description && <Text>{description}</Text>}</>
-              )}
-            </div>
+            {(headerContent || description) &&
+              <div className='w-full grow flex flex-col overflow-hidden pt-2'>
+                {headerContent ? (
+                  <>{headerContent}</>
+                ) : (
+                  <>{description && <Text>{description}</Text>}</>
+                )}
+              </div>
+            }
           </div>
         </div>
         {itemsContent && (
           Array.isArray(itemsContent) ? (
-            <div className={`grid grid-cols-1 md:grid-cols-${gridCols} gap-4 !mb-2`}>
+            <div className={`grid grid-cols-1 md:grid-cols-${gridCols} gap-1 !mb-2`}>
               {itemsContent.map((item, index) => (
                 <div key={index}>{item}</div>
               ))}

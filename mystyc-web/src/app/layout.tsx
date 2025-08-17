@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: '/favicon/favicon.ico',
       apple: '/favicon/apple-touch-icon.png',
-      shortcut: '/favicon/android-chrome-192x192.png',
+      shortcut: '/favicon/favicon-192x192.png',
     },
   };
 }

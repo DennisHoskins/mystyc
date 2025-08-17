@@ -11,10 +11,10 @@ import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import DeviceIcon from '@/components/admin/ui/icons/DeviceIcon';
 import DeviceDetailsPanel from './DeviceDetailsPanel';
-import DeviceUsersCard from './DeviceUsersCard';
-import DeviceNotificationsCard from './DeviceNotificationsCard';
-import DeviceAuthEventsCard from './DeviceAuthEventsCard';
-import DeviceSessionCard from './DeviceSessionCard';
+import DeviceUsersCard from './cards/DeviceUsersCard';
+import DeviceNotificationsCard from './cards/DeviceNotificationsCard';
+import DeviceAuthEventsCard from './cards/DeviceAuthEventsCard';
+import DeviceSessionCard from './cards/DeviceSessionCard';
 
 export default function DevicePage({ deviceId }: { deviceId: string }) {
   const { setBusy } = useBusy();

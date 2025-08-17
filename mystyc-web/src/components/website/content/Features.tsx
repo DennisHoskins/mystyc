@@ -1,14 +1,14 @@
-import Panel from '@/components/ui/Panel';
+// import Panel from '@/components/ui/Panel';
 import Heading from '@/components/ui/Heading';
 
 export default function Features() {
   return (
-    <>
-      <Heading level={1} className="text-center mb-8">
+    <div className='flex flex-col py-12'>
+      <Heading level={1} className="text-center mb-16">
         Features
       </Heading>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Panel
+        {/* <Panel
           title="Insight Dashboard"
           description="View personalized analytics about your habits, mood, and progress over time."
         />
@@ -23,8 +23,8 @@ export default function Features() {
         <Panel
           title="Secure Cloud Storage"
           description="All of your entries and data are encrypted and stored securely in the cloud."
-        />
+        /> */}
       </div>
-    </>
+    </div>
   );
 }

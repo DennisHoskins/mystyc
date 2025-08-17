@@ -30,7 +30,6 @@ export default function AdminDashboardSubscriptions({ stats, className } : {
         <SubscriptionsDashboard
           stats={stats}
           charts={['mrr']}
-          height={100}
         />
       </Link>
     </AdminDashboardItemLayout>

@@ -10,7 +10,7 @@ export default function Hero() {
  const router = useTransitionRouter();
 
  return (
-   <div className="text-center">
+   <div className="text-center py-12">
      <Heading level={1} className="mb-6 text-4xl md:text-6xl">
        Welcome to mystyc
      </Heading>
@@ -29,7 +29,7 @@ export default function Hero() {
        <Heading level={2} className="mb-6">
          Why mystyc?
        </Heading>
-       <ul className="text-left list-disc list-inside space-y-3 text-gray-700 text-lg">
+       <ul className="text-left list-disc list-inside space-y-3 text-gray-500 text-lg">
          <li>Personalized self-discovery tools</li>
          <li>Data-driven insights and analytics</li>
          <li>Community-driven support and sharing</li>

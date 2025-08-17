@@ -56,7 +56,7 @@ export default function ModalityPage({ modality } : { modality: ModalityType }) 
       headerContent={<ModalityDetailsPanel modality={modalityData} />}
       sideContent={<ModalitySignsPanel key='signs' modality={modality} />}
       itemsContent={[
-        <div key='energy-signs' className='energy-type-sign flex flex-col space-y-4 w-full'>
+        <div key='energy-signs' className='energy-type-sign flex flex-col space-y-1 w-full'>
           <EnergyTypeDetailsCard key='energy-type' energyType={modalityData?.energyType} />
           <ModalityInteractionsCard key='modality-interactions' modality={modality} />    
         </div>

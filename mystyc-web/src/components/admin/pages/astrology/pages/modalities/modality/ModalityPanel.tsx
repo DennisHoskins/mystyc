@@ -14,10 +14,10 @@ export default function ModalityPanel({ modality } : { modality?: Modality | nul
       headinghref={'/admin/astrology/modalities/' + modality?.modality}
       value={
         <div className='flex flex-col space-y-2'>
-          <Link href={'/admin/astrology/modalities/' + modality?.modality} className='!text-gray-500 text-wrap !no-underline'>
-            {modality?.description}
+          <Link href={'/admin/astrology/modalities/' + modality?.modality} className='text-wrap !no-underline'>
+            <span className='text-gray-100'>{modality?.description}</span>
             <br />
-            <span className='text-xs'><strong>Keywords</strong> [{modality?.keywords.join(", ")}]</span>
+            <span className='text-xs text-gray-500'><strong>Keywords</strong> [{modality?.keywords.join(", ")}]</span>
           </Link>
           <div className='flex space-x-2'>
             <Capsule

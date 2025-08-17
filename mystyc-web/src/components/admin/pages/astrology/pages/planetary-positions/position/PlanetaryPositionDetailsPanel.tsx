@@ -1,11 +1,12 @@
 import { PlanetaryPosition } from 'mystyc-common/schemas/';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
+import Panel from '@/components/ui/Panel';
 
 export default function PlanetaryPositionDetailsPanel({ position }: { position?: PlanetaryPosition | null }) {
   return (
-    <div className='space-y-4'>
-      <AdminDetailGrid cols={1} className='!gap-1'>
+    <Panel>
+      <AdminDetailGrid className='!gap-1'>
         <AdminDetailField
           value={position?.description}
           type='description'
@@ -16,6 +17,6 @@ export default function PlanetaryPositionDetailsPanel({ position }: { position?:
           text={position?.keywords && "[" + position?.keywords.join(", ") + "]"}
         />
       </AdminDetailGrid>
-    </div>
+    </Panel>
   );
 }

@@ -8,10 +8,9 @@ import { getModality } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
-import Link from '@/components/ui/Link';
+import AdminPanelHeader from '@/components/admin/ui/AdminPanelHeader';
 import ModalityPanel from '../../modalities/modality/ModalityPanel';
+import Panel from '@/components/ui/Panel';
 
 export default function ModalityInteractionPanel({ interaction } : { interaction?: ModalityInteraction | null }) {
   const { setBusy } = useBusy();
@@ -47,18 +46,20 @@ export default function ModalityInteractionPanel({ interaction } : { interaction
 
   return (
     <>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<Atom className='w-3 h-3' />} />
-        <div>
-          <Link href='/admin/astrology/modalityary-interactions'>
-            <Heading level={3}>Position</Heading>
-          </Link>
-        </div>
-      </div>
-      <hr/ >
-      <div className='flex flex-col space-y-6 pt-1'>
-        <ModalityPanel modality={modality1} />
-        {modality2 && <ModalityPanel modality={modality2} />}
+      <AdminPanelHeader
+        icon={<Atom className='w-3 h-3' />}
+        heading='Modality Interactions'
+        href='/admin/astrology/modality-interactions'
+      />
+      <div className='flex flex-col space-y-6'>
+        <Panel>
+          <ModalityPanel modality={modality1} />
+        </Panel>
+        {modality2 && 
+          <Panel>
+            <ModalityPanel modality={modality2} />
+          </Panel>
+        }
       </div>
     </>
   );

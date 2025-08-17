@@ -15,19 +15,19 @@ export default function AdminDashboard({ query, stats } : {
   stats?: AdminStatsResponseExtended | null 
 }) {
   return(
-    <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4">
-      <AdminDashboardTraffic stats={stats?.traffic} className='col-span-1 lg:col-span-12' />
+    <div className="grow w-full grid gap-1 grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12">
+      <AdminDashboardTraffic stats={stats?.traffic} className='order-1 col-span-2 md:col-span-4 lg:col-span-6 xl:col-span-8' />
 
-      <AdminDashboardSchedules stats={stats?.schedule} className='col-span-1 lg:col-span-4 xl:col-span-3' />
-      <AdminDashboardContent stats={stats?.content} className='col-span-1 lg:col-span-8 xl:col-span-9' />
+      <AdminDashboardSubscriptions stats={stats?.subscriptions} className='min-h-[12em] order-2 col-span-2 md:col-span-4 lg:col-span-4 xl:order-4 xl:col-span-5' />
+      <AdminDashboardOpenAI stats={stats?.openai} className='min-h-[12em] order-3 col-span-1 md:col-span-2 lg:col-span-2 xl:order-2 xl:col-span-4' />
 
-      <AdminDashboardSubscriptions stats={stats?.subscriptions} className='col-span-1 lg:col-span-8' />
-      <AdminDashboardOpenAI stats={stats?.openai} className='col-span-1 lg:col-span-4' />
+      <AdminDashboardSchedules stats={stats?.schedule} className='min-h-[12em] order-4 col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2' />
+      <AdminDashboardContent query={query} stats={stats?.content} className='min-h-[12em] order-5 col-span-2 md:col-span-4 lg:col-span-4 xl:col-span-5' />
 
-      <AdminDashboardUsers query={query} stats={stats?.users} className='col-span-1 lg:col-span-6 xl:col-span-3' />
-      <AdminDashboardDevices stats={stats?.devices} className='col-span-1 lg:col-span-6 xl:col-span-3' />
-      <AdminDashboardNotifications query={query} stats={stats?.notifications} className='col-span-1 lg:col-span-6 xl:col-span-3' />
-      <AdminDashboardAuthentications stats={stats?.authEvents} className='col-span-1 lg:col-span-6 xl:col-span-3' />
+      <AdminDashboardUsers query={query} stats={stats?.users} className='min-h-[10em] order-6 col-span-2 md:col-span-2 lg:col-span-3' />
+      <AdminDashboardDevices stats={stats?.devices} className='min-h-[10em] order-7 col-span-2 md:col-span-2 lg:col-span-3' />
+      <AdminDashboardNotifications query={query} stats={stats?.notifications} className='min-h-[10em] order-8 col-span-2 md:col-span-2 lg:col-span-3' />
+      <AdminDashboardAuthentications stats={stats?.authEvents} className='min-h-[10em] order-9 col-span-2 md:col-span-2 lg:col-span-3' />
     </div>
   );
 };

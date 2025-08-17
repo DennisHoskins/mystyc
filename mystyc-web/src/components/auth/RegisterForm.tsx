@@ -86,12 +86,12 @@ export default function RegisterForm() {
             Create Account
           </Button>
 
-          <p className="text-center text-sm mt-4 text-gray-600">
+          <p className="text-center text-sm mt-4 text-gray-400">
             <span className="block">
-              Already have an account? <Link href="/login" onClick={() => router.replace("/login", false)}>Sign In</Link>
+              Already have an account? <Link href="/login" onClick={() => router.replace("/login", false)}><strong>Sign In</strong></Link>
             </span>
             <span className="block mt-1">
-              <Link href="/password-reset" onClick={() => router.replace("/password-reset", false)}>Forgot your password?</Link>
+              <Link href="/password-reset" onClick={() => router.replace("/password-reset", false)}><strong>Forgot your password?</strong></Link>
             </span>
           </p>
         </Form>

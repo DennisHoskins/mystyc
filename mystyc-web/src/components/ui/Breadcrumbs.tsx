@@ -22,7 +22,7 @@ export default function Breadcrumbs({
   items, 
   separator = '/', 
   className = '',
-  level = 3,
+  level = 5,
   size
 }: BreadcrumbsProps) {
   const router = useTransitionRouter();
@@ -73,17 +73,17 @@ export default function Breadcrumbs({
                 <a
                   href={item.href}
                   onClick={(e) => handleClick(item, e)}
-                  className={`${baseSizeClass} hover:underline`}
+                  className={`${baseSizeClass} hover:underline text-gray-100`}
                 >
                   {item.label}
                 </a>
               ) : (
-                <span className={`${baseSizeClass} truncate whitespace-nowrap  ${isLast ? 'text-gray-900' : 'text-gray-500'}`}>
+                <span className={`${baseSizeClass} truncate whitespace-nowrap  ${isLast ? 'text-gray-100' : 'text-gray-100'}`}>
                   {item.label}
                 </span>
               )}
               {!isLast && (
-                <span className={`mx-2 ${baseSizeClass} text-gray-400`} aria-hidden="true">
+                <span className={`mx-2 ${baseSizeClass} text-gray-100`} aria-hidden="true">
                   {separator}
                 </span>
               )}

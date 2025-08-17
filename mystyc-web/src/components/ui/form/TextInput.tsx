@@ -36,7 +36,7 @@ export default function TextInput({
           type="text"
           value={value}
           className={clsx(
-            'block w-full h-14 rounded-md border-0 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500 font-sans shadow-sm disabled:text-gray-100 disabled:opacity-60',
+            'block w-full h-14 rounded-md border-0 px-3 bg-[#230537] !text-white font-sans disabled:text-gray-100 disabled:opacity-60',
             label ? 'pt-6 pb-2' : 'py-3',
             'placeholder:text-transparent',
             className

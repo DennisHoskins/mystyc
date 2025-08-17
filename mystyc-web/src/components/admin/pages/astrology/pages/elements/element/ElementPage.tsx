@@ -56,7 +56,7 @@ export default function ElementPage({ element } : { element: ElementType }) {
       headerContent={<ElementDetailsPanel element={elementData} />}
       sideContent={<ElementInteractionsPanel element={element} />}
       itemsContent={[
-        <div key='energy-signs' className='flex-1 flex flex-col space-y-4 w-full'>
+        <div key='energy-signs' className='flex-1 flex flex-col space-y-1 w-full'>
           <EnergyTypeDetailsCard key='energy-type' energyType={elementData?.energyType} />
           <ElementSignsCard key='signs' element={element} className='flex-1 grow' />
         </div>          

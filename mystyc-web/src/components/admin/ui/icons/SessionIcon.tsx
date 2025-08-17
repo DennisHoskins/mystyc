@@ -2,6 +2,6 @@ import { Activity } from 'lucide-react'
 
 export default function SessionIcon({ size = 6 }: { size?: number }) {
   return (
-    <Activity className={`w-${size} h-${size} text-gray-500`} />
+    <Activity className={`w-${size} h-${size}`} />
   );    
 }

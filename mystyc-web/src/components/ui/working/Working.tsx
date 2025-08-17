@@ -31,10 +31,8 @@ export default function Working() {
   if (!visible) return null;
 
   return (
-    <div className={fadingOut ? styles.fadeOut : styles.fadeIn}>
-      <Overlay>
-        <IconEye className={`${styles.icon} ${styles.animatePingSoft} w-20 h-20`} />
-      </Overlay>
-    </div>
+    <Overlay className={`${fadingOut ? styles.fadeOut : styles.fadeIn}`}>
+      <IconEye className={`${styles.icon} ${styles.animatePingSoft} w-20 h-20`} />
+    </Overlay>
   );
 }

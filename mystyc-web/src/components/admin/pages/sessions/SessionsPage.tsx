@@ -111,9 +111,9 @@ export default function SessionsPage() {
         />
       }
       sideContent={
-        <SessionsDashboard 
+        <SessionsDashboard
+          className='-mt-2' 
           stats={stats} 
-          showDetails={false}
         />
       }
       mainContent={

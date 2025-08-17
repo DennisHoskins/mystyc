@@ -3,20 +3,16 @@ import { Pagination } from 'mystyc-common/admin';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface OpenAIUsageTableProps {
-  label?: string;
   data?: OpenAIUsage[];
   pagination?: Pagination;
-  loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
 }
 
 export default function OpenAIUsageTable({
-  label,
   data,
   pagination,
-  loading,
   currentPage,
   onPageChange,
   onRefresh,
@@ -33,10 +29,9 @@ export default function OpenAIUsageTable({
   ];
   return (
     <AdminTable<OpenAIUsage>
-      label={label}
       data={data}
       columns={columns}
-      loading={loading}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={pagination?.totalPages}
       hasMore={pagination?.hasMore}

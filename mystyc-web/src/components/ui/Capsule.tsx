@@ -14,7 +14,7 @@ export default function Capsule({ icon, label, total, hasTotal, href } : Capsule
     return null;
   }
 
-  const className = 'p-1 pr-2 rounded-full bg-gray-300 !text-gray-600 font-bold text-[8px] max-w-fit flex items-center ' + (icon ? "pl-1" : "pl-2");
+  const className = 'py-[2.5px] pl-1 pr-2 rounded-full bg-blue-600 !text-gray-100 font-bold text-[7px] max-w-fit flex items-center ' + (icon ? "pl-1" : "pl-2");
 
   return(
     href ? (

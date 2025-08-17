@@ -40,7 +40,7 @@ export default function ModalityDetailsCard({ modality } : { modality?: Modality
         href={'/admin/astrology/modalities/' + modality}
         tag={
           <Capsule
-            icon={<Energy size={3} />} 
+            icon={<Energy size={2} />} 
             label={modalityData?.energyType || ''} 
             href={'/admin/astrology/energy-types/' + modalityData?.energyType} 
           />

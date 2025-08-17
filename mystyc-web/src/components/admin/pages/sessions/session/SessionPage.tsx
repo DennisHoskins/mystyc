@@ -5,18 +5,16 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Device } from 'mystyc-common/schemas/';
 import { Session } from '@/interfaces';
 import { getSession } from '@/server/actions/admin/sessions';
+import { getDevice } from '@/server/actions/admin/devices';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
-import UserProfileIcon from '@/components/admin/ui/icons/UserProfileIcon';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import SessionIcon from '@/components/admin/ui/icons/SessionIcon';
 import SessionDetailsPanel from './SessionDetailsPanel';
 import SessionTokensCard from './SessionTokensCard';
-import UserInfoPanel from '@/components/admin/pages/users/user/UserInfoPanel';
-import DeviceInfoPanel from '@/components/admin/pages/devices/device/DeviceInfoPanel';
+import UserCard from '../../users/user/UserCard';
+import DeviceCard from '../../devices/device/DeviceCard';
 
 export default function SessionPage({ sessionId }: { sessionId: string }) {
   const { setBusy } = useBusy();
@@ -28,9 +26,12 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
     try {
       setError(null);
       setBusy(1000);
-
       const data = await getSession({deviceInfo: getDeviceInfo(), sessionId});
       setSession(data);
+      if (data) {
+        const device = await getDevice({deviceInfo: getDeviceInfo(), deviceId: data?.deviceId});
+        setDevice(device);
+      }
     } catch (err) {
       logger.error('Failed to load session:', err);
       setError('Failed to load session. Please try again.');
@@ -49,10 +50,6 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
     { label: session ? `${sessionId}` : `` },
   ], [session, sessionId]);
 
-  const handleDeviceLoad = useCallback((device: Device) => {
-    setDevice(device);
-  }, []);
-
   return (
     <AdminItemLayout
       error={error}
@@ -61,19 +58,10 @@ export default function SessionPage({ sessionId }: { sessionId: string }) {
       icon={<SessionIcon />}
       title={session ? `${session.email} - ${session.deviceName}` : ""}
       headerContent={<SessionDetailsPanel session={session} />}
-      sideContent={
-        <div className='flex flex-col space-y-1'>
-          <div className='flex space-x-2'>
-            <Avatar size={'small'} icon={UserProfileIcon} />
-            <Heading level={3}>User</Heading>
-          </div>
-          <hr/ >
-          <div className='flex flex-col space-y-6 pt-1'>
-            <UserInfoPanel key='user' firebaseUid={session?.uid} />
-            <DeviceInfoPanel key='device' deviceId={session?.deviceId} onLoad={handleDeviceLoad} />
-          </div>
-        </div>
-      }
+      sideContent={[
+        <UserCard key='user' firebaseUid={session?.uid} className='!flex-none' />,
+        <DeviceCard key='device' deviceId={session?.deviceId} className='flex-1 grow' />
+      ]}
       itemsContent={[<SessionTokensCard key='tokens' session={session} device={device} />]}
     />
   );    

@@ -59,7 +59,7 @@ export default function PasswordResetPage() {
         error={error}
         success={message}
       >
-        <Form onSubmit={handleSubmit} className='!mt-10'>
+        <Form onSubmit={handleSubmit} className='!mt-4'>
           <TextInput
             id="email"
             name="email"
@@ -82,12 +82,12 @@ export default function PasswordResetPage() {
             Send Reset Email
           </Button>
 
-          <p className="text-center text-sm mt-4 text-gray-600">
+          <p className="text-center text-sm mt-4 text-gray-400">
             <span className="block">
-              Remember your password? <Link href="/login" onClick={() => router.replace("/login", false)}>Sign In</Link>
+              Remember your password? <Link href="/login" onClick={() => router.replace("/login", false)}><strong>Sign In</strong></Link>
             </span>
             <span className="block mt-1">
-              Don&apos;t have an account? <Link href="/register" onClick={() => router.replace("/register", false)}>Register</Link>
+              Don&apos;t have an account? <Link href="/register" onClick={() => router.replace("/register", false)}><strong>Register</strong></Link>
             </span>
           </p>
         </Form>

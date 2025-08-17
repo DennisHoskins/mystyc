@@ -4,7 +4,7 @@ import { Device } from 'mystyc-common/schemas/';
 
 export default function DeviceIcon({ device, size = 6 }: { device?: Device | null, size?: number }) {
   if (!device) {
-    return <MonitorSmartphone className={`w-${size} h-${size} text-gray-500`} />
+    return <MonitorSmartphone className={`w-${size} h-${size}`} />
   }
 
   const getDeviceIcon = (userAgent: string) => {
@@ -24,6 +24,6 @@ export default function DeviceIcon({ device, size = 6 }: { device?: Device | nul
   const DeviceIcon = getDeviceIcon(device.userAgent || '');
 
   return (
-    <DeviceIcon className={`w-${size} h-${size} text-gray-500`} />
+    <DeviceIcon className={`w-${size} h-${size}`} />
   );    
 }

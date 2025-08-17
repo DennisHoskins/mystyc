@@ -3,12 +3,9 @@ import { AlarmClockCheck, Bell, Globe, Users, UserPlus } from 'lucide-react';
 import { Content } from 'mystyc-common/schemas';
 import { Pagination } from 'mystyc-common/admin';
 import { formatDateForDisplay } from '@/util/dateTime';
-import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface ContentTableProps {
-  icon?: IconComponent,
-  label?: string,
   data?: Content[] | null;
   pagination?: Pagination | null;
   loading?: boolean;
@@ -19,8 +16,6 @@ interface ContentTableProps {
 }
 
 export default function ContentTable({
-  icon,
-  label,
   data,
   pagination,
   loading,
@@ -78,14 +73,11 @@ export default function ContentTable({
 
   return (
     <AdminTable<Content>
-      icon={icon}
-      label={label}
       data={data}
       columns={columns}
       loading={loading}
       currentPage={currentPage}
       totalPages={pagination?.totalPages}
-      totalItems={pagination?.totalItems}
       hasMore={pagination?.hasMore}
       onPageChange={onPageChange}
       onRefresh={onRefresh}

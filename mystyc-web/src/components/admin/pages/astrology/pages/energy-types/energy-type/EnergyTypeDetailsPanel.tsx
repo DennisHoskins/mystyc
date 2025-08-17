@@ -1,10 +1,11 @@
 import { EnergyType } from 'mystyc-common/schemas/';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
+import Panel from '@/components/ui/Panel';
 
 export default function EnergyTypeDetailsPanel({ energyType, showCategory = true }: { energyType?: EnergyType | null, showCategory?: boolean }) {
   return (
-    <div className='space-y-4'>
+    <Panel>
       {showCategory &&
         <AdminDetailGrid cols={2}>
           <AdminDetailField
@@ -17,7 +18,7 @@ export default function EnergyTypeDetailsPanel({ energyType, showCategory = true
           />
         </AdminDetailGrid>
       }
-      <AdminDetailGrid cols={1} className='!gap-1'>
+      <AdminDetailGrid className='!gap-1'>
         <AdminDetailField
           value={energyType?.description}
           type='description'
@@ -28,6 +29,6 @@ export default function EnergyTypeDetailsPanel({ energyType, showCategory = true
           text={energyType?.keywords && "[" + energyType?.keywords.join(", ") + "]"}
         />
       </AdminDetailGrid>
-    </div>
+    </Panel>
   );
 }

@@ -1,22 +1,7 @@
-import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
-
-interface PanelProps {
-  title: string;
-  description: string;
-  icon?: React.ReactNode;
-}
-
-export default function Panel({ title, description, icon }: PanelProps) {
+export default function Panel({ children, className }: {  children: React.ReactNode, className?: string }) {
   return (
-    <div className="rounded-md p-6 shadow-sm">
-      {icon && <div className="mb-4">{icon}</div>}
-      <Heading level={3} className="mb-2">
-        {title}
-      </Heading>
-      <Text>
-        {description}
-      </Text>
+    <div className={`flex flex-col p-4 space-y-1 bg-[#230537] rounded-md w-full ${className}`}>
+      {children}
     </div>
   );
 }

@@ -3,20 +3,16 @@ import { Pagination } from 'mystyc-common/admin';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface SchedulesTableProps {
-  label?: string;
   data?: Schedule[];
   pagination?: Pagination;
-  loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
 }
 
 export default function SchedulesTable({
-  label,
   data,
   pagination,
-  loading,
   currentPage,
   onPageChange,
   onRefresh,
@@ -30,10 +26,9 @@ export default function SchedulesTable({
 
   return (
     <AdminTable<Schedule>
-      label={label}
       data={data}
       columns={columns}
-      loading={loading}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={pagination?.totalPages}
       hasMore={pagination?.hasMore}

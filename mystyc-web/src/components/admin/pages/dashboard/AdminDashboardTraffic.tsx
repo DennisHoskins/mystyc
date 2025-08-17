@@ -25,26 +25,27 @@ export default function AdminDashboardTraffic({ stats, className } : {
     >
       <Link 
         href='/admin/traffic'
-        className="w-full flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4"
+        className="w-full flex-1 grid grid-cols-2 md:grid-cols-7 gap-4"
       >
-        <div className="col-span-1 lg:col-span-2 flex">
-          <TrafficDashboard 
-            data={stats} 
-            charts={['visitors']}
-            height={100} 
-          />
-        </div>
+        <TrafficDashboard 
+          data={stats} 
+          charts={['visitors']}
+          height={80} 
+          className="col-span-2 md:col-span-3"
+        />
         
         <TrafficDashboard 
           data={stats} 
           charts={['browsers']} 
-          height={100} 
+          height={80} 
+          className="col-span-1 md:col-span-2"
         />
         
         <TrafficDashboard 
           data={stats} 
           charts={['types']} 
-          height={100} 
+          height={80} 
+          className="col-span-1 md:col-span-2"
         />
       </Link>    
     </AdminDashboardItemLayout>

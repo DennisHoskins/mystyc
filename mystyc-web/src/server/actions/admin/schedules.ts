@@ -99,12 +99,12 @@ export async function getExecution(params: {
 }
 
 // Execution Summary
-export async function getExecutionsSummary(params: {
+export async function getExecutionSummary(params: {
   deviceInfo: DeviceInfo;
   executionId: string;
 }) {
   return withAdminAuth(async (session, { executionId }) => {
-    logger.log('[getExecutionsSummary] Fetching execution summary:', executionId);
+    logger.log('[getExecutionSummary] Fetching execution summary:', executionId);
     return nestGet<{ contents: { total: number }; notifications: { total: number } }>(
       session,
       `admin/schedule-executions/${executionId}/summary`

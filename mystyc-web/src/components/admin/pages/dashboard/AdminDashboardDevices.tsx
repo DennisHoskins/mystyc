@@ -29,8 +29,7 @@ export default function AdminDashboardDevices({ stats, className } : {
       >
         <DevicesDashboard 
           stats={stats}
-          charts={['browsers', 'activity'] }
-          height={100}
+          charts={['browsers'] }
         />
       </Link>
     </AdminDashboardItemLayout>

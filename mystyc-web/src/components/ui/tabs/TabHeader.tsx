@@ -23,34 +23,37 @@ export default function TabHeader({
   if (!tabs.length) return null;
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full ${className} min-h-7`}>
       <div className="flex">
         {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            className={`
-              flex px-4 py-1 text-[10px] font-bold border-b-2 transition-colors duration-200 items-baseline justify-center
-              ${activeTab === tab.id 
-                ? 'border-blue-500' 
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }
-            `}
-          >
-            <span className={`flex items-end min-h-4
-              ${activeTab === tab.id 
-                ? 'text-gray-600' 
-                : 'text-gray-400'
-              }
-            `}>
-              {tab.label}
-              {tab.hasCount &&
-                <span className={`ml-1 text-xs min-w-10 text-left block`}>
-                  {tab.count}
+          <div key={tab.id}>
+            {((!tab.hasCount) || (tab.hasCount && tab.count != null)) &&
+              <button
+                onClick={() => onTabChange(tab.id)}
+                className={`
+                  flex px-4 py-1 text-[10px] font-bold border-b-2 transition-colors duration-200 items-baseline justify-center
+                  ${activeTab === tab.id 
+                    ? 'border-purple-800' 
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }
+                `}
+              >
+                <span className={`flex items-end min-h-4
+                  ${activeTab === tab.id 
+                    ? 'text-white' 
+                    : 'text-gray-500'
+                  }
+                `}>
+                  {tab.label}
+                  {tab.hasCount &&
+                    <span className={`ml-1 text-xs text-left block`}>
+                      {tab.count}
+                    </span>
+                  }
                 </span>
-              }
-            </span>
-          </button>
+              </button>
+            }
+          </div>
         ))}
       </div>
     </div>

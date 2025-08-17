@@ -1,4 +1,4 @@
-import { Clock, CalendarClock, Earth } from 'lucide-react';
+import { Clock, CalendarClock } from 'lucide-react';
 
 import { ScheduleStats } from 'mystyc-common/admin/interfaces/stats';
 import StatusCard from '@/components/admin/ui/charts/StatusCard';
@@ -113,32 +113,23 @@ export default function SchedulesDashboard({
       <StatusCard
         icon={Clock}
         iconColor={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'text-green-600' : stats ? 'text-red-600' : 'text-gray-500'}
-        backgroundColor={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'bg-green-50' : stats ? 'bg-red-50' : 'bg-gray-50'}
+        backgroundColor={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'bg-[#230537]' : stats ? 'bg-red-50' : 'bg-[#230537]'}
         textColor={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'text-green-700' : 'text-red-700'}
-        shortText={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
-        longText={stats ? (stats?.summary && stats?.summary.enabledSchedules > 0 ? `${stats?.summary.enabledSchedules} Active Schedule(s)` : 'No Active Schedules') : ""}
+        text={stats?.summary && stats?.summary.enabledSchedules > 0 ? 'Active' : 'Inactive'}
       />
     ),
     today: nextEntry && nextDate ? (
       <StatusCard
         icon={CalendarClock}
         iconColor="text-gray-500"
-        backgroundColor="bg-gray-50"
-        shortText={`Next: @${nextEntry.scheduledTime}`}
-        longText={`Next Execution: @${nextEntry.scheduledTime}`}
-        badge={
-          <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded-full w-6 h-6 flex justify-center items-center ml-2">
-            <Earth className='h-4 w-4' />
-          </span>
-        }
+        textColor='text-gray-500'
+        text={`${nextEntry.scheduledTime}`}
       />
     ) : (
       <StatusCard
         icon={CalendarClock}
         iconColor="text-gray-500"
-        backgroundColor="bg-gray-50"
-        shortText={stats ? `No Schedules` : ""}
-        longText={stats ? `No Upcoming Schedules` : ""}
+        text={stats ? `No Schedules` : ""}
       />
     )
   };

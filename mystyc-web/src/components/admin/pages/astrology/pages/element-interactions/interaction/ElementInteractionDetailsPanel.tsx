@@ -5,7 +5,7 @@ import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 export default function ElementInteractionsDetailsPanel({ interaction }: { interaction?: ElementInteraction | null }) {
   return (
     <div className='space-y-4'>
-      <AdminDetailGrid cols={1} className='!gap-1'>
+      <AdminDetailGrid className='!gap-1'>
         <AdminDetailField
           value={interaction?.description}
           type='description'

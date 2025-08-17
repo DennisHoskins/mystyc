@@ -32,8 +32,7 @@ export default function AdminDashboardUsers({ query, stats, className } : {
         <UsersDashboard 
           query={query}
           stats={stats}
-          charts={['registrations', 'activity']} 
-          height={100}
+          charts={['registrations']} 
         />
       </Link>
     </AdminDashboardItemLayout>

@@ -20,10 +20,11 @@ export default function Header() {
     if (isAdmin) setClassName("max-w-full");
     else setClassName("max-w-[80rem]");
     if (!user || user?.isOnboard || isAdmin) setHeaderClassName("opacity-1")
+      else setHeaderClassName("opacity-0");
   }, [pathname, setClassName, setHeaderClassName, user]);
 
   return (
-    <header className={`flex w-full bg-white px-4 py-3 shadow-sm border border-gray-100 relative z-[50] ${headerClassName}`}>
+    <header className={`flex w-full px-4 py-3 relative z-[50] ${headerClassName} shadow-md`}>
       <nav className={`flex w-full mx-auto items-center ${className} transition-[max-width] duration-300 ease-in-out`}>
         <Link href="/" className="flex items-center hover:!no-underline">
           <AppLogo orientation="horizontal" showText user={user} showSparkle={true} />

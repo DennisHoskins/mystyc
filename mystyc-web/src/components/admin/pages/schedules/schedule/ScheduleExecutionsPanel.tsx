@@ -15,7 +15,6 @@ export default function ScheduleExecutionsPanel({ scheduleId }: { scheduleId: st
   const [executions, setExecutions] = useState<AdminListResponse<ScheduleExecution> | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
@@ -29,7 +28,6 @@ export default function ScheduleExecutionsPanel({ scheduleId }: { scheduleId: st
 
       setHasMore(response.pagination.hasMore == true);
       setCurrentPage(page);
-      setTotalItems(response.pagination.totalItems);
       setTotalPages(response.pagination.totalPages);
     } catch (err) {
       logger.error('Failed to load schedule executions:', err);
@@ -59,7 +57,6 @@ export default function ScheduleExecutionsPanel({ scheduleId }: { scheduleId: st
       loading={loading}
       currentPage={currentPage}
       totalPages={totalPages}
-      totalItems={totalItems}
       hasMore={hasMore}
       onPageChange={loadScheduleExecutions}
       onRefresh={() => loadScheduleExecutions(currentPage)}

@@ -22,9 +22,12 @@ export default function TablePagination({
       ? `Page ${currentPage + 1} of ${totalPages}`
       : `Page ${currentPage + 1}`;
 
+  const className = '!bg-purple-950 !text-gray-400 enabled:hover:!text-white enabled:hover:!bg-purple-700 disabled:!text-gray-500';
+
   return (
     <div className="flex items-center gap-2">
       <Button
+        className={className}
         variant="secondary"
         size="xs"
         onClick={() => onPageChange(currentPage - 1)}
@@ -38,6 +41,7 @@ export default function TablePagination({
       </Text>
       
       <Button
+        className={className}
         variant="secondary"
         size="xs"
         onClick={() => onPageChange(currentPage + 1)}

@@ -8,16 +8,17 @@ import { UserSummary } from 'mystyc-common/admin';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
+import Card from '@/components/ui/Card';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import UserDetailsPanel from './UserDetailsPanel';
-import UserSubscriptionCard from './UserSubscriptionCard';
 import UserProfilePanel from './UserProfilePanel';
-import UserDevicesCard from './UserDevicesCard';
-import UserContentCard from './UserContentCard';
-import UserNotificationsCard from './UserNotificationsCard';
-import UserAuthEventsCard from './UserAuthEventsCard';
-import Card from '@/components/ui/Card';
+import UserZodiacPanel from './UserZodiacPanel';
+import UserSubscriptionCard from './cards/UserSubscriptionCard';
+import UserDevicesCard from './cards/UserDevicesCard';
+import UserContentCard from './cards/UserContentCard';
+import UserNotificationsCard from './cards/UserNotificationsCard';
+import UserAuthEventsCard from './cards/UserAuthEventsCard';
 
 export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
   const { setBusy } = useBusy();
@@ -66,11 +67,16 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
         <UserAuthEventsCard key='authEvents' firebaseUid={user?.firebaseUid} total={summary?.authEvents || null} />,
       ]}
       itemsContent={[
-        <div key='subscription-profile' className='flex-1 flex flex-col space-y-4 w-full'>
+        <div key='subscription-profile' className='flex-1 flex flex-col space-y-1 w-full'>
           <UserSubscriptionCard key='subscriptions' user={user} />
-          <Card className='flex-1 grow'>
+          <Card className={`${user?.astrology?.createdAt ? '' : 'flex-1 grow'}`}>
             <UserProfilePanel key='user-profile' user={user} />
           </Card>
+          {user?.astrology?.createdAt &&
+            <Card className='flex-1 grow'>
+              <UserZodiacPanel key='user-zodiac' user={user} />
+            </Card>
+          }
         </div>
       ]}
     />

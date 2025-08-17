@@ -14,6 +14,7 @@ import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 import Link from '@/components/ui/Link';
 import Energy from '@/components/ui/icons/astrology/Energy';
 import Capsule from '@/components/ui/Capsule';
+import Panel from '@/components/ui/Panel';
 
 export default function ElementSignsCard({ element, className } : { element?: ElementType | null, className?: string }) {
   const [signs, setSigns] = useState<Sign[] | null>();
@@ -39,27 +40,28 @@ export default function ElementSignsCard({ element, className } : { element?: El
         heading="Element Signs"
         href={'/admin/astrology/signs'}
       />
-      <div className='flex flex-col space-y-6'>
+      <div className='flex flex-col space-y-4'>
         {signs && signs.map((item) => (
-          <AdminDetailField 
-            key={item.sign}
-            heading={item.sign}
-            headingicon={getZodiacIcon(item.sign, "w-3 h-3")}
-            value={
-              <div className='flex flex-col space-y-2'>
-                <Link href={'/admin/astrology/signs/' + item.sign} className='!text-gray-500 text-wrap !no-underline'>
-                  {item.description}
-                  <br />
-                  <span className='text-xs'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
-                </Link>
-                <Capsule
-                  icon={<Energy size={3} />} 
-                  label={item?.energyType || ''} 
-                  href={'/admin/astrology/energy-types/' + item?.energyType} 
-                />
-              </div>
-            }
-          />
+          <Panel key={item.sign}>
+            <AdminDetailField 
+              heading={item.sign}
+              headingicon={getZodiacIcon(item.sign, "w-3 h-3")}
+              value={
+                <div className='flex flex-col space-y-2'>
+                  <Link href={'/admin/astrology/signs/' + item.sign} className='!text-gray-500 text-wrap !no-underline'>
+                    {item.description}
+                    <br />
+                    <span className='text-xs'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
+                  </Link>
+                  <Capsule
+                    icon={<Energy size={2} />} 
+                    label={item?.energyType || ''} 
+                    href={'/admin/astrology/energy-types/' + item?.energyType} 
+                  />
+                </div>
+              }
+            />
+          </Panel>
         ))}        
       </div>
     </Card>

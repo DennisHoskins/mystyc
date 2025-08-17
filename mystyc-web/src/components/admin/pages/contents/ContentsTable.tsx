@@ -7,27 +7,22 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
-import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 type ContentServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<Content>>;
 
 interface ContentsTableProps {
-  icon?: IconComponent;
-  label?: string;
   serverAction: ContentServerAction;
   onRefresh?: () => void;
   contentType: 'all' | 'notifications' | 'website' | 'users' | 'users-plus';
 }
 
 export default function ContentsTable({
-  icon,
-  label,
   serverAction,
   onRefresh,
   contentType
 }: ContentsTableProps) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [data, setData] = useState<AdminListResponse<Content> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -171,14 +166,11 @@ export default function ContentsTable({
 
   return (
     <AdminTable<Content>
-      icon={icon}
-      label={label}
       data={data?.data}
       columns={getColumns()}
-      loading={isBusy}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={data?.pagination?.totalPages || 0}
-      totalItems={data?.pagination?.totalItems || 0}
       hasMore={data?.pagination?.hasMore || false}
       onPageChange={handlePageChange}
       onRefresh={handleRefresh}

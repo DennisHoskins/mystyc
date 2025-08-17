@@ -22,7 +22,7 @@ export default function AdminFooter() {
       <a            
         href="/home"
         onClick={handleHomeClick}
-        className="ml-1 underline hover:text-gray-700"
+        className="hover:text-gray-600"
       >
         home
       </a>

@@ -1,12 +1,11 @@
 import { ReactNode } from 'react';
 
-import Card from '@/components/ui/Card';
-import AdminDashboardHeader from './AdminDashboardHeader';
+import AdminCard from '../../ui/AdminCard';
 
 interface DashboardItemLayoutProps {
   icon: ReactNode;
   title: string;
-  link?: string | null;
+  link?: string;
   children: ReactNode;
   className?: string | null;
   stats?: ReactNode | null;
@@ -21,17 +20,16 @@ export default function AdminDashboardItemLayout({
   stats
 }: DashboardItemLayoutProps) {
   return (
-    <Card className={`@container grow ${className}`}>
-      <AdminDashboardHeader
-        icon={icon}
-        title={title}
-        link={link}
-        stats={stats}
-      />
-      <hr />
-      <div className="flex flex-1 flex-col pt-2">
+    <AdminCard
+      icon={icon}
+      title={title}
+      href={link}
+      tag={stats}
+      className={`@container grow ${className}`}
+    >
+      <div className="flex flex-1 flex-col">
         {children}
       </div>
-    </Card>
+    </AdminCard>
   );
 }

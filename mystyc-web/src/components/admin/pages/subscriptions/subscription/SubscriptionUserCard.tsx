@@ -7,9 +7,7 @@ import { getUser } from '@/server/actions/admin/users';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { formatDateForDisplay } from '@/util/dateTime';
 import { logger } from '@/util/logger';
-import Card from '@/components/ui/Card';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
+import AdminCard from '@/components/admin/ui/AdminCard';
 import UserIcon from '@/components/admin/ui/icons/UserIcon';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
@@ -35,12 +33,10 @@ export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: st
   }, [firebaseUid]);
 
   return (
-    <Card>
-      <div className="flex items-center space-x-2 mb-4">
-        <Avatar size={'small'} icon={<UserIcon userProfile={user} />} />
-        <Heading level={5} className='flex-1'>User Details</Heading>
-      </div>
-      <hr />
+    <AdminCard
+      icon={<UserIcon userProfile={user} />}
+      title='User Details'
+    >
       <AdminDetailGrid cols={3} className='mt-1'>
         <AdminDetailField
           label="Full Name"
@@ -70,6 +66,6 @@ export default function SubscriptionUserCard({ firebaseUid }: { firebaseUid?: st
           value={formatDateForDisplay(user?.subscription.startDate)}
         />
       </AdminDetailGrid>
-    </Card>      
+    </AdminCard>      
   );
 }

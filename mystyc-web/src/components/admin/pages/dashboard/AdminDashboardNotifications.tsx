@@ -32,8 +32,7 @@ export default function AdminDashboardNotifications({ query, stats, className } 
         <NotificationsDashboard 
           query={query}
           stats={stats}
-          charts={['volume', 'platforms']}
-          height={100}
+          charts={['volume']}
         />
       </Link>
     </AdminDashboardItemLayout>

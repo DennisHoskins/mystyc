@@ -12,14 +12,14 @@ export default function WebsiteHeader() {
       <Button
         variant="ghost"
         onClick={() => router.push('/login', false)}
-        className="text-sm font-medium hover:underline"
+        className="text-sm !font-bold text-purple-300 hover:text-purple-950"
       >
         Login
       </Button>
       <Button
         variant="primary"
         onClick={() => router.push('/register', false)}
-        className="text-sm font-medium !rounded-full !px-6"
+        className="text-sm !font-bold"
       >
         Sign Up
       </Button>

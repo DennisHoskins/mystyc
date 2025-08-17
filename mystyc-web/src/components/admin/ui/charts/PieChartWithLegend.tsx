@@ -1,5 +1,6 @@
 'use client'
 
+import Panel from '@/components/ui/Panel';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 interface PieDataItem {
@@ -29,8 +30,8 @@ export default function PieChartWithLegend({
   height = '100%'
 }: PieChartWithLegendProps) {
   return (
-    <div className='flex flex-col flex-1 bg-gray-100 py-2 rounded-md'>
-      {label && <h4 className="text-sm font-bold text-gray-700 ml-2 mb-1">{title}</h4>}
+    <Panel className='flex-1'>
+      {label && <h4 className="text-sm font-bold text-gray-500 ml-2 mb-4">{title}</h4>}
       <div className="flex items-center justify-between grow">
         {data &&
           <ResponsiveContainer width="50%" height={height}>
@@ -67,13 +68,13 @@ export default function PieChartWithLegend({
                 className="w-2 h-2 rounded-full mr-2" 
                 style={{ backgroundColor: item.color || colors[index % colors.length] }}
               />
-              <span className='text-[10px]'>
+              <span className='text-[10px] text-gray-100'>
                 {item.name}: {showPercentage && item.percentage ? `${item.percentage}%` : item.value}
               </span>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </Panel>
   );
 }

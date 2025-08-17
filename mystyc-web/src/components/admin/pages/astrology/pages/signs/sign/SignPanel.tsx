@@ -14,14 +14,14 @@ export default function SignPanel({ sign } : { sign?: Sign | null }) {
       headinghref={'/admin/astrology/signs/' + sign?.sign}
       value={
         <div className='flex flex-col space-y-2'>
-          <Link href={'/admin/astrology/signs/' + sign?.sign} className='!text-gray-500 text-wrap !no-underline'>
-            {sign?.description}
+          <Link href={'/admin/astrology/signs/' + sign?.sign} className='text-wrap !no-underline'>
+            <span className='text-gray-100'>{sign?.description}</span>
             <br />
-            <span className='text-xs'><strong>Keywords</strong> [{sign?.keywords.join(", ")}]</span>
+            <span className='text-xs text-gray-500'><strong>Keywords</strong> [{sign?.keywords.join(", ")}]</span>
           </Link>
           <div className='flex space-x-2'>
             <Capsule
-              icon={<Energy size={3} />} 
+              icon={<Energy size={2} />} 
               label={sign?.energyType || ''} 
               href={'/admin/astrology/energy-types/' + sign?.energyType} 
             />

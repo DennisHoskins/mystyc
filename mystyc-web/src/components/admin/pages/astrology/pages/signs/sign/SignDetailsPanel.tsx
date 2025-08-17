@@ -1,6 +1,7 @@
 import { Sign } from 'mystyc-common/schemas/';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
+import Panel from '@/components/ui/Panel';
 
 export default function SignDetailsPanel({ sign, showLinks = true }: { sign?: Sign | null, showLinks?: boolean }) {
   return (
@@ -24,16 +25,18 @@ export default function SignDetailsPanel({ sign, showLinks = true }: { sign?: Si
           />
         </AdminDetailGrid>
       }
-      <AdminDetailGrid cols={1} className='!gap-1'>
-        <AdminDetailField
-          value={sign?.description}
-          type='description'
-        />
-        <AdminDetailField
-          label="Keywords"
-          inline={true}
-          text={sign?.keywords && "[" + sign?.keywords.join(", ") + "]"}
-        />
+      <AdminDetailGrid className='!gap-1'>
+        <Panel>
+          <AdminDetailField
+            value={sign?.description}
+            type='description'
+          />
+          <AdminDetailField
+            label="Keywords"
+            inline={true}
+            text={sign?.keywords && "[" + sign?.keywords.join(", ") + "]"}
+          />
+        </Panel>
       </AdminDetailGrid>
     </div>
   );

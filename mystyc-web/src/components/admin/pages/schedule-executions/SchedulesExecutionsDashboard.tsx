@@ -72,16 +72,14 @@ export default function SchedulesExecutionsDashboard({
       <StatusCard
         icon={CalendarClock}
         iconColor="text-gray-500"
-        backgroundColor="bg-gray-50"
-        shortText={`${dayLabel}:`}
-        longText={`${dayLabel} Executions:`}
-        shortSubtext={`${dayCount} executed`}
-        longSubtext={dayCount === 0 ? 'No executions' : `${dayCount} total`}
+        text={`${dayLabel}:`}
+        subtext={`${dayCount} executed`}
+        vertical={true}
         badge={dayCount > 0 && (
-          <span className={`text-xs px-1 ml-2 rounded flex items-center ${
+          <span className={`text-xs ml-2 flex items-center ${
             daySuccessful === dayCount 
-              ? 'bg-green-100 text-green-700' 
-              : 'bg-yellow-100 text-yellow-700'
+              ? 'text-green-700' 
+              : 'text-yellow-700'
           }`}>
             <span>
               {daySuccessful === dayCount ? 'all ✓' : `${daySuccessful}/${dayCount} ✓`}

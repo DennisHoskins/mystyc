@@ -20,6 +20,7 @@ interface AdminDetailFieldProps {
   text?: string | null;
   onClick?: () => void;  
   active?: boolean;
+  hasBackground?: boolean;
 }
 
 export default function AdminDetailField({ 
@@ -33,12 +34,14 @@ export default function AdminDetailField({
   type = 'text', 
   value, 
   href, 
+  text,
   onClick, 
   active = false, 
-  text 
+  hasBackground = false
 }: AdminDetailFieldProps) {
 
   const className = type == 'text' ? 'truncate min-h-2' : 'h-auto';
+  const panelClass = hasBackground ? 'bg-[#230537] p-4 rounded-md' : '';
 
   // Helper function to safely get array item or single value
   const getArrayItem = <T,>(item: T | T[] | null | undefined, index: number): T | null => {
@@ -55,9 +58,9 @@ export default function AdminDetailField({
   const headingiconArray = Array.isArray(headingicon) ? headingicon : headingicon ? [headingicon] : [];
 
   return (
-    <div className={`overflow-hidden`}>
+    <div className={`overflow-hidden ${panelClass}`}>
       {(label && !inline) &&
-        <Text variant="small" className="text-gray-500 font-bold">
+        <Text variant="xs">
           {label}
         </Text>
       }
@@ -85,22 +88,27 @@ export default function AdminDetailField({
       <div className='flex flex-col'>
         {icon}
 
-        {href ? (
-          <Link 
-            href={href} 
-            onClick={onClick} 
-            className={`block ${className} underline-offset-2 text-gray-500 text-base ${active && "font-bold underline"}`}
-          >
-            {value || ''}
-          </Link>
-        ) : (
-          <div className={`block ${className} text-gray-500 text-base ${active && "font-bold underline underline-offset-2"}`}>
-            {value || ''}
+        {value &&
+          <div className='flex items-center space-x-1'>
+            {label && inline ? <span className='text-gray-500 text-xs'><strong>{label}</strong></span> : ''}
+            {href ? (
+              <Link 
+                href={href} 
+                onClick={onClick} 
+                className={`block ${className} underline-offset-2 text-gray-100 text-base ${active && "font-bold underline"} min-h-4`}
+              >
+                {value || ''}
+              </Link>
+            ) : (
+              <div className={`block ${className} text-gray-100 text-base ${active && "font-bold underline underline-offset-2"} min-h-4`}>
+                {value || ''}
+              </div>
+            )}
           </div>
-        )}
+        }
 
         {text && (
-          <Text className={`text-gray-400 text-xs`}>
+          <Text className={`!text-gray-500 text-xs`}>
             {label && inline ? <strong>{label}</strong> : ''}  {text}
           </Text>
         )}

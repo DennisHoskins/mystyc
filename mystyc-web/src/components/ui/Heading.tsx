@@ -21,12 +21,12 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     const actualSize = size || defaultSizes[level];
     
     const sizeClasses: Record<NonNullable<HeadingProps['size']>, string> = {
-      xs: 'text-xs text-gray-600 font-medium',
-      sm: 'text-sm text-gray-500 font-semibold', 
-      md: 'text-[14px] text-gray-600 font-bold',
-      lg: 'text-lg text-gray-800 font-bold',
-      xl: 'text-xl text-gray-900 font-bold',
-      '2xl': 'text-2xl text-gray-900 font-bold',
+      xs: 'text-xs text-gray-100 font-medium',
+      sm: 'text-sm text-white font-semibold', 
+      md: 'text-[14px] text-gray-100 font-bold',
+      lg: 'text-lg text-gray-100 font-bold',
+      xl: 'text-xl text-gray-100 font-bold',
+      '2xl': 'text-2xl text-gray-100 font-bold',
     };
 
     return createElement(

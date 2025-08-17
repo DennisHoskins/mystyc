@@ -7,16 +7,16 @@ export default function UserIcon({ size = 6, userProfile }: { size?: number, use
   if (userProfile) {
     if (userProfile.roles.includes(UserRole.ADMIN)) {
       return (
-        <ShieldUser className={`w-${size} h-${size} text-gray-500`} />
+        <ShieldUser className={`w-${size} h-${size}`} />
       );    
     }
     if (userProfile?.subscription.level == "plus") {
       return (
-        <UserPlus className={`w-${size} h-${size} text-gray-500`} />
+        <UserPlus className={`w-${size} h-${size}`} />
       );    
     }
   }
   return (
-    <UserLucide className={`w-${size} h-${size} text-gray-500`} />
+    <UserLucide className={`w-${size} h-${size}`} />
   );    
 }

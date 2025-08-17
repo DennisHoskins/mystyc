@@ -1,11 +1,12 @@
-import { ContentStats } from 'mystyc-common/admin';
+import { ContentStats, AdminStatsQuery } from 'mystyc-common/admin';
 import AdminDashboardItemLayout from './AdminDashboardItemLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import ContentDashboard from '../contents/ContentDashboard';
 import Link from '@/components/ui/Link';
 
-export default function AdminDashboardContent({ stats, className } : { 
+export default function AdminDashboardContent({ stats, query, className } : { 
   stats?: ContentStats | null,
+  query?: Partial<AdminStatsQuery> | null, 
   className?: string
 }) {
   return (
@@ -28,9 +29,9 @@ export default function AdminDashboardContent({ stats, className } : {
         className='flex flex-1'
       >
         <ContentDashboard 
+          query={query}
           stats={stats}
           charts={['timeline']}
-          height={100}
         />
       </Link>
     </AdminDashboardItemLayout>

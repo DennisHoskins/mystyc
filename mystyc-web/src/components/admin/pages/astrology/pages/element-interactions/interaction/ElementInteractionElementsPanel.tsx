@@ -8,9 +8,7 @@ import { getElement } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
-import Link from '@/components/ui/Link';
+import AdminPanelHeader from '@/components/admin/ui/AdminPanelHeader';
 import ElementPanel from '../../elements/element/ElementPanel';
 
 export default function ElementInteractionElementsPanel({ interaction } : { interaction?: ElementInteraction | null }) {
@@ -47,16 +45,12 @@ export default function ElementInteractionElementsPanel({ interaction } : { inte
 
   return (
     <>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<Atom className='w-3 h-3' />} />
-        <div>
-          <Link href='/admin/astrology/element-interactions'>
-            <Heading level={3}>Elements</Heading>
-          </Link>
-        </div>
-      </div>
-      <hr/ >
-      <div className='flex flex-col space-y-6 pt-1'>
+      <AdminPanelHeader
+        icon={<Atom className='w-3 h-3' />}
+        heading='Elements'
+        href='/admin/astrology/element-interactions'
+      />
+      <div className='flex flex-col space-y-6'>
         <ElementPanel element={element1} />
         {element2 && <ElementPanel element={element2} />}
       </div>

@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/table';
 import { IconComponent } from '@/components/ui/icons/Icon';
 
-import AdminTableHeader from './AdminTableHeader';
 import AdminTableFooter from './AdminTableFooter';
 
 export interface Column<T> {
@@ -48,7 +47,7 @@ function LinkCell({ href, children }: LinkCellProps) {
     <a 
       href={href} 
       onClick={handleClick}
-      className="hover:text-blue-800 hover:underline cursor-pointer"
+      className="hover:text-purple-200 underline-offset-2 hover:underline cursor-pointer"
     >
       {children}
     </a>
@@ -56,15 +55,12 @@ function LinkCell({ href, children }: LinkCellProps) {
 }
 
 interface AdminTableProps<T> {
-  icon?: IconComponent | React.ReactNode;
-  label?: string;
   data?: T[] | null;
   columns: Column<T>[];
   getRowId?: (row: T) => string;
   loading?: boolean;
   currentPage?: number;
   totalPages?: number;
-  totalItems?: number;
   hasMore?: boolean;
   onPageChange?: (page: number) => void;
   onRefresh?: () => void;
@@ -72,15 +68,12 @@ interface AdminTableProps<T> {
 }
 
 export default function AdminTable<T>({
-  icon,
-  label,
   data,
   columns,
   getRowId,
   loading = false,
   currentPage = 0,
   totalPages,
-  totalItems,
   hasMore = false,
   onPageChange,
   onRefresh,
@@ -145,8 +138,6 @@ export default function AdminTable<T>({
 
   return (
     <>
-      {label && <AdminTableHeader icon={icon} label={label} totalItems={totalItems} />}        
-
       <Table>
         <TableHeader>
           <TableRow>
@@ -192,6 +183,7 @@ export default function AdminTable<T>({
           totalPages={totalPages}
           hasMore={hasMore}
           loading={loading}
+          onRefresh={onRefresh}
           onPageChange={onPageChange}
         />
       }

@@ -1,5 +1,6 @@
 'use client'
 
+import Panel from '@/components/ui/Panel';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface LineDataItem {
@@ -34,8 +35,8 @@ export default function SimpleLineChart({
   showDots = false
 }: SimpleLineChartProps) {
   return (
-    <div className='flex flex-col flex-1 bg-gray-100 rounded-md py-2'>
-      {label && <h4 className="text-sm font-bold text-gray-700 ml-2 mb-1">{title}</h4>}
+    <Panel className='flex-1'>
+      {label && <h4 className="text-sm font-bold text-gray-500 ml-2 mb-4">{title}</h4>}
       {data && (
         <ResponsiveContainer minWidth={10} minHeight={10} width="100%" height={height} className="grow min-h-1">
           <LineChart 
@@ -62,6 +63,6 @@ export default function SimpleLineChart({
           </LineChart>
         </ResponsiveContainer>
       )}
-    </div>
+    </Panel>
   );
 }

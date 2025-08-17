@@ -7,9 +7,7 @@ import { PlanetaryPosition, PlanetType } from 'mystyc-common/schemas';
 import { getPlanetaryPositionsByPlanet } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import Card from '@/components/ui/Card';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
+import AdminCard from '@/components/admin/ui/AdminCard';
 import Link from '@/components/ui/Link';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
@@ -38,19 +36,15 @@ export default function PlanetarySignPositionsPanel({ planet } : { planet: Plane
 console.log(error);
 
   return (
-    <Card className='grow overflow-hidden'>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<Eclipse className='w-3 h-3' />} />
-        <div>
-          <Link href='/admin/astrology/planetary-positions'>
-            <Heading level={3}>Planetary Positions</Heading>
-          </Link>
-        </div>
-      </div>
-      <hr/ >
-      <div className='flex flex-col space-y-6 pt-1'>
+    <AdminCard
+      icon={<Eclipse className='w-3 h-3' />}
+      className='grow overflow-hidden'
+      title='Planetary Positions'
+    >
+      <div className='flex flex-col space-y-4 pt-1'>
         {data.map((item) => (
           <AdminDetailField 
+            hasBackground={true}
             key={item.sign}
             heading={item.sign}
             headingicon={getZodiacIcon(item.sign, "w-3 h-3")}
@@ -62,7 +56,7 @@ console.log(error);
                   <span className='text-xs pt-1 block'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
                 </Link>
                 <Capsule
-                  icon={<Energy size={3} />} 
+                  icon={<Energy size={2} />} 
                   label={item?.energyType || ''} 
                   href={'/admin/astrology/energy-types/' + item?.energyType} 
                 />
@@ -71,6 +65,6 @@ console.log(error);
           />
         ))}
       </div>          
-    </Card>
+    </AdminCard>
   );
 }

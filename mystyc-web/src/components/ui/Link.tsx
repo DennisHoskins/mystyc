@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
 type LinkProps = {
-  href: string;
+  href?: string | null;
   children: ReactNode;
   className?: string;
   useTransition?: boolean;
@@ -23,6 +23,7 @@ export default function Link({ href, children, className, useTransition = true, 
       onClick(e);
       return;
     }
+    if (!href) return;
     if (useTransition) {
       router.push(href);
     } else {
@@ -31,12 +32,16 @@ export default function Link({ href, children, className, useTransition = true, 
   };
 
   return (
-    <a
-      href={href}
-      onClick={handleClick}
-      className={`text-indigo-600 hover:underline ${className || ''}`}
-    >
-      {children}
-    </a>
+    href 
+      ? <a
+          href={href}
+          onClick={handleClick}
+          className={`text-indigo-300 hover:underline ${className || ''}`}
+        >
+          {children}
+        </a>
+      : <p className={`text-gray-300 ${className || ''}`} >
+          {children}
+        </p>
   );
 }

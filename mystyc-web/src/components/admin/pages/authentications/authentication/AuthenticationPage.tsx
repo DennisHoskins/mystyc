@@ -11,7 +11,7 @@ import { formatStringForDisplay } from '@/util/util';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import AuthenticationIcon from '@/components/admin/ui/icons/AuthenticationIcon';
 import AuthenticationDetailsPanel from './AuthenticationDetailsPanel';
-import AuthenticationUserPanel from './AuthenticationUserPanel';
+import UserCard from '../../users/user/UserCard';
 
 export default function AuthenticationPage({ authId }: { authId: string }) {
   const { setBusy } = useBusy();
@@ -51,7 +51,7 @@ export default function AuthenticationPage({ authId }: { authId: string }) {
       icon={<AuthenticationIcon size={6} />}
       title={authentication?.type ?? "Authentication"}
       headerContent={<AuthenticationDetailsPanel authentication={authentication} />}
-      sideContent={<AuthenticationUserPanel firebaseUid={authentication && authentication.firebaseUid} />}
+      sideContent={[<UserCard key='user' firebaseUid={authentication?.firebaseUid} className='flex-1 grow' />]}
     />
   );
 }

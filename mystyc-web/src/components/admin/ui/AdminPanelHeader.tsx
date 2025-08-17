@@ -1,8 +1,10 @@
+import React from 'react';
+
 import { IconComponent } from '@/components/ui/icons/Icon';
 import Avatar from '@/components/ui/Avatar';
 import Link from '@/components/ui/Link';
 import Heading from '@/components/ui/Heading';
-import React from 'react';
+import Text from '@/components/ui/Text';
 
 interface AdminPanelHeaderProps {
   icon: IconComponent | React.ReactNode;
@@ -10,34 +12,39 @@ interface AdminPanelHeaderProps {
   typeHref?: string;
   heading?: string;
   href?: string;
+  text?: string | null,
   tag?: React.ReactNode
 }
 
-export default function AdminPanelHeader({ icon, type, typeHref, heading, href, tag }: AdminPanelHeaderProps) {
+export default function AdminPanelHeader({ icon, type, typeHref, heading, href, text, tag }: AdminPanelHeaderProps) {
   return(
-    <div className='flex flex-col space-y-1 pb-1'>
-      <div className="flex w-full items-center space-x-2">
+    <div className="flex items-center">
+      <div className='flex-1 flex space-x-1 items-center'>
         <Avatar size={'small'} icon={icon} />
-        <div className='flex flex-row items-center flex-1 space-x-1'>
+        <div className='flex space-x-2 items-center'>
           {(type && typeHref) && (
             <>
               <Link href={typeHref}>
-                <Heading level={3}>{type}</Heading>
+                <Heading level={5}>{type}</Heading>
               </Link>
-              <span className='mr-1'>/</span>
+              <span className='mr-1 text-gray-300'>/</span>
             </>
           )}
-          {href ? (
-            <Link href={href}>
-              <Heading level={3}>{heading}</Heading>
-            </Link>
-          ) : (
-            <Heading level={3}>{heading}</Heading>
-          )}
+          {href
+            ? <Link href={href} className="flex items-center space-x-2">
+                <Heading level={5}>{heading}</Heading>
+                {text && <Text variant='small'>{text}</Text>}
+              </Link>
+            : <div className="flex items-center space-x-2">
+                <Heading level={5}>{heading}</Heading>
+                {text && <Text variant='small'>{text}</Text>}
+              </div>
+          }
         </div>
-        {tag}
       </div>
-      <hr />
+      <div className='-mt-1'>
+        {tag}
+      </div>          
     </div>
   );
 }

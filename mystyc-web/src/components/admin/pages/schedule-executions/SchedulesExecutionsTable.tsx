@@ -4,20 +4,16 @@ import { formatDateForDisplay } from '@/util/dateTime';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 interface ScheduleExecutionsTableProps {
-  label?: string;
   data?: ScheduleExecution[];
   pagination?: Pagination;
-  loading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
 }
 
-export default function ScheduleExecutionsTable({
-  label,
+export default function SchedulesExecutionsTable({
   data,
   pagination,
-  loading,
   currentPage,
   onPageChange,
   onRefresh,
@@ -32,10 +28,9 @@ export default function ScheduleExecutionsTable({
 
   return (
     <AdminTable<ScheduleExecution>
-      label={label}
       data={data}
       columns={columns}
-      loading={loading}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={pagination?.totalPages}
       hasMore={pagination?.hasMore}

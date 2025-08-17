@@ -69,7 +69,7 @@ export default function ModalityInteractionPage({ interaction } : { interaction:
       headerContent={<ModalityInteractionDetailsPanel interaction={data} />}
       sideContent={<ModalityInteractionPanel interaction={data} />}
       itemsContent={[
-        <div key='energy-dynamic' className='flex flex-col w-full space-y-4 grow flex-1'>
+        <div key='energy-dynamic' className='flex flex-col w-full space-y-1 grow flex-1'>
           <EnergyTypeDetailsCard energyType={data?.energyType} />
           <DynamicDetailsCard dynamic={data?.dynamic} className='grow flex-1' /> 
         </div>

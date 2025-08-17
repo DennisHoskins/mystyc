@@ -30,7 +30,6 @@ export default function AdminDashboardOpenAI({ stats, className } : {
         <OpenAIUsageDashboard
           stats={stats}
           charts={['budget']}
-          height={100}
         />
       </Link>
     </AdminDashboardItemLayout>

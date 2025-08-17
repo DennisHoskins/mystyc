@@ -1,45 +1,60 @@
 import { Notification } from 'mystyc-common/schemas';
-import { formatTimestampForComponent } from '@/util/dateTime';
+import Panel from '@/components/ui/Panel';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
 export default function NotificationDetailsPanel({ notification }: { notification?: Notification | null }) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'sent':
+        return 'text-green-600';
+      case 'failed':
+        return 'text-red-600';
+      case 'pending':
+        return 'text-yellow-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
   return (
-    <AdminDetailGrid cols={2}>
-      <AdminDetailField
-        label="type"
-        value={notification?.type}
-      />
-      <AdminDetailField
-        label="Source"
-        value={notification?.source}
-      />
-      <AdminDetailField
-        label="Status"
-        value={notification?.status}
-      />
-      <AdminDetailField
-        label="Sent"
-        value={notification &&(notification.sentAt ? formatTimestampForComponent(new Date(notification.sentAt).getTime()) : '-')}
-      />
-        <AdminDetailField
-          label="Title"
-          value={notification?.title}
-        />
-        <AdminDetailField
-          label="Body"
-          value={notification?.body}
-        />
-        <AdminDetailField
-          label="Url"
-          value={notification && 'https://mystyc.app'}
-          href={notification && 'https://mystyc.app'}
-        />
-        <AdminDetailField
-          label="Content Id"
-          value={notification?.contentId ? notification.contentId : "-"}
-          href={notification?.contentId && `/admin/content/${notification?.contentId}`}
-        />
-    </AdminDetailGrid>
+    <>
+      <AdminDetailGrid cols={2}>
+        <Panel>
+          <AdminDetailField
+            label="Status"
+            value={notification &&
+              <span className={`font-medium ${getStatusColor(notification.status)}`}>
+                {notification.status.charAt(0).toUpperCase() + notification.status.slice(1)}
+              </span>
+            }
+          />
+        </Panel>
+        <Panel>
+          <AdminDetailField
+            label="Type / Source"
+            value={notification && `${notification?.type} - ${notification?.source}`}
+          />
+        </Panel>
+      </AdminDetailGrid>
+      <AdminDetailGrid cols={1} className='mt-4'>
+        <Panel>
+          <AdminDetailField
+            label="Title"
+            value={notification?.title}
+          />
+          <AdminDetailField
+            label="Body"
+            value={notification?.body}
+            type='description'
+          />
+          <AdminDetailField
+            label="Url"
+            value={notification && 'https://mystyc.app'}
+            href={notification && 'https://mystyc.app'}
+          />
+        </Panel>
+      </AdminDetailGrid>
+    </>
   );
 }

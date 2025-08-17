@@ -25,17 +25,15 @@ interface SessionDeviceResponse {
 type SessionDeviceServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<SessionDeviceResponse>;
 
 interface SessionDevicesTableProps {
-  label?: string;
   serverAction: SessionDeviceServerAction;
   onRefresh?: () => void;
 }
 
 export default function SessionDevicesTable({
-  label,
   serverAction,
   onRefresh
 }: SessionDevicesTableProps) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [data, setData] = useState<SessionDeviceResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -84,13 +82,11 @@ export default function SessionDevicesTable({
 
   return (
     <AdminTable<SessionDevice>
-      label={label}
       data={data?.data}
       columns={columns}
-      loading={isBusy}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={Math.ceil((data?.pagination?.total || 0) / (data?.pagination?.limit || 1))}
-      totalItems={data?.pagination?.total || 0}
       hasMore={(data?.pagination?.offset || 0) + (data?.pagination?.limit || 0) < (data?.pagination?.total || 0)}
       onPageChange={handlePageChange}
       onRefresh={handleRefresh}

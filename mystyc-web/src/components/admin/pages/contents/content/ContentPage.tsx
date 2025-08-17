@@ -10,7 +10,8 @@ import { useBusy } from '@/components/ui/context/AppContext';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ContentIcon from '@/components/admin/ui/icons/ContentIcon';
 import ContentDetailsPanel from './ContentDetailsPanel';
-import ContentGenerationPanel from './ContentGenerationPanel';
+import ContentGenerationCard from './ContentGenerationCard';
+import ContentSourceCard from './ContentSourceCard';
 import ContentDataCard from './ContentDataCard';
 
 export default function ContentPage({ contentId }: { contentId: string }) {
@@ -43,6 +44,10 @@ export default function ContentPage({ contentId }: { contentId: string }) {
     { label: content ? content.date : `` },
   ], [content]);
 
+  const sideContent = content?.executionId || content?.notificationId || content?.userId 
+    ? [<ContentSourceCard key='source' content={content} />]
+    : null;
+
   return (
     <div className='flex flex-col grow'>
       <AdminItemLayout
@@ -52,8 +57,13 @@ export default function ContentPage({ contentId }: { contentId: string }) {
         icon={<ContentIcon size={6}/>}
         title={content?.title ?? "Content"}
         headerContent={<ContentDetailsPanel content={content} />}
-        sideContent={<ContentGenerationPanel content={content} />}
-        itemsContent={[<ContentDataCard key='data' content={content} />]}
+        sideContent={sideContent}
+        itemsContent={[
+          <div key='generation-data' className='flex-1 flex flex-col w-full space-y-1'>
+            <ContentGenerationCard key='generation' content={content} />
+            <ContentDataCard key='data' content={content} />
+          </div>
+        ]}
       />
     </div>
   );    

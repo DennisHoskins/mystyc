@@ -2,7 +2,7 @@
   height: 100%;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: rgb(107 114 128) transparent;
 }
 
 .tableWrapper::-webkit-scrollbar-track {

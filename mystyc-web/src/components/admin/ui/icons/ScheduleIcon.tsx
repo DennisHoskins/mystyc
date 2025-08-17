@@ -10,9 +10,9 @@ export default function ScheduleIcon({ size = 6, variant = 'schedule' }: Schedul
     <>
       {variant === 'schedule-execution' ? 
         (
-          <AlarmClockCheck className={`w-${size} h-${size} text-gray-500`} />
+          <AlarmClockCheck className={`w-${size} h-${size}`} />
         ) : (
-          <Clock className={`w-${size} h-${size} text-gray-500`} />
+          <Clock className={`w-${size} h-${size}`} />
         ) 
       }
     </>

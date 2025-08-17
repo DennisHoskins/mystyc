@@ -2,18 +2,23 @@ import { Session } from '@/interfaces';
 import { formatTimestampForComponent } from '@/util/dateTime';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
+import Panel from '@/components/ui/Panel';
 
 export default function SessionDetailsPanel({ session }: { session?: Session | null }) {
   return (
-      <AdminDetailGrid cols={2}>
+    <AdminDetailGrid cols={2}>
+      <Panel>
         <AdminDetailField
           label="Created"
           value={(session && session.createdAt) ? formatTimestampForComponent(session.createdAt) : ""}
         />
+      </Panel>
+      <Panel>
         <AdminDetailField
           label="Last Update"
           value={(session && session.lastUpdated) ? formatTimestampForComponent(session.lastUpdated) : ""}
         />
-      </AdminDetailGrid>
+      </Panel>
+    </AdminDetailGrid>
   );
 }

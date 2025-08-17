@@ -29,8 +29,7 @@ export default function AdminDashboardAuthentications({ stats, className } : {
       >
         <AuthenticationDashboard 
           stats={stats}
-          charts={['peak', 'duration']}
-          height={100}
+          charts={['peak']}
         />
       </Link>
     </AdminDashboardItemLayout>

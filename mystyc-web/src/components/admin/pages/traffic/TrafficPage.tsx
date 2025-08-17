@@ -10,7 +10,6 @@ import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminListLayout from '@/components/admin/ui/AdminListLayout';
 import TrafficIcon from '@/components/admin/ui/icons/TrafficIcon';
-import TrafficDetailsPanel from './TrafficDetailsPanel';
 import TrafficAnalyticsPanel from './TrafficAnalyticsPanel';
 import TrafficDashboard from './TrafficDashboard';
 import TrafficMainPanel from './TrafficMainPanel';
@@ -52,14 +51,13 @@ export default function TrafficPage() {
       breadcrumbs={breadcrumbs}
       icon={<TrafficIcon size={6} />}
       title="Website Traffic Analytics"
-      headerContent={<TrafficDetailsPanel trafficStats={trafficStats} />}
       sideContent={
         <TrafficDashboard 
           data={trafficStats} 
           charts={['stats']}
         />
       }
-      itemsContent={[<TrafficAnalyticsPanel key='analytics' trafficStats={trafficStats} />]}
+      headerContent={<TrafficAnalyticsPanel key='analytics' trafficStats={trafficStats} />}
       mainContent={<TrafficMainPanel trafficStats={trafficStats} />}
     />
   );

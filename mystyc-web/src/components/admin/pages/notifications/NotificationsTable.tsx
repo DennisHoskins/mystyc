@@ -12,7 +12,6 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 type NotificationServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<Notification>>;
 
 interface NotificationsTableProps {
-  label?: string;
   serverAction?: NotificationServerAction;
   onRefresh?: () => void;
   hideUserColumn?: boolean;
@@ -20,13 +19,12 @@ interface NotificationsTableProps {
 }
 
 export default function NotificationsTable({
-  label,
   serverAction,
   onRefresh,
   hideUserColumn = false,
   notifications
 }: NotificationsTableProps) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [data, setData] = useState<AdminListResponse<Notification> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -114,13 +112,11 @@ export default function NotificationsTable({
 
   return (
     <AdminTable<Notification>
-      label={label}
       data={data?.data}
       columns={columns}
-      loading={isBusy}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={data?.pagination?.totalPages || 0}
-      totalItems={data?.pagination?.totalItems || 0}
       hasMore={data?.pagination?.hasMore || false}
       onPageChange={handlePageChange}
       onRefresh={handleRefresh}

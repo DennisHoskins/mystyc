@@ -7,15 +7,13 @@ import { ModalityInteraction, DynamicType } from 'mystyc-common/schemas';
 import { getModalityInteractionsByDynamic } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import Card from '@/components/ui/Card';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
-import Link from '@/components/ui/Link';
+import AdminCard from '@/components/admin/ui/AdminCard';
 import Text from '@/components/ui/Text';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import { getModalityIcon } from '@/components/ui/icons/astrology/modalities';
 import Capsule from '@/components/ui/Capsule';
 import Energy from '@/components/ui/icons/astrology/Energy';
+import Panel from '@/components/ui/Panel';
 
 export default function DynamicModalityInteractionsCard({ dynamic } : { dynamic: DynamicType }) {
   const [error, setError] = useState<string | null>(null);
@@ -39,42 +37,39 @@ export default function DynamicModalityInteractionsCard({ dynamic } : { dynamic:
   console.log(error);
 
   return (
-    <Card className='space-y-2'>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<Expand className='w-3 h-3' />} />
-        <div>
-          <Link href='/admin/astrology/modality-interactions'>
-            <Heading level={3}>Modality Interactions</Heading>
-          </Link>
-        </div>
-      </div>
-      <hr/ >
-      <div className='flex flex-col space-y-6 pt-1'>
+    <AdminCard
+      icon={<Expand className='w-3 h-3' />}
+      title='Modality Interactions'
+      href='/admin/astrology/modality-interactions'
+      className='!flex-none'
+    >
+      <div className='flex flex-col space-y-4'>
         {data.map((item) => (
-          <AdminDetailField 
-            key={item.modality1 + '-' + item.modality2}
-            heading={[item.modality1, item.modality2]}
-            headingicon={[getModalityIcon(item.modality1, "w-3 h-3"), getModalityIcon(item.modality2, "w-3 h-3")]}
-            headinghref={['/admin/astrology/modalities/' + item.modality1, '/admin/astrology/modalities/' + item.modality2]}
-            value={
-              <div className='flex flex-col space-y-2'>
-                <Text className='!text-gray-500 text-wrap flex-1'>
-                  {item.description}
-                  <br />
-                  <span className='text-xs'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
-                </Text>
-                <div className='flex space-x-1'>
-                  <Capsule
-                    icon={<Energy size={3} />} 
-                    label={item?.energyType || ''} 
-                    href={'/admin/astrology/energy-types/' + item?.energyType} 
-                  />
-                </div>
-              </div>
-            }
-          />
+          <Panel key={item.modality1 + '-' + item.modality2}>
+            <AdminDetailField 
+              heading={[item.modality1, item.modality2]}
+              headingicon={[getModalityIcon(item.modality1, "w-3 h-3"), getModalityIcon(item.modality2, "w-3 h-3")]}
+              headinghref={['/admin/astrology/modalities/' + item.modality1, '/admin/astrology/modalities/' + item.modality2]}
+              value={
+                <>
+                  <Text className='text-wrap flex-1'>
+                    <span className='text-gray-100'>{item.description}</span>
+                    <br />
+                    <span className='text-xs text-gray-500'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
+                  </Text>
+                  <div className='flex space-x-1'>
+                    <Capsule
+                      icon={<Energy size={2} />} 
+                      label={item?.energyType || ''} 
+                      href={'/admin/astrology/energy-types/' + item?.energyType} 
+                    />
+                  </div>
+                </>
+              }
+            />
+          </Panel>
         ))}        
       </div>
-    </Card>
+    </AdminCard>
   );
 }

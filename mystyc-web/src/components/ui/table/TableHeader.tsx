@@ -7,7 +7,7 @@ const TableHeader = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={clsx('h-6 w-full !bg-gray-100', styles.stickyHeader, className)} {...props} />
+  <thead ref={ref} className={clsx('h-6 w-full !bg-purple-950', styles.stickyHeader, className)} {...props} />
 ));
 
 TableHeader.displayName = 'TableHeader';

@@ -1,5 +1,6 @@
 import { Content } from 'mystyc-common';
 import { formatTimestampForComponent } from '@/util/dateTime';
+import Panel from '@/components/ui/Panel';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
@@ -18,8 +19,8 @@ export default function ContentDetailsPanel({ content }: { content: Content | nu
   };
 
   return (
-    <div className='space-y-4'>
-      <AdminDetailGrid cols={2}>
+    <AdminDetailGrid cols={2}>
+      <Panel>
         <AdminDetailField
           label="Status"
           value={content &&
@@ -32,6 +33,8 @@ export default function ContentDetailsPanel({ content }: { content: Content | nu
           label="Generated At"
           value={content?.generatedAt ? formatTimestampForComponent(new Date(content.generatedAt).getTime()) : ''}
         />
+      </Panel>
+      <Panel>
         <AdminDetailField
           label="Date"
           value={content?.date}
@@ -40,7 +43,7 @@ export default function ContentDetailsPanel({ content }: { content: Content | nu
           label="Type"
           value={content?.type}
         />
-      </AdminDetailGrid>
-    </div>
+      </Panel>        
+    </AdminDetailGrid>
   );
 }

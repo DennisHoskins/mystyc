@@ -5,7 +5,7 @@ import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 export default function PlanetDetailsPanel({ planet }: { planet?: Planet | null }) {
   return (
     <div className='space-y-4'>
-      <AdminDetailGrid cols={1} className='!gap-1'>
+      <AdminDetailGrid className='!gap-1'>
         <AdminDetailField
           value={planet?.description}
           type='description'
@@ -13,7 +13,7 @@ export default function PlanetDetailsPanel({ planet }: { planet?: Planet | null 
         <AdminDetailField
           label="Importance"
           inline={true}
-          text={planet?.importance.toString()}
+          value={planet?.importance.toString()}
         />
         <AdminDetailField
           label="Keywords"

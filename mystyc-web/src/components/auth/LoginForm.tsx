@@ -82,12 +82,12 @@ export default function LoginForm() {
           >
             Sign In
           </Button>
-          <p className="text-center text-sm mt-4 text-gray-600">
+          <p className="text-center text-sm mt-4 text-gray-400">
             <span className="block">
-              <Link href="/password-reset" onClick={() => { router.replace("/password-reset", false)}}>Forgot your password?</Link>
+              <Link href="/password-reset" onClick={() => { router.replace("/password-reset", false)}}><strong>Forgot your password?</strong></Link>
             </span>
             <span className="block mt-1">
-              Don&apos;t have an account? <Link href="/register" onClick={() => {router.replace("/register", false)}}>Register</Link>
+              Don&apos;t have an account? <Link href="/register" onClick={() => {router.replace("/register", false)}}><strong>Register</strong></Link>
             </span>
           </p>
         </Form>

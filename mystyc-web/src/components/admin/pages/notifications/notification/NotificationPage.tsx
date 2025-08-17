@@ -11,6 +11,8 @@ import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import NotificationIcon from '@/components/admin/ui/icons/NotificationIcon';
 import NotificationDetailsPanel from './NotificationDetailsPanel';
 import NotificationScheduleGenerationCard from './NotificationScheduleGenerationCard';
+import UserCard from '../../users/user/UserCard';
+import DeviceCard from '../../devices/device/DeviceCard';
 
 export default function NotificationPage({ notificationId }: { notificationId: string }) {
   const { setBusy } = useBusy();
@@ -50,6 +52,10 @@ export default function NotificationPage({ notificationId }: { notificationId: s
       icon={<NotificationIcon size={6} />}
       title={notification ? `${notification.sentBy}: ${notification.type}` : 'Unknown Notification'}
       headerContent={<NotificationDetailsPanel notification={notification} />}
+      sideContent={[
+        <UserCard key='user' firebaseUid={notification?.firebaseUid} className='!flex-none' />,
+        <DeviceCard key='device' deviceId={notification?.deviceId} className='flex-1 grow' />
+      ]}
       itemsContent={[<NotificationScheduleGenerationCard key='generation' notification={notification} />]}
     />
   );

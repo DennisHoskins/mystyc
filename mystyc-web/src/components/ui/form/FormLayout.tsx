@@ -20,13 +20,13 @@ export default function FormLayout({
     <div className='flex flex-col w-full space-y-4'>
 
       {title &&
-        <div className="text-gray-500 text-base font-medium">
-          <strong>{title}</strong>
+        <div className="text-gray-300 text-md font-medium">
+          {title}
         </div>
       }
 
       {subtitle &&
-        <div className="text-gray-500 text-sm flex flex-col">
+        <div className="text-gray-400 text-sm flex flex-col">
           {subtitle}
         </div>
       }

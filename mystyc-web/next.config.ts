@@ -1,5 +1,5 @@
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   allowedDevOrigins: ['mystyc.app', '127.0.0.1:3000'],
   transpilePackages: ['mystyc-common'],
   async redirects() {

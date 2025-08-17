@@ -7,8 +7,7 @@ import { PlanetInteraction, PlanetType } from 'mystyc-common/schemas';
 import { getPlanetInteractionsByPlanet } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
+import AdminPanelHeader from '@/components/admin/ui/AdminPanelHeader';
 import Link from '@/components/ui/Link';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import { getPlanetIcon } from '@/components/ui/icons/astrology/planets';
@@ -39,19 +38,16 @@ export default function PlanetInteractionsPanel({ planet } : { planet: PlanetTyp
 
   return (
     <>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<MoonStar className='w-3 h-3' />} />
-        <div>
-          <Link href='/admin/astrology/planet-interactions'>
-            <Heading level={3}>Planet Interactions</Heading>
-          </Link>
-        </div>
-      </div>
-      <hr/ >
-      <div className='flex flex-col space-y-6 pt-1'>
+      <AdminPanelHeader
+        icon={<MoonStar className='w-3 h-3' />}
+        heading='Planet Interactions'
+        href='/admin/astrology/planet-interactions'
+      />
+      <div className='flex flex-col space-y-4'>
         {data.map((item) => (
-          <AdminDetailField 
+          <AdminDetailField
             key={item.planet2}
+            hasBackground={true} 
             heading={item.planet2}
             headingicon={getPlanetIcon(item.planet2, "w-3 h-3")}
             headinghref={'/admin/astrology/planets/' + item.planet2}
@@ -64,12 +60,12 @@ export default function PlanetInteractionsPanel({ planet } : { planet: PlanetTyp
                 </Link>
                 <div className='flex space-x-1'>
                   <Capsule
-                    icon={<Energy size={3} />} 
+                    icon={<Energy size={2} />} 
                     label={item?.energyType || ''} 
                     href={'/admin/astrology/energy-types/' + item?.energyType} 
                   />
                   <Capsule
-                    icon={getDynamicIcon(item?.dynamic, 'w-3 h-3')} 
+                    icon={getDynamicIcon(item?.dynamic, 'w-2 h-2')} 
                     label={item?.dynamic || ''} 
                     href={'/admin/astrology/dynamics/' + item.dynamic} 
                   />

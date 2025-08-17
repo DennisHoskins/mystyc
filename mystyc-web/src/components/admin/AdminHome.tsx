@@ -9,14 +9,12 @@ import { getDefaultStatsQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import Card from '@/components/ui/Card';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
+import AdminCard from './ui/AdminCard';
 import DashboardIcon from '@/components/admin/ui/icons/DashboardIcon'
 import AdminError from '@/components/admin/ui/AdminError';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import SessionsDashboard from './pages/sessions/SessionsDashboard';
+import SessionsHealth from './pages/sessions/SessionsHealth';
 import Capsule from '../ui/Capsule';
 import { MonitorCheck, MonitorSmartphone, UserPlus, Users } from 'lucide-react';
 
@@ -30,10 +28,8 @@ export default function AdminHome() {
     try {
       setError(null);
       setBusy(1000);
-
       const defaultQuery = getDefaultStatsQuery();
       const stats = await getDashboardStats({deviceInfo: getDeviceInfo(), ...defaultQuery});
-
       setQuery(defaultQuery)
       setStats(stats)
     } catch (err) {
@@ -50,78 +46,78 @@ export default function AdminHome() {
 
   if (error) {
     return(
-      <>
-        <Card className='mb-4'>
-          <div className='flex space-x-3 items-center overflow-hidden flex-1'>
-            <Avatar size={'small'} icon={<DashboardIcon size={3}/>} className='-mt-[2.5px]' />
-            <Heading level={3}>Admin</Heading>
-          </div>
-          <hr />
-          <Text className='flex-1 pt-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
-          <AdminError 
-            title={"Unable to load dashboard"}
-            error={error} 
-            onRetry={loadDashboard}
-          />
-        </Card>
-      </>
+      <div className='flex-1 flex flex-col p-0 sm:p-1 sm:pb-0 w-full'>
+        <div className="flex flex-col sm:flex-row mb-1">
+          <AdminCard className='grow'
+            icon={<DashboardIcon />}
+            title='Admin'
+            tag={<SessionsDashboard stats={stats?.sessions} />}
+          >
+            <AdminError 
+              title={"Unable to load dashboard"}
+              error={error} 
+              onRetry={loadDashboard}
+            />
+          </AdminCard>
+        </div>
+      </div>
     );
   }
 
   return(
-    <div className='flex-1 flex flex-col p-4 pb-0 w-full'>
-      <div className="flex flex-col sm:flex-row mb-4">
-        <Card className='grow'>
-          <div className='flex space-x-3 items-center'>
-            <Avatar size={'small'} icon={<DashboardIcon />} />
-            <Heading level={3}>Admin</Heading>
+    <div className='flex-1 flex flex-col w-full p-0 sm:p-1 sm:pb-0 sm:pr-2'>
+      <div className="flex flex-col sm:flex-row mb-1">
+        <AdminCard className='grow'
+          icon={<DashboardIcon />}
+          title='Admin'
+          tag={<SessionsDashboard stats={stats?.sessions} />}
+        >
+          <div className='flex w-full'>
+            <ul className='flex space-x-2 flex-1 flex-wrap mr-2'>
+              <li>
+                <Capsule
+                  label={`All Users`}
+                  total={stats?.users.profiles.totalUsers}
+                  hasTotal={true}
+                  href='/admin/users?all'
+                  icon={<Users className='w-3 h-3' />}
+                />
+              </li>
+              <li>
+                <Capsule
+                  label={`Plus Users`}
+                  total={stats?.subscriptions.summary.totalSubscriptions}
+                  hasTotal={true}
+                  href='/admin/users?plus'
+                  icon={<UserPlus className='w-3 h-3' />}
+                />
+              </li>
+              <li>
+                <Capsule
+                  label={`All Devices`}
+                  total={stats?.devices.platforms.totalDevices}
+                  hasTotal={true}
+                  href='/admin/devices?all'
+                  icon={<MonitorSmartphone className='w-3 h-3' />}
+                />
+              </li>
+              <li>
+                <Capsule
+                  label={`Online Devices`}
+                  total={stats?.devices.fcmTokens.totalDevices}
+                  hasTotal={true}
+                  href='/admin/devices?online'
+                  icon={<MonitorCheck className='w-3 h-3' />}
+                />
+              </li>
+            </ul>
+            <div>
+            <SessionsHealth
+              stats={stats?.sessions}
+            />
           </div>
-          <hr />
-          <Text className='mb-2 pt-1 flex-1'>Overview of system activity, key metrics, and quick access to administrative tasks</Text>
-          <ul className='flex space-x-2'>
-            <li>
-              <Capsule
-                label={`All Users`}
-                total={stats?.users.profiles.totalUsers}
-                hasTotal={true}
-                href='/admin/users?all'
-                icon={<Users className='w-3 h-3' />}
-              />
-            </li>
-            <li>
-              <Capsule
-                label={`Plus Users`}
-                total={stats?.subscriptions.summary.totalSubscriptions}
-                hasTotal={true}
-                href='/admin/users?plus'
-                icon={<UserPlus className='w-3 h-3' />}
-              />
-            </li>
-            <li>
-              <Capsule
-                label={`All Devices`}
-                total={stats?.devices.platforms.totalDevices}
-                hasTotal={true}
-                href='/admin/devices?all'
-                icon={<MonitorSmartphone className='w-3 h-3' />}
-              />
-            </li>
-            <li>
-              <Capsule
-                label={`Online Devices`}
-                total={stats?.devices.fcmTokens.totalDevices}
-                hasTotal={true}
-                href='/admin/devices?online'
-                icon={<MonitorCheck className='w-3 h-3' />}
-              />
-            </li>
-          </ul>
-        </Card>
-        <Card className='sm:ml-4 mt-4 sm:mt-0 min-w-44 lg:min-w-64'>
-          <SessionsDashboard 
-            stats={stats?.sessions}
-          />
-        </Card>
+          </div>
+        </AdminCard>
       </div>
       <AdminDashboard query={query} stats={stats} />
     </div>

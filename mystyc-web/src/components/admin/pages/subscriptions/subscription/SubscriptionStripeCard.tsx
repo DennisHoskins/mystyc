@@ -1,6 +1,5 @@
 import { PaymentHistory } from 'mystyc-common/schemas/payment-history.schema';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
+import AdminPanelHeader from '@/components/admin/ui/AdminPanelHeader';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import StripeIcon from '@/components/admin/ui/icons/StripeIcon';
@@ -8,12 +7,11 @@ import StripeIcon from '@/components/admin/ui/icons/StripeIcon';
 export default function SubscriptionStripeCard({ payment }: { payment?: PaymentHistory | null }) {
   return (
     <div className='flex flex-col space-y-1'>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={StripeIcon} />
-        <Heading level={5} className='flex-1'>Stripe Details</Heading>
-      </div>
-      <hr />
-      <AdminDetailGrid cols={1} className='mt-1'>
+      <AdminPanelHeader
+        icon={StripeIcon}
+        heading='Stripe Details'
+      />
+      <AdminDetailGrid>
         <AdminDetailField
           label="Invoice Id"
           value={payment?.stripeInvoiceId}

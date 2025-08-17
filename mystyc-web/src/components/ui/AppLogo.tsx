@@ -27,22 +27,22 @@ export default function AppLogo({
   isWorking = false
 }: AppLogoProps) {
   const isVertical = orientation === 'vertical';
-  const iconSize = 50 * scale;
+  const iconSize = 25 * scale;
   const titleSize = `${1.25 * scale}rem`; // roughly 20px base scaled
   const subSize = `${0.75 * scale}rem`; // roughly 12px base scaled
 
   return (
     <div className={`flex ${isVertical ? 'flex-col items-center' : 'flex-row items-center'} ${className}`}>
 
-      <IconEye size={iconSize} className={` ${isWorking ? "text-gray-900 " + styles.animatePingSoft : 'text-gray-500'} `} />
+      <IconEye size={iconSize} className={` ${isWorking && styles.animatePingSoft} text-white mt-1`} />
 
       {showText && (
         <div className={`${isVertical ? 'text-center' : 'ml-1'}`}>
-          <div style={{ fontSize: titleSize }} className={`font-bold tracking-wide ${isWorking ? "text-gray-300" : "text-gray-500"} flex items-center`}>
+          <div style={{ fontSize: titleSize }} className={`font-bold tracking-wide text-white flex items-center`}>
             mystyc {showSparkle && <Sparkle user={user} />}
           </div>
           {subheading && (
-            <div style={{ fontSize: subSize }} className="text-gray-500 mt-4">
+            <div style={{ fontSize: subSize }} className="text-gray-100 mt-4">
               {subheading}
             </div>
           )}

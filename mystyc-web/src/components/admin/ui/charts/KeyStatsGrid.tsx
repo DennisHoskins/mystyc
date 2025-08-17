@@ -1,7 +1,7 @@
 'use client'
 
 interface StatItem {
-  value: string | number;
+  value: string | number | React.ReactNode;
   label: string;
   color?: string;
 }
@@ -35,11 +35,14 @@ function formatNumber(value: string | number): string {
 
 export default function KeyStatsGrid({ stats }: KeyStatsGridProps) {
   return (
-    <div className={`flex w-full space-x-4 justify-center sm:justify-end`}>
+    <div className={`flex w-full space-x-4 justify-end`}>
       {stats.map((stat, index) => (
-        <div key={index} className="text-center flex flex-col">
+        <div key={index} className="text-center flex flex-col items-center">
           <div className={`text-sm h-4 font-bold ${stat.color || 'text-blue-600'}`}>
-            {formatNumber(stat.value)}
+            {typeof stat.value === 'string' || typeof stat.value === 'number' 
+              ? formatNumber(stat.value) 
+              : stat.value
+            }
           </div>
           <div className="text-[8px] text-gray-500">{stat.label}</div>
         </div>

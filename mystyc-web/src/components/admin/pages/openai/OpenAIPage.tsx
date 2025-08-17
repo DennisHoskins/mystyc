@@ -24,8 +24,7 @@ export default function OpenAIPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [stats, setStats] = useState<OpenAIUsageStats | null>(null);
   const [data, setData] = useState<AdminListResponse<OpenAIUsage> | null>(null);
@@ -143,7 +142,6 @@ export default function OpenAIPage() {
         <OpenAIUsageTable 
           data={data?.data}
           pagination={data?.pagination}
-          loading={isBusy}
           currentPage={currentPage}
           onPageChange={loadUsage}
           onRefresh={() => loadUsage(0)}

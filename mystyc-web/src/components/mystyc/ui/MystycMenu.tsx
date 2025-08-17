@@ -20,7 +20,7 @@ export default function MystycMenu() {
       <>
         <div className='h-full'>
           {user.isAdmin && (
-            <div className='h-full mb-4 border-b '>
+            <div className='h-full mb-4 border-b border-purple-950'>
               <div className='pb-4 block md:hidden'>
                 <AdminMenu />
               </div>

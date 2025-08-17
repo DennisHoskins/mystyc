@@ -31,7 +31,6 @@ export default function PlanetPage({ planet } : { planet: PlanetType }) {
     try {
       setError(null);
       setBusy(1000);
-
       const planetData = await getPlanet({deviceInfo: getDeviceInfo(), planet});
       setPlanet(planetData);
     } catch (err) {
@@ -56,7 +55,7 @@ export default function PlanetPage({ planet } : { planet: PlanetType }) {
       headerContent={<PlanetDetailsPanel planet={planetData} />}
       sideContent={<PlanetInteractionsPanel key='planet-interactions' planet={planet} />}
       itemsContent={[
-        <div key='energy-planet' className='flex flex-col space-y-4 w-full'>
+        <div key='energy-planet' className='flex flex-col space-y-1 w-full'>
           <EnergyTypeDetailsCard key='energy-type' energyType={planetData?.energyType || null} />
           <PlanetaryPlanetPositionsCard planet={planet} />
         </div>

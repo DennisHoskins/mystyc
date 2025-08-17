@@ -6,13 +6,13 @@ import WebsiteContent from "@/components/website/content/Content";
 export default function WebsiteHome() {
   return (
     <>
-      <Section background="blue">
+      <Section>
         <Hero />
       </Section>
-      <Section background="white">
+      <Section background="purple">
         <Features />
       </Section>
-      <Section background="gray">
+      <Section className="mt-12">
         <WebsiteContent />
       </Section>
     </>

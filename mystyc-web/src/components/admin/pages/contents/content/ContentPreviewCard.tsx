@@ -1,21 +1,16 @@
 import { Eye } from 'lucide-react';
 
 import { Content } from 'mystyc-common/schemas';
-import Card from '@/components/ui/Card';
-import Avatar from '@/components/ui/Avatar';
+import AdminCard from '@/components/admin/ui/AdminCard';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
 export default function ContentPreviewCard({ content }: { content: Content | null }) {
   return (
-    <Card>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<Eye className='w-4 h-4'/>} />
-        <div>
-          <Heading level={5}>Content</Heading>
-        </div>
-      </div>
-      <hr/>
+    <AdminCard
+      icon={<Eye className='w-4 h-4'/>}
+      title='Content'
+    >
       {content?.status === 'failed' && content.error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-1">
           <Heading level={6} className="text-red-700 mb-2">Generation Error</Heading>
@@ -72,6 +67,6 @@ export default function ContentPreviewCard({ content }: { content: Content | nul
           </div>
         ))}
       </div>
-    </Card>
+    </AdminCard>
   );
 }

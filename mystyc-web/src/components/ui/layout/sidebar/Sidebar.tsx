@@ -22,9 +22,9 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <div className='relative'>
-      <aside className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''} ${isOpen ? styles.open : styles.closed} ${className} hidden md:flex sticky top-4 rounded-md m-4 mr-0 shadow-lg border border-gray-100 bg-white flex-col self-start flex-shrink-0`}>
+      <aside className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''} ${isOpen ? styles.open : styles.closed} ${className} hidden md:flex sticky top-1 rounded-md flex-col self-start flex-shrink-0 text-purple-300`}>
       <SidebarToggleButton isCollapsed={isCollapsed} onToggle={onToggle} />
-        <nav className={`${styles.nav} rounded-md p-4 flex flex-col`}>
+        <nav className={`${styles.nav} rounded-md p-4 pt-0 flex flex-col`}>
           {children}
         </nav>
       </aside>

@@ -1,5 +1,6 @@
 'use client'
 
+import Panel from '@/components/ui/Panel';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LabelList } from 'recharts';
 
 interface BarDataItem {
@@ -34,8 +35,8 @@ export default function SimpleBarChart({
   fontSize = 8
 }: SimpleBarChartProps) {
   return (
-    <div className='flex flex-col flex-1 bg-gray-100 py-2 rounded-md'>
-      {label && <h4 className="text-sm font-bold text-gray-700 ml-2 mb-1">{title}</h4>}
+    <Panel className='flex-1 pb-2 pr-2'>
+      {label && <h4 className="text-sm font-bold text-gray-500 ml-2 mb-4">{title}</h4>}
       <ResponsiveContainer width="100%" height={height} className="grow">
         <BarChart 
           data={data} 
@@ -77,6 +78,6 @@ export default function SimpleBarChart({
           </Bar>            
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </Panel>
   );
 }

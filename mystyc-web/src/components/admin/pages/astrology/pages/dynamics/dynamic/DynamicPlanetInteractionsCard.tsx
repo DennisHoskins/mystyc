@@ -7,15 +7,13 @@ import { PlanetInteraction, DynamicType } from 'mystyc-common/schemas';
 import { getPlanetInteractionsByDynamic } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import Card from '@/components/ui/Card';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
-import Link from '@/components/ui/Link';
+import AdminCard from '@/components/admin/ui/AdminCard';
 import Text from '@/components/ui/Text';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import { getPlanetIcon } from '@/components/ui/icons/astrology/planets';
 import Capsule from '@/components/ui/Capsule';
 import Energy from '@/components/ui/icons/astrology/Energy';
+import Panel from '@/components/ui/Panel';
 
 export default function DynamicPlanetInteractionsCard({ dynamic, className } : { dynamic: DynamicType, className?: string }) {
   const [error, setError] = useState<string | null>(null);
@@ -39,23 +37,17 @@ export default function DynamicPlanetInteractionsCard({ dynamic, className } : {
   console.log(error);
 
   return (
-    <Card className={'space-y-2 grow' + className}>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<MoonStar className='w-3 h-3' />} />
-        <div>
-          <Link href='/admin/astrology/planet-interactions'>
-            <Heading level={3}>Planet Interactions</Heading>
-          </Link>
-        </div>
-      </div>
-      <hr/ >
-      <div className='flex flex-col space-y-6 pt-1'>
-        {data.map((item) => (
+    <AdminCard
+      icon={<MoonStar className='w-3 h-3' />}
+      title='Planet Interactions'
+      className={'space-y-2 flex-1 min-h-0 grow' + className}
+    >
+      {data.map((item) => (
+        <Panel key={item.planet1 + "-" + item.planet2}>
           <AdminDetailField 
-            key={item.planet1}
             heading={[item.planet1, item.planet2]}
             headingicon={[getPlanetIcon(item.planet1, "w-3 h-3"), getPlanetIcon(item.planet2, "w-3 h-3")]}
-            headinghref={['/admin/astrology/elements/' + item.planet1, '/admin/astrology/elements/' + item.planet2]}
+            headinghref={['/admin/astrology/planets/' + item.planet1, '/admin/astrology/planets/' + item.planet2]}
             value={
               <div className='flex flex-col space-y-2'>
                 <Text className='!text-gray-500 text-wrap flex-1'>
@@ -73,8 +65,8 @@ export default function DynamicPlanetInteractionsCard({ dynamic, className } : {
               </div>
             }
           />
-        ))}        
-      </div>
-    </Card>
+        </Panel>
+      ))}        
+    </AdminCard>
   );
 }

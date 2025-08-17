@@ -6,14 +6,11 @@ import { getDefaultListQuery } from '@/util/admin/getQuery';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import { IconComponent } from '@/components/ui/icons/Icon';
 import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 
 type UserServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<UserProfile>>;
 
 interface UsersTableProps {
-  icon?: IconComponent;
-  label?: string;
   serverAction?: UserServerAction;
   onRefresh?: () => void;
   hideSubscriptionColumn?: boolean;
@@ -21,14 +18,12 @@ interface UsersTableProps {
 }
 
 export default function UsersTable({
-  icon,
-  label,
   serverAction,
   onRefresh,
   hideSubscriptionColumn = false,
   users
 }: UsersTableProps) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [data, setData] = useState<AdminListResponse<UserProfile> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -96,14 +91,11 @@ export default function UsersTable({
 
   return (
     <AdminTable<UserProfile>
-      icon={icon}
-      label={label}
       data={data?.data}
       columns={columns}
-      loading={isBusy}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={data?.pagination?.totalPages || 0}
-      totalItems={data?.pagination?.totalItems || 0}
       hasMore={data?.pagination?.hasMore || false}
       onPageChange={handlePageChange}
       onRefresh={handleRefresh}

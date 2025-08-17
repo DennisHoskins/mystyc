@@ -25,11 +25,6 @@
   margin-bottom: 0;;
 }
 
-.sidebarItem.active {
-  background: #dbeafe;
-  color: #1d4ed8;
-}
-
 .icon {
   flex-shrink: 0;
   width: 20px;

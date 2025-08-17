@@ -8,11 +8,10 @@ import { getPlanet, getSign } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import Avatar from '@/components/ui/Avatar';
-import Heading from '@/components/ui/Heading';
-import Link from '@/components/ui/Link';
+import AdminPanelHeader from '@/components/admin/ui/AdminPanelHeader';
 import PlanetPanel from '../../planets/planet/PlanetPanel';
 import SignPanel from '../../signs/sign/SignPanel';
+import Panel from '@/components/ui/Panel';
 
 export default function PlanetaryPositionPanel({ position } : { position?: PlanetaryPosition | null }) {
   const { setBusy } = useBusy();
@@ -47,18 +46,18 @@ export default function PlanetaryPositionPanel({ position } : { position?: Plane
 
   return (
     <>
-      <div className="flex items-center space-x-2">
-        <Avatar size={'small'} icon={<Atom className='w-3 h-3' />} />
-        <div>
-          <Link href='/admin/astrology/planetary-positions'>
-            <Heading level={3}>Position</Heading>
-          </Link>
-        </div>
-      </div>
-      <hr/ >
-      <div className='flex flex-col space-y-6 pt-1'>
-        <PlanetPanel planet={planet} />
-        <SignPanel sign={sign} />
+      <AdminPanelHeader
+        icon={<Atom className='w-3 h-3' />}
+        href='/admin/astrology/planetary-positions'
+        heading='Position'
+      />
+      <div className='flex flex-col space-y-4'>
+        <Panel>
+          <PlanetPanel planet={planet} />
+        </Panel>
+        <Panel>
+          <SignPanel sign={sign} />
+        </Panel>
       </div>
     </>
   );

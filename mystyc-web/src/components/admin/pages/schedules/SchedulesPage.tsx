@@ -24,8 +24,7 @@ export default function SchedulesPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [stats, setStats] = useState<ScheduleStats | null>(null);
   const [data, setData] = useState<AdminListResponse<Schedule> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -139,10 +138,8 @@ export default function SchedulesPage() {
           </div>
           <div className='flex-1'>
             <SchedulesTable
-              label="Schedules"
               data={data?.data}
               pagination={data?.pagination}
-              loading={isBusy}
               currentPage={currentPage}
               onPageChange={loadSchedules}
               onRefresh={() => loadSchedules(0)}

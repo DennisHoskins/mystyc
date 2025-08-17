@@ -1,3 +1,5 @@
+import Panel from "@/components/ui/Panel";
+
 interface BudgetProgressPanelProps {
   costUsed?: number;
   costBudget?: number;
@@ -38,25 +40,24 @@ export default function BudgetProgressPanel({
   };
 
   return (
-    <div className='flex flex-col flex-1 bg-gray-50 p-4 rounded-md'>
-      
+    <Panel className='flex-1 justify-center'>
       {/* Cost Budget */}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs font-medium text-gray-600">Cost Budget</span>
+          <span className="text-xs font-medium text-gray-500">Cost Budget</span>
           <span className="text-xs text-gray-500">
             {formatCost(costUsed)} / {formatCost(costBudget)}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-800 rounded-full h-2">
           <div 
             className={`h-2 rounded-full transition-all duration-300 ${getCostColor(costUsagePercent)}`}
             style={{ width: `${Math.min(costUsagePercent, 100)}%` }}
           />
         </div>
         <div className="flex justify-between items-center mt-1">
-          <span className="text-xs text-gray-500">{costUsagePercent}% used</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-600">{costUsagePercent}% used</span>
+          <span className="text-xs text-gray-600">
             {formatCost((costBudget || 0) - (costUsed || 0))} remaining
           </span>
         </div>
@@ -65,20 +66,20 @@ export default function BudgetProgressPanel({
       {/* Token Budget */}
       <div>
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs font-medium text-gray-600">Token Budget</span>
+          <span className="text-xs font-medium text-gray-500">Token Budget</span>
           <span className="text-xs text-gray-500">
             {formatTokens(tokensUsed || 0)} / {formatTokens(tokenBudget || 0)}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-800 rounded-full h-2">
           <div 
             className={`h-2 rounded-full transition-all duration-300 ${getTokenColor(tokenUsagePercent)}`}
             style={{ width: `${Math.min(tokenUsagePercent, 100)}%` }}
           />
         </div>
         <div className="flex justify-between items-center mt-1">
-          <span className="text-xs text-gray-500">{tokenUsagePercent}% used</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-600">{tokenUsagePercent}% used</span>
+          <span className="text-xs text-gray-600">
             {formatTokens((tokenBudget || 0) - (tokensUsed || 0))} remaining
           </span>
         </div>
@@ -95,6 +96,6 @@ export default function BudgetProgressPanel({
           ⚡ High usage detected
         </div>
       )}
-    </div>
+    </Panel>
   );
 }

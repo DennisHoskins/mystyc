@@ -1,7 +1,7 @@
 interface SectionProps {
   children: React.ReactNode;
   className?: string;
-  background?: 'transparent' | 'white' | 'gray' | 'blue';
+  background?: 'transparent' | 'white' | 'gray' | 'blue' | 'purple';
 }
 
 export default function Section({ children, className = '', background = 'transparent' }: SectionProps) {
@@ -9,11 +9,12 @@ export default function Section({ children, className = '', background = 'transp
     transparent: 'bg-transparent', 
     gray: 'bg-gray-50', 
     white: 'bg-white',
-    blue: 'bg-blue-50'
+    blue: 'bg-blue-950',
+    purple: 'bg-[#2e0847]'
   };
 
   return (
-    <section className={`w-full py-16 px-4 ${backgrounds[background]} ${className}`}>
+    <section className={`w-full py-4 px-4 ${backgrounds[background]} ${className}`}>
       <div className="max-w-content mx-auto">
         {children}
       </div>

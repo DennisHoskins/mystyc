@@ -1,5 +1,6 @@
 import { UserProfile } from 'mystyc-common/schemas/user-profile.schema';
 import { formatDateForDisplay } from '@/util/dateTime';
+import Panel from '@/components/ui/Panel';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
@@ -11,31 +12,37 @@ export default function UserDetailsPanel({ user }: { user?: UserProfile | null }
 
   return (
     <div className='space-y-4 flex-1 grow'>
-      <AdminDetailGrid cols={2}>
-        <AdminDetailField
-          label="Firebase Uid"
-          value={user?.firebaseUid}
-        />
-        <AdminDetailField
-          label="Contact Information"
-          value={user?.email}
-        />
-        <AdminDetailField
-          label="Roles & Permissions"
-          value={user && formatUserRoles(user.roles)}
-        />
-        <AdminDetailField
-          label="Subscription Level"
-          value={user?.subscription.level}
-        />
-        <AdminDetailField
-          label="Account Created"
-          value={formatDateForDisplay(user?.createdAt)}
-        />
-        <AdminDetailField
-          label="Last Updated"
-          value={formatDateForDisplay(user?.updatedAt)}
-        />
+      <AdminDetailGrid cols={3}>
+        <Panel>
+          <AdminDetailField
+            label="Firebase Uid"
+            value={user?.firebaseUid}
+          />
+          <AdminDetailField
+            label="Contact Information"
+            value={user?.email}
+          />
+        </Panel>
+        <Panel>
+          <AdminDetailField
+            label="Roles & Permissions"
+            value={user && formatUserRoles(user.roles)}
+          />
+          <AdminDetailField
+            label="Subscription Level"
+            value={user?.subscription.level}
+          />
+        </Panel>
+        <Panel>
+          <AdminDetailField
+            label="Account Created"
+            value={formatDateForDisplay(user?.createdAt)}
+          />
+          <AdminDetailField
+            label="Last Updated"
+            value={formatDateForDisplay(user?.updatedAt)}
+          />
+        </Panel>
       </AdminDetailGrid>
     </div>
   );

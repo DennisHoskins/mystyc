@@ -22,16 +22,16 @@ export default function WebsiteContent() {
 
   return (
     <>
-      <Heading level={1} className="text-center mb-8">
+      <Heading level={1} className="text-center mb-16">
         {content ? content.title + " @ " + content.date : ' Loading...'}
       </Heading>
-      <Text  className="text-gray-600 mb-10 text-lg md:text-xl text-center mx-auto">{content ? content.message : ''}</Text>
+      <Text  className="!text-gray-500 mb-10 text-lg text-center mx-auto">{content ? content.message : ''}</Text>
       {content && content.data && (
         <div className='mt-8 flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[15em]'>
           {content.data.map((item, index) => (
             <Card key={index}>
               <Heading level={3}>{item.key}</Heading>
-              <Text className='mt-2'>{item.value}</Text>
+              <Text className='mt-2 !text-gray-500'>{item.value}</Text>
             </Card>
           ))}
         </div>

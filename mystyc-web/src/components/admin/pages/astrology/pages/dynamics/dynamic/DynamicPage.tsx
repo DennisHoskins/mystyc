@@ -56,7 +56,7 @@ export default function DynamicPage({ dynamic } : { dynamic: DynamicType }) {
       headerContent={<DynamicDetailsPanel dynamic={dynamicData} />}
       sideContent={<DynamicElementInteractionsPanel dynamic={dynamic} />}
       itemsContent={[
-        <div key='element-modality' className='flex flex-col space-y-4 w-full'>
+        <div key='element-modality' className='flex grow flex-col space-y-1 w-full'>
           <DynamicModalityInteractionsCard dynamic={dynamic} />
           <DynamicPlanetInteractionsCard dynamic={dynamic} className='flex-1 grow' />
         </div>          

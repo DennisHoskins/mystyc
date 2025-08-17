@@ -18,7 +18,7 @@ export default function WorkingEye({
 
   return (
     <div className={`flex flex-col items-center text-center ${className}`}>
-      <IconEye size={iconSize} className={` ${isWorking ? "text-gray-900 " + styles.eyeWorking : 'text-gray-500'} `} />
+      <IconEye size={iconSize} className={` ${isWorking ? "text-white " + styles.eyeWorking : 'text-gray-100'} `} />
     </div>
   );
 }

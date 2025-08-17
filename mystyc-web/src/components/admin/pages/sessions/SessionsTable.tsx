@@ -11,17 +11,15 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 type SessionServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<Session>>;
 
 interface SessionsTableProps {
-  label?: string;
   serverAction: SessionServerAction;
   onRefresh?: () => void;
 }
 
 export default function SessionsTable({
-  label,
   serverAction,
   onRefresh
 }: SessionsTableProps) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [data, setData] = useState<AdminListResponse<Session> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -72,13 +70,11 @@ export default function SessionsTable({
 
   return (
     <AdminTable<Session>
-      label={label}
       data={data?.data}
       columns={columns}
-      loading={isBusy}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={data?.pagination?.totalPages || 0}
-      totalItems={data?.pagination?.totalItems || 0}
       hasMore={data?.pagination?.hasMore || false}
       onPageChange={handlePageChange}
       onRefresh={handleRefresh}

@@ -56,7 +56,7 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
       headerContent={<SignDetailsPanel sign={signData} showLinks={false} />}
       sideContent={<PlanetarySignPositionsPanel sign={sign} />}
       itemsContent={[
-        <div key='sign-content' className='flex flex-col w-full flex-1 space-y-4'>
+        <div key='sign-content' className='flex flex-col w-full flex-1 space-y-1'>
           <ElementDetailsCard key='element' element={signData?.element || null} />
           <ModalityDetailsCard key='modality' modality={signData?.modality || null} />
           <EnergyTypeDetailsCard key='energy-type' energyType={signData?.energyType || null} className='flex-1 grow' />

@@ -11,7 +11,6 @@ import AdminTable, { Column } from '@/components/admin/ui/table/AdminTable';
 type PaymentServerAction = (params: {deviceInfo: any} & BaseAdminQuery) => Promise<AdminListResponse<PaymentHistory>>;
 
 interface PaymentsTableProps {
-  label?: string;
   serverAction?: PaymentServerAction;
   onRefresh?: () => void;
   hideUserColumn?: boolean;
@@ -19,13 +18,12 @@ interface PaymentsTableProps {
 }
 
 export default function PaymentsTable({
-  label,
   serverAction,
   onRefresh,
   hideUserColumn = false,
   payments
 }: PaymentsTableProps) {
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [data, setData] = useState<AdminListResponse<PaymentHistory> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -97,13 +95,11 @@ export default function PaymentsTable({
 
   return (
     <AdminTable<PaymentHistory>
-      label={label}
       data={data?.data}
       columns={columns}
-      loading={isBusy}
+      loading={data == null}
       currentPage={currentPage}
       totalPages={data?.pagination?.totalPages || 0}
-      totalItems={data?.pagination?.totalItems || 0}
       hasMore={data?.pagination?.hasMore || false}
       onPageChange={handlePageChange}
       onRefresh={handleRefresh}

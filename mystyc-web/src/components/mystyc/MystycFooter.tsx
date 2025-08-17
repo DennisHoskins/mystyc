@@ -20,7 +20,7 @@ export default function MystycFooter({ user } : { user: AppUser }) {
           <a            
             href="/admin"
             onClick={handleAdminClick}
-            className="ml-1 underline hover:text-gray-700"
+            className="hover:text-gray-600"
           >
             Admin
           </a>

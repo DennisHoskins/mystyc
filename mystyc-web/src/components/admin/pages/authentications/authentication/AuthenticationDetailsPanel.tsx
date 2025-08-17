@@ -6,7 +6,7 @@ import { AuthEvent, Device } from 'mystyc-common/schemas/';
 import { getDevice } from '@/server/actions/admin/devices';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
-import { formatTimestampForComponent } from '@/util/dateTime';
+import Panel from '@/components/ui/Panel';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import AdminErrorPage from '@/components/admin/ui/AdminError';
@@ -47,52 +47,51 @@ export default function AuthenticationDetailsPanel({ authentication }: { authent
   return (
     <>
       <AdminDetailGrid cols={3}>
-        <AdminDetailField
-          label="Device Name"
-          value={device?.deviceName}
-          href={'/admin/devices/' + device?.deviceId}
-        />
-        <AdminDetailField
-          label="Device ID"
-          value={device?.deviceId}
-          href={'/admin/devices/' + device?.deviceId}
-        />
+        <Panel>
+          <AdminDetailField
+            label="Device Name"
+            value={device?.deviceName}
+            href={'/admin/devices/' + device?.deviceId}
+          />
+          <AdminDetailField
+            label="Device ID"
+            value={device?.deviceId}
+            href={'/admin/devices/' + device?.deviceId}
+          />
+          <AdminDetailField
+            label="TCP/IP Address"
+            value={authentication?.ip}
+          />
+        </Panel>
+        <Panel>
+          <AdminDetailField
+            label="Timezone"
+            value={device?.timezone}
+          />
+          <AdminDetailField
+            label="Language"
+            value={device?.language}
+          />
+        </Panel>
+        <Panel>
+          <AdminDetailField
+            label="Platform"
+            value={device?.platform}
+          />
+          <AdminDetailField
+            label="Version"
+            value={device?.appVersion}
+          />
+        </Panel>
       </AdminDetailGrid>
-      <AdminDetailGrid cols={3} className='mt-4'>
-        <AdminDetailField
-          label="TCP/IP Address"
-          value={authentication?.ip}
-        />
-        <AdminDetailField
-          label="Timestamp"
-          value={authentication 
-            ? authentication.clientTimestamp ? formatTimestampForComponent(new Date(authentication.clientTimestamp).getTime()) : '-'
-            : ""
-          }
-        />
-        <AdminDetailField
-          label="Timezone"
-          value={device?.timezone}
-        />
-        <AdminDetailField
-          label="Language"
-          value={device?.language}
-        />
-        <AdminDetailField
-          label="Platform"
-          value={device?.platform}
-        />
-        <AdminDetailField
-          label="Version"
-          value={device?.appVersion}
-        />
-      </AdminDetailGrid>
-      <AdminDetailGrid cols={1} className='mt-4'>
-        <AdminDetailField
-          label="UserAgent"
-          value={device?.userAgent}
-          type='description'
-        />
+      <AdminDetailGrid className='mt-4'>
+        <Panel>
+          <AdminDetailField
+            label="UserAgent"
+            value={device?.userAgent}
+            type='description'
+          />
+        </Panel>
       </AdminDetailGrid>
     </>
   );

@@ -23,8 +23,7 @@ export default function SchedulesExecutionsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
-  const { setBusy, isBusy } = useBusy();
+  const { setBusy } = useBusy();
   const [query, setQuery] = useState<Partial<AdminStatsQuery> | null>(null);
   const [stats, setStats] = useState<ScheduleExecutionStats | null>(null);
   const [data, setData] = useState<AdminListResponse<ScheduleExecution> | null>(null);
@@ -145,7 +144,6 @@ export default function SchedulesExecutionsPage() {
         <SchedulesExecutionsTable 
           data={data?.data}
           pagination={data?.pagination}
-          loading={isBusy}
           currentPage={currentPage}
           onPageChange={loadSchedulesExecutions}
           onRefresh={() => loadSchedulesExecutions(0)}

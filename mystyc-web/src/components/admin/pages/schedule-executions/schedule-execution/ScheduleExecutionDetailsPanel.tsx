@@ -8,6 +8,7 @@ import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { ScheduleExecution } from 'mystyc-common/schemas';
 import { formatTimestampForComponent } from '@/util/dateTime';
+import Panel from '@/components/ui/Panel';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 
@@ -35,50 +36,79 @@ export default function ScheduleExecutionDetailsPanel({ execution }: { execution
 
   console.log(error);
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'text-green-600';
+      case 'failed':
+        return 'text-red-600';
+      case 'timeout':
+        return 'text-yellow-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  const cols = execution?.localTime ? 3 : 2;
+
   return (
-    <AdminDetailGrid cols={3}>
-      <AdminDetailField
-        label="Status"
-        value={execution?.status}
-      />
-      <AdminDetailField
-        label="Scheduled Time"
-        value={execution && (execution.scheduledTime.hour + ":" + execution.scheduledTime.minute)}
-      />
-      <AdminDetailField
-        label="Executed Time"
-        value={execution && (execution.executedAt ? formatTimestampForComponent(new Date(execution.executedAt).getTime()) : '-')}
-      />
-      <AdminDetailField
-        label="Local Time"
-        value={execution && 
-          execution.localTime ? formatTimestampForComponent(new Date(execution.localTime).getTime()) : 
-          execution?.executedAt ? formatTimestampForComponent(new Date(execution.executedAt).getTime()) : 
-          ""
+    <>
+      <AdminDetailGrid cols={cols}>
+        <Panel>
+          <AdminDetailField
+            label="Status"
+            value={execution &&
+              <span className={`font-medium ${getStatusColor(execution.status)}`}>
+                {execution.status.charAt(0).toUpperCase() + execution.status.slice(1)}
+              </span>
+            }
+          />
+          <AdminDetailField
+            label="Duration"
+            value={execution?.duration && (execution.duration + 'ms')}
+          />
+        </Panel>
+        <Panel>
+          <AdminDetailField
+            label="Scheduled Time"
+            value={execution && (execution.scheduledTime.hour + ":" + execution.scheduledTime.minute.toString().padEnd(2, '0'))}
+          />
+          <AdminDetailField
+            label="Executed Time"
+            value={execution && (execution.executedAt ? formatTimestampForComponent(new Date(execution.executedAt).getTime()) : '-')}
+          />
+        </Panel>
+        {execution && execution.timezone &&
+          <Panel>
+            <AdminDetailField
+              label="Local Time"
+              value={execution && 
+                execution.localTime ? formatTimestampForComponent(new Date(execution.localTime).getTime()) : 
+                execution?.executedAt ? formatTimestampForComponent(new Date(execution.executedAt).getTime()) : 
+                ""
+              }
+            />
+            <AdminDetailField
+              label="Timezone"
+              value={execution?.timezone || "UTC"}
+            />
+          </Panel>
         }
-      />
-      <AdminDetailField
-        label="Timezone"
-        value={execution?.timezone || "UTC"}
-      />
-      <AdminDetailField
-        label="Duration"
-        value={execution?.duration}
-      />
-      <AdminDetailField
-        label="Schedule Name"
-        value={schedule?.event_name}
-        href={'/admin/schedules/' + schedule?._id}
-      />
-      <AdminDetailField
-        label="Schedule ID"
-        value={schedule?._id}
-        href={'/admin/schedules/' + schedule?._id}
-      />
-      <AdminDetailField
-        label="Timezone Aware"
-        value={schedule?.timezone_aware ? "Yes" : "No"}
-      />
-    </AdminDetailGrid>
+      </AdminDetailGrid>
+      <AdminDetailGrid className='mt-4'>
+        <Panel>
+          <AdminDetailField
+            label="Schedule Name"
+            value={schedule?.event_name}
+            href={'/admin/schedules/' + schedule?._id}
+          />
+          <AdminDetailField
+            label="Schedule ID"
+            value={schedule?._id}
+            href={'/admin/schedules/' + schedule?._id}
+          />
+        </Panel>
+      </AdminDetailGrid>
+    </>
   );
 }
