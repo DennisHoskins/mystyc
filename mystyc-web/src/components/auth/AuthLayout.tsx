@@ -27,9 +27,12 @@ export default function AuthLayout({ children, isWorking = false } : { children:
   }, [isWorking]);
 
   return (
-    <div className="w-full min-h-[28em] flex flex-col">
-      <WorkingEye scale={1.75} className='py-6' isWorking={isWorking} />
-      <div className={`${isWorking ? "opacity-50 pointer-events-none" : ""}`}>
+    <div className="w-full min-h-[28em] flex flex-col items-center">
+      <WorkingEye scale={1.75} className='py-2' isWorking={isWorking} />
+      <div className={`w-full flex flex-col items-center ${isWorking ? "opacity-50 pointer-events-none" : ""}`}>
+        <div className={`text-2xl font-bold tracking-wide text-white flex items-center pb-0`}>
+          mystyc
+        </div>
         {children}
       </div>
     </div>      

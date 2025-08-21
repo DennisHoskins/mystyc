@@ -189,7 +189,7 @@ export default function PlacesSearchInput({
   }, [onChange]);
 
   const footer = (
-    <div className="px-3 py-1 text-xs text-gray-400 bg-gray-50 border-t border-gray-100 text-right">
+    <div className="px-3 py-1 text-xs text-gray-700 bg-[#230537] border-t border-[#ffffff12] text-right">
       Powered by Google
     </div>
   );

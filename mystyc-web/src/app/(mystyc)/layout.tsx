@@ -26,7 +26,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </Main>
       </div>
-      <MystycFooter user={user} />
+      <div className='fixed bottom-0 left-0 w-full'>
+        <MystycFooter user={user} />
+      </div>
     </>
   );
 }

@@ -4,6 +4,9 @@
 
 :root {
   --client-height: calc(100dvh - 64px);
+  --color-main: #4925604a;
+  --color-main-1: #331944;
+  --color-border: #5f34808a;
 }
 
 html, body {
@@ -11,16 +14,15 @@ html, body {
 }
 
 body {
+  font-family: Google Sans Text, Google Sans, Roboto, Arial, sans-serif;
+  background-color: #1a0033;
   height: 100vh;
   max-height: 100dvh;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  margin: 0;
   opacity: 0;
-  font-family: Google Sans Text, Google Sans, Roboto, Arial, sans-serif;
   animation: fadeIn 0.75s ease-in-out forwards;
-  background: #25003d;
-  background: linear-gradient(0deg,rgba(27, 0, 43, 1) 0%, rgba(37, 0, 61, 1) 100%);  
 }
 
 @keyframes fadeIn {
@@ -54,3 +56,10 @@ select:-webkit-autofill:focus {
   border: 1px solid #5a0096;
 }
 
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

@@ -20,7 +20,7 @@ export default function MystycMenu() {
       <>
         <div className='h-full'>
           {user.isAdmin && (
-            <div className='h-full mb-4 border-b border-purple-950'>
+            <div className='h-full mb-4 border-b border-[#ffffff24]'>
               <div className='pb-4 block md:hidden'>
                 <AdminMenu />
               </div>
@@ -64,10 +64,10 @@ export default function MystycMenu() {
 
       {user.isAdmin && (
         <div className='h-full'>
-          <div className='pt-4 pb-4 sm:hidden border-t'>
+          <div className='pt-4 pb-4 sm:hidden border-t border-[#ffffff24]'>
             <AdminMenu />
           </div>
-          <div className='pt-4 pb-4 hidden sm:block border-t'>
+          <div className='pt-4 pb-4 hidden sm:block border-t border-[#ffffff24]'>
             <MenuItem className='mt-auto pb-0 items-end' onClick={() => router.push('/admin')}>
               <LayoutDashboard className="inline-block mr-2 h-4 w-4" />
               Admin Dashboard
@@ -76,7 +76,7 @@ export default function MystycMenu() {
         </div>
       )}
 
-      <div className="mt-auto pt-4 border-t">
+      <div className="mt-auto pt-4 border-t border-[#ffffff24]">
         <MenuItem className='pb-0' onClick={() => router.push('/logout')}>
           <LogOut className="inline-block mr-2 h-4 w-4" />
           Logout

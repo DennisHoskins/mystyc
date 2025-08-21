@@ -9,10 +9,10 @@ export default function WebsiteHome() {
       <Section>
         <Hero />
       </Section>
-      <Section background="purple">
+      <Section>
         <Features />
       </Section>
-      <Section className="mt-12">
+      <Section className="pt-12">
         <WebsiteContent />
       </Section>
     </>

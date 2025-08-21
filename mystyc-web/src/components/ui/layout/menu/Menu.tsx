@@ -52,13 +52,13 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
   return (
     <>
       <div 
-        className={`md:hidden fixed top-16 -left-10 right-0 bottom-0 bg-[#25003d] text-purple-300 shadow-[inset_0_10px_15px_-5px_rgba(0,0,0,0.1),inset_0_10px_10px_-5px_rgba(0,0,0,0.04)] z-[60] transition-opacity duration-300 ease-in-out ${
+        className={`md:hidden fixed top-16 -left-10 right-0 bottom-0 bg-[var(--color-main)] text-purple-300 shadow-[inset_0_10px_15px_-5px_rgba(0,0,0,0.1),inset_0_10px_10px_-5px_rgba(0,0,0,0.04)] z-[60] transition-opacity duration-300 ease-in-out ${
           isOpen ? 'opacity-75 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
       
-      <div className={`md:hidden fixed top-16 right-0 bottom-0 w-[80%] bg-[#25003d] text-purple-300 z-[60] shadow-lg transform transition-transform duration-300 ease-in-out ${
+      <div className={`md:hidden fixed top-16 right-0 bottom-0 w-[80%] bg-[var(--color-main)] text-purple-300 z-[60] shadow-lg transform transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : 'translate-x-[110%]'
       }`}>
         <div className="flex flex-col h-full p-4 ">

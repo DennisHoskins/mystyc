@@ -1,5 +1,7 @@
 'use client'
 
+import styles from '../layout/scroll/ScrollWrapper.module.css';
+
 import {
   Combobox,
   ComboboxInput,
@@ -50,8 +52,6 @@ const ComboInput = forwardRef<HTMLInputElement, ComboInputProps<any>>(function C
   ref: Ref<HTMLInputElement>
 ) {
 
-console.log(value);
-
   return (
     <div className='text-left mb-4'>
       <Combobox value={value} onChange={onChange}>
@@ -60,7 +60,7 @@ console.log(value);
             <AnimatedLabel
               htmlFor={id}
               label={label}
-              value={value ? value.toString() : undefined}
+              value={value ? value.toString() : " "}
               error={error}
             />
           )}
@@ -70,7 +70,7 @@ console.log(value);
             id={id}
             name={name}
             className={clsx(
-              'block w-full h-14 rounded-md border-0 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500 font-sans shadow-sm placeholder:text-transparent',
+              'block w-full h-14 rounded-md border-0 px-3 bg-[#230537] !text-white font-sans disabled:text-gray-100 disabled:opacity-60',
               label ? 'pt-6 pb-2' : 'py-3',
               className
             )}
@@ -81,7 +81,9 @@ console.log(value);
             disabled={disabled}
           />
 
-          <ComboboxOptions className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <ComboboxOptions 
+            className={`absolute z-10 w-full bg-[#230537] border border-[var(--color-border)] rounded-md shadow-lg max-h-56 overflow-auto focus:outline-none ${styles.scroller}`}
+          >
             {suggestions.map((suggestion, index) => (
               <ComboboxOption
                 key={getSuggestionKey(suggestion, index)}
@@ -89,7 +91,7 @@ console.log(value);
                 className={({ active }) =>
                   clsx(
                     'relative cursor-pointer select-none px-3 py-2 text-left',
-                    active ? 'bg-blue-50 text-blue-900' : 'text-gray-900'
+                    active ? 'bg-[var(--color-main-1)] text-white' : 'text-gray-500'
                   )
                 }
               >

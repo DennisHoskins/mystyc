@@ -17,7 +17,9 @@ export default function AdminHomeLayout({ children }: { children: React.ReactNod
             isCollapsed={sidebarCollapsed} 
             onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
-          {children}
+          <div className='flex w-full flex-grow'>
+            {children}
+          </div>
         </div>
         <AdminFooter />
       </ScrollWrapper>

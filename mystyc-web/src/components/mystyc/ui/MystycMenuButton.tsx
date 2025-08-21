@@ -39,7 +39,7 @@ export default function MystycMenuButton({ menuOpen, setMenuOpen }: MystycMenuBu
       />
       
       {/* Desktop: Floating popup */}
-      <div className={`hidden md:block absolute top-10 right-0 z-[100] w-64 bg-[#25003d] border border-purple-950 text-purple-300 rounded-md shadow-lg transition-opacity duration-200 ease-in-out ${
+      <div className={`hidden md:block absolute top-10 right-0 z-[100] w-64 bg-[var(--color-main-1)] border border-[var(--color-border)] text-purple-300 rounded-md shadow-lg transition-opacity duration-200 ease-in-out ${
         menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}>
         <div className="p-4">

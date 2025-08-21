@@ -18,11 +18,11 @@ export default function AdminFooter() {
 
   return (
     <Footer>
-      {' · '}
+      <span className='opacity-25'>{' · '}</span>
       <a            
         href="/home"
         onClick={handleHomeClick}
-        className="hover:text-gray-600"
+        className="opacity-25 hover:opacity-50"
       >
         home
       </a>

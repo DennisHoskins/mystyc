@@ -33,7 +33,7 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
       `h${level}`,
       {
         ref,
-        className: clsx(sizeClasses[actualSize!], 'truncate', className),
+        className: clsx(sizeClasses[actualSize!], '', className),
         ...props,
       }
     );

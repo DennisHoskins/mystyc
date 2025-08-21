@@ -22,9 +22,9 @@ export const transitionVariants = {
     exit: { opacity: 0 }
   },
   fadeScale: {
-    initial: { opacity: 0, scale: 0.25 },
+    initial: { opacity: 0, scale: 0 },
     animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.25 }
+    exit: { opacity: 0, scale: 0 }
   },
   fadeSlide: {
     initial: { opacity: 0, y: 50 },
@@ -65,7 +65,11 @@ export default function BaseTransition({
   const key = usePathnameKey ? `${pathname}-${keyPrefix}` : keyPrefix;
 
   return (
-    <AnimatePresence onExitComplete={() => window.dispatchEvent(new CustomEvent('exit-complete'))}>
+    <AnimatePresence onExitComplete={() => {
+        setShowing(false);
+        window.dispatchEvent(new CustomEvent('exit-complete'));
+      }
+    }>
       {showing && (
         <motion.div
           key={key}

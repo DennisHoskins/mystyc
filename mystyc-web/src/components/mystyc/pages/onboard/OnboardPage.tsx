@@ -20,7 +20,6 @@ export default function OnboardingPage({ user } : { user: AppUser }) {
 
   const deviceInfo = getDeviceInfo();
 
-  // For now, always show welcome (virgin visit)
   const steps = [
     { component: WelcomePanel, props: { user }, title: 'Welcome to mystyc!' },
     { component: NamePanel, props: { user, deviceInfo, setIsWorking }, title: 'What is your name?' },

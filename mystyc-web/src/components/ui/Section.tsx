@@ -14,8 +14,8 @@ export default function Section({ children, className = '', background = 'transp
   };
 
   return (
-    <section className={`w-full py-4 px-4 ${backgrounds[background]} ${className}`}>
-      <div className="max-w-content mx-auto">
+    <section className={`w-full py-4 px-4 flex ${backgrounds[background]} ${className}`}>
+      <div className="max-w-content mx-auto flex">
         {children}
       </div>
     </section>

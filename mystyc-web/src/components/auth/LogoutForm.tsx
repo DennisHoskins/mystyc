@@ -28,7 +28,7 @@ export default function LogoutPage() {
 
   useEffect(() => {
     if (!user || !isLogout || isWorking) return;
-    setBusy(500);
+    setBusy(true);
     setIsWorking(true);
 
     signOut()
@@ -39,8 +39,6 @@ export default function LogoutPage() {
       })
       .catch((err: any) => {
         logger.error('Logout error:', err);
-      }).finally(() => {
-        setBusy(false);
       });
   }, [user, isLogout, isWorking, setBusy, signOut, clearUser, showToast, router]);
 

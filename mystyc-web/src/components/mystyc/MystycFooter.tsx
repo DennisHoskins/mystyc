@@ -16,11 +16,11 @@ export default function MystycFooter({ user } : { user: AppUser }) {
     <Footer>
       {user.isAdmin && (
         <>
-          {' · '}
+          <span className='opacity-25'>{' · '}</span>
           <a            
             href="/admin"
             onClick={handleAdminClick}
-            className="hover:text-gray-600"
+            className="opacity-25 hover:opacity-50"
           >
             Admin
           </a>
