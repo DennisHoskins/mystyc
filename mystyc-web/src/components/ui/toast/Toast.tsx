@@ -31,7 +31,7 @@ export default function Toast() {
 
   const colors = {
     success: {
-      bg: 'bg-gradient-to-r from-emerald-500 to-green-600',
+      bg: 'bg-purple-700',
       icon: 'text-white',
       text: 'text-white',
       close: 'text-white/70 hover:text-white'
@@ -43,7 +43,7 @@ export default function Toast() {
       close: 'text-white/70 hover:text-white'
     },
     info: {
-      bg: 'bg-gradient-to-r from-blue-500 to-indigo-600',
+      bg: 'bg-[var(--color-main)]',
       icon: 'text-white',
       text: 'text-white',
       close: 'text-white/70 hover:text-white'

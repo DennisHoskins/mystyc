@@ -55,6 +55,8 @@ export default function DynamicModalityInteractionsCard({ dynamic } : { dynamic:
                   <Text className='text-wrap flex-1'>
                     <span className='text-gray-100'>{item.description}</span>
                     <br />
+                    <span className='text-xs'><strong className='mr-1'>Action</strong>{item.action}</span>
+                    <br />
                     <span className='text-xs text-gray-500'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
                   </Text>
                   <div className='flex space-x-1'>

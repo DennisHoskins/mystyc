@@ -1,15 +1,17 @@
 'use client'
 
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 import Text from '@/components/ui/Text';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 
 interface AdminDetailFieldProps {
-  label?: string;
+  label?: string | ReactNode | null;
+  tag?: React.ReactNode | null;
   inline?: boolean;
   heading?: string | string[];
+  subheading?: string;
   headinghref?: string | string[];
   headingicon?: React.ReactNode | React.ReactNode[] | null;
   headingtag?: React.ReactNode | null;
@@ -18,6 +20,7 @@ interface AdminDetailFieldProps {
   value?: string | ReactNode | null;
   href?: string | null;
   text?: string | null;
+  subtext?: string | null;
   onClick?: () => void;  
   active?: boolean;
   hasBackground?: boolean;
@@ -25,8 +28,10 @@ interface AdminDetailFieldProps {
 
 export default function AdminDetailField({ 
   label, 
+  tag,
   inline = false, 
   heading, 
+  subheading,
   headingicon, 
   headinghref, 
   headingtag, 
@@ -35,6 +40,7 @@ export default function AdminDetailField({
   value, 
   href, 
   text,
+  subtext,
   onClick, 
   active = false, 
   hasBackground = false
@@ -60,9 +66,13 @@ export default function AdminDetailField({
   return (
     <div className={`overflow-hidden ${panelClass}`}>
       {(label && !inline) &&
-        <Text variant="xs">
-          {label}
-        </Text>
+        <div className='flex items-center'>
+          {label && typeof label === 'string' 
+          ? <Text variant="xs" className='text-gray-500'>{label}</Text>
+          : label
+          }
+          {tag}
+        </div>
       }
 
       {heading && headingArray.length > 0 && (
@@ -84,6 +94,12 @@ export default function AdminDetailField({
           ))}
         </div>          
       )}
+
+      {subheading &&
+        <Text variant="xs" className='text-gray-300 mt-1'>
+          {subheading}
+        </Text>
+      }
 
       <div className='flex flex-col'>
         {icon}
@@ -108,8 +124,13 @@ export default function AdminDetailField({
         }
 
         {text && (
-          <Text className={`!text-gray-500 text-xs`}>
+          <Text className={`!text-gray-500 text-xs mt-1`}>
             {label && inline ? <strong>{label}</strong> : ''}  {text}
+          </Text>
+        )}
+        {subtext && (
+          <Text className={`!text-gray-500 text-xs mt-2`}>
+            {subtext}
           </Text>
         )}
       </div>

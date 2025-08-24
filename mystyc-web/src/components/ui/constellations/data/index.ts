@@ -12,16 +12,16 @@ import taurus from './taurus.json';
 import virgo from './virgo.json';
 
 export const data = {
-  aquarius,
-  aries,
   cancer,
-  capricorn,
   gemini,
-  leo,
-  libra,
+  taurus,
+  aries,
   pisces,
+  aquarius,
+  capricorn,
   sagittarius,
   scorpio,
-  taurus,
-  virgo
+  libra,
+  virgo,
+  leo,
 }

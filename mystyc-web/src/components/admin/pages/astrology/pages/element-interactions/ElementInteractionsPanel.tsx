@@ -61,6 +61,8 @@ export default function ElementInteractionsPanel({ element } : { element: Elemen
                   <Link href={'/admin/astrology/elements/' + item.element2} className='!text-gray-500 text-wrap !no-underline'>
                     {item.description}
                     <br />
+                    <span className='text-xs'><strong className='mr-1'>Action</strong>{item.action}</span>
+                    <br />
                     <span className='text-xs'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
                   </Link>
                   <div className='flex space-x-2'>

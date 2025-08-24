@@ -1,5 +1,6 @@
 {
   "name": "Scorpio",
+  "degrees" : 10,
   "stars": [
     {"id": "Lesath", "x": 0.13, "y": 0.74, "brightness": 0.6, "size": 1},
     {"id": "Shaula", "x": 0.05, "y": 0.82, "brightness": 0.6, "size": 1},

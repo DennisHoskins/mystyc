@@ -12,6 +12,11 @@ export default function ModalityInteractionDetailsPanel({ interaction }: { inter
           type='description'
         />
         <AdminDetailField
+          label='Action'
+          value={interaction?.action}
+          type='description'
+        />
+        <AdminDetailField
           label='Keywords'
           inline={true}
           text={interaction?.keywords && "[" + interaction?.keywords.join(", ") + "]"}

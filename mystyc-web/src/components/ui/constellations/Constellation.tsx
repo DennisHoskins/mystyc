@@ -1,194 +1,224 @@
-import React, { useRef, useEffect, useCallback } from 'react';
-import { ConstellationClass } from './ConstellationClass';
+import React, { useRef, useCallback, useEffect, useState } from "react";
+import Star, { StarData } from "./Star";
+import StarLine from "./StarLine";
 
-interface RenderProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  canvas?: React.RefObject<HTMLCanvasElement | null>;
+interface ConstellationData {
+  name: string;
+  stars: StarData[];
+  lines: string[][];
 }
 
 interface ConstellationProps {
-  constellation: ConstellationClass;
-  render?: RenderProps;
-  resolution?: number;
-  dimBrightness?: number;
-  sparkleBrightness?: number;
+  constellationData: ConstellationData | null;
   sparkleSpeed?: number;
   animationDuration?: number;
+  dimBrightness?: number;
+  sparkleBrightness?: number;
+  sparkleChance?: number;  // Probability of sparkling (0-1)
+  minDelay?: number;       // Min delay between sparkles (ms)
+  maxDelay?: number;       // Max delay between sparkles (ms)
+  showLabels?: boolean;
   className?: string;
 }
 
 export default function Constellation({
-  constellation,
-  render,
-  resolution = 512,
-  dimBrightness = 0,
-  sparkleBrightness = 1.3,
-  sparkleSpeed = 2500,
+  constellationData,
+  sparkleSpeed = 1000,
   animationDuration = 2500,
-  className = '',
+  dimBrightness = 0,
+  sparkleBrightness = 1,
+  sparkleChance = 0.6,
+  minDelay = 1000,
+  maxDelay = 3000,
+  showLabels = false,
+  className,
 }: ConstellationProps) {
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize offscreen canvas
-  useEffect(() => {
-    if (!offscreenCanvasRef.current) {
-      offscreenCanvasRef.current = document.createElement('canvas');
-    }
-    
-    // Update constellation timing
-    constellation.sparkleSpeed = sparkleSpeed;
-    constellation.animationDuration = animationDuration;
-  }, [constellation, sparkleSpeed, animationDuration, resolution]);
+  const [isActive, setIsActive] = useState(false);
 
-  // Calculate brightness based on sparkle activity
-  const getCurrentBrightness = useCallback((): number => {
-    const anyStarSparkling = constellation.stars.some(star => star.isSparkle);
-    const anyLineAnimating = constellation.starLines.some(line => line.isAnimating);
-    
-    if (anyStarSparkling || anyLineAnimating) {
-      // Calculate actual total sequence duration
-      const sortedStars = [...constellation.stars].sort((a, b) => a.relativeX - b.relativeX);
-      
-      let totalDelay = 0;
-      for (let i = 1; i < sortedStars.length; i++) {
-        const prevStar = sortedStars[i - 1];
-        const currentStar = sortedStars[i];
-        const distance = Math.sqrt(
-          Math.pow(currentStar.relativeX - prevStar.relativeX, 2) + 
-          Math.pow(currentStar.relativeY - prevStar.relativeY, 2)
-        );
-        totalDelay += distance * sparkleSpeed;
-      }
-      
-      // Total sequence time = delay to start last star + duration of animations
-      const maxSparkleTime = totalDelay + Math.max(sparkleSpeed * 0.6, animationDuration);
-      
-      const progress = Math.min(constellation.sparkleSequenceTimer / maxSparkleTime, 1);
-      
-      let fadeMultiplier;
-      if (progress <= 0.5) {
-        fadeMultiplier = dimBrightness + (sparkleBrightness - dimBrightness) * (progress * 2);
-      } else {
-        fadeMultiplier = sparkleBrightness - (sparkleBrightness - dimBrightness) * ((progress - 0.5) * 2);
-      }
-      
-      return fadeMultiplier;
-    }
-    
-    return dimBrightness;
-  }, [constellation, dimBrightness, sparkleBrightness, sparkleSpeed, animationDuration]);
+  const starsRef = useRef<Star[]>([]);
+  const linesRef = useRef<StarLine[]>([]);
+  const totalDurationRef = useRef(0);
+  const startTimeRef = useRef<number | null>(null);
 
-  const updateAndRender = useCallback((currentTime: number) => {
-    const offscreenCanvas = offscreenCanvasRef.current;
-    if (!offscreenCanvas) return;
+  // Track the last constellationData object initialized
+  const lastInitializedRef = useRef<ConstellationData | null>(null);
 
-    const deltaTime = currentTime - lastTimeRef.current;
-    lastTimeRef.current = currentTime;
-
-    // Update constellation
-    constellation.update(deltaTime);
-
-    // Set up offscreen canvas size
-    offscreenCanvas.width = resolution;
-    offscreenCanvas.height = resolution;
-
-    const offscreenCtx = offscreenCanvas.getContext('2d');
-    if (!offscreenCtx) return;
-
-    // Clear offscreen canvas
-    offscreenCtx.clearRect(0, 0, resolution, resolution);
-
-    // Draw constellation to offscreen canvas (centered) - no brightness applied here
-    const scale = resolution * 0.8; // Leave some padding
-    const centerX = resolution / 2;
-    const centerY = resolution / 2;
-    constellation.draw(offscreenCtx, centerX - scale / 2, centerY - scale / 2, scale);
-
-    // Handle rendering based on render prop
-    if (render?.canvas?.current) {
-      // Draw to shared canvas - brightness already applied to offscreen canvas
-      const sharedCtx = render.canvas.current.getContext('2d');
-      if (sharedCtx) {
-        const brightness = getCurrentBrightness();
-        sharedCtx.globalAlpha = brightness;
-        sharedCtx.drawImage(
-          offscreenCanvas,
-          render.x,
-          render.y,
-          render.width,
-          render.height
-        );
-      }
-    } else if (canvasRef.current) {
-      // Draw to own canvas - brightness already applied to offscreen canvas
-      const ctx = canvasRef.current.getContext('2d');
-      if (ctx) {
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        ctx.drawImage(
-          offscreenCanvas,
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
-        );
-      }
-    }
-
-    animationRef.current = requestAnimationFrame(updateAndRender);
-  }, [resolution, constellation, render, getCurrentBrightness]);
-
-  // Set up canvas size for standalone mode
   const resizeCanvas = useCallback(() => {
-    if (!render && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const parent = canvas.parentElement;
-      if (parent) {
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
-      }
-    }
-  }, [render]);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  // Start animation
+    const displayWidth = canvas.clientWidth;
+    const displayHeight = canvas.clientHeight;
+    const size = Math.min(displayWidth, displayHeight);
+
+    canvas.width = size;
+    canvas.height = size;
+  }, []);
+
+  const setupAnimation = useCallback(() => {
+    if (!constellationData) return;
+    
+    // Only rebuild constellation data if it changed
+    if (lastInitializedRef.current !== constellationData) {
+      lastInitializedRef.current = constellationData;
+
+      const stars = constellationData.stars.map((s) => new Star(s));
+      const starMap = new Map(stars.map((s) => [s.id, s]));
+      const lines = constellationData.lines.map(([a, b]) => {
+        return new StarLine(starMap.get(a)!, starMap.get(b)!);
+      });
+
+      const sorted = [...stars].sort((a, b) => {
+        if (a.relativeX !== b.relativeX) return a.relativeX - b.relativeX;
+        return a.relativeY - b.relativeY;
+      });
+
+      const root = sorted[0];
+      root.schedule(0, sparkleSpeed);
+
+      const queue: Star[] = [root];
+      let maxTime = 0;
+
+      while (queue.length) {
+        const current = queue.shift()!;
+        const currentEnd = current.sparkleEnd;
+
+        const connected = lines.filter(
+          (l) => l.startStar === current || l.endStar === current
+        );
+
+        connected.forEach((line) => {
+          const next = line.getOtherStar(current);
+          line.scheduleFromStar(next, current.sparkleStart, animationDuration);
+
+          if (next.sparkleStart === 0 && next !== root) {
+            next.schedule(line.endTime, sparkleSpeed);
+            queue.push(next);
+            maxTime = Math.max(maxTime, next.sparkleEnd);
+          }
+        });
+        maxTime = Math.max(maxTime, currentEnd);
+      }
+
+      starsRef.current = stars;
+      linesRef.current = lines;
+      totalDurationRef.current = maxTime;
+    }
+    
+    // Always reset start time for each animation cycle
+    startTimeRef.current = performance.now();
+  }, [constellationData, sparkleSpeed, animationDuration]);
+
+  const animate = useCallback(
+    (time: number) => {
+      if (!isActive) return;
+
+      const canvas = canvasRef.current;
+      if (!canvas || !constellationData) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      if (!startTimeRef.current) return;
+      const elapsed = time - startTimeRef.current;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const padding = 0.1;
+      const scale = Math.min(canvas.width, canvas.height) * (1 - padding);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      starsRef.current.forEach((s) => {
+        s.x = cx + (s.relativeX - 0.5) * scale;
+        s.y = cy + (s.relativeY - 0.5) * scale;
+      });
+
+      let brightness = dimBrightness;
+      if (elapsed < totalDurationRef.current) {
+        const p = elapsed / totalDurationRef.current;
+        brightness =
+          p < 0.5
+            ? dimBrightness + (sparkleBrightness - dimBrightness) * (p * 2)
+            : sparkleBrightness -
+              (sparkleBrightness - dimBrightness) * ((p - 0.5) * 2);
+      }
+
+      ctx.globalAlpha = brightness;
+      linesRef.current.forEach((l) => l.draw(ctx, elapsed, brightness));
+      starsRef.current.forEach((s) => s.draw(ctx, elapsed, brightness, showLabels));
+
+      ctx.globalAlpha = 1;
+
+      if (elapsed < totalDurationRef.current) {
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        // Animation complete - schedule next sparkle
+        setIsActive(false);
+        scheduleNextSparkle();
+      }
+    },
+    [isActive, constellationData, dimBrightness, sparkleBrightness, showLabels]
+  );
+
+  const scheduleNextSparkle = useCallback(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Random chance to sparkle
+    if (Math.random() < sparkleChance) {
+      // Random delay between min and max
+      const delay = minDelay + Math.random() * (maxDelay - minDelay);
+      
+      timeoutRef.current = setTimeout(() => {
+        setIsActive(true);
+      }, delay);
+    } else {
+      // Try again after a short delay
+      timeoutRef.current = setTimeout(() => {
+        scheduleNextSparkle();
+      }, 1000);
+    }
+  }, [sparkleChance, minDelay, maxDelay]);
+
+  // Handle active state changes
+  useEffect(() => {
+    if (isActive && constellationData) {
+      setupAnimation();
+      animationRef.current = requestAnimationFrame(animate);
+    }
+  }, [isActive, constellationData, setupAnimation, animate]);
+
+  // Handle canvas resize
   useEffect(() => {
     resizeCanvas();
-    animationRef.current = requestAnimationFrame(updateAndRender);
-
-    const handleResize = () => {
-      if (!render) {
-        setTimeout(resizeCanvas, 100);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
+    const handleResize = () => resizeCanvas();
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [resizeCanvas]);
+
+  // Initial sparkle scheduling
+  useEffect(() => {
+    if (constellationData) {
+      scheduleNextSparkle();
+    }
+
+    return () => {
+      cancelAnimationFrame(animationRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-  }, [updateAndRender, resizeCanvas, render]);
+  }, [constellationData, scheduleNextSparkle]);
 
-  // If render prop provided, we don't return a visible component
-  if (render) {
-    return null;
-  }
-
-  // Return standalone canvas
-  return (
-    <canvas
-      ref={canvasRef}
-      className={`w-full h-full ${className}`}
-      style={{
-        display: 'block'
-      }}
-    />
-  );
+  return <canvas ref={canvasRef} className={`w-full aspect-square block ${className}`} />;
 }

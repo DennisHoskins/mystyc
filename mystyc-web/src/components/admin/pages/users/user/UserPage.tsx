@@ -13,7 +13,6 @@ import UserIcon from '@/components/admin/ui/icons/UserIcon';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import UserDetailsPanel from './UserDetailsPanel';
 import UserProfilePanel from './UserProfilePanel';
-import UserZodiacPanel from './UserZodiacPanel';
 import UserSubscriptionCard from './cards/UserSubscriptionCard';
 import UserDevicesCard from './cards/UserDevicesCard';
 import UserContentCard from './cards/UserContentCard';
@@ -69,14 +68,9 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       itemsContent={[
         <div key='subscription-profile' className='flex-1 flex flex-col space-y-1 w-full'>
           <UserSubscriptionCard key='subscriptions' user={user} />
-          <Card className={`${user?.astrology?.createdAt ? '' : 'flex-1 grow'}`}>
+          <Card className={`flex-1 grow'`}>
             <UserProfilePanel key='user-profile' user={user} />
           </Card>
-          {user?.astrology?.createdAt &&
-            <Card className='flex-1 grow'>
-              <UserZodiacPanel key='user-zodiac' user={user} />
-            </Card>
-          }
         </div>
       ]}
     />

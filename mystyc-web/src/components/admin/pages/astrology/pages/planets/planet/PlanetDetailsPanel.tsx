@@ -1,10 +1,11 @@
 import { Planet } from 'mystyc-common/schemas/';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
+import Panel from '@/components/ui/Panel';
 
 export default function PlanetDetailsPanel({ planet }: { planet?: Planet | null }) {
   return (
-    <div className='space-y-4'>
+    <Panel>
       <AdminDetailGrid className='!gap-1'>
         <AdminDetailField
           value={planet?.description}
@@ -21,6 +22,6 @@ export default function PlanetDetailsPanel({ planet }: { planet?: Planet | null 
           text={planet?.keywords && "[" + planet?.keywords.join(", ") + "]"}
         />
       </AdminDetailGrid>
-    </div>
+    </Panel>
   );
 }

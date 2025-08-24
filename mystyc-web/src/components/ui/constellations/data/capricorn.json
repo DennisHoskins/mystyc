@@ -1,5 +1,6 @@
 {
   "name": "Capricorn",
+  "degrees" : 17.5,
   "stars": [
     {"id": "Algiedi", "x": 1, "y": 0, "brightness": 1, "size": 2},
     {"id": "Alshat", "x": 0.90, "y": 0.04, "brightness": 0.6, "size": 1},

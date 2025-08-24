@@ -30,7 +30,8 @@ export const ElementInteractionInputSchema = z.object({
   dynamic: DynamicType,
   description: z.string().min(50).max(500).trim(),
   keywords: z.array(z.string().min(1).trim()).min(2).max(8),
-  energyType: z.string().min(1).max(50).trim()
+  energyType: z.string().min(1).max(50).trim(),
+  action: z.string().min(20).max(300).trim()
 }).strict();
 
 export const ElementInteractionSchema = ElementInteractionInputSchema.extend({
@@ -46,7 +47,8 @@ export const ModalityInteractionInputSchema = z.object({
   dynamic: DynamicType,
   description: z.string().min(50).max(500).trim(),
   keywords: z.array(z.string().min(1).trim()).min(2).max(8),
-  energyType: z.string().min(1).max(50).trim()
+  energyType: z.string().min(1).max(50).trim(),
+  action: z.string().min(20).max(300).trim()
 }).strict();
 
 export const ModalityInteractionSchema = ModalityInteractionInputSchema.extend({
@@ -62,7 +64,8 @@ export const PlanetInteractionInputSchema = z.object({
   dynamic: DynamicType,
   description: z.string().min(50).max(500).trim(),
   keywords: z.array(z.string().min(1).trim()).min(2).max(8),
-  energyType: z.string().min(1).max(50).trim()
+  energyType: z.string().min(1).max(50).trim(),
+  action: z.string().min(20).max(300).trim()
 }).strict();
 
 export const PlanetInteractionSchema = PlanetInteractionInputSchema.extend({

@@ -1,5 +1,6 @@
 {
   "name": "Gemini",
+  "degrees" : 12.5,
   "stars": [
     {"id": "Alhena", "x": 0.67, "y": 0.83, "brightness": 0.8, "size": 1.5},
     {"id": "Mekbuta", "x": 0.41, "y": 0.64, "brightness": 0.6, "size": 1},

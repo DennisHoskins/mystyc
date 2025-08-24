@@ -51,7 +51,12 @@ export default function DynamicPlanetInteractionsCard({ dynamic, className } : {
             value={
               <div className='flex flex-col space-y-2'>
                 <Text className='!text-gray-500 text-wrap flex-1'>
-                  {item.description}
+                  <span className='text-gray-300'>{item.description}</span>
+                  <br />
+                  <span className='text-xs'>
+                    <strong>Action</strong>
+                    <span className='text-gray-300 ml-1'>{item.action}</span>
+                  </span>
                   <br />
                   <span className='text-xs'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
                 </Text>

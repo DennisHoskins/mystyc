@@ -5,6 +5,8 @@ import Panel from '@/components/ui/Panel';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import UserProfileIcon from '@/components/admin/ui/icons/UserProfileIcon';
+import Capsule from '@/components/ui/Capsule';
+import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 
 export default function UserProfilePanel({ user }: { user?: UserProfile | null }) {
   return (
@@ -12,6 +14,14 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
       <AdminPanelHeader
         icon={UserProfileIcon}
         heading='Profile'
+        tag={user?.astrology?.createdAt && (
+            <Capsule
+              label={user?.astrology?.sunSign || "Astrology"}
+              href={`/admin/users/${user?.firebaseUid}/astrology`}
+              icon={getZodiacIcon(user?.astrology?.sunSign, '!w-2 !h-2')}
+            />
+          )
+        }
       />
       <AdminDetailGrid cols={2}>
         <Panel>

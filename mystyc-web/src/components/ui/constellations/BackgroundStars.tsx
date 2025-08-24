@@ -54,7 +54,7 @@ export function BackgroundStars({
         x: Math.random(), // Relative position 0-1
         y: Math.random(), // Relative position 0-1
         brightness,
-        size: size / 2,
+        size: size / 3,
         twinkleOffset: Math.random() * Math.PI * 2,
         isSparkle: false,
         sparkleTimer: 0

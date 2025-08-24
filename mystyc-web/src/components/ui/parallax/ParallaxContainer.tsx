@@ -1,3 +1,5 @@
+'use client'
+
 import { FlowEdge } from '../FlowEdge';
 import Constellations from '@/components/ui/constellations/Constellations';
 import styles from './ParallaxContainer.module.css';
@@ -9,53 +11,51 @@ interface ParallaxContainerProps {
 
 export default function ParallaxContainer({ children, className }: ParallaxContainerProps) {
   return (
-    <>
-      <div className={`${styles.parallaxWrapper} ${className}`}>
+    <div className={`${styles.parallaxWrapper} ${className}`}>
 
-        <div className={`${styles.parallaxLayer} ${styles.stars}`}>
-          <Constellations />
-        </div>
-
-        <div className={`${styles.parallaxLayer} ${styles.background}`}></div>
-        
-        <div className={`${styles.parallaxLayer} ${styles.layer1}`}>
-          <FlowEdge 
-            height={200}
-            amplitude={13}
-            wavelength={200}
-            edgeColor='#8b2c8b'
-            startColor='#4a0e4e'
-            endColor='#1a0033'
-          />
-        </div>
-        
-        <div className={`${styles.parallaxLayer} ${styles.layer2}`}>
-          <FlowEdge 
-            height={150}
-            amplitude={12}
-            wavelength={200}
-            edgeColor='#8b2c8b'
-            startColor='#4a0e4e'
-            endColor='#1a0033'
-          />
-        </div>
-
-        <div className={`${styles.parallaxLayer} ${styles.layer3}`}>
-          <FlowEdge 
-            height={250}
-            amplitude={10}
-            wavelength={200}
-            edgeColor='#8b2c8b'
-            startColor='#4a0e4e'
-            endColor='#1a0033'
-          />
-          <div className='h-[25em] w-full -mt-4 bg-[#1a0033]' />
-        </div>
-        
-        <div className={`${styles.content} flex flex-1 flex-col items-center`}>
-          {children}
-        </div>
+      <div className={`${styles.parallaxLayer} ${styles.stars}`}>
+        <Constellations />
       </div>
-    </>
+
+      <div className={`${styles.parallaxLayer} ${styles.background}`}></div>
+      
+      <div className={`${styles.parallaxLayer} ${styles.layer1}`}>
+        <FlowEdge 
+          height={200}
+          amplitude={13}
+          wavelength={200}
+          edgeColor='#8b2c8b'
+          startColor='#4a0e4e'
+          endColor='#1a0033'
+        />
+      </div>
+      
+      <div className={`${styles.parallaxLayer} ${styles.layer2}`}>
+        <FlowEdge 
+          height={150}
+          amplitude={12}
+          wavelength={200}
+          edgeColor='#8b2c8b'
+          startColor='#4a0e4e'
+          endColor='#1a0033'
+        />
+      </div>
+
+      <div className={`${styles.parallaxLayer} ${styles.layer3}`}>
+        <FlowEdge 
+          height={250}
+          amplitude={10}
+          wavelength={200}
+          edgeColor='#8b2c8b'
+          startColor='#4a0e4e'
+          endColor='#1a0033'
+        />
+        <div className='h-[25em] w-full -mt-4 bg-[#1a0033]' />
+      </div>
+      
+      <div className={`${styles.content} flex flex-1 flex-col items-center`}>
+        {children}
+      </div>
+    </div>
   );
 }

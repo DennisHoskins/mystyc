@@ -12,105 +12,65 @@ export default class Star {
   relativeY: number;
   brightness: number;
   baseSize: number;
-  currentSize: number;
-  sparkleTimer: number;
-  isSparkle: boolean;
-  sparkleIntensity: number;
-  sparkleDelay: number;
-  sparkleDuration: number;
-  x: number;
-  y: number;
+
+  // Canvas coords
+  x: number = 0;
+  y: number = 0;
+
+  // Scheduling
+  sparkleStart: number = 0;
+  sparkleEnd: number = 0;
+  sparkleDuration: number = 0;
 
   constructor(data: StarData) {
     this.id = data.id;
     this.relativeX = data.x;
     this.relativeY = data.y;
-    this.brightness = data.brightness || 1.0;
-    this.baseSize = ((data.size) || 1) * 3;
-    
-    // Animation properties
-    this.currentSize = this.baseSize;
-    this.sparkleTimer = 0;
-    this.isSparkle = false;
-    this.sparkleIntensity = 1.0;
-    this.sparkleDelay = 0;
-    this.sparkleDuration = 1500; // Default duration
-    
-    // Actual canvas coordinates
-    this.x = 0;
-    this.y = 0;
+    this.brightness = (data.brightness || 1.0) / 2;
+    this.baseSize = (data.size || 1) / 3;
   }
 
-  startSparkle(delay: number = 0, sparkleSpeed: number = 2500): void {
-    this.sparkleDelay = delay;
-    this.sparkleTimer = -delay;
-    this.isSparkle = true;
-    // Convert sparkleSpeed to actual duration (you can adjust this ratio)
-    this.sparkleDuration = sparkleSpeed * 0.6; // 60% of sparkleSpeed for duration
+  schedule(start: number, sparkleSpeed: number) {
+    this.sparkleStart = start;
+    this.sparkleDuration = sparkleSpeed;
+    this.sparkleEnd = start + sparkleSpeed;
   }
 
-  update(deltaTime: number): void {
-    if (this.isSparkle) {
-      this.sparkleTimer += deltaTime;
+  update(currentTime: number) {
+    if (currentTime < this.sparkleStart) return { active: false };
+    if (currentTime > this.sparkleEnd) return { active: false };
 
-      if (this.sparkleTimer > 0 && this.sparkleTimer < this.sparkleDuration) {
-        const progress = this.sparkleTimer / this.sparkleDuration;
-        let scale;
-        
-        if (progress < 0.5) {
-          // Growing phase (0 to 0.5)
-          scale = 1.0 + (progress * 2) * 2.0;
-        } else {
-          // Shrinking phase (0.5 to 1.0)
-          scale = 3.0 - ((progress - 0.5) * 2) * 2.0;
-        }
-        
-        this.currentSize = (this.baseSize / 2) * scale;
-        this.sparkleIntensity = 1.0;
-      } else if (this.sparkleTimer >= this.sparkleDuration) {
-        // End sparkle
-        this.isSparkle = false;
-        this.sparkleIntensity = 1.0;
-        this.currentSize = this.baseSize;
-        this.sparkleDelay = 0;
-      } else {
-        // Still in delay period - keep normal appearance
-        this.sparkleIntensity = 1.0;
-        this.currentSize = this.baseSize;
-      }
-    }
+    const progress = (currentTime - this.sparkleStart) / this.sparkleDuration;
+    const half = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
+    const sizeScale = 1 + half * 2; // pulsates between 1–3
+    return {
+      active: true,
+      currentSize: this.baseSize * sizeScale,
+      alpha: this.brightness,
+    };
   }
 
-  draw(ctx: CanvasRenderingContext2D, showLabels: boolean = false): void {
-    const alpha = this.brightness * this.sparkleIntensity;
+  draw(ctx: CanvasRenderingContext2D, currentTime: number, brightness: number, showLabels = false) {
+    const state = this.update(currentTime);
+    const size = state.active ? state.currentSize : this.baseSize;
+    const alpha = ((state.active ? state.alpha : this.brightness) || 0) * brightness;
 
-    // Calculate glow size based on current star size
-    const glowSize = this.currentSize;
-    const isSparklingNow = this.isSparkle && this.sparkleTimer > 0;
+    ctx.globalAlpha = alpha;
+    ctx.shadowColor = "white";
+    ctx.shadowBlur = size || 0;
 
-    ctx.globalAlpha = 1;
-
-    // White glow that scales with sparkle
-    if (isSparklingNow) {
-      ctx.shadowColor = `white`;
-      ctx.shadowBlur = glowSize;
-    } else {
-      ctx.shadowColor = `white`;
-      ctx.shadowBlur = this.currentSize;
-    }
-    
-    // Main star
     ctx.beginPath();
     ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-    ctx.arc(this.x, this.y, this.currentSize, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, size || 0, 0, Math.PI * 2);
     ctx.fill();
 
     if (showLabels) {
-      ctx.textAlign = 'center';
-      ctx.font = '10px Arial';
+      ctx.textAlign = "center";
+      ctx.font = "10px Arial";
       ctx.fillText(this.id, this.x, this.y - 12.5);
     }
 
     ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
   }
 }

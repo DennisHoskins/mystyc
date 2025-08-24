@@ -2,22 +2,18 @@
 
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
-// import { ConstellationClass } from '@/components/ui/constellations/ConstellationClass';
-// import * as constellation from '@/components/ui/constellations/data/virgo.json';
-
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
-// import Constellation from '@/components/ui/constellations/Constellation';
 
 export default function Hero() {
  const router = useTransitionRouter();
 
  return (
-  <div className='m-36 !flex-row'>
-    <div className="text-center flex flex-col justify-center">
+  <div className='m-[20%] !flex-row'>
+    <div className="text-center flex justify-center">
       <div className='flex flex-col'>
-        <Heading level={1} className="mb-6 text-4xl md:text-7xl">
+        <Heading level={1} className="mt-20 mb-6 text-4xl md:text-7xl">
           mystyc
         </Heading>
         <Heading level={1} className="mb-6">

@@ -1,5 +1,6 @@
 {
   "name": "Virgo",
+  "degrees" : 15.5,
   "stars": [
     {"id": "Zavijava", "x": 1, "y": 0.3, "brightness": 1, "size": 2},
     {"id": "Zaniah", "x": 0.82, "y": 0.53, "brightness": 0.6, "size": 1},

@@ -10,6 +10,7 @@ import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
 import AdminPanelHeader from '@/components/admin/ui/AdminPanelHeader';
 import ElementPanel from '../../elements/element/ElementPanel';
+import Panel from '@/components/ui/Panel';
 
 export default function ElementInteractionElementsPanel({ interaction } : { interaction?: ElementInteraction | null }) {
   const { setBusy } = useBusy();
@@ -50,10 +51,10 @@ export default function ElementInteractionElementsPanel({ interaction } : { inte
         heading='Elements'
         href='/admin/astrology/element-interactions'
       />
-      <div className='flex flex-col space-y-6'>
+      <Panel className='space-y-6'>
         <ElementPanel element={element1} />
         {element2 && <ElementPanel element={element2} />}
-      </div>
+      </Panel>
     </>
   );
 }

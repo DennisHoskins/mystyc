@@ -1,5 +1,6 @@
 {
   "name": "Aries",
+  "degrees" : 15,
   "stars": [
     {"id": "41-Ari", "x": 0, "y": 0, "brightness": 0.8, "size": 1.5},
     {"id": "Hamal", "x": 0.76, "y": 0.48, "brightness": 1, "size": 2},

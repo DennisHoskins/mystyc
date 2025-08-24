@@ -1,5 +1,6 @@
 {
   "name": "Taurus",
+  "degrees" : 10,
   "stars": [
     {"id": "Elnath", "x": 0.09, "y": 0, "brightness": 0.6, "size": 1},
     {"id": "Tau Tauri", "x": 0.32, "y": 0.20, "brightness": 1, "size": 2},

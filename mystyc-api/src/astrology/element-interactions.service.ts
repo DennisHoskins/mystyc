@@ -234,6 +234,7 @@ export class ElementInteractionsService {
       element2: doc.element2 as any,
       dynamic: doc.dynamic as any,
       description: doc.description,
+      action: doc.action,
       keywords: doc.keywords,
       energyType: doc.energyType,
       createdAt: doc.createdAt,

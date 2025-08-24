@@ -55,6 +55,8 @@ export default function DynamicElementInteractionsPanel({ dynamic } : { dynamic:
                   <Text className='!text-gray-500 text-wrap flex-1'>
                     {item.description}
                     <br />
+                    <span className='text-xs'><strong className='mr-1'>Action</strong>{item.action}</span>
+                    <br />
                     <span className='text-xs'><strong>Keywords</strong> [{item.keywords.join(", ")}]</span>
                   </Text>
                   <div className='flex space-x-1'>

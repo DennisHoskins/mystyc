@@ -1,5 +1,6 @@
 {
   "name": "Aquarius",
+  "degrees" : 17.5,
   "stars": [
     {"id": "Phil Aquarii", "x": 0, "y": 0.14, "brightness": 0.8, "size": 1},
     {"id": "Lambda Aquarii", "x": 0.23, "y": 0.25, "brightness": 0.8, "size": 1.5},

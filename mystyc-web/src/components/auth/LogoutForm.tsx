@@ -36,6 +36,7 @@ export default function LogoutPage() {
         clearUser();
         showToast("You have been Logged Out", "success");
         router.replace("/");
+        setBusy(false);
       })
       .catch((err: any) => {
         logger.error('Logout error:', err);

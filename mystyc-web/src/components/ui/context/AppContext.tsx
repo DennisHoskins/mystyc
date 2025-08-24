@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useRef, useCallback } from 'react';
+import { createContext, useContext, useRef, useCallback, useEffect } from 'react';
 import { useStore } from 'zustand';
 
 import { useAppStore } from '@/store/appStore';
@@ -17,8 +17,27 @@ interface AppContextProps {
 
 export default function AppContext({ children }: AppContextProps) {
   const storeRef = useRef<ReturnType<typeof createUserStore>>(createUserStore(null));
+  const hasHydrated = useAppStore((state) => state.hasHydrated);
 
-  const hasHydrated = useAppStore((state) => state.hasHydrated);  
+  useEffect(() => {
+    // Get setOnline inside useEffect to avoid subscription
+    const { setOnline } = useAppStore.getState();
+    
+    const handleOnline = () => {
+      setOnline(true);
+    };
+    const handleOffline = () => {
+      setOnline(false);
+    };
+    setOnline(navigator.onLine);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
   if (!hasHydrated) {
     return null
   }  

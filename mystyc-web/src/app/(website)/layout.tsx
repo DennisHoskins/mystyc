@@ -1,57 +1,54 @@
 'use client'
 
 import { usePathname } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useAppStore } from '@/store/appStore';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter'; 
 import Modal from "@/components/ui/modal/Modal";
 
-export default function Template({ children, modal } : { children: React.ReactNode, modal: React.ReactNode }) {
+export default function Layout({ children, modal } : { children: React.ReactNode, modal: React.ReactNode }) {
   const router = useTransitionRouter();
   const pathname = usePathname();
   const { setModalShowing, isModalShowing } = useAppStore();
-  const [doTransition, setDoTransition] = useState(false);
-  const [hasShown, setHasShown] = useState(false);
+  
   const showModal = pathname !== '/' && pathname !== '/home';
-  const prevModalShowingRef = useRef(isModalShowing);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (!showModal) {
-      setHasShown(true);
-      setModalShowing(false);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      if (showModal !== isModalShowing) {
+        setModalShowing(showModal);
+      }
       return;
     }
-    if (hasShown) {
-      setDoTransition(true);
-      setHasShown(false);
-    } else {
-      setDoTransition(!isModalShowing);
+    
+    // On subsequent renders (route changes), keep modal open if we're staying in modal routes
+    if (showModal && !isModalShowing) {
+      setModalShowing(true);
+    } else if (!showModal && isModalShowing) {
+      setModalShowing(false);
     }
-    setModalShowing(true);
-  }, [showModal, hasShown, isModalShowing, setModalShowing]);  
-
-  useEffect(() => {
-    if (isModalShowing == prevModalShowingRef.current) return;
-    prevModalShowingRef.current = isModalShowing;    
-  }, [isModalShowing]);  
+  }, [showModal, isModalShowing, setModalShowing]);
 
   const handleCloseModal = () => {
     setModalShowing(false);
-    setHasShown(false); // Reset for next time
-    prevModalShowingRef.current = false;    
-    setDoTransition(true);
     router.back();
   }
 
   return (
     <>
       {children}
-      {showModal &&
-        <Modal isOpen={true} doTransition={doTransition} onClose={handleCloseModal}>
+      {showModal && (
+        <Modal 
+          isOpen={isModalShowing} 
+          doTransition={!isFirstRender.current} 
+          onClose={handleCloseModal}
+        >
           {modal}
         </Modal>
-      }
+      )}
     </>      
   );
 }

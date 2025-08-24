@@ -11,7 +11,7 @@ export default function AdminCard({ icon, title, text, tag, href, className, chi
   children?: React.ReactNode | null,
 }) {
   return (
-    <Card className={`flex grow flex-1 flex-col ${className}`}>
+    <Card className={`flex flex-col ${className}`}>
       <AdminPanelHeader
         icon={icon}
         heading={title}

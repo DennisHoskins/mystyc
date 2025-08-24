@@ -13,6 +13,11 @@ export default function PlanetInteractionDetailsPanel({ interaction }: { interac
             type='description'
           />
           <AdminDetailField
+            label='Action'
+            value={interaction?.action}
+            type='description'
+          />
+          <AdminDetailField
             label='Keywords'
             inline={true}
             text={interaction?.keywords && "[" + interaction?.keywords.join(", ") + "]"}

@@ -21,6 +21,9 @@ export class ModalityInteraction {
   @Prop({ required: true, maxlength: 50 })
   energyType!: string;
 
+  @Prop({ required: true, minlength: 20, maxlength: 300 })
+  action!: string;
+
   createdAt!: Date;
   updatedAt!: Date;
 }

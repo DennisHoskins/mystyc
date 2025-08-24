@@ -40,8 +40,6 @@ export default function Link({ href, children, className, useTransition = true, 
         >
           {children}
         </a>
-      : <p className={`text-gray-300 ${className || ''}`} >
-          {children}
-        </p>
+      : children
   );
 }
