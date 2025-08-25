@@ -10,6 +10,7 @@ import {
   PaymentHistory 
 } from 'mystyc-common/schemas/';
 import { UserStats, UsersSummary, UserSummary } from 'mystyc-common/admin/interfaces';
+import { UserAstrologyResponse } from 'mystyc-common/interfaces/user-astrology-data.interface';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { logger } from '@/util/logger';
 import { withAdminAuth } from '@/server/util/admin/withAdminAuth';
@@ -176,5 +177,15 @@ export async function getUserPayments(params: {
       `admin/users/${firebaseUid}/payments`,
       query
     );
+  }, params);
+}
+
+export async function getUserAstrologyData(params: {
+  deviceInfo: DeviceInfo;
+  firebaseUid: string;
+}) {
+  return withAdminAuth(async (session, { firebaseUid }) => {
+    logger.log('[getUserAstrologyData] Fetching user astrology data:', firebaseUid);
+    return nestGet<UserAstrologyResponse>(session, `admin/users/${firebaseUid}/astrology`);
   }, params);
 }

@@ -12,12 +12,10 @@ export default function WebsiteLayout() {
   return (
     <>
       {user == null &&
-        <ScrollWrapper className="-mt-[59px] !h-full">
-          <ParallaxContainer>
-            <WebsiteHome />
-            <WebsiteFooter />
-          </ParallaxContainer>
-        </ScrollWrapper>
+        <ParallaxContainer className="-mt-[59px]">
+          <WebsiteHome />
+          <WebsiteFooter />
+        </ParallaxContainer>
       }
     </>
   );

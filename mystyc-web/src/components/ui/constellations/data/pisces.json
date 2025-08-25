@@ -1,6 +1,6 @@
 {
   "name": "Pisces",
-  "degrees" : 15,
+  "degrees" : 16,
   "stars": [
     {"id": "Alrischa", "x": 0, "y": 0.88, "brightness": 1, "size": 2},
     {"id": "Omicron Piscium", "x": 0.1, "y": 0.6, "brightness": 1, "size": 2},

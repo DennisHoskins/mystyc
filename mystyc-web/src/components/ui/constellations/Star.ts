@@ -27,7 +27,7 @@ export default class Star {
     this.relativeX = data.x;
     this.relativeY = data.y;
     this.brightness = (data.brightness || 1.0) / 2;
-    this.baseSize = (data.size || 1) / 3;
+    this.baseSize = (data.size || 1);
   }
 
   schedule(start: number, sparkleSpeed: number) {

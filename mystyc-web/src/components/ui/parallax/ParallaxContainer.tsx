@@ -13,7 +13,7 @@ export default function ParallaxContainer({ children, className }: ParallaxConta
   return (
     <div className={`${styles.parallaxWrapper} ${className}`}>
 
-      <div className={`${styles.parallaxLayer} ${styles.stars}`}>
+      <div className={`${styles.parallaxLayer} ${styles.stars} h-[80dvh]`}>
         <Constellations />
       </div>
 

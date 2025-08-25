@@ -1,6 +1,7 @@
 import { Fingerprint } from 'lucide-react';
-import React from 'react';
+
 import { UserProfile } from 'mystyc-common';
+import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
 import AdminCard from '@/components/admin/ui/AdminCard';
 import Sun from '@/components/ui/icons/astrology/planets/Sun';
 import Moon from '@/components/ui/icons/astrology/planets/Moon';
@@ -9,16 +10,22 @@ import Mars from '@/components/ui/icons/astrology/planets/Mars';
 import Venus from '@/components/ui/icons/astrology/planets/Venus';
 import UserCoreIdentityInteraction from './UserCoreIdentityInteraction';
 
-export default function UserCoreIdentityCard({ user }: { user?: UserProfile | null }) {
+export default function UserCoreIdentityCard({ 
+  user,
+  astrologyData 
+}: { 
+  user?: UserProfile | null;
+  astrologyData: UserAstrologyData;
+}) {
   if (!user?.astrology) return null;
 
   return (
     <AdminCard icon={<Fingerprint className='w-3 h-3' />} title='Core Identity Dynamics' className='space-y-2'>
       <UserCoreIdentityInteraction
-        planet1="Sun"
-        planet2="Moon"
+        interactionKey="Sun-Moon"
         sign1={user.astrology.sunSign}
         sign2={user.astrology.moonSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Sun className='w-3 h-3' />
@@ -29,10 +36,10 @@ export default function UserCoreIdentityCard({ user }: { user?: UserProfile | nu
       />
       
       <UserCoreIdentityInteraction
-        planet1="Sun"
-        planet2="Rising"
+        interactionKey="Sun-Rising"
         sign1={user.astrology.sunSign}
         sign2={user.astrology.risingSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Sun className='w-3 h-3' />
@@ -43,10 +50,10 @@ export default function UserCoreIdentityCard({ user }: { user?: UserProfile | nu
       />
       
       <UserCoreIdentityInteraction
-        planet1="Sun"
-        planet2="Mars"
+        interactionKey="Sun-Mars"
         sign1={user.astrology.sunSign}
         sign2={user.astrology.marsSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Sun className='w-3 h-3' />
@@ -57,10 +64,10 @@ export default function UserCoreIdentityCard({ user }: { user?: UserProfile | nu
       />
       
       <UserCoreIdentityInteraction
-        planet1="Sun"
-        planet2="Venus"
+        interactionKey="Sun-Venus"
         sign1={user.astrology.sunSign}
         sign2={user.astrology.venusSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Sun className='w-3 h-3' />

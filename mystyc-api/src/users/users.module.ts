@@ -1,3 +1,5 @@
+// mystyc-api/src/users/users.module.ts
+
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -13,6 +15,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
 import { UserRolesService } from './user-roles.service';
+import { UserAstrologyService } from './user-astrology.service'; // Add this
 import { UserContentService } from '@/content/user-content.service';
 import { UserPlusContentService } from '@/content/user-plus-content.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
@@ -41,6 +44,7 @@ import { UserProfileSchema } from './schemas/user-profile.schema';
     UsersService,
     UserProfilesService,
     UserRolesService,
+    UserAstrologyService, // Add this
     UserContentService,
     UserPlusContentService,
     OpenAIUserService,
@@ -50,6 +54,7 @@ import { UserProfileSchema } from './schemas/user-profile.schema';
     UsersService,
     UserProfilesService,
     UserRolesService,
+    UserAstrologyService,
     UserContentService,
     UserPlusContentService,
     OpenAIUserService,

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --client-height: calc(100dvh - 64px);
+  --client-height: 100dvh;
   --color-main: #4925604a;
   --color-main-1: #331944;
   --color-border: #5f34808a;

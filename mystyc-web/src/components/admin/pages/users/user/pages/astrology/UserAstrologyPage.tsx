@@ -3,7 +3,8 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { UserProfile } from 'mystyc-common';
-import { getUser } from '@/server/actions/admin/users';
+import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
+import { getUser, getUserAstrologyData } from '@/server/actions/admin/users';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
@@ -18,6 +19,7 @@ import UserSocialRelationshipsCard from './UserSocialRelationshipCard';
 export default function UserAstrologyPage({ firebaseUid } : { firebaseUid: string}) {
   const { setBusy } = useBusy();
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [astrologyData, setAstrologyData] = useState<UserAstrologyData | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,13 +30,24 @@ export default function UserAstrologyPage({ firebaseUid } : { firebaseUid: strin
     { label: "Astrology"},
   ], [user, firebaseUid]);
 
-  const loadUser = useCallback(async (firebaseUid: string) => {
+  const loadUserAstrologyData = useCallback(async (firebaseUid: string) => {
     try {
       setError(null);
       setBusy(1000);
+      
+      const [userResult, astrologyResult] = await Promise.all([
+        getUser({deviceInfo: getDeviceInfo(), firebaseUid}),
+        getUserAstrologyData({deviceInfo: getDeviceInfo(), firebaseUid})
+      ]);
 
-      const user = await getUser({deviceInfo: getDeviceInfo(), firebaseUid})
-      setUser(user);
+      setUser(userResult);
+      
+      if (astrologyResult.error) {
+        setError(astrologyResult.error);
+        setAstrologyData(null);
+      } else {
+        setAstrologyData(astrologyResult.astrologyData);
+      }
     } catch (err) {
       logger.error('Failed to load user astrology data:', err);
       setError('Failed to load user astrology data. Please try again.');
@@ -48,14 +61,14 @@ export default function UserAstrologyPage({ firebaseUid } : { firebaseUid: strin
     if (!firebaseUid) {
       return;
     }
-    loadUser(firebaseUid);
-  }, [loadUser, firebaseUid]);
+    loadUserAstrologyData(firebaseUid);
+  }, [loadUserAstrologyData, firebaseUid]);
 
   if (!loaded) {
     return null;
   }
 
-  if (!user || !user.astrology || !user.astrology.createdAt) {
+  if (!user || !astrologyData) {
     return (
       <AdminItemLayout
         error={error ? error : 'No astrology data available.'}
@@ -69,17 +82,16 @@ export default function UserAstrologyPage({ firebaseUid } : { firebaseUid: strin
   return (
     <AdminItemLayout
       breadcrumbs={breadcrumbs}
-      icon={getZodiacIcon(user.astrology.sunSign)}
+      icon={getZodiacIcon(user.astrology!.sunSign)}
       title={user && (user.firstName && user.lastName) ? user.firstName + " " + user.lastName + " Astrology" : `Astrology`}
-      headerContent={<UserZodiacPanel user={user} />}
+      headerContent={<UserZodiacPanel user={user} astrologyData={astrologyData} />}
       itemsContent={[
         <div key='dynamics' className='w-full grid grid-cols-3 gap-1'>
-          <UserCoreIdentityCard user={user} />
-          <UserSocialRelationshipsCard user={user} />
-          <UserEmotionalExpressionCard user={user} />
+          <UserCoreIdentityCard user={user} astrologyData={astrologyData} />
+          <UserSocialRelationshipsCard user={user} astrologyData={astrologyData} />
+          <UserEmotionalExpressionCard user={user} astrologyData={astrologyData} />
         </div>
       ]}
     />
   );
-} 
-
+}

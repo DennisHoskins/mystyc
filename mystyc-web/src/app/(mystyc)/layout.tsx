@@ -11,8 +11,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useUser();
   const router = useTransitionRouter();
 
-console.log('Mystyc Layout rendered - user:', user);
-
   useEffect(() => {
     if (!user || !user.isAdmin) router.replace('/', false);
   }, [user, router]);

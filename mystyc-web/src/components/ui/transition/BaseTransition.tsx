@@ -51,10 +51,8 @@ export default function BaseTransition({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (usePathnameKey) {
-      setShowing(true);
-    }
-  }, [pathname, usePathnameKey]);
+    setShowing(true);
+  }, [keyPrefix, pathname, usePathnameKey]);
 
   useEffect(() => {
     const handleStartExit = () => setShowing(false);
@@ -65,11 +63,7 @@ export default function BaseTransition({
   const key = usePathnameKey ? `${pathname}-${keyPrefix}` : keyPrefix;
 
   return (
-    <AnimatePresence onExitComplete={() => {
-        setShowing(false);
-        window.dispatchEvent(new CustomEvent('exit-complete'));
-      }
-    }>
+    <AnimatePresence onExitComplete={() => { window.dispatchEvent(new CustomEvent('exit-complete')); }}>
       {showing && (
         <motion.div
           key={key}

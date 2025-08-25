@@ -75,7 +75,7 @@ export function BackgroundStars({
 
     const { width, height } = canvas;
     ctx.clearRect(0, 0, width, height);
-    ctx.globalAlpha = 0.25;
+    ctx.globalAlpha = 0.5;
     ctx.shadowColor = `rgba(255, 255, 255, 1)`;
 
     starsRef.current.forEach(star => {

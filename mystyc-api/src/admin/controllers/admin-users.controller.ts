@@ -1,6 +1,7 @@
 import { Controller, Query, Get, UseGuards, Param, NotFoundException } from '@nestjs/common';
 
 import { AuthEvent, Content, Device, Notification, PaymentHistory, UserProfile } from 'mystyc-common/schemas/';
+import { UserAstrologyResponse } from 'mystyc-common/interfaces/user-astrology-data.interface'
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
 import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
@@ -17,6 +18,7 @@ import { PaymentHistoryService } from '@/payments/payment-history.service';
 import { ContentService } from '@/content/content.service';
 import { logger } from '@/common/util/logger';
 import { AdminController } from './admin.controller';
+import { UserAstrologyService } from '@/users/user-astrology.service';
 
 function isErrorWithStatus(e: unknown): e is { status: number } {
   return (
@@ -38,6 +40,7 @@ export class AdminUsersController extends AdminController<UserProfile> {
     private readonly authEventsService: AuthEventsService,
     private readonly notificationsService: NotificationsService,
     private readonly paymentHistoryService: PaymentHistoryService,
+    private readonly userAstrologyService: UserAstrologyService, // Add this
   ) {
     super();
   }
@@ -488,5 +491,35 @@ export class AdminUsersController extends AdminController<UserProfile> {
         order: query.sortOrder || 'desc'
       } : undefined
     };
+  }
+
+  @Get(':firebaseUid/astrology')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUserAstrologyData(
+    @Param('firebaseUid') firebaseUid: string
+  ): Promise<UserAstrologyResponse> {
+    logger.info('Admin fetching user astrology data', { firebaseUid }, 'AdminUsersController');
+    
+    try {
+      const astrologyData = await this.userAstrologyService.getUserAstrologyData(firebaseUid);
+      
+      logger.info('User astrology data retrieved', { 
+        firebaseUid, 
+        hasData: !!astrologyData 
+      }, 'AdminUsersController');
+      
+      return { astrologyData };
+    } catch (error) {
+      logger.error('Failed to get user astrology data', {
+        firebaseUid,
+        error
+      }, 'AdminUsersController');
+      
+      return { 
+        astrologyData: null, 
+        error: 'Failed to load astrology data' 
+      };
+    }
   }
 }

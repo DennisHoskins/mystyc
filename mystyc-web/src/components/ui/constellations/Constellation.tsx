@@ -208,6 +208,7 @@ export default function Constellation({
 
   // Initial sparkle scheduling
   useEffect(() => {
+
     if (constellationData) {
       scheduleNextSparkle();
     }

@@ -1,6 +1,6 @@
 {
   "name": "Libra",
-  "degrees" : 12.5,
+  "degrees" : 14,
   "stars": [
     {"id": "Zuben Elschemali", "x": 0.58, "y": 0, "brightness": 0.6, "size": 1},
     {"id": "Theta Librae", "x": 0.15, "y": 1, "brightness": 0.6, "size": 1},

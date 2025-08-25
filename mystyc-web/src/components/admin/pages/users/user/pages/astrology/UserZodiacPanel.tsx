@@ -1,5 +1,5 @@
-import React from 'react';
 import { UserProfile } from 'mystyc-common';
+import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import Sun from '@/components/ui/icons/astrology/planets/Sun';
 import Moon from '@/components/ui/icons/astrology/planets/Moon';
@@ -8,8 +8,13 @@ import Mars from '@/components/ui/icons/astrology/planets/Mars';
 import Venus from '@/components/ui/icons/astrology/planets/Venus';
 import UserZodiacPanelPlanet from './UserZodiacPanelPlanet';
 
-export default function UserZodiacPanel({ user }: { user?: UserProfile | null }) {
-  if (!user || !user.astrology) {
+interface Props {
+  user: UserProfile;
+  astrologyData: UserAstrologyData;
+}
+
+export default function UserZodiacPanel({ user, astrologyData }: Props) {
+  if (!user.astrology) {
     return null;
   }
 
@@ -17,31 +22,31 @@ export default function UserZodiacPanel({ user }: { user?: UserProfile | null })
     <AdminDetailGrid cols={5}>
       <UserZodiacPanelPlanet
         planet="Sun"
-        sign={user.astrology.sunSign}
+        planetData={astrologyData.planetaryData.Sun}
         icon={<Sun className='w-3 h-3' />}
         label="Sun Sign"
       />
       <UserZodiacPanelPlanet
         planet="Moon"
-        sign={user.astrology.moonSign}
+        planetData={astrologyData.planetaryData.Moon}
         icon={<Moon className='w-3 h-3' />}
         label="Moon Sign"
       />
       <UserZodiacPanelPlanet
         planet="Rising"
-        sign={user.astrology.risingSign}
+        planetData={astrologyData.planetaryData.Rising}
         icon={<Rising className='w-3 h-3' />}
         label="Rising Sign"
       />
       <UserZodiacPanelPlanet
         planet="Mars"
-        sign={user.astrology.marsSign}
+        planetData={astrologyData.planetaryData.Mars}
         icon={<Mars className='w-3 h-3' />}
         label="Mars Sign"
       />
       <UserZodiacPanelPlanet
         planet="Venus"
-        sign={user.astrology.venusSign}
+        planetData={astrologyData.planetaryData.Venus}
         icon={<Venus className='w-3 h-3' />}
         label="Venus Sign"
       />

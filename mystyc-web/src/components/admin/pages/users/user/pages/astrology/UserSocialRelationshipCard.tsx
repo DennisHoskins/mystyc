@@ -1,13 +1,20 @@
 import { Drama } from 'lucide-react';
-import React from 'react';
+
 import { UserProfile } from 'mystyc-common';
+import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
 import AdminCard from '@/components/admin/ui/AdminCard';
 import Rising from '@/components/ui/icons/astrology/planets/Rising';
 import Mars from '@/components/ui/icons/astrology/planets/Mars';
 import Venus from '@/components/ui/icons/astrology/planets/Venus';
 import UserSocialRelationshipInteraction from './UserSocialRelationshipInteraction';
 
-export default function UserSocialRelationshipsCard({ user }: { user?: UserProfile | null }) {
+export default function UserSocialRelationshipsCard({ 
+  user,
+  astrologyData 
+}: { 
+  user?: UserProfile | null;
+  astrologyData: UserAstrologyData;
+}) {
   if (!user || !user.astrology) {
     return null;
   }
@@ -19,10 +26,10 @@ export default function UserSocialRelationshipsCard({ user }: { user?: UserProfi
       className='space-y-2'
     >
       <UserSocialRelationshipInteraction
-        planet1="Rising"
-        planet2="Venus"
+        interactionKey="Rising-Venus"
         sign1={user.astrology.risingSign}
         sign2={user.astrology.venusSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Rising className='w-3 h-3' />
@@ -34,10 +41,10 @@ export default function UserSocialRelationshipsCard({ user }: { user?: UserProfi
       />
 
       <UserSocialRelationshipInteraction
-        planet1="Rising"
-        planet2="Mars"
+        interactionKey="Rising-Mars"
         sign1={user.astrology.risingSign}
         sign2={user.astrology.marsSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Rising className='w-3 h-3' />
@@ -49,10 +56,10 @@ export default function UserSocialRelationshipsCard({ user }: { user?: UserProfi
       />
 
       <UserSocialRelationshipInteraction
-        planet1="Venus"
-        planet2="Mars"
+        interactionKey="Venus-Mars"
         sign1={user.astrology.venusSign}
         sign2={user.astrology.marsSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Venus className='w-3 h-3' />

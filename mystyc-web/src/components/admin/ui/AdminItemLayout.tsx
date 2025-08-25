@@ -59,8 +59,6 @@ export default function AdminItemLayout({
     )
   }
 
-console.log(sideContent)
-
   if (!sideContent || (Array.isArray(sideContent) && !sideContent.length)) {
 
     const headClass = itemsContent || mainContent ? "" : "flex-1";

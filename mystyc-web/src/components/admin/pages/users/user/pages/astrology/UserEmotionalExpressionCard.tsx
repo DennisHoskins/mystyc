@@ -1,6 +1,7 @@
 import { HandHeart } from 'lucide-react';
-import React from 'react';
+
 import { UserProfile } from 'mystyc-common';
+import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
 import AdminCard from '@/components/admin/ui/AdminCard';
 import Moon from '@/components/ui/icons/astrology/planets/Moon';
 import Rising from '@/components/ui/icons/astrology/planets/Rising';
@@ -8,7 +9,13 @@ import Mars from '@/components/ui/icons/astrology/planets/Mars';
 import Venus from '@/components/ui/icons/astrology/planets/Venus';
 import UserEmotionalExpressionInteraction from './UserEmotionalExpressionInteraction';
 
-export default function UserEmotionalExpressionCard({ user }: { user?: UserProfile | null }) {
+export default function UserEmotionalExpressionCard({ 
+  user,
+  astrologyData 
+}: { 
+  user?: UserProfile | null;
+  astrologyData: UserAstrologyData;
+}) {
   if (!user || !user.astrology) {
     return null;
   }
@@ -20,10 +27,10 @@ export default function UserEmotionalExpressionCard({ user }: { user?: UserProfi
       className='space-y-2'
     >
       <UserEmotionalExpressionInteraction
-        planet1="Moon"
-        planet2="Rising"
+        interactionKey="Moon-Rising"
         sign1={user.astrology.moonSign}
         sign2={user.astrology.risingSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Moon className='w-3 h-3' />
@@ -35,10 +42,10 @@ export default function UserEmotionalExpressionCard({ user }: { user?: UserProfi
       />
 
       <UserEmotionalExpressionInteraction
-        planet1="Moon"
-        planet2="Venus"
+        interactionKey="Moon-Venus"
         sign1={user.astrology.moonSign}
         sign2={user.astrology.venusSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Moon className='w-3 h-3' />
@@ -50,10 +57,10 @@ export default function UserEmotionalExpressionCard({ user }: { user?: UserProfi
       />
 
       <UserEmotionalExpressionInteraction
-        planet1="Moon"
-        planet2="Mars"
+        interactionKey="Moon-Mars"
         sign1={user.astrology.moonSign}
         sign2={user.astrology.marsSign}
+        astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
             <Moon className='w-3 h-3' />
