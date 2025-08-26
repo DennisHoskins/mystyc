@@ -1,7 +1,6 @@
 import { Drama } from 'lucide-react';
 
-import { UserProfile } from 'mystyc-common';
-import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
+import { UserProfile, UserAstrologyData } from 'mystyc-common';
 import AdminCard from '@/components/admin/ui/AdminCard';
 import Rising from '@/components/ui/icons/astrology/planets/Rising';
 import Mars from '@/components/ui/icons/astrology/planets/Mars';

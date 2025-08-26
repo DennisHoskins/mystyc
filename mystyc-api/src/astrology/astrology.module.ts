@@ -6,6 +6,7 @@ import { FirebaseModule } from '@/auth/firebase.module';
 import { UserProfilesService } from '@/users/user-profiles.service'; 
 
 import { AstrologyService } from './astrology.service';
+import { AstrologyDataService } from './astrology-data.service';
 import { AstrologyKnowledgeController } from './astrology-knowledge.controller';
 
 import { SignsService } from './signs.service';
@@ -31,6 +32,7 @@ import { PlanetaryPosition, PlanetaryPositionSchema } from './schemas/planetary-
 import { ElementInteraction, ElementInteractionSchema } from './schemas/element-interaction.schema';
 import { ModalityInteraction, ModalityInteractionSchema } from './schemas/modality-interaction.schema';
 import { PlanetInteraction, PlanetInteractionSchema } from './schemas/planet-interaction.schema';
+import { AstrologyDocument, AstrologyDocumentSchema } from './schemas/astrology.schema';
 
 @Module({
   imports: [
@@ -46,13 +48,15 @@ import { PlanetInteraction, PlanetInteractionSchema } from './schemas/planet-int
       { name: 'PlanetaryPosition', schema: PlanetaryPositionSchema },
       { name: 'ElementInteraction', schema: ElementInteractionSchema },
       { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
-      { name: 'PlanetInteraction', schema: PlanetInteractionSchema }
+      { name: 'PlanetInteraction', schema: PlanetInteractionSchema },
+      { name: 'AstrologyDocument', schema: AstrologyDocumentSchema }
     ])
   ],
   controllers: [AstrologyKnowledgeController],
   providers: [
     UserProfilesService,
     AstrologyService,
+    AstrologyDataService,
     SignsService,
     PlanetsService,
     ElementsService,
@@ -66,6 +70,7 @@ import { PlanetInteraction, PlanetInteractionSchema } from './schemas/planet-int
   ],
   exports: [
     AstrologyService,
+    AstrologyDataService,
     SignsService,
     PlanetsService,
     ElementsService,

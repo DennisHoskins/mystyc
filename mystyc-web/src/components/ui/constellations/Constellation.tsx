@@ -114,6 +114,28 @@ export default function Constellation({
     startTimeRef.current = performance.now();
   }, [constellationData, sparkleSpeed, animationDuration]);
 
+  const scheduleNextSparkle = useCallback(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Random chance to sparkle
+    if (Math.random() < sparkleChance) {
+      // Random delay between min and max
+      const delay = minDelay + Math.random() * (maxDelay - minDelay);
+      
+      timeoutRef.current = setTimeout(() => {
+        setIsActive(true);
+      }, delay);
+    } else {
+      // Try again after a short delay
+      timeoutRef.current = setTimeout(() => {
+        scheduleNextSparkle();
+      }, 1000);
+    }
+  }, [sparkleChance, minDelay, maxDelay]);
+
   const animate = useCallback(
     (time: number) => {
       if (!isActive) return;
@@ -162,30 +184,8 @@ export default function Constellation({
         scheduleNextSparkle();
       }
     },
-    [isActive, constellationData, dimBrightness, sparkleBrightness, showLabels]
+    [isActive, constellationData, dimBrightness, sparkleBrightness, showLabels, scheduleNextSparkle]
   );
-
-  const scheduleNextSparkle = useCallback(() => {
-    // Clear any existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    // Random chance to sparkle
-    if (Math.random() < sparkleChance) {
-      // Random delay between min and max
-      const delay = minDelay + Math.random() * (maxDelay - minDelay);
-      
-      timeoutRef.current = setTimeout(() => {
-        setIsActive(true);
-      }, delay);
-    } else {
-      // Try again after a short delay
-      timeoutRef.current = setTimeout(() => {
-        scheduleNextSparkle();
-      }, 1000);
-    }
-  }, [sparkleChance, minDelay, maxDelay]);
 
   // Handle active state changes
   useEffect(() => {

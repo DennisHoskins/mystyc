@@ -2,8 +2,7 @@
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import { UserProfile } from 'mystyc-common';
-import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
+import { UserProfile, UserAstrologyData } from 'mystyc-common';
 import { getUser, getUserAstrologyData } from '@/server/actions/admin/users';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';

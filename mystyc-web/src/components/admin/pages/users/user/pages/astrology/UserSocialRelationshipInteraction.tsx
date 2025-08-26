@@ -1,5 +1,4 @@
-import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
-import { createInteractionKey } from 'mystyc-common/interfaces/user-astrology-data.interface';
+import { UserAstrologyData, createInteractionKey } from 'mystyc-common/schemas';
 import Panel from '@/components/ui/Panel';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import Link from '@/components/ui/Link';

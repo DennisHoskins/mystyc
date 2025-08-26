@@ -12,5 +12,6 @@ export * from './payment-history.schema';
 export * from './openai-usage.schema';
 export * from './astrology-reference.schema';
 export * from './astrology-knowledge.schema';
+export * from './astrology.schema';
 
 export * from './requests';

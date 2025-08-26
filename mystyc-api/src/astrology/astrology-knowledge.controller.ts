@@ -1,8 +1,7 @@
-import { Controller, Param, UseGuards, Get, Post, Query, NotFoundException } from '@nestjs/common';
+import { Controller, UseGuards, Get, Query } from '@nestjs/common';
 
 import { UserRole } from 'mystyc-common/constants';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
-import { Sign, Planet, Dynamic, Element, Modality, EnergyType } from 'mystyc-common/schemas';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';

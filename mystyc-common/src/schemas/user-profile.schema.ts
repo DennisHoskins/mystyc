@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { UserRole } from '../constants/roles.enum';
 import { SubscriptionLevel } from '../constants/subscription-levels.enum';
 import { validateWithError, validateSafely } from '../util/validation';
-import { ZodiacSign } from './astrology-knowledge.schema';
+import { AstrologySchema } from './astrology.schema';
 
 // Reusable base schemas
 const BaseNameSchema = z.string()
@@ -36,15 +36,6 @@ export const BirthLocationSchema = z.object({
     name: z.string().min(1, "Timezone name is required"),
     offsetHours: z.number().min(-12).max(14, "Invalid timezone offset")
   })
-});
-
-export const AstrologySchema = z.object({
-  sunSign: ZodiacSign,
-  moonSign: ZodiacSign,
-  risingSign: ZodiacSign,
-  venusSign: ZodiacSign,
-  marsSign: ZodiacSign,
-  createdAt: z.date()
 });
 
 export const CreateUserProfileSchema = z.object({
@@ -84,7 +75,6 @@ export type CreateUserProfileInput = z.infer<typeof CreateUserProfileSchema>;
 export type UserProfileInput = z.input<typeof UserProfileInputSchema>;
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 export type BirthLocation = z.infer<typeof BirthLocationSchema>;
-export type Astrology = z.infer<typeof AstrologySchema>;
 
 export const validateCreateUserProfile = (data: unknown) => 
   validateWithError(CreateUserProfileSchema, data, { schema: 'CreateUserProfile' });

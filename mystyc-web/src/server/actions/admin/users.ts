@@ -7,10 +7,10 @@ import {
   Content, 
   AuthEvent, 
   Notification, 
-  PaymentHistory 
+  PaymentHistory,
+  UserAstrologyResponse
 } from 'mystyc-common/schemas/';
 import { UserStats, UsersSummary, UserSummary } from 'mystyc-common/admin/interfaces';
-import { UserAstrologyResponse } from 'mystyc-common/interfaces/user-astrology-data.interface';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { logger } from '@/util/logger';
 import { withAdminAuth } from '@/server/util/admin/withAdminAuth';

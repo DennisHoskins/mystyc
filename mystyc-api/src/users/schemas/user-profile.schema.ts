@@ -3,6 +3,7 @@ import { Document } from 'mongoose';
 
 import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
+import { Astrology, AstrologySchema } from '@/astrology/schemas/astrology.schema';
 
 @Schema()
 export class Subscription {
@@ -52,27 +53,6 @@ export class BirthLocation {
   };
 }
 
-@Schema()
-export class Astrology {
-  @Prop({ type: String, required: true })
-  sunSign!: string;
-
-  @Prop({ type: String, required: true })
-  moonSign!: string;
-
-  @Prop({ type: String, required: true })
-  risingSign!: string;
-
-  @Prop({ type: String, required: true })
-  venusSign!: string;
-
-  @Prop({ type: String, required: true })
-  marsSign!: string;
-
-  @Prop({ type: Date, default: Date.now, required: true })
-  createdAt!: Date;
-}
-
 @Schema({ timestamps: true, collection: 'userProfiles' })
 export class UserProfile {
   @Prop({ required: true })
@@ -102,7 +82,8 @@ export class UserProfile {
   @Prop({ type: BirthLocation })
   birthLocation?: BirthLocation;
 
-  @Prop({ type: Astrology })
+  // Now using the imported generic Astrology schema
+  @Prop({ type: AstrologySchema })
   astrology?: Astrology;
 
   @Prop({ type: Subscription, default: () => ({}) })

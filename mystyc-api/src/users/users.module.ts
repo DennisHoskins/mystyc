@@ -15,7 +15,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
 import { UserRolesService } from './user-roles.service';
-import { UserAstrologyService } from './user-astrology.service'; // Add this
+import { UserAstrologyService } from './user-astrology.service';
 import { UserContentService } from '@/content/user-content.service';
 import { UserPlusContentService } from '@/content/user-plus-content.service';
 import { OpenAIUserService } from '@/openai/openai-user.service';
@@ -32,7 +32,7 @@ import { UserProfileSchema } from './schemas/user-profile.schema';
     AuthEventsModule,
     forwardRef(() => ContentModule),
     OpenAIModule,
-    AstrologyModule,
+    AstrologyModule, // This exports AstrologyDataService
     MongooseModule.forFeature([
       { name: "UserProfile", schema: UserProfileSchema, collection: 'userProfiles'},
       { name: Content.name, schema: ContentSchema },
@@ -44,7 +44,7 @@ import { UserProfileSchema } from './schemas/user-profile.schema';
     UsersService,
     UserProfilesService,
     UserRolesService,
-    UserAstrologyService, // Add this
+    UserAstrologyService,
     UserContentService,
     UserPlusContentService,
     OpenAIUserService,

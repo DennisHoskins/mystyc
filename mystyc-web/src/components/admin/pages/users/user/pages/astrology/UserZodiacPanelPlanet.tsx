@@ -1,5 +1,4 @@
-import { PlanetType } from 'mystyc-common';
-import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
+import { PlanetType, UserAstrologyData } from 'mystyc-common';
 import Panel from '@/components/ui/Panel';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import { getElementIcon } from '@/components/ui/icons/astrology/elements';

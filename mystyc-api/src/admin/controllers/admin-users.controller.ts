@@ -1,7 +1,6 @@
 import { Controller, Query, Get, UseGuards, Param, NotFoundException } from '@nestjs/common';
 
-import { AuthEvent, Content, Device, Notification, PaymentHistory, UserProfile } from 'mystyc-common/schemas/';
-import { UserAstrologyResponse } from 'mystyc-common/interfaces/user-astrology-data.interface'
+import { AuthEvent, Content, Device, Notification, PaymentHistory, UserProfile, UserAstrologyResponse } from 'mystyc-common/schemas/';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
 import { UsersSummary } from 'mystyc-common/admin/interfaces/summary';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';

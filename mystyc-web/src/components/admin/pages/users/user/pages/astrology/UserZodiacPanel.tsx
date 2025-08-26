@@ -1,5 +1,4 @@
-import { UserProfile } from 'mystyc-common';
-import { UserAstrologyData } from 'mystyc-common/interfaces/user-astrology-data.interface';
+import { UserProfile, UserAstrologyData } from 'mystyc-common';
 import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import Sun from '@/components/ui/icons/astrology/planets/Sun';
 import Moon from '@/components/ui/icons/astrology/planets/Moon';

@@ -35,6 +35,8 @@ export default function SuccessPanel({ user, deviceInfo, setIsWorking }: Success
     
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+      debugger
+
       try {
         setIsWorking(true);
         const [updatedUser] = await Promise.all([
