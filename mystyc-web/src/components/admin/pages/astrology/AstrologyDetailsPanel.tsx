@@ -47,7 +47,7 @@ export default function AstrologyTabPanel() {
   })
 
   return (
-    <div className='flex flex-col w-full space-y-8 mt-1'>
+    <div className='flex flex-col w-full space-y-6 mt-1'>
       <AdminPanelLink
         label="Signs"
         total={summary?.signs}
@@ -155,27 +155,52 @@ export default function AstrologyTabPanel() {
         href='/admin/astrology/planets'
         sublinks={[
           {
-            icon: getPlanetIcon("mars", 'w-2 h-2'),
+            icon: getPlanetIcon("jupiter"),
+            label: "Jupiter",
+            href: '/admin/astrology/planets/Jupiter'
+          },
+          {
+            icon: getPlanetIcon("mars"),
             label: "Mars",
             href: '/admin/astrology/planets/Mars'
           },
           {
-            icon: getPlanetIcon("moon", 'w-2 h-2'),
+            icon: getPlanetIcon("moon", 'w-3 h-3'),
             label: "Moon",
             href: '/admin/astrology/planets/Moon'
           },
           {
-            icon: getPlanetIcon("rising", 'w-2 h-2'),
+            icon: getPlanetIcon("neptune"),
+            label: "Neptune",
+            href: '/admin/astrology/planets/Neptune'
+          },
+          {
+            icon: getPlanetIcon("pluto"),
+            label: "Pluto",
+            href: '/admin/astrology/planets/Pluto'
+          },
+          {
+            icon: getPlanetIcon("rising", 'w-3 h-3'),
             label: "Rising",
             href: '/admin/astrology/planets/Rising'
           },
           {
-            icon: getPlanetIcon("sun", 'w-2 h-2'),
+            icon: getPlanetIcon("saturn"),
+            label: "Saturn",
+            href: '/admin/astrology/planets/Saturn'
+          },
+          {
+            icon: getPlanetIcon("sun", 'w-3 h-3'),
             label: "Sun",
             href: '/admin/astrology/planets/Sun'
           },
           {
-            icon: getPlanetIcon("venus", 'w-2 h-2'),
+            icon: getPlanetIcon("uranus"),
+            label: "Uranus",
+            href: '/admin/astrology/planets/Uranus'
+          },
+          {
+            icon: getPlanetIcon("venus"),
             label: "Venus",
             href: '/admin/astrology/planets/Venus'
           },
@@ -191,6 +216,74 @@ export default function AstrologyTabPanel() {
             total: summary?.planetInteractions,
             href: '/admin/astrology/planet-interactions'
           }
+        ]}
+      />
+
+      <AdminPanelLink
+        label="Houses"
+        total={summary?.houses}
+        href='/admin/astrology/houses'
+        sublinks={[
+          {
+            icon: getZodiacIcon("Ares"),
+            label: "Ares / Self",
+            href: '/admin/astrology/houses/1'
+          },
+          {
+            icon: getZodiacIcon("Taurus"),
+            label: "Taurus / Values",
+            href: '/admin/astrology/houses/2'
+          },
+          {
+            icon: getZodiacIcon("Gemini"),
+            label: "Gemini / Communication",
+            href: '/admin/astrology/houses/3'
+          },
+          {
+            icon: getZodiacIcon("Cancer"),
+            label: "Cancer / Home",
+            href: '/admin/astrology/houses/4'
+          },
+          {
+            icon: getZodiacIcon("Leo"),
+            label: "Leo / Creativity",
+            href: '/admin/astrology/houses/5'
+          },
+          {
+            icon: getZodiacIcon("Virgo"),
+            label: "Virgo / Health",
+            href: '/admin/astrology/houses/6'
+          },
+          {
+            icon: getZodiacIcon("Libra"),
+            label: "Libra / Partnerships",
+            href: '/admin/astrology/houses/7'
+          },
+          {
+            icon: getZodiacIcon("Scorpio"),
+            label: "Scorpio / Transformation",
+            href: '/admin/astrology/houses/8'
+          },
+          {
+            icon: getZodiacIcon("Sagittarius"),
+            label: "Sagittarius / Exploration",
+            href: '/admin/astrology/houses/9'
+          },
+          {
+            icon: getZodiacIcon("Capricorn"),
+            label: "Capricorn / Career",
+            href: '/admin/astrology/houses/10'
+          },
+          {
+            icon: getZodiacIcon("Aquarius"),
+            label: "Aquarius / Community",
+            href: '/admin/astrology/houses/11'
+          },
+          {
+            icon: getZodiacIcon("Pisces"),
+            label: "Pisces / Reflection",
+            href: '/admin/astrology/houses/12'
+          },
         ]}
       />
       <AdminPanelLink
@@ -212,6 +305,30 @@ export default function AstrologyTabPanel() {
             icon: getModalityIcon("mutable", 'w-2 h-2'),
             label: "Mutable",
             href: '/admin/astrology/modalities/Mutable'
+          },
+        ]}
+        links={[
+          {
+            label: "Modality Interactions",
+            total: summary?.modalityInteractions,
+            href: '/admin/astrology/modality-interactions'
+          },
+        ]}
+      />
+      <AdminPanelLink
+        label="Polarities"
+        total={summary?.polarities}
+        href='/admin/astrology/polarities'
+        sublinks={[
+          {
+//            icon: getPolarityIcon("masculine", 'w-2 h-2'),
+            label: "Masculine",
+            href: '/admin/astrology/polarities/Masculine'
+          },
+          {
+//            icon: getPolarityIcon("feminine", 'w-2 h-2'),
+            label: "Feminine",
+            href: '/admin/astrology/polarities/Feminine'
           },
         ]}
         links={[

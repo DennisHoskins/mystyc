@@ -2,22 +2,25 @@ import { Controller, UseGuards, Get, Query, Param, NotFoundException } from '@ne
 
 import { UserRole } from 'mystyc-common/constants';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
+import { SignComplete } from 'mystyc-common/index';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { createServiceLogger, logger } from '@/common/util/logger';
 
-import { SignsService } from './signs.service';
-import { PlanetsService } from './planets.service';
-import { ElementsService } from './elements.service';
-import { ModalitiesService } from './modalities.service';
-import { DynamicsService } from './dynamics.service';
-import { EnergyTypesService } from './energy-types.service';
-import { PlanetaryPositionsService } from './planetary-positions.service';
-import { ElementInteractionsService } from './element-interactions.service';
-import { ModalityInteractionsService } from './modality-interactions.service';
-import { PlanetInteractionsService } from './planet-interactions.service';
+import { SignsService } from './services/signs.service';
+import { PlanetsService } from './services/planets.service';
+import { ElementsService } from './services/elements.service';
+import { ModalitiesService } from './services/modalities.service';
+import { DynamicsService } from './services/dynamics.service';
+import { PolaritiesService } from './services/polarities.service';
+import { HousesService } from './services/houses.service';
+import { EnergyTypesService } from './services/energy-types.service';
+import { PlanetaryPositionsService } from './services/planetary-positions.service';
+import { ElementInteractionsService } from './services/element-interactions.service';
+import { ModalityInteractionsService } from './services/modality-interactions.service';
+import { PlanetInteractionsService } from './services/planet-interactions.service';
 
 function isErrorWithStatus(e: unknown): e is { status: number } {
   return (
@@ -38,11 +41,13 @@ export class AstrologyKnowledgeController {
     private readonly elementsService: ElementsService,
     private readonly modalitiesService: ModalitiesService,
     private readonly dynamicsService: DynamicsService,
+    private readonly polaritiesService: PolaritiesService,
+    private readonly housesService: HousesService,
     private readonly energyTypesService: EnergyTypesService,
     private readonly planetaryPositionService: PlanetaryPositionsService,
     private readonly elementInteractionService: ElementInteractionsService,
     private readonly modalityInteractionService: ModalityInteractionsService,
-    private readonly planetInteractionService: PlanetInteractionsService
+    private readonly planetInteractionService: PlanetInteractionsService,
   ) {}
   
   @Get('signs')
@@ -63,7 +68,7 @@ export class AstrologyKnowledgeController {
 
   @Get('sign/:sign')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  async getSign(@Param('sign') sign: string) {
+  async getSign(@Param('sign') sign: string): Promise<SignComplete> {
     logger.info('User fetching sign by name', { sign }, 'AstrologyKnowledgeController');
     
     try {
@@ -75,29 +80,46 @@ export class AstrologyKnowledgeController {
       }
 
       // Fetch related data in parallel
-      const [elementData, modalityData, energyTypeData] = await Promise.all([
+      const [houseData, elementData, modalityData, polarityData, energyTypeData] = await Promise.all([
+        this.housesService.findByNumber(signResult.basics.naturalHouse),
         this.elementsService.findByName(signResult.element),
         this.modalitiesService.findByName(signResult.modality),
+        this.polaritiesService.findByName(signResult.basics.polarity),
         this.energyTypesService.findByName(signResult.energyType)
       ]);
 
+      // Fetch house sign data
+      const houseSignData = await this.signsService.findByName(signResult.basics.rulingPlanet);
+
       // Fetch energy types for element and modality
-      const [elementEnergyTypeData, modalityEnergyTypeData] = await Promise.all([
+      const [houseEnergyTypeData, elementEnergyTypeData, modalityEnergyTypeData, polarityEnergyTypeData] = await Promise.all([
+        houseData ? this.energyTypesService.findByName(houseData.energyType) : null,
         elementData ? this.energyTypesService.findByName(elementData.energyType) : null,
-        modalityData ? this.energyTypesService.findByName(modalityData.energyType) : null
+        modalityData ? this.energyTypesService.findByName(modalityData.energyType) : null,
+        polarityData ? this.energyTypesService.findByName(polarityData.energyType) : null
       ]);
 
       logger.info('Sign with complete related data retrieved successfully', { 
         sign, 
+        hasHouse: !!houseData,
         hasElement: !!elementData,
         hasModality: !!modalityData,
+        hasPolarity: !!polarityData,
         hasEnergyType: !!energyTypeData,
+        hasHouseEnergyType: !!houseEnergyTypeData,
         hasElementEnergyType: !!elementEnergyTypeData,
-        hasModalityEnergyType: !!modalityEnergyTypeData
+        hasModalityEnergyType: !!modalityEnergyTypeData,
+        hasPolarityEnergyType: !!polarityEnergyTypeData,
       }, 'AstrologyKnowledgeController');
       
-      return {
+      // Return SignComplete with all nested data
+      const signComplete: SignComplete = {
         ...signResult,
+        houseData: houseData ? {
+          ...houseData,
+          naturalRulerSignData: houseSignData,
+          energyTypeData: houseEnergyTypeData
+        } : null,
         elementData: elementData ? {
           ...elementData,
           energyTypeData: elementEnergyTypeData
@@ -106,8 +128,14 @@ export class AstrologyKnowledgeController {
           ...modalityData,
           energyTypeData: modalityEnergyTypeData
         } : null,
+        polarityData: polarityData ? {
+          ...polarityData,
+          energyTypeData: polarityEnergyTypeData
+        } : null,
         energyTypeData
       };
+
+      return signComplete;
     } catch (error) {
       if (isErrorWithStatus(error) && error.status === 404) {
         throw error;
@@ -262,6 +290,38 @@ export class AstrologyKnowledgeController {
     ]);
 
     this.logger.debug('Planet interactions retrieved', { count: data.length, total });
+
+    return { data, total };
+  }
+
+  @Get('polarities')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getPolarities(@Query() query: BaseAdminQuery) {
+    this.logger.debug('Getting polarities', { query });
+
+    const [data, total] = await Promise.all([
+      this.polaritiesService.findAll(query),
+      this.polaritiesService.getTotal()
+    ]);
+
+    this.logger.debug('Polarities retrieved', { count: data.length, total });
+
+    return { data, total };
+  }
+
+  @Get('houses')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getHouses(@Query() query: BaseAdminQuery) {
+    this.logger.debug('Getting houses', { query });
+
+    const [data, total] = await Promise.all([
+      this.housesService.findAll(query),
+      this.housesService.getTotal()
+    ]);
+
+    this.logger.debug('Houses retrieved', { count: data.length, total });
 
     return { data, total };
   }

@@ -17,7 +17,7 @@ export default function AdminErrorPage({
 }: AdminErrorProps) {
 
   return (
-    <div className="text-center py-8 h-full w-full flex flex-col justify-center">
+    <div className="w-full max-w-xl text-center py-8 h-full flex flex-col justify-center">
       <div className="text-4xl mb-4">⚠️</div>
       <Heading level={3} className="mb-2 text-red-600">
         {title}

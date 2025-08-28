@@ -6,6 +6,9 @@ import { ZodiacSignType } from "mystyc-common";
 import CompatibilityPanel from "./CompatibilityPanel";
 
 export default function CompatibilityCard({ sign } : { sign: ZodiacSignType | null }) {
+
+console.log(sign);
+
   return (
     <Card className="flex flex-col space-y-2">
       <div className='flex items-center space-x-2'>

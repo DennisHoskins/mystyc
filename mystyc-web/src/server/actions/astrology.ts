@@ -1,29 +1,15 @@
 'use server'
 
-import { Sign, Element, Modality, EnergyType, ZodiacSignType } from 'mystyc-common/schemas';
+import { SignComplete, ZodiacSignType } from 'mystyc-common';
 import { DeviceInfo } from '@/interfaces/';
 import { authTokenManager } from '@/server/services/authTokenManager';
 import { logger } from '@/util/logger';
 import { withSession } from '../util/withSession';
 
-export interface ElementWithEnergyType extends Element {
-  energyTypeData: EnergyType | null;
-}
-
-export interface ModalityWithEnergyType extends Modality {
-  energyTypeData: EnergyType | null;
-}
-
-export interface SignWithRelatedData extends Sign {
-  elementData: ElementWithEnergyType | null;
-  modalityData: ModalityWithEnergyType | null;
-  energyTypeData: EnergyType | null;
-}
-
 export async function getSign(params: {
   deviceInfo: DeviceInfo;
   sign: ZodiacSignType;
-}): Promise<SignWithRelatedData | null> {
+}): Promise<SignComplete | null> {
   return withSession(async (session) => {
     if (!session.authToken) {
       throw new Error(`Failed to fetch sign: No Auth Token`);

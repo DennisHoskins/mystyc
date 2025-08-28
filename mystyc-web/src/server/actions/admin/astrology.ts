@@ -4,8 +4,10 @@ import { AdminListResponse, BaseAdminQuery, AstrologySummary } from 'mystyc-comm
 import { 
   Sign,
   Planet,
+  House,
   Element,
   Modality,
+  Polarity,
   Dynamic,
   EnergyType,
   PlanetaryPosition,
@@ -16,6 +18,7 @@ import {
   PlanetType,
   ElementType,
   ModalityType,
+  PolarityType,
   DynamicType,
 } from 'mystyc-common/schemas/';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
@@ -73,6 +76,27 @@ export async function getPlanet(params: {
   }, params);
 }
 
+// Houses
+export async function getHouses(params: {
+  deviceInfo: DeviceInfo;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, fullParams) => {
+    logger.log('[getHouses] Fetching houses');
+    const { deviceInfo, ...query } = fullParams;
+    return nestGet<AdminListResponse<House>>(session, 'admin/houses', query);
+  }, params);
+}
+
+export async function getHouse(params: {
+  deviceInfo: DeviceInfo;
+  house: number;
+}) {
+  return withAdminAuth(async (session, { house }) => {
+    logger.log('[getHouse] Fetching house:', house);
+    return nestGet<House>(session, `admin/houses/${house}`);
+  }, params);
+}
+
 // Elements
 export async function getElements(params: {
   deviceInfo: DeviceInfo;
@@ -122,6 +146,27 @@ export async function getModality(params: {
   return withAdminAuth(async (session, { modality }) => {
     logger.log('[getModality] Fetching modality:', modality);
     return nestGet<Modality>(session, `admin/modalities/${modality}`);
+  }, params);
+}
+
+// Polarities
+export async function getPolarities(params: {
+  deviceInfo: DeviceInfo;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, fullParams) => {
+    logger.log('[getPolarities] Fetching polarities');
+    const { deviceInfo, ...query } = fullParams;
+    return nestGet<AdminListResponse<Polarity>>(session, 'admin/polarities', query);
+  }, params);
+}
+
+export async function getPolarity(params: {
+  deviceInfo: DeviceInfo;
+  polarity: PolarityType;
+}) {
+  return withAdminAuth(async (session, { polarity }) => {
+    logger.log('[getPolarity] Fetching polarity:', polarity);
+    return nestGet<Polarity>(session, `admin/polarities/${polarity}`);
   }, params);
 }
 

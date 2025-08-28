@@ -106,12 +106,12 @@ export const REQUIRED_PLANET_INTERACTIONS = [
 export type PlanetaryDataItem = z.infer<typeof PlanetaryDataItemSchema>;
 export type PlanetaryData = z.infer<typeof PlanetaryDataSchema>;
 export type Interactions = z.infer<typeof InteractionsSchema>;
-export type UserAstrologyData = z.infer<typeof UserAstrologyDataSchema>; // Replaces interface
-export type UserAstrologyResponse = z.infer<typeof UserAstrologyResponseSchema>; // Replaces interface
+export type UserAstrologyData = z.infer<typeof UserAstrologyDataSchema>;
+export type UserAstrologyResponse = z.infer<typeof UserAstrologyResponseSchema>;
 export type Astrology = z.infer<typeof AstrologySchema>;
 export type AstrologyInput = z.infer<typeof AstrologyInputSchema>;
 
-// Utility types (moved from interface file)
+// Utility types
 export type InteractionKey = string; // Format: "Item1-Item2" (e.g., "Sun-Moon", "Fire-Water")
 export type RequiredPlanetInteraction = typeof REQUIRED_PLANET_INTERACTIONS[number];
 

@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback }  from 'react';
 
-import { ZodiacSignType, Element, Modality, EnergyType } from 'mystyc-common';
-import { getSign, SignWithRelatedData } from '@/server/actions/astrology';
+import { SignComplete, ZodiacSignType, Element, Modality, EnergyType } from 'mystyc-common';
+import { getSign } from '@/server/actions/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import Card from '@/components/ui/Card';
 import Panel from '@/components/ui/Panel';
@@ -16,7 +16,7 @@ import EnergyTypePanel from './EnergyTypePanel';
 import MystycSidebar from '../../ui/MystycSidebar';
 
 export default function SignPage({ sign } : { sign: ZodiacSignType }) {
-  const [signData, setSignData] = useState<SignWithRelatedData | null>(null);
+  const [signData, setSignData] = useState<SignComplete | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadSign = useCallback(async (sign: ZodiacSignType) => {
@@ -27,11 +27,11 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
       console.log(err);
       setError("Unable to load Sign information. Please try again.")
     }
-  }, [sign]);
+  }, []);
 
   useEffect(() => {
     loadSign(sign);
-  }, [sign])
+  }, [sign, loadSign])
 
   if (error) {
     return (

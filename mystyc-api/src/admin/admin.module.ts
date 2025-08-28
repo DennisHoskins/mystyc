@@ -15,11 +15,14 @@ import {
   AdminSchedulesController,
   AdminScheduleExecutionsController,
   AdminNotificationsController,
+
   AdminAstrologyController,
   AdminSignsController,
   AdminPlanetsController,
+  AdminHousesController,
   AdminElementsController,
   AdminModalitiesController,
+  AdminPolaritiesController,
   AdminDynamicsController,
   AdminEnergyTypesController,  
   AdminPlanetaryPositionsController,
@@ -62,8 +65,10 @@ import { ScheduleSchema } from '@/schedules/schemas/schedule.schema';
 import { ScheduleExecutionSchema } from '@/schedules/schemas/schedule-execution.schema';
 import { SignSchema } from '@/astrology/schemas/sign.schema';
 import { PlanetSchema } from '@/astrology/schemas/planet.schema';
+import { HouseSchema } from '@/astrology/schemas/house.schema';
 import { ElementSchema } from '@/astrology/schemas/element.schema';
 import { ModalitySchema } from '@/astrology/schemas/modality.schema';
+import { PolaritySchema } from '@/astrology/schemas/polarity.schema';
 import { DynamicSchema } from '@/astrology/schemas/dynamic.schema';
 import { EnergyTypeSchema } from '@/astrology/schemas/energy-type.schema';
 import { PaymentHistorySchema } from '@/payments/schemas/payment-history.schema';
@@ -87,8 +92,10 @@ import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.
       { name: 'PaymentHistory', schema: PaymentHistorySchema },
       { name: 'Sign', schema: SignSchema },
       { name: 'Planet', schema: PlanetSchema },
+      { name: 'House', schema: HouseSchema },
       { name: 'Element', schema: ElementSchema },
       { name: 'Modality', schema: ModalitySchema },
+      { name: 'Polarity', schema: PolaritySchema },
       { name: 'Dynamic', schema: DynamicSchema },
       { name: 'EnergyType', schema: EnergyTypeSchema },      
       { name: 'ElementInteraction', schema: ElementInteractionSchema },
@@ -97,7 +104,7 @@ import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.
       { name: 'PlanetaryPosition', schema: PlanetaryPositionSchema },
     ])
   ],
-controllers: [
+  controllers: [
     AdminUsersController,
     AdminDevicesController,
     AdminAuthEventsController,
@@ -111,11 +118,14 @@ controllers: [
     AdminSchedulesController,
     AdminScheduleExecutionsController,
     AdminNotificationsController,
+    
     AdminAstrologyController,
     AdminSignsController,
     AdminPlanetsController,  
+    AdminHousesController,  
     AdminElementsController,
     AdminModalitiesController,
+    AdminPolaritiesController,
     AdminDynamicsController,
     AdminEnergyTypesController,    
     AdminPlanetaryPositionsController,

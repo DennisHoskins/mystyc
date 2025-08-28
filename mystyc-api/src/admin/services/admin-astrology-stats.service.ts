@@ -3,23 +3,27 @@ import { Injectable } from '@nestjs/common';
 import { AdminStatsQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 
 import { logger } from '@/common/util/logger';
-import { SignsService } from '@/astrology/signs.service';
-import { PlanetsService } from '@/astrology/planets.service';
-import { ElementsService } from '@/astrology/elements.service';
-import { ModalitiesService } from '@/astrology/modalities.service';
-import { DynamicsService } from '@/astrology/dynamics.service';
-import { EnergyTypesService } from '@/astrology/energy-types.service';
-import { PlanetaryPositionsService } from '@/astrology/planetary-positions.service';
-import { ElementInteractionsService } from '@/astrology/element-interactions.service';
-import { ModalityInteractionsService } from '@/astrology/modality-interactions.service';
-import { PlanetInteractionsService } from '@/astrology/planet-interactions.service';
+import { SignsService } from '@/astrology/services/signs.service';
+import { PlanetsService } from '@/astrology/services/planets.service';
+import { HousesService } from '@/astrology/services/houses.service';
+import { ElementsService } from '@/astrology/services/elements.service';
+import { ModalitiesService } from '@/astrology/services/modalities.service';
+import { PolaritiesService } from '@/astrology/services/polarities.service';
+import { DynamicsService } from '@/astrology/services/dynamics.service';
+import { EnergyTypesService } from '@/astrology/services/energy-types.service';
+import { PlanetaryPositionsService } from '@/astrology/services/planetary-positions.service';
+import { ElementInteractionsService } from '@/astrology/services/element-interactions.service';
+import { ModalityInteractionsService } from '@/astrology/services/modality-interactions.service';
+import { PlanetInteractionsService } from '@/astrology/services/planet-interactions.service';
 import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 export interface AstrologySummaryStats {
   totalSigns: number;
   totalPlanets: number;
+  totalHouses: number;
   totalElements: number;
   totalModalities: number;
+  totalPolarities: number;
   totalDynamics: number;
   totalEnergyTypes: number;
   totalPlanetaryPositions: number;
@@ -40,8 +44,10 @@ export class AdminAstrologyStatsService {
   constructor(
     private readonly signsService: SignsService,
     private readonly planetsService: PlanetsService,
+    private readonly housesService: HousesService,
     private readonly elementsService: ElementsService,
     private readonly modalitiesService: ModalitiesService,
+    private readonly polaritiesService: PolaritiesService,
     private readonly dynamicsService: DynamicsService,
     private readonly energyTypesService: EnergyTypesService,
     private readonly planetaryPositionsService: PlanetaryPositionsService,
@@ -57,8 +63,10 @@ export class AdminAstrologyStatsService {
       const [
         totalSigns,
         totalPlanets, 
+        totalHouses,
         totalElements,
         totalModalities,
+        totalPolarities,
         totalDynamics,
         totalEnergyTypes,
         totalPlanetaryPositions,
@@ -68,8 +76,10 @@ export class AdminAstrologyStatsService {
       ] = await Promise.all([
         this.signsService.getTotal(),
         this.planetsService.getTotal(),
+        this.housesService.getTotal(),
         this.elementsService.getTotal(),
         this.modalitiesService.getTotal(),
+        this.polaritiesService.getTotal(),
         this.dynamicsService.getTotal(),
         this.energyTypesService.getTotal(),
         this.planetaryPositionsService.getTotal(),
@@ -81,8 +91,10 @@ export class AdminAstrologyStatsService {
       logger.info('Astrology summary stats generated', {
         totalSigns,
         totalPlanets,
+        totalHouses,
         totalElements,
         totalModalities,
+        totalPolarities,
         totalDynamics,
         totalEnergyTypes,
         totalPlanetaryPositions,
@@ -94,8 +106,10 @@ export class AdminAstrologyStatsService {
       return {
         totalSigns,
         totalPlanets,
+        totalHouses,
         totalElements,
         totalModalities,
+        totalPolarities,
         totalDynamics,
         totalEnergyTypes,
         totalPlanetaryPositions,

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: true, collection: 'planets' })
 export class Planet {
-  @Prop({ required: true, enum: ['Sun', 'Moon', 'Rising', 'Venus', 'Mars'], unique: true, index: true })
+  @Prop({ required: true, enum: ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'], unique: true, index: true })
   planet!: string;
 
   @Prop({ required: true, minlength: 50, maxlength: 500 })

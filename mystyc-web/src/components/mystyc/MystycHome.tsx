@@ -2,12 +2,15 @@
 
 import { useState, useEffect, useCallback }  from 'react';
 
+import { SignComplete } from 'mystyc-common';
 import { AppUser } from '@/interfaces/app/app-user.interface';
-import { getSign, SignWithRelatedData } from '@/server/actions/astrology';
+import { getSign } from '@/server/actions/astrology';
+import { logger } from '@/util/logger';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import Card from '@/components/ui/Card';
 import Panel from '../ui/Panel';
 import MystycError from './ui/MystycError';
+import OnboardingPage from './pages/onboard/OnboardPage';
 import Link from '../ui/Link';
 import ConstellationPanel from '@/components/mystyc/ui/ConstellationPanel';
 import HoroscopePanel from '@/components/mystyc/pages/home/HoroscopePanel';
@@ -16,7 +19,7 @@ import EmotionalExpressionPanel from '@/components/mystyc/pages/home/EmotionalEx
 import RelationshipsPanel from '@/components/mystyc/pages/home/RelationshipsPanel';
 
 export default function CorePage({ user } : { user: AppUser }) {
-  const [sign, setSign] = useState<SignWithRelatedData | null>(null);
+  const [sign, setSign] = useState<SignComplete | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadSign = useCallback(async (user: AppUser) => {
@@ -27,22 +30,23 @@ export default function CorePage({ user } : { user: AppUser }) {
       const signData = await getSign({ deviceInfo: getDeviceInfo(), sign: user.userProfile.astrology.sunSign });
       setSign(signData);
     } catch(err) {
+      logger.error(err);
       setError("There was a problem loading your profile. Please try again.")      
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     loadSign(user);
-  }, [user])
+  }, [user, loadSign])
 
-  if (!user || !user.userProfile.astrology) {
+  if (!user || !user.userProfile) {
     return (
       <div className='w-full h-full space-y-10 flex flex-col'>
         <div className='flex space-x-10'>
           <Card className='w-full h-full'>
             <Panel className='items-center'>
               <MystycError 
-                title={`Sorry, ${user.userProfile.firstName} :(`}
+                title={`Sorry :(`}
                 error={"There was a problem loading your profile. Please try again."}
                 onRetry={() => loadSign(user)}
               />
@@ -50,6 +54,12 @@ export default function CorePage({ user } : { user: AppUser }) {
           </Card>
         </div>
       </div>
+    );
+  }
+
+  if (!user.userProfile.astrology) {
+    return (
+      <OnboardingPage user={user} />
     );
   }
 

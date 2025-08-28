@@ -32,10 +32,7 @@ export default function SuccessPanel({ user, deviceInfo, setIsWorking }: Success
     hasRun.current = true;    
 
     const getAstrologicalData = async () => {
-    
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-      debugger
 
       try {
         setIsWorking(true);

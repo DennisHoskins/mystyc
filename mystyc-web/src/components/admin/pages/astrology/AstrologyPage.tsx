@@ -7,7 +7,7 @@ import { getAstrologySummary } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import AdminListLayout from '@/components/admin/ui/AdminListLayout';
+import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import AstrologyIcon from '@/components/admin/ui/icons/AstrologyIcon';
 import AstrologyDetailsPanel from './AstrologyDetailsPanel';
 
@@ -47,11 +47,12 @@ export default function AstrologyPage() {
   console.log(summary);
 
   return (
-    <AdminListLayout
+    <AdminItemLayout
       error={error}
       onRetry={retryAll}
       breadcrumbs={breadcrumbs}
-      icon={AstrologyIcon}
+      title='Astrology'
+      icon={<AstrologyIcon />}
       headerContent={<AstrologyDetailsPanel />}
     />   
   );

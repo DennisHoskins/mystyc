@@ -10,7 +10,7 @@ import {
 
 import { logger } from '@/common/util/logger';
 import { UserProfilesService } from './user-profiles.service';
-import { AstrologyDataService } from '@/astrology/astrology-data.service';
+import { AstrologyDataService } from '@/astrology/services/astrology-data.service';
 
 @Injectable()
 export class UserAstrologyService {

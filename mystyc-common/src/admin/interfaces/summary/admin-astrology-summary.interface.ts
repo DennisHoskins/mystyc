@@ -1,8 +1,10 @@
 export interface AstrologySummary {
   signs: number;
   planets: number;
+  houses: number;
   elements: number;
   modalities: number;
+  polarities: number;
   dynamics: number;
   energyTypes: number;
   planetaryPositions: number;

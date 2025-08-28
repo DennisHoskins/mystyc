@@ -43,7 +43,7 @@ export default function OnboardingPage({ user } : { user: AppUser }) {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center w-full h-[var(--client-height)] bg-red-400 p-4">
+    <div className="flex flex-1 flex-col items-center justify-center w-full h-[var(--client-height)] p-4">
       <Card className='w-full md:max-w-lg text-center space-y-4 p-6 pt-10'>
         <div className='flex flex-col h-[36em]'>
           <WorkingEye scale={1.75} className='pt-10 pb-10' isWorking={isWorking} />

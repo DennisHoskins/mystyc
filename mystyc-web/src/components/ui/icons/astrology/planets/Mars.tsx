@@ -1,8 +1,3 @@
-'use client'
-
-import React from 'react';
-import { Mars as MarsIcon } from 'lucide-react';
-
-export default function Mars({ className = 'w-10 h-10' }: { className?: string }) {
-  return <MarsIcon className={className} />
+export default function Mars({ className = 'text-[10px] text-white' }: { className?: string }) {
+  return <div className={className} >&#9794;</div>
 }

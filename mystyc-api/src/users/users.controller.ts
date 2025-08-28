@@ -18,8 +18,8 @@ import { logger, createServiceLogger } from '@/common/util/logger';
 import { UserContentService } from '@/content/user-content.service';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
-import { AstrologyService } from '@/astrology/astrology.service'; 
-import { AstrologyDataService } from '@/astrology/astrology-data.service';
+import { AstrologyService } from '@/astrology/services/astrology.service'; 
+import { AstrologyDataService } from '@/astrology/services/astrology-data.service';
 
 @Controller('users')
 export class UsersController {

@@ -6,6 +6,7 @@ export const PlanetType = z.enum(['Sun', 'Moon', 'Rising', 'Venus', 'Mars']);
 export const ZodiacSign = z.enum(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']);
 export const ElementType = z.enum(['Fire', 'Earth', 'Air', 'Water']);
 export const ModalityType = z.enum(['Cardinal', 'Fixed', 'Mutable']);
+export const PolarityType = z.enum(['Masculine', 'Feminine']);
 export const DynamicType = z.enum(['harmony', 'tension', 'complementary', 'amplification']);
 
 // 1. Planetary Positions Schema
@@ -79,6 +80,7 @@ export type ZodiacSignType = z.infer<typeof ZodiacSign>;
 export type ElementType = z.infer<typeof ElementType>;
 export type PlanetType = z.infer<typeof PlanetType>;
 export type ModalityType = z.infer<typeof ModalityType>;
+export type PolarityType = z.infer<typeof PolarityType>;
 export type DynamicType = z.infer<typeof DynamicType>;
 export type PlanetaryPosition = z.infer<typeof PlanetaryPositionSchema>;
 export type PlanetaryPositionInput = z.infer<typeof PlanetaryPositionInputSchema>;

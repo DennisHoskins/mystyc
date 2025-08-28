@@ -5,20 +5,22 @@ import { FirebaseModule } from '@/auth/firebase.module';
 
 import { UserProfilesService } from '@/users/user-profiles.service'; 
 
-import { AstrologyService } from './astrology.service';
-import { AstrologyDataService } from './astrology-data.service';
 import { AstrologyKnowledgeController } from './astrology-knowledge.controller';
 
-import { SignsService } from './signs.service';
-import { PlanetsService } from './planets.service';
-import { ElementsService } from './elements.service';
-import { ModalitiesService } from './modalities.service';
-import { DynamicsService } from './dynamics.service';
-import { EnergyTypesService } from './energy-types.service';
-import { PlanetaryPositionsService } from './planetary-positions.service';
-import { ElementInteractionsService } from './element-interactions.service';
-import { ModalityInteractionsService } from './modality-interactions.service';
-import { PlanetInteractionsService } from './planet-interactions.service';
+import { AstrologyService } from './services/astrology.service';
+import { AstrologyDataService } from './services/astrology-data.service';
+import { SignsService } from './services/signs.service';
+import { PlanetsService } from './services/planets.service';
+import { ElementsService } from './services/elements.service';
+import { ModalitiesService } from './services/modalities.service';
+import { DynamicsService } from './services/dynamics.service';
+import { EnergyTypesService } from './services/energy-types.service';
+import { PlanetaryPositionsService } from './services/planetary-positions.service';
+import { ElementInteractionsService } from './services/element-interactions.service';
+import { ModalityInteractionsService } from './services/modality-interactions.service';
+import { PlanetInteractionsService } from './services/planet-interactions.service';
+import { PolaritiesService } from './services/polarities.service';
+import { HousesService } from './services/houses.service';
 
 import { UserProfileSchema } from '@/users/schemas/user-profile.schema';
 
@@ -33,6 +35,8 @@ import { ElementInteraction, ElementInteractionSchema } from './schemas/element-
 import { ModalityInteraction, ModalityInteractionSchema } from './schemas/modality-interaction.schema';
 import { PlanetInteraction, PlanetInteractionSchema } from './schemas/planet-interaction.schema';
 import { AstrologyDocument, AstrologyDocumentSchema } from './schemas/astrology.schema';
+import { Polarity, PolaritySchema } from './schemas/polarity.schema';
+import { House, HouseSchema } from './schemas/house.schema';
 
 @Module({
   imports: [
@@ -49,7 +53,9 @@ import { AstrologyDocument, AstrologyDocumentSchema } from './schemas/astrology.
       { name: 'ElementInteraction', schema: ElementInteractionSchema },
       { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
       { name: 'PlanetInteraction', schema: PlanetInteractionSchema },
-      { name: 'AstrologyDocument', schema: AstrologyDocumentSchema }
+      { name: 'AstrologyDocument', schema: AstrologyDocumentSchema },
+      { name: 'Polarity', schema: PolaritySchema },
+      { name: 'House', schema: HouseSchema }
     ])
   ],
   controllers: [AstrologyKnowledgeController],
@@ -66,7 +72,9 @@ import { AstrologyDocument, AstrologyDocumentSchema } from './schemas/astrology.
     PlanetaryPositionsService,
     ElementInteractionsService,
     ModalityInteractionsService,
-    PlanetInteractionsService
+    PlanetInteractionsService,
+    PolaritiesService,
+    HousesService
   ],
   exports: [
     AstrologyService,
@@ -80,7 +88,9 @@ import { AstrologyDocument, AstrologyDocumentSchema } from './schemas/astrology.
     PlanetaryPositionsService,
     ElementInteractionsService,
     ModalityInteractionsService,
-    PlanetInteractionsService
+    PlanetInteractionsService,
+    PolaritiesService,
+    HousesService
   ]
 })
 export class AstrologyModule {}

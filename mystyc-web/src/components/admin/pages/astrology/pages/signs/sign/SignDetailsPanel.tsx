@@ -3,28 +3,9 @@ import AdminDetailGrid from '@/components/admin/ui/detail/AdminDetailGrid';
 import AdminDetailField from '@/components/admin/ui/detail/AdminDetailField';
 import Panel from '@/components/ui/Panel';
 
-export default function SignDetailsPanel({ sign, showLinks = true }: { sign?: Sign | null, showLinks?: boolean }) {
+export default function SignDetailsPanel({ sign }: { sign?: Sign | null }) {
   return (
     <div className='space-y-4'>
-      {showLinks &&
-        <AdminDetailGrid cols={3}>
-          <AdminDetailField
-            label="Element"
-            value={sign?.element}
-            href={`/admin/astrology/elements/${sign?.element}`}
-          />
-          <AdminDetailField
-            label="Modality"
-            value={sign?.modality}
-            href={`/admin/astrology/modalities/${sign?.modality}`}
-          />
-          <AdminDetailField
-            label="Energy Type"
-            value={sign?.energyType}
-            href={`/admin/astrology/energy-types/${sign?.energyType}`}
-          />
-        </AdminDetailGrid>
-      }
       <AdminDetailGrid className='!gap-1'>
         <Panel>
           <AdminDetailField

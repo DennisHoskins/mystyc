@@ -53,7 +53,7 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
       breadcrumbs={breadcrumbs}
       icon={getZodiacIcon(sign)}
       title={signData?.sign || "Sun Sign"}
-      headerContent={<SignDetailsPanel sign={signData} showLinks={false} />}
+      headerContent={<SignDetailsPanel sign={signData} />}
       sideContent={<PlanetarySignPositionsPanel sign={sign} />}
       itemsContent={[
         <div key='sign-content' className='flex flex-col w-full flex-1 space-y-1'>

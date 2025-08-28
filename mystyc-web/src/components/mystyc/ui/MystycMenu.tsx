@@ -1,7 +1,7 @@
 import MenuItems from '@/components/ui/layout/menu/MenuItems';
 import MenuItem from '@/components/ui/layout/menu/MenuItem';
 
-import { User, Settings, CreditCard, LayoutDashboard, LogOut } from 'lucide-react';
+import { Settings, CreditCard, LayoutDashboard, LogOut } from 'lucide-react';
 import { useUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 

@@ -49,11 +49,13 @@ export default function AdminItemLayout({
               <Heading level={3}>{title}</Heading>
             )}
           </div>
-          <AdminError
-            title={title}
-            error={error} 
-            onRetry={onRetry}
-          />
+          <div className='w-full h-full flex flex-col items-center justify-center'>
+            <AdminError
+              title={title}
+              error={error} 
+              onRetry={onRetry}
+            />
+          </div>
         </Card>
       </div>
     )
