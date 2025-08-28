@@ -21,12 +21,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className='flex grow w-full min-h-0 max-w-content self-center'>
-        <Main>
+      <div className='flex w-full h-[var(--client-height)] -mt-[59px] max-w-content self-center'>
+        <Main className='relative z-20 flex w-full justify-center mt-14 mb-12 p-10 pb-0'>
           {children}
         </Main>
       </div>
-      <div className='fixed bottom-0 left-0 w-full'>
+      <div className='fixed z-40 bottom-0 left-0 w-full'>
         <MystycFooter user={user} />
       </div>
     </>

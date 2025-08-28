@@ -45,7 +45,7 @@ export default function ParallaxContainer({ children, className }: ParallaxConta
 
       <div className={`${styles.parallaxLayer} ${styles.layer3}`}>
         <FlowEdge 
-          height={250}
+          height={350}
           amplitude={10}
           wavelength={200}
           edgeColor='#8b2c8b'

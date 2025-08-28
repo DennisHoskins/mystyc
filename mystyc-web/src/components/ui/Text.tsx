@@ -9,7 +9,7 @@ interface TextProps extends HTMLAttributes<HTMLParagraphElement> {
 const Text = forwardRef<HTMLParagraphElement, TextProps>(
   ({ className, variant = 'body', as: Component = 'p', ...props }, ref) => {
     const variants = {
-      body: 'text-base text-gray-400',
+      body: 'text-md text-gray-400',
       muted: 'text-sm text-gray-500',
       small: 'text-xs text-gray-600', 
       xs: 'text-[10px] text-gray-400', 

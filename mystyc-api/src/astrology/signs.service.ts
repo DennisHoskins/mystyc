@@ -23,8 +23,10 @@ export class SignsService {
     logger.debug('Finding sign by name', { name }, 'SignsService');
 
     try {
-      const sign = await this.signModel.findOne({ sign: name });
-
+      const sign = await this.signModel.findOne({ 
+        sign: { $regex: new RegExp(`^${name}$`, 'i') } 
+      });
+      
       if (!sign) {
         logger.debug('Sign not found', { name }, 'SignsService');
         return null;

@@ -5,15 +5,7 @@ import { LayoutDashboard, Clock, BookOpenText, CircleDollarSign, Globe, Sparkle,
 import Sidebar from '@/components/ui/layout/sidebar/Sidebar';
 import SidebarItem from '@/components/ui/layout/sidebar/SidebarItem';
 
-interface AdminSidebarProps {
-  isCollapsed?: boolean;
-  onToggle?: () => void;
-}
-
-export default function AdminSidebar({ 
-  isCollapsed = false,
-  onToggle = () => {},
-}: AdminSidebarProps) {
+export default function MystycSidebar() {
   const menuItems = [
     { icon: <LayoutDashboard />, label: 'Dashboard', href: '/admin' },
     { icon: <Activity />, label: 'Sessions', href: '/admin/sessions' },
@@ -30,17 +22,14 @@ export default function AdminSidebar({
   ];
 
   return (
-    <Sidebar 
-      isCollapsed={isCollapsed} 
-      onToggle={onToggle} 
-    >
+    <Sidebar isCollapsed={false}>
       {menuItems.map((item) => (
         <SidebarItem
           key={item.href}
           icon={item.icon}
           label={item.label}
           href={item.href}
-          isCollapsed={isCollapsed}
+          isCollapsed={false}
         />
       ))}
     </Sidebar>

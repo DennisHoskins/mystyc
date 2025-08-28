@@ -1,9 +1,6 @@
-export default function Main({ children }: { children: React.ReactNode }) {
+export default function Main({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <main
-      className='flex flex-col grow w-full min-h-0 items-center overflow-hidden'
-      style={{ height: 'calc(100vh - 4em)' }}
-    >
+    <main className={`flex flex-col w-full min-h-0 items-center overflow-hidden ${className}`}>
       {children}
     </main>
   );

@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Query } from '@nestjs/common';
+import { Controller, UseGuards, Get, Query, Param, NotFoundException } from '@nestjs/common';
 
 import { UserRole } from 'mystyc-common/constants';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
@@ -18,6 +18,15 @@ import { PlanetaryPositionsService } from './planetary-positions.service';
 import { ElementInteractionsService } from './element-interactions.service';
 import { ModalityInteractionsService } from './modality-interactions.service';
 import { PlanetInteractionsService } from './planet-interactions.service';
+
+function isErrorWithStatus(e: unknown): e is { status: number } {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'status' in e &&
+    typeof (e as any).status === 'number'
+  );
+}  
 
 @Controller('astrology')
 export class AstrologyKnowledgeController {
@@ -50,6 +59,67 @@ export class AstrologyKnowledgeController {
     this.logger.debug('Signs retrieved', { count: data.length, total });
 
     return { data, total };
+  }
+
+  @Get('sign/:sign')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  async getSign(@Param('sign') sign: string) {
+    logger.info('User fetching sign by name', { sign }, 'AstrologyKnowledgeController');
+    
+    try {
+      const signResult = await this.signsService.findByName(sign);
+      
+      if (!signResult) {
+        logger.warn('Sign not found', { sign }, 'AstrologyKnowledgeController');
+        throw new NotFoundException('Sign not found');
+      }
+
+      // Fetch related data in parallel
+      const [elementData, modalityData, energyTypeData] = await Promise.all([
+        this.elementsService.findByName(signResult.element),
+        this.modalitiesService.findByName(signResult.modality),
+        this.energyTypesService.findByName(signResult.energyType)
+      ]);
+
+      // Fetch energy types for element and modality
+      const [elementEnergyTypeData, modalityEnergyTypeData] = await Promise.all([
+        elementData ? this.energyTypesService.findByName(elementData.energyType) : null,
+        modalityData ? this.energyTypesService.findByName(modalityData.energyType) : null
+      ]);
+
+      logger.info('Sign with complete related data retrieved successfully', { 
+        sign, 
+        hasElement: !!elementData,
+        hasModality: !!modalityData,
+        hasEnergyType: !!energyTypeData,
+        hasElementEnergyType: !!elementEnergyTypeData,
+        hasModalityEnergyType: !!modalityEnergyTypeData
+      }, 'AstrologyKnowledgeController');
+      
+      return {
+        ...signResult,
+        elementData: elementData ? {
+          ...elementData,
+          energyTypeData: elementEnergyTypeData
+        } : null,
+        modalityData: modalityData ? {
+          ...modalityData,
+          energyTypeData: modalityEnergyTypeData
+        } : null,
+        energyTypeData
+      };
+    } catch (error) {
+      if (isErrorWithStatus(error) && error.status === 404) {
+        throw error;
+      }
+      
+      logger.error('Failed to get sign with complete related data', {
+        sign,
+        error
+      }, 'AstrologyKnowledgeController');
+      
+      throw error;
+    }
   }
 
   @Get('planets')
