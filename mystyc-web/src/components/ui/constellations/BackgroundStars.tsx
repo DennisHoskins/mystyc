@@ -236,9 +236,8 @@ export function BackgroundStars({
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full h-full ${className}`}
+      className={`relative w-full h-full min-h-0 ${className}`}
     >
-      {/* Static stars canvas */}
       <canvas
         ref={staticCanvasRef}
         style={{
@@ -250,7 +249,6 @@ export function BackgroundStars({
           pointerEvents: 'none'
         }}
       />
-      {/* Sparkling stars canvas */}
       <canvas
         ref={sparkleCanvasRef}
         style={{

@@ -8,14 +8,14 @@ import SidebarToggleButton from './SidebarToggleButton';
 interface SidebarProps {
   children: ReactNode;
   isCollapsed?: boolean;
-  onToggle?: () => void;
+  onToggle?: () => void | null;
   className?: string;
 }
 
 export default function Sidebar({ 
   children, 
   isCollapsed = false, 
-  onToggle = () => {},
+  onToggle,
   className = '' 
 }: SidebarProps) {
   return (
@@ -24,7 +24,7 @@ export default function Sidebar({
         {onToggle &&
           <SidebarToggleButton isCollapsed={isCollapsed} onToggle={onToggle} />
         }
-        <nav className={`${styles.nav} rounded-md p-4 pt-0 flex flex-col`}>
+        <nav className={`${styles.nav} rounded-md flex flex-col ${onToggle ? 'p-4 pt-0' : ''}`}>
           {children}
         </nav>
       </aside>

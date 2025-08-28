@@ -13,7 +13,7 @@ import SignDetailsPanel from './SignDetailsPanel';
 import ElementDetailsPanel from './ElementDetailsPanel';
 import ModalityDetailsPanel from './ModalityDetailsPanel';
 import EnergyTypePanel from './EnergyTypePanel';
-import CompatibilityPanel from './CompatibilityPanel';
+import MystycSidebar from '../../ui/MystycSidebar';
 
 export default function SignPage({ sign } : { sign: ZodiacSignType }) {
   const [signData, setSignData] = useState<SignWithRelatedData | null>(null);
@@ -41,6 +41,7 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
             <Card>
               <ConstellationPanel sign={sign} showLabel={false} />
             </Card>
+            <MystycSidebar />
           </div>
           <Card className='w-full h-full space-x-4 !flex-row'>
             <Panel className='items-center'>
@@ -62,9 +63,10 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
         <Card>
           <ConstellationPanel sign={sign} showLabel={false} />
         </Card>
+        <MystycSidebar />
       </div>
 
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-10">
         <Card>
           <SignDetailsPanel sign={signData} />
 
@@ -77,9 +79,6 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
             <EnergyTypePanel energyType={signData?.elementData?.energyTypeData as EnergyType} />
             <EnergyTypePanel energyType={signData?.modalityData?.energyTypeData as EnergyType} />
           </div>
-        </Card>
-        <Card>
-          <CompatibilityPanel sign={sign} />
         </Card>
       </div>
     </div>

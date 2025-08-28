@@ -47,10 +47,6 @@ export default function MystycMenu() {
     <>
       <div className='pb-4'>
         <MenuItems>
-          <MenuItem onClick={() => router.push('/profile')}>
-            <User className="inline-block mr-2 h-4 w-4" />
-            Profile
-          </MenuItem>
           <MenuItem onClick={() => router.push('/account')}>
             <CreditCard className="inline-block mr-2 h-4 w-4" />
             Account

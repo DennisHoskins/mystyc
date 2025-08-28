@@ -10,10 +10,10 @@ import Panel from '../ui/Panel';
 import MystycError from './ui/MystycError';
 import Link from '../ui/Link';
 import ConstellationPanel from '@/components/mystyc/ui/ConstellationPanel';
-import HoroscopePanel from './ui/HoroscopePanel';
-import CoreIdentityPanel from './ui/CoreIdentityPanel';
-import EmotionalExpressionPanel from './ui/EmotionalExpressionPanel';
-import RelationshipsPanel from './ui/RelationshipsPanel';
+import HoroscopePanel from '@/components/mystyc/pages/home/HoroscopePanel';
+import CoreIdentityPanel from '@/components/mystyc/pages/home/CoreIdentityPanel';
+import EmotionalExpressionPanel from '@/components/mystyc/pages/home/EmotionalExpressionPanel';
+import RelationshipsPanel from '@/components/mystyc/pages/home/RelationshipsPanel';
 
 export default function CorePage({ user } : { user: AppUser }) {
   const [sign, setSign] = useState<SignWithRelatedData | null>(null);

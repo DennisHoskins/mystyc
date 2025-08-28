@@ -8,6 +8,7 @@ import Constellation from '@/components/ui/constellations/Constellation';
 import Panel from '@/components/ui/Panel';
 import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 import Heading from '@/components/ui/Heading';
+import { BackgroundStars } from '@/components/ui/constellations/BackgroundStars';
 
 export default function ConstellationPanel({ sign, showLabel = false } : { sign: ZodiacSignType, showLabel?: boolean }) {
   const [constellation, setConstellation] = useState<any | null>(null)
@@ -20,10 +21,13 @@ export default function ConstellationPanel({ sign, showLabel = false } : { sign:
   }, [sign])
 
   return (
-    <Panel className='flex-0 !w-60'>
+    <Panel className='flex-0 !w-64 !p-0'>
+      <div className='absolute w-60 aspect-square'>
+        <BackgroundStars density={100} />
+      </div>
       <Constellation 
         constellationData={constellation} 
-        dimBrightness={0.75}
+        dimBrightness={0.8}
         sparkleChance={1}
         className={`p-2 ${showLabel ? 'pb-0' : ''}`}
       />
