@@ -4,7 +4,7 @@ import { validateWithError, validateSafely } from '../util/validation';
 // Nested object schemas for Sign
 const SignBasicsSchema = z.object({
   rulingPlanet: z.enum(['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn']),
-  modernRulingPlanet: z.enum(['Uranus', 'Neptune', 'Pluto']).optional(),
+  modernRulingPlanet: z.enum(['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']).optional(),
   polarity: z.enum(['Masculine', 'Feminine']),
   naturalHouse: z.number().int().min(1).max(12),
   unicodeSymbol: z.string().min(1).max(5),
@@ -22,8 +22,8 @@ const SignTimingSchema = z.object({
 
 const SignSymbolSchema = z.object({
   name: z.string().min(1).max(30),
-  description: z.string().min(100).max(1000),
-  mythologicalStory: z.string().min(200).max(2000),
+  description: z.string().min(50).max(1000),
+  mythologicalStory: z.string().min(100).max(2000),
   mythologicalFigures: z.array(z.string().min(1)).min(1)
 }).strict();
 

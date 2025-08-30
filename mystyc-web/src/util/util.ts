@@ -3,7 +3,8 @@ export const toSentenceCase = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-export const formatStringForDisplay = (str: string): string => {
+export const formatStringForDisplay = (str: string | null | undefined): string => {
+  if (!str) return '';
   return str
     .replace(/_/g, ' ')
     .split(' ')

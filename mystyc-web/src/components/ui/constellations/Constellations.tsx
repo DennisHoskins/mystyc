@@ -103,7 +103,7 @@ export default function Constellations({
         ref={containerRef}
         className={`absolute inset-0 flex w-full mt-[25%] md:mt-[-10%] xl:-mt-[25%] aspect-square items-center justify-center ${styles.constellations}`}
       >
-        <NatalChart className="w-full aspect-square opacity-25" />
+        <NatalChart className="w-full aspect-square opacity-10" />
 
         <div className="absolute inset-0 flex items-center justify-center">
           {/* Only render constellations once we have proper dimensions */}

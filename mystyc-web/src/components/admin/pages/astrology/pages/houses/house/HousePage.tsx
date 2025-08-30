@@ -8,7 +8,6 @@ import { getHouse } from '@/server/actions/admin/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useBusy } from '@/components/ui/context/AppContext';
-import { formatStringForDisplay } from '@/util/util';
 import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import HouseDetailsPanel from './HouseDetailsPanel';
 import EnergyTypeDetailsCard from '../../energy-types/energy-type/EnergyTypeDetailsCard';

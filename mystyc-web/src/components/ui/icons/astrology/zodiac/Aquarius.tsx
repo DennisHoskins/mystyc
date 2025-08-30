@@ -1,7 +1,3 @@
-'use client'
-
-import React from 'react';
-
 export default function Aquarius({ className = 'w-10 h-10' }: { className?: string }) {
   return (
     <svg

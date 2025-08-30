@@ -10,33 +10,33 @@ import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 import Heading from '@/components/ui/Heading';
 import { BackgroundStars } from '@/components/ui/constellations/BackgroundStars';
 
-export default function ConstellationPanel({ sign, showLabel = false } : { sign: ZodiacSignType, showLabel?: boolean }) {
+export default function ConstellationPanel({ sign, className, showLabel = false } : { sign: ZodiacSignType | null, className?: string, showLabel?: boolean }) {
   const [constellation, setConstellation] = useState<any | null>(null)
 
- console.log('All props:', { sign, showLabel }); // Add this line
- 
   useEffect(() => {
+    if (!sign) return;
     const constellation = data[sign.toLowerCase() as keyof typeof data]
     setConstellation(constellation);
   }, [sign])
 
   return (
-    <Panel className='flex-0 !w-64 !p-0'>
-      <div className='absolute w-60 aspect-square'>
+    <Panel className={`p-4 flex-0 relative ${className} items-center justify-center`}>
+      <div className='absolute w-full h-full -mt-12 -ml-12 flex'>
         <BackgroundStars density={100} />
       </div>
-      <Constellation 
-        constellationData={constellation} 
-        dimBrightness={0.8}
-        sparkleChance={1}
-        className={`p-2 ${showLabel ? 'pb-0' : ''}`}
-      />
       {showLabel &&
-        <div className='flex items-center justify-center space-x-1'>
+        <div className='flex items-center justify-center space-x-1 p-4'>
           {getZodiacIcon(sign, 'w-10 h-10 text-white -ml-2')}
           <Heading level={1}>{sign}</Heading>
         </div>
       }
+      <Constellation 
+        constellationData={constellation} 
+        dimBrightness={0.8}
+        sparkleChance={1}
+        className={`${showLabel ? 'pt-0' : ''}`}
+        showLabels={true}
+      />
     </Panel>
   );
 }

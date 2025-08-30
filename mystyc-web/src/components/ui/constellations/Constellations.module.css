@@ -1,5 +1,5 @@
 .constellations {
-  animation: rotate 600s linear infinite;
+  animation: rotate 2400s linear infinite;
 }
 
 @keyframes rotate {

@@ -26,6 +26,7 @@ export default function CorePage({ user } : { user: AppUser }) {
     if (!user || !user.userProfile.astrology) {
       return;
     }
+
     try {
       const signData = await getSign({ deviceInfo: getDeviceInfo(), sign: user.userProfile.astrology.sunSign });
       setSign(signData);

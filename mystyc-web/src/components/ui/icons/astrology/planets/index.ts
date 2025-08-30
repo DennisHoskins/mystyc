@@ -31,8 +31,8 @@ const planetIcons: Record<string, (className?: string) => JSX.Element> = {
 
 export default planetIcons;
 
-export function getPlanetIcon(element?: string | null, className?: string): JSX.Element | undefined {
-  if (!element) return undefined;
-  const iconFn = planetIcons[element.toLowerCase()];
+export function getPlanetIcon(planet?: string | null, className?: string): JSX.Element | undefined {
+  if (!planet) return undefined;
+  const iconFn = planetIcons[planet.toLowerCase()];
   return iconFn?.(className);
 }

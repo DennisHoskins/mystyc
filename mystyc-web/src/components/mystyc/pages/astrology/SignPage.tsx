@@ -2,18 +2,27 @@
 
 import { useState, useEffect, useCallback }  from 'react';
 
-import { SignComplete, ZodiacSignType, Element, Modality, EnergyType } from 'mystyc-common';
+import { SignComplete, ZodiacSignType } from 'mystyc-common';
 import { getSign } from '@/server/actions/astrology';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { getZodiacIcon } from "@/components/ui/icons/astrology/zodiac";
 import Card from '@/components/ui/Card';
 import Panel from '@/components/ui/Panel';
 import ConstellationPanel from '@/components/mystyc/ui/ConstellationPanel';
+import MystycTitle from '../../ui/MystycTitle';
 import MystycError from '../../ui/MystycError';
 import SignDetailsPanel from './SignDetailsPanel';
 import ElementDetailsPanel from './ElementDetailsPanel';
+import HouseDetailsPanel from './HouseDetailsPanel';
+import SignTarotPanel from './SignTarotPanel';
+import SignLuckPanel from "./SignLuckPanel";
 import ModalityDetailsPanel from './ModalityDetailsPanel';
-import EnergyTypePanel from './EnergyTypePanel';
-import MystycSidebar from '../../ui/MystycSidebar';
+import PolarityDetailsPanel from './PolarityDetailsPanel';
+import EnergyTypesPanel from './EnergyTypesPanel';
+import SignGemsPanel from './SignGemsPanel';
+import SignAestheticPanel from './SignAestheticPanel';
+import SignLifestylePanel from './SignLifestylePanel';
+import SignPhysicalityPanel from './SignPhysicalityPanel';
 
 export default function SignPage({ sign } : { sign: ZodiacSignType }) {
   const [signData, setSignData] = useState<SignComplete | null>(null);
@@ -35,15 +44,16 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
 
   if (error) {
     return (
-      <div className='w-full h-full space-y-10 flex flex-col'>
-        <div className='flex space-x-10'>
-          <div>
-            <Card>
-              <ConstellationPanel sign={sign} showLabel={false} />
-            </Card>
-            <MystycSidebar />
-          </div>
-          <Card className='w-full h-full space-x-4 !flex-row'>
+    <div className='w-full h-full flex flex-col space-y-4'>
+      <MystycTitle
+        icon={getZodiacIcon(signData?.sign, 'w-14 h-14 text-white')}
+        heading={signData?.sign}
+        title={`${signData?.timing.dateRange.start} - ${signData?.timing.dateRange.end}, ${signData?.timing.season}`}
+        subtitle={signData?.timing.seasonDescription}
+      />
+      <div className='grid grid-cols-3 gap-4 relative'>
+        <ConstellationPanel sign={sign} />
+        <Card className='col-span-2'>
             <Panel className='items-center'>
               <MystycError 
                 title={`Sorry, ${sign} :(`}
@@ -58,28 +68,52 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
   }
 
   return (
-    <div className='w-full h-full flex space-x-10'>
-      <div>
-        <Card>
-          <ConstellationPanel sign={sign} showLabel={false} />
+    <div className='w-full h-full flex flex-col space-y-4'>
+      <MystycTitle
+        icon={getZodiacIcon(signData?.sign, 'w-14 h-14 text-white')}
+        heading={signData?.sign || ""}
+        title={`${signData?.timing.dateRange.start || ""} - ${signData?.timing.dateRange.end || ""}, ${signData?.timing.season || ""}`}
+        subtitle={signData?.timing.seasonDescription || ""}
+      />
+      <div className='grid grid-cols-3 gap-4 relative'>
+        <ConstellationPanel sign={sign} />
+        <Card className='col-span-2'>
+          <SignDetailsPanel sign={signData} />
         </Card>
-        <MystycSidebar />
+      </div>
+      <div className='grid grid-cols-3 gap-4'>
+        <HouseDetailsPanel house={signData?.houseData} className='col-span-2' />
+        <Card>
+          <ElementDetailsPanel element={signData?.elementData} />
+        </Card>
       </div>
 
-      <div className="flex flex-col space-y-10">
-        <Card>
-          <SignDetailsPanel sign={signData} />
-
-          <div className='grid grid-cols-2 gap-4 !mt-4'>
-            <ElementDetailsPanel element={signData?.elementData as Element} />
-            <ModalityDetailsPanel modality={signData?.modalityData as Modality} />
-          </div>
-          <div className='grid grid-cols-3 gap-4'>
-            <EnergyTypePanel energyType={signData?.energyTypeData as EnergyType} />
-            <EnergyTypePanel energyType={signData?.elementData?.energyTypeData as EnergyType} />
-            <EnergyTypePanel energyType={signData?.modalityData?.energyTypeData as EnergyType} />
-          </div>
+      <div className='grid grid-cols-5 gap-4'>
+        <Card className='!p-10 col-span-2'>
+          <SignTarotPanel sign={signData} />
         </Card>
+        <Card className='!p-10 col-span-3'>
+          <SignGemsPanel sign={signData} />
+        </Card>
+      </div>
+
+      <div className='grid grid-cols-2 gap-4'>
+        <div className='flex flex-col space-y-4'>
+          <Card className='space-y-10 !p-10'>
+            <SignLuckPanel sign={signData} />
+          </Card>
+
+          <Card className='space-y-10 !p-10'>
+            <SignAestheticPanel sign={signData} />
+            <SignLifestylePanel sign={signData} />
+            <SignPhysicalityPanel sign={signData} />
+          </Card>
+        </div>
+        <div className='flex flex-col space-y-4'>
+          <ModalityDetailsPanel modality={signData?.modalityData} />
+          <PolarityDetailsPanel polarity={signData?.polarityData} />
+          <EnergyTypesPanel sign={signData} />
+        </div>
       </div>
     </div>
   );
