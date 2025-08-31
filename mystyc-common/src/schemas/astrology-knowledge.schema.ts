@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { validateWithError, validateSafely } from '../util/validation';
+import { SignComplete } from '../interfaces/astrology.interface';
 
 // Enums
 export const PlanetType = z.enum(['Sun', 'Moon', 'Rising', 'Venus', 'Mars']);
@@ -75,6 +76,28 @@ export const PlanetInteractionSchema = PlanetInteractionInputSchema.extend({
   updatedAt: z.date().optional()
 });
 
+// 5. Sign Interactions Schema
+export const SignInteractionInputSchema = z.object({
+  sign1: ZodiacSign,
+  sign2: ZodiacSign,
+  distance: z.number().int().min(0).max(6),
+  dynamic: DynamicType,
+  description: z.string().min(50).max(500).trim(),
+  keywords: z.array(z.string().min(1).trim()).min(2).max(8),
+  energyType: z.string().min(1).max(50).trim(),
+  action: z.string().min(20).max(300).trim(),
+  totalScore: z.number().min(-1).max(1),
+  elementScore: z.number().min(-1).max(1),
+  modalityScore: z.number().min(-1).max(1),
+  dynamicScore: z.number().min(-1).max(1)
+}).strict();
+
+export const SignInteractionSchema = SignInteractionInputSchema.extend({
+  _id: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+});
+
 // Type exports
 export type ZodiacSignType = z.infer<typeof ZodiacSign>;
 export type ElementType = z.infer<typeof ElementType>;
@@ -90,6 +113,8 @@ export type ModalityInteraction = z.infer<typeof ModalityInteractionSchema>;
 export type ModalityInteractionInput = z.infer<typeof ModalityInteractionInputSchema>;
 export type PlanetInteraction = z.infer<typeof PlanetInteractionSchema>;
 export type PlanetInteractionInput = z.infer<typeof PlanetInteractionInputSchema>;
+export type SignInteraction = z.infer<typeof SignInteractionSchema>;
+export type SignInteractionInput = z.infer<typeof SignInteractionInputSchema>;
 
 // Validation functions
 export const validatePlanetaryPosition = (data: unknown) => 
@@ -111,3 +136,8 @@ export const validatePlanetInteraction = (data: unknown) =>
   validateWithError(PlanetInteractionSchema, data, { schema: 'PlanetInteraction' });
 export const validatePlanetInteractionSafe = (data: unknown) => 
   validateSafely(PlanetInteractionSchema, data);
+
+export const validateSignInteraction = (data: unknown) => 
+  validateWithError(SignInteractionSchema, data, { schema: 'SignInteraction' });
+export const validateSignInteractionSafe = (data: unknown) => 
+  validateSafely(SignInteractionSchema, data);

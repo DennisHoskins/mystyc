@@ -18,7 +18,7 @@ import CoreIdentityPanel from '@/components/mystyc/pages/home/CoreIdentityPanel'
 import EmotionalExpressionPanel from '@/components/mystyc/pages/home/EmotionalExpressionPanel';
 import RelationshipsPanel from '@/components/mystyc/pages/home/RelationshipsPanel';
 
-export default function CorePage({ user } : { user: AppUser }) {
+export default function MystycHome({ user } : { user: AppUser }) {
   const [sign, setSign] = useState<SignComplete | null>(null);
   const [error, setError] = useState<string | null>(null);
 

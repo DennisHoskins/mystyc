@@ -43,11 +43,11 @@ export default function SignDetailsPanel({ sign } : { sign: SignComplete | null 
       <Text variant='small' className="!text-gray-500 !mt-2">
         {sign.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}
       </Text>
-      <Text variant='body' className="!mt-2">{sign.description}</Text>
-      <Text variant='body'>
+      <Text variant='muted' className="!mt-2 !text-gray-400">{sign.description}</Text>
+      <Text variant='muted' className="!text-gray-400">
         {linkFigures(sign.symbol.mythologicalStory, sign.symbol.mythologicalFigures)}
       </Text>
-      <Text variant='body'>
+      <Text variant='muted' className="!text-gray-400">
         {sign.symbol.description}
       </Text>
     </div>

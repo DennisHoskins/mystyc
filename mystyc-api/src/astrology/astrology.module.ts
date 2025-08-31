@@ -16,6 +16,7 @@ import { ModalitiesService } from './services/modalities.service';
 import { DynamicsService } from './services/dynamics.service';
 import { EnergyTypesService } from './services/energy-types.service';
 import { PlanetaryPositionsService } from './services/planetary-positions.service';
+import { SignInteractionsService } from './services/sign-interactions.service';
 import { ElementInteractionsService } from './services/element-interactions.service';
 import { ModalityInteractionsService } from './services/modality-interactions.service';
 import { PlanetInteractionsService } from './services/planet-interactions.service';
@@ -30,6 +31,7 @@ import { Element, ElementSchema } from './schemas/element.schema';
 import { Modality, ModalitySchema } from './schemas/modality.schema';
 import { Dynamic, DynamicSchema } from './schemas/dynamic.schema';
 import { EnergyType, EnergyTypeSchema } from './schemas/energy-type.schema';
+import { SignInteraction, SignInteractionSchema } from './schemas/sign-interaction.schema';
 import { PlanetaryPosition, PlanetaryPositionSchema } from './schemas/planetary-position.schema';
 import { ElementInteraction, ElementInteractionSchema } from './schemas/element-interaction.schema';
 import { ModalityInteraction, ModalityInteractionSchema } from './schemas/modality-interaction.schema';
@@ -49,6 +51,7 @@ import { House, HouseSchema } from './schemas/house.schema';
       { name: 'Modality', schema: ModalitySchema },
       { name: 'Dynamic', schema: DynamicSchema },
       { name: 'EnergyType', schema: EnergyTypeSchema },      
+      { name: 'SignInteraction', schema: SignInteractionSchema },
       { name: 'PlanetaryPosition', schema: PlanetaryPositionSchema },
       { name: 'ElementInteraction', schema: ElementInteractionSchema },
       { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
@@ -69,6 +72,7 @@ import { House, HouseSchema } from './schemas/house.schema';
     ModalitiesService,
     DynamicsService,
     EnergyTypesService,    
+    SignInteractionsService,
     PlanetaryPositionsService,
     ElementInteractionsService,
     ModalityInteractionsService,
@@ -85,6 +89,7 @@ import { House, HouseSchema } from './schemas/house.schema';
     ModalitiesService,
     DynamicsService,
     EnergyTypesService,
+    SignInteractionsService,
     PlanetaryPositionsService,
     ElementInteractionsService,
     ModalityInteractionsService,

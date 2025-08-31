@@ -4,12 +4,10 @@ import {
   Modality, 
   EnergyType, 
   Planet, 
-  Dynamic,
   Polarity,
   House
 } from '../schemas';
 
-// Complete interfaces for reference tables (base + related data)
 export interface ElementComplete extends Element {
   energyTypeData: EnergyType | null;
 }

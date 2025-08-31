@@ -4,7 +4,7 @@
 
 .scroller {
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: scroll;
   scrollbar-width: thin;
   scrollbar-color: rgb(107 114 128) transparent;
   height: auto;

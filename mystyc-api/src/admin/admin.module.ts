@@ -25,6 +25,7 @@ import {
   AdminPolaritiesController,
   AdminDynamicsController,
   AdminEnergyTypesController,  
+  AdminSignInteractionsController,
   AdminPlanetaryPositionsController,
   AdminElementInteractionsController,
   AdminModalityInteractionsController,
@@ -72,6 +73,7 @@ import { PolaritySchema } from '@/astrology/schemas/polarity.schema';
 import { DynamicSchema } from '@/astrology/schemas/dynamic.schema';
 import { EnergyTypeSchema } from '@/astrology/schemas/energy-type.schema';
 import { PaymentHistorySchema } from '@/payments/schemas/payment-history.schema';
+import { SignInteractionSchema } from '@/astrology/schemas/sign-interaction.schema';
 import { ElementInteractionSchema } from '@/astrology/schemas/element-interaction.schema';
 import { ModalityInteractionSchema } from '@/astrology/schemas/modality-interaction.schema'; 
 import { PlanetInteractionSchema } from '@/astrology/schemas/planet-interaction.schema';
@@ -98,6 +100,7 @@ import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.
       { name: 'Polarity', schema: PolaritySchema },
       { name: 'Dynamic', schema: DynamicSchema },
       { name: 'EnergyType', schema: EnergyTypeSchema },      
+      { name: 'SignInteraction', schema: SignInteractionSchema },
       { name: 'ElementInteraction', schema: ElementInteractionSchema },
       { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
       { name: 'PlanetInteraction', schema: PlanetInteractionSchema },
@@ -128,6 +131,7 @@ import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.
     AdminPolaritiesController,
     AdminDynamicsController,
     AdminEnergyTypesController,    
+    AdminSignInteractionsController,
     AdminPlanetaryPositionsController,
     AdminElementInteractionsController,
     AdminModalityInteractionsController,

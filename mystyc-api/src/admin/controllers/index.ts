@@ -21,6 +21,7 @@ export { AdminEnergyTypesController } from './astrology/admin-energy-types.contr
 export { AdminModalitiesController } from './astrology/admin-modalities.controller';
 export { AdminPolaritiesController } from './astrology/admin-polarities.controller';
 export { AdminDynamicsController } from './astrology/admin-dynamics.controller';
+export { AdminSignInteractionsController } from './astrology/admin-sign-interactions.controller';
 export { AdminPlanetaryPositionsController } from './astrology/admin-planetary-positions.controller';
 export { AdminElementInteractionsController } from './astrology/admin-element-interactions.controller';
 export { AdminModalityInteractionsController } from './astrology/admin-modality-interactions.controller';

@@ -2,7 +2,7 @@ import { Controller, UseGuards, Get, Query, Param, NotFoundException } from '@ne
 
 import { UserRole } from 'mystyc-common/constants';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
-import { SignComplete } from 'mystyc-common/index';
+import { SignComplete, SignInteraction } from 'mystyc-common/index';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
@@ -17,6 +17,7 @@ import { DynamicsService } from './services/dynamics.service';
 import { PolaritiesService } from './services/polarities.service';
 import { HousesService } from './services/houses.service';
 import { EnergyTypesService } from './services/energy-types.service';
+import { SignInteractionsService } from './services/sign-interactions.service';
 import { PlanetaryPositionsService } from './services/planetary-positions.service';
 import { ElementInteractionsService } from './services/element-interactions.service';
 import { ModalityInteractionsService } from './services/modality-interactions.service';
@@ -44,6 +45,7 @@ export class AstrologyKnowledgeController {
     private readonly polaritiesService: PolaritiesService,
     private readonly housesService: HousesService,
     private readonly energyTypesService: EnergyTypesService,
+    private readonly signInteractionsService: SignInteractionsService,
     private readonly planetaryPositionService: PlanetaryPositionsService,
     private readonly elementInteractionService: ElementInteractionsService,
     private readonly modalityInteractionService: ModalityInteractionsService,
@@ -228,6 +230,46 @@ export class AstrologyKnowledgeController {
     this.logger.debug('Energy types retrieved', { count: data.length, total });
 
     return { data, total };
+  }
+
+  @Get('sign-interactions')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getSignInteractions(@Query() query: BaseAdminQuery) {
+    this.logger.debug('Getting sign interactions', { query });
+
+    const [data, total] = await Promise.all([
+      this.signInteractionsService.findAll(query),
+      this.signInteractionsService.getTotal()
+    ]);
+
+    this.logger.debug('Sign interactions retrieved', { count: data.length, total });
+
+    return { data, total };
+  }
+
+  @Get('sign-interactions/:sign')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  async getSignSignInteractions(@Param('sign') sign: string): Promise<SignInteraction[]> {
+    this.logger.debug('Getting sign interactions for sign', { sign });
+    try {
+      const data = await this.signInteractionsService.findBySign(sign);
+
+      this.logger.debug('Sign interactions retrieved', { count: data.length });
+
+      return data;
+    } catch (error) {
+      if (isErrorWithStatus(error) && error.status === 404) {
+        throw error;
+      }
+      
+      logger.error('Failed to get sign interactions', {
+        sign,
+        error
+      }, 'AstrologyKnowledgeController');
+      
+      throw error;
+    }
   }
 
   @Get('planetary-positions')

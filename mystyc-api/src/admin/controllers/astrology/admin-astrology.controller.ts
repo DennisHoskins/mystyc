@@ -15,6 +15,7 @@ import { ModalitiesService } from '@/astrology/services/modalities.service';
 import { PolaritiesService } from '@/astrology/services/polarities.service';
 import { DynamicsService } from '@/astrology/services/dynamics.service';
 import { EnergyTypesService } from '@/astrology/services/energy-types.service';
+import { SignInteractionsService } from '@/astrology/services/sign-interactions.service';
 import { ElementInteractionsService } from '@/astrology/services/element-interactions.service';
 import { ModalityInteractionsService } from '@/astrology/services/modality-interactions.service';
 import { PlanetInteractionsService } from '@/astrology/services/planet-interactions.service';
@@ -33,6 +34,7 @@ export class AdminAstrologyController {
     private readonly polaritiesService: PolaritiesService,
     private readonly dynamicsService: DynamicsService,
     private readonly energyTypesService: EnergyTypesService,    
+    private readonly signInteractionsService: SignInteractionsService,
     private readonly elementInteractionsService: ElementInteractionsService,
     private readonly modalityInteractionsService: ModalityInteractionsService,
     private readonly planetInteractionsService: PlanetInteractionsService,
@@ -59,6 +61,7 @@ export class AdminAstrologyController {
       polarities,
       dynamics,
       energyTypes,
+      signInteractions,
       planetaryPositions,
       elementInteractions,
       modalityInteractions,
@@ -72,6 +75,7 @@ export class AdminAstrologyController {
       this.polaritiesService.getTotal(),
       this.dynamicsService.getTotal(),
       this.energyTypesService.getTotal(),
+      this.signInteractionsService.getTotal(),
       this.planetaryPositionsService.getTotal(),
       this.elementInteractionsService.getTotal(),
       this.modalityInteractionsService.getTotal(),
@@ -87,6 +91,7 @@ export class AdminAstrologyController {
       polarities,
       dynamics,
       energyTypes,
+      signInteractions,
       planetaryPositions,
       elementInteractions,
       modalityInteractions,

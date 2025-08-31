@@ -7,6 +7,7 @@ export interface AstrologySummary {
   polarities: number;
   dynamics: number;
   energyTypes: number;
+  signInteractions: number;
   planetaryPositions: number;
   elementInteractions: number;
   modalityInteractions: number;
