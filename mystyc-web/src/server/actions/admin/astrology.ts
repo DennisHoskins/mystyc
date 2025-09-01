@@ -14,6 +14,7 @@ import {
   ElementInteraction,
   ModalityInteraction,
   PlanetInteraction,
+  PolarityInteraction,
   ZodiacSignType,
   PlanetType,
   ElementType,
@@ -388,5 +389,27 @@ export async function getPlanetInteractionsByDynamic(params: {
   return withAdminAuth(async (session, { dynamic }) => {
     logger.log('[getPlanetInteractionsByDynamic] Fetching planet interactions by dynamic:' + dynamic);
     return nestGet<PlanetInteraction[]>(session, `admin/planet-interactions/dynamics/${dynamic}`);
+  }, params);
+}
+
+// Polarity Interactions
+export async function getPolarityInteractions(params: {
+  deviceInfo: DeviceInfo;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, fullParams) => {
+    logger.log('[getPolarityInteractions] Fetching polarity interactions');
+    const { deviceInfo, ...query } = fullParams;
+    return nestGet<AdminListResponse<PolarityInteraction>>(session, 'admin/polarity-interactions', query);
+  }, params);
+}
+
+export async function getPolarityInteraction(params: {
+  deviceInfo: DeviceInfo;
+  polarity1: PolarityType;
+  polarity2: PolarityType;
+} & Partial<BaseAdminQuery>) {
+  return withAdminAuth(async (session, { polarity1, polarity2 }) => {
+    logger.log('[getPolarityInteraction] Fetching polarity interactions by polarities:' + polarity1 + "-" + polarity2);
+    return nestGet<PolarityInteraction>(session, `admin/polarity-interactions/polarity-interaction/${polarity1}/${polarity2}`);
   }, params);
 }

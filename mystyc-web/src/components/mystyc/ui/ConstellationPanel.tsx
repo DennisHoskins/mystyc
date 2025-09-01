@@ -34,7 +34,7 @@ export default function ConstellationPanel({ sign, className, showLabel = false 
         constellationData={constellation} 
         dimBrightness={0.8}
         sparkleChance={1}
-        className={`${showLabel ? 'pt-0' : ''}`}
+        className={`${showLabel ? '' : 'p-4'}`}
         showLabels={true}
       />
     </Panel>

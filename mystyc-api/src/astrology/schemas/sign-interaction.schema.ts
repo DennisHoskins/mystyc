@@ -38,6 +38,9 @@ export class SignInteraction {
   modalityScore!: number;
 
   @Prop({ required: true, min: -1, max: 1 })
+  polarityScore!: number;
+
+  @Prop({ required: true, min: -1, max: 1 })
   dynamicScore!: number;
 
   createdAt!: Date;

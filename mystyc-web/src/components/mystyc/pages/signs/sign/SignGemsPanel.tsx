@@ -63,8 +63,8 @@ export default function SignGemsPanel({ sign } : { sign: Sign | null }) {
     );
     const hex = entry?.[1] || "#ccc";
     return (
-      <div key={gem} className="flex items-center space-x-2">
-        <div className="w-4 h-4 rotate-45 border border-gray-400" style={{ backgroundColor: hex }}></div>
+      <div key={gem} className="flex items-center space-x-3">
+        <div className="w-3 h-3 rotate-45 border border-gray-400" style={{ backgroundColor: hex }}></div>
         <Text variant="muted">{gem}</Text>
       </div>
     );
@@ -81,16 +81,16 @@ export default function SignGemsPanel({ sign } : { sign: Sign | null }) {
         {sign?.gems.meanings.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}
       </Text>
 
-      <Panel className="flex flex-col space-y-2 !p-4">
+      <Panel className="flex flex-col space-y-2 !p-4 !mt-2">
         <Text variant='xs' className="!text-gray-500">Birthstones</Text>
-        <div className="flex space-x-4">
+        <div className="flex space-x-6">
           {sign?.gems.birthstones.map(renderGem)}
         </div>
       </Panel>
 
       <Panel className="col-span-2 flex flex-col space-y-2 !p-4">
         <Text variant='xs' className="!text-gray-500">Crystals</Text>
-        <div className="flex space-x-4">
+        <div className="flex space-x-6">
           {sign?.gems.crystals.map(renderGem)}
         </div>
       </Panel>

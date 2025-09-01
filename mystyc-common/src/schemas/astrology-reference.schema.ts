@@ -134,7 +134,7 @@ export const ModalitySchema = ModalityInputSchema.extend({
   updatedAt: z.date().optional()
 });
 
-// Dynamic Schema (keep existing)
+// Dynamic Schema
 export const DynamicInputSchema = z.object({
   dynamic: z.enum(['harmony', 'tension', 'complementary', 'amplification']),
   description: z.string().min(50).max(500).trim(),

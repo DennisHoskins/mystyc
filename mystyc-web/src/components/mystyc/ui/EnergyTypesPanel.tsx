@@ -1,6 +1,6 @@
 import { Zap } from "lucide-react";
 
-import { SignComplete } from "mystyc-common";
+import { EnergyType } from "mystyc-common";
 import { formatStringForDisplay } from "@/util/util";
 import { getCategoryIcon } from "@/components/ui/icons/astrology/categories";
 import Text from "@/components/ui/Text";
@@ -9,7 +9,7 @@ import Heading from "@/components/ui/Heading";
 
 interface AggregatedEnergyType {
   category: string;
-  descriptions: string[];
+  descriptions: Set<string>;
   keywords: Set<string>;
   intensity: number;
 }
@@ -18,22 +18,16 @@ interface AggregatedEnergyData {
   [category: string]: AggregatedEnergyType;
 }
 
-export default function EnergyTypesPanel({ sign } : { sign: SignComplete | null }) {
-  if (!sign) {
+export default function EnergyTypesPanel({ energyTypes } : { energyTypes: EnergyType[] | null }) {
+  if (!energyTypes) {
     return null;
   }
 
   // Extract all energyTypeData objects
-  const energyTypes = [
-    sign.energyTypeData,
-    sign.houseData?.energyTypeData,
-    sign.elementData?.energyTypeData,
-    sign.modalityData?.energyTypeData,
-    sign.polarityData?.energyTypeData,
-  ].filter(Boolean);
+  const energyTypesUnique = energyTypes.filter(Boolean);
 
   // Aggregate by category
-  const aggregatedData: AggregatedEnergyData = energyTypes.reduce((acc: AggregatedEnergyData, energyType) => {
+  const aggregatedData: AggregatedEnergyData = energyTypesUnique.reduce((acc: AggregatedEnergyData, energyType) => {
     if (!energyType) {
       return acc;
     }
@@ -43,13 +37,13 @@ export default function EnergyTypesPanel({ sign } : { sign: SignComplete | null 
     if (!acc[category]) {
       acc[category] = {
         category,
-        descriptions: [],
+        descriptions: new Set<string>(),
         keywords: new Set<string>(),
         intensity: energyType.intensity
       };
     }
     
-    acc[category].descriptions.push(energyType.description);
+    (acc[category].descriptions as Set<string>).add(energyType.description);
     energyType.keywords.forEach((keyword: string) => acc[category].keywords.add(keyword));
     
     return acc;
@@ -84,7 +78,7 @@ export default function EnergyTypesPanel({ sign } : { sign: SignComplete | null 
             </Text>
 
             <Text variant='muted' className="mt-1">
-              {categoryData.descriptions.join(". ")}
+              {[...(categoryData.descriptions as Set<string>)].join(". ")}
             </Text>
           </div>
         ))}

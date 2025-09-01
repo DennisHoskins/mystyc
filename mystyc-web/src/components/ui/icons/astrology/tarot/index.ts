@@ -33,14 +33,7 @@ const tarotIcons: Record<string, (className?: string) => JSX.Element> = {
 export default tarotIcons;
 
 export function getTarotIcon(tarot?: string | null, className?: string): JSX.Element | undefined {
-
   if (!tarot) return undefined;
   const iconFn = tarotIcons[tarot.toLowerCase()];
-
-console.log(tarot.toLowerCase());
-console.log(tarotIcons[tarot.toLowerCase()]);
-
-
-
   return iconFn?.(className);
 }

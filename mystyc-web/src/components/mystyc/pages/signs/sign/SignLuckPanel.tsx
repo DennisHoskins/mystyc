@@ -51,20 +51,19 @@ export default function SignLuckPanel({ sign } : { sign: Sign | null }) {
         <Clover className='w-6 h-6 text-white' />
         <Heading level={3}>Luck</Heading>
       </div>
-      <div className="grid grid-cols-2 gap-4 w-full">
-        <Panel className="!p-4 !flex-row items-center space-x-2">
+      <div className="grid grid-cols-5 gap-2 w-full">
+        <Panel className="!p-4 !flex-row items-center space-x-2 col-span-2">
           <CalendarDays className="w-10 h-10 mr-2 text-gray-500 stroke-[1.5px]" />
           <div className="flex flex-col">
             <Text variant='xs' className="!text-gray-500">Lucky Day</Text>
             <Text className="flex items-center">{sign?.lucky.day}</Text>
           </div>
         </Panel>
-        <Panel className="!p-4 !flex-row items-center space-x-2">
+        <Panel className="!p-4 !flex-row items-center space-x-2 col-span-3">
           <Clock className="w-10 h-10 mr-2 text-gray-500 stroke-[1.5px]" />
           <div className="flex flex-col">
             <Text variant='xs' className="!text-gray-500">Lucky Times</Text>
-            <Text variant="muted" className="!text-gray-400 text-[12px]">{sign?.lucky.times.split(", ")[0]}</Text>
-            <Text variant="muted" className="!-mt-[5px] !text-gray-400 text-[12px]">{sign?.lucky.times.split(", ")[1]}</Text>
+            <Text className="flex items-center">{sign?.lucky.times}</Text>
           </div>
         </Panel>
       </div>
@@ -80,7 +79,7 @@ export default function SignLuckPanel({ sign } : { sign: Sign | null }) {
       </Panel>
       <Panel className="flex flex-col space-y-2 !p-4">
         <Text variant='xs' className="!text-gray-500">Lucky Colors</Text>
-        <div className='flex space-x-4'>
+        <div className='flex space-x-2'>
           {sign?.lucky.colors.map((color) => {
             const normalized = color.trim().toLowerCase();
             const entry = Object.entries(colorHex).find(
@@ -92,7 +91,7 @@ export default function SignLuckPanel({ sign } : { sign: Sign | null }) {
               : { backgroundColor: hex };
 
             return (
-              <div key={color} className="flex flex-col items-center space-y-2">
+              <div key={color} className="flex flex-col items-center min-w-20 space-y-2">
                 <div className="w-10 aspect-square rounded-md border border-gray-400" style={style}></div>
                 <Text variant="muted">{color}</Text>
               </div>

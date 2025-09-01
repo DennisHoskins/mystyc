@@ -38,14 +38,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const pathSegment = pathname.slice(1).toLowerCase();
-
-  // Zodiac signs - rewrite /pisces to /astrology/pisces
-  const zodiacSigns = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
-  if (zodiacSigns.includes(pathSegment)) {
-    return NextResponse.rewrite(new URL(`/astrology/${pathSegment}`, request.url));
-  }  
-  
   // Rewrite / to /home when authenticated
   if (sessionCookie?.value && pathname === '/') {
     logger.info('rewrite home');

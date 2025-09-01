@@ -90,7 +90,7 @@ export default function MystycHome({ user } : { user: AppUser }) {
     <div className='w-full h-full space-y-10 flex flex-col'>
       <div className='flex space-x-10'>
         <Card>
-          <Link href={`/${user.userProfile.astrology.sunSign}`}>
+          <Link href={`/signs/${user.userProfile.astrology.sunSign}`}>
             <ConstellationPanel 
               sign={user.userProfile.astrology.sunSign} 
               showLabel={true} 

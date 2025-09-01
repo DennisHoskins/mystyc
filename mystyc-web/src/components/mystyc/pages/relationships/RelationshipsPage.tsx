@@ -7,13 +7,15 @@ import { SignInteraction } from 'mystyc-common';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
 import { logger } from '@/util/logger';
 import { useUser } from '@/components/ui/context/AppContext';
-import MystycTitle from '../../ui/MystycTitle';
-import RelationshipCard from './RelationshipCard';
 import { getSignInteractions } from '@/server/actions/astrology';
+import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
+import MystycTitle from '../../ui/MystycTitle';
 import Card from '@/components/ui/Card';
 import Panel from '@/components/ui/Panel';
 import MystycError from '../../ui/MystycError';
-import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
+import RelationshipCardWide from './RelationshipCardWide';
+import RelationshipCardTall from './RelationshipCardTall';
+import RelationshipPanelSquare from './RelationshipPanelSquare';
 
 export default function RelationshipsPage() {
   const user = useUser();
@@ -42,8 +44,6 @@ export default function RelationshipsPage() {
     return null;
   }
 
-  console.log(interactions);
-
   if (error) {
     return (
       <div className='w-full flex flex-col space-y-4'>
@@ -66,6 +66,10 @@ export default function RelationshipsPage() {
     );
   }
 
+  if (!interactions) {
+    return null;
+  }
+
   return (
     <div className='w-full flex flex-col space-y-4'>
       <MystycTitle
@@ -76,9 +80,39 @@ export default function RelationshipsPage() {
         subtitle={`How do the stars shape your connections?`}
       />
       <div className='flex flex-col space-y-4'>
-        {interactions?.map((interaction, i) => (
-          <RelationshipCard key={i} interaction={interaction} />
-        ))}
+        {(interactions && interactions.length == 12) &&
+          <>
+            <RelationshipCardWide interaction={interactions[0]} />
+            <div className='grid grid-cols-5 gap-4'>
+              
+              <div className='col-span-3 flex flex-col space-y-4'>
+                <RelationshipPanelSquare interaction={interactions[1]} />
+                <RelationshipPanelSquare interaction={interactions[3]} />
+                <RelationshipPanelSquare interaction={interactions[5]} />
+              </div>
+              
+              <div className='col-span-2 flex flex-col space-y-4'>
+                <RelationshipCardTall interaction={interactions[2]} />
+                <RelationshipCardTall interaction={interactions[4]} className='flex-1 grow' />
+              </div>
+
+              <div className='col-span-2 flex flex-col space-y-4'>
+                <RelationshipCardTall interaction={interactions[6]} />
+                <RelationshipCardTall interaction={interactions[8]} className='flex-1 grow' />
+              </div>
+
+              <div className='col-span-3 flex flex-col space-y-4'>
+                <RelationshipPanelSquare interaction={interactions[7]} />
+                <RelationshipPanelSquare interaction={interactions[9]} />
+                <RelationshipPanelSquare interaction={interactions[10]} />
+              </div>
+
+              <div className='col-span-5'>
+                <RelationshipCardWide interaction={interactions[11]} />
+              </div>
+            </div>
+          </>
+        }     
       </div>
     </div>
   )

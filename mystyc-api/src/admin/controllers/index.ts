@@ -26,6 +26,7 @@ export { AdminPlanetaryPositionsController } from './astrology/admin-planetary-p
 export { AdminElementInteractionsController } from './astrology/admin-element-interactions.controller';
 export { AdminModalityInteractionsController } from './astrology/admin-modality-interactions.controller';
 export { AdminPlanetInteractionsController } from './astrology/admin-planet-interactions.controller';
+export { AdminPolarityInteractionsController } from './astrology/admin-polarity-interactions.controller';
 
 export { AdminStatsController } from './stats/admin-stats.controller';
 export { AdminUsersStatsController } from './stats/admin-users-stats.controller';

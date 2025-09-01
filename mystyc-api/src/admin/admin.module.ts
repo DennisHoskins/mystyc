@@ -30,6 +30,7 @@ import {
   AdminElementInteractionsController,
   AdminModalityInteractionsController,
   AdminPlanetInteractionsController,
+  AdminPolarityInteractionsController,
 
   AdminStatsController,
   AdminUsersStatsController,
@@ -78,6 +79,7 @@ import { ElementInteractionSchema } from '@/astrology/schemas/element-interactio
 import { ModalityInteractionSchema } from '@/astrology/schemas/modality-interaction.schema'; 
 import { PlanetInteractionSchema } from '@/astrology/schemas/planet-interaction.schema';
 import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.schema';
+import { PolarityInteractionSchema } from '@/astrology/schemas/polarity-interaction.schema';
 
 @Module({
   imports: [
@@ -105,6 +107,7 @@ import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.
       { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
       { name: 'PlanetInteraction', schema: PlanetInteractionSchema },
       { name: 'PlanetaryPosition', schema: PlanetaryPositionSchema },
+      { name: 'PolarityInteraction', schema: PolarityInteractionSchema },
     ])
   ],
   controllers: [
@@ -136,6 +139,7 @@ import { PlanetaryPositionSchema } from '@/astrology/schemas/planetary-position.
     AdminElementInteractionsController,
     AdminModalityInteractionsController,
     AdminPlanetInteractionsController,
+    AdminPolarityInteractionsController,
     
     AdminStatsController,
     AdminUsersStatsController,

@@ -1,16 +1,22 @@
 import React from 'react';
 import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 
-interface CompatibilityGaugeProps {
+interface RadialGaugeProps {
   totalScore: number; // -1 to 1 scale
   size?: number;
+  label: string;
   showPercentage?: boolean;
+  inline?: boolean;
+  className?: string;
 }
 
-const CompatibilityGauge: React.FC<CompatibilityGaugeProps> = ({ 
+const RadialGauge: React.FC<RadialGaugeProps> = ({ 
   totalScore, 
   size = 120,
-  showPercentage = true 
+  label = 'Percent',
+  showPercentage = true,
+  inline = false,
+  className
 }) => {
   // Convert -1 to 1 scale to 0-100 percentage
   const percentage = Math.round(((totalScore + 1) / 2) * 100);
@@ -32,14 +38,14 @@ const CompatibilityGauge: React.FC<CompatibilityGaugeProps> = ({
       fill: '#e5e7eb' // Light gray background
     },
     {
-      name: 'Compatibility', 
+      name: label, 
       value: percentage,
       fill: color
     }
   ];
 
   return (
-    <div className="flex flex-col items-center">
+    <div className={`relative flex flex-col items-center justify-center ${className}`}>
       <div style={{ width: size, height: size }}>
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
@@ -61,17 +67,28 @@ const CompatibilityGauge: React.FC<CompatibilityGaugeProps> = ({
       </div>
       
       {showPercentage && (
-        <div className="mt-2 text-center">
-          <div className="text-2xl font-bold" style={{ color }}>
+        <div className="text-center">
+          <div
+            className={`
+              ${inline 
+                ? 'absolute inset-0 flex items-center justify-center text-md font-bold' 
+                : 'text-2xl mt-2 font-bold'
+              }
+            `}
+            style={{ color }}
+          >
             {percentage}%
           </div>
-          <div className="text-sm text-gray-600">
-            Compatible
-          </div>
+          {!inline &&
+            <div className={`${inline ? 'text-xs' : 'text-sm'}  text-gray-600`}>
+              {label}
+            </div>
+          }
         </div>
       )}
+      <div className={`absolute top-0 left-0 w-full h-full ${className}`}></div>
     </div>
   );
 };
 
-export default CompatibilityGauge;
+export default RadialGauge;

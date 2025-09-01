@@ -1,11 +1,14 @@
 import { SignComplete } from "mystyc-common";
 import Text from "@/components/ui/Text";
 import { getSignIcon } from "@/components/ui/icons/astrology/signs";
+import { getPlanetIcon } from '@/components/ui/icons/astrology/planets';
 import Heading from "@/components/ui/Heading";
 
 function linkFigures(story: string, figures: string[]) {
   const escapedFigures = figures.map(f => f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const regex = new RegExp(`(${escapedFigures.join("|")})`, "gi");
+  
+  // Add word boundaries to avoid partial matches (e.g., Hera in Heracles)
+  const regex = new RegExp(`\\b(${escapedFigures.join("|")})\\b`, "gi");
 
   const parts = story.split(regex);
 
@@ -49,6 +52,22 @@ export default function SignDetailsPanel({ sign } : { sign: SignComplete | null 
       </Text>
       <Text variant='muted' className="!text-gray-400">
         {sign.symbol.description}
+      </Text>
+      <Text variant='muted' className="!text-gray-400 flex items-center">
+        Ruling Planet: 
+        {getPlanetIcon(sign.basics.rulingPlanet, 'w-4 h-5 text-white ml-2')}
+        <a href={`https://en.wikipedia.org/wiki/${sign.basics.rulingPlanet}`} className="flex space-x-1 mr-2 text-purple-100 underline hover:text-purple-400">
+          {sign.basics.rulingPlanet}
+        </a>
+        {(sign.basics.modernRulingPlanet && sign.basics.modernRulingPlanet != sign.basics.rulingPlanet) && 
+          <>
+            <>/</>
+            {getPlanetIcon(sign.basics.modernRulingPlanet, 'w-4 h-5 text-white ml-2')}
+            <a href={`https://en.wikipedia.org/wiki/${sign.basics.modernRulingPlanet}`} className="flex space-x-1 text-purple-100 underline hover:text-purple-400">
+              {sign.basics.modernRulingPlanet}
+            </a>
+          </>
+        }
       </Text>
     </div>
   )

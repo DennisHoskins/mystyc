@@ -5,7 +5,12 @@ import {
   EnergyType, 
   Planet, 
   Polarity,
-  House
+  House,
+  Dynamic,
+  SignInteraction,
+  ElementInteraction,
+  ModalityInteraction,
+  PolarityInteraction
 } from '../schemas';
 
 export interface ElementComplete extends Element {
@@ -35,4 +40,38 @@ export interface SignComplete extends Sign {
   modalityData: ModalityComplete | null;
   polarityData: PolarityComplete | null;
   energyTypeData: EnergyType | null;
+  
+  // Best and worst compatibility interactions
+  bestInteraction?: SignInteraction | null;
+  worstInteraction?: SignInteraction | null;
+}
+
+export interface ElementInteractionComplete extends ElementInteraction {
+  dynamicData: Dynamic | null;
+  energyTypeData: EnergyType | null;
+}
+
+export interface ModalityInteractionComplete extends ModalityInteraction {
+  dynamicData: Dynamic | null;
+  energyTypeData: EnergyType | null;
+}
+
+export interface PolarityInteractionComplete extends PolarityInteraction {
+  dynamicData: Dynamic | null;
+  energyTypeData: EnergyType | null;
+}
+
+export interface SignInteractionComplete extends SignInteraction {
+  // Complete data for both signs
+  sign1Data: SignComplete;
+  sign2Data: SignComplete;
+  
+  // Sign interaction level data
+  dynamicData: Dynamic | null;
+  energyTypeData: EnergyType | null;
+  
+  // Cross-sign interaction data
+  elementInteractionData: ElementInteractionComplete | null;
+  modalityInteractionData: ModalityInteractionComplete | null;
+  polarityInteractionData: PolarityInteractionComplete | null;
 }

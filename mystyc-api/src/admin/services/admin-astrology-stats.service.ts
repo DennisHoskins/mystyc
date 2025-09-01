@@ -15,6 +15,7 @@ import { PlanetaryPositionsService } from '@/astrology/services/planetary-positi
 import { ElementInteractionsService } from '@/astrology/services/element-interactions.service';
 import { ModalityInteractionsService } from '@/astrology/services/modality-interactions.service';
 import { PlanetInteractionsService } from '@/astrology/services/planet-interactions.service';
+import { PolarityInteractionsService } from '@/astrology/services/polarity-interactions.service';
 import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
 export interface AstrologySummaryStats {
@@ -30,6 +31,7 @@ export interface AstrologySummaryStats {
   totalElementInteractions: number;
   totalModalityInteractions: number;
   totalPlanetInteractions: number;
+  totalPolarityInteractions: number;
 }
 
 @RegisterStatsModule({
@@ -54,6 +56,7 @@ export class AdminAstrologyStatsService {
     private readonly elementInteractionsService: ElementInteractionsService,
     private readonly modalityInteractionsService: ModalityInteractionsService,
     private readonly planetInteractionsService: PlanetInteractionsService,
+    private readonly polarityInteractionsService: PolarityInteractionsService,
   ) {}
 
   async getSummaryStats(query?: AdminStatsQuery): Promise<AstrologySummaryStats> {
@@ -72,7 +75,8 @@ export class AdminAstrologyStatsService {
         totalPlanetaryPositions,
         totalElementInteractions,
         totalModalityInteractions,
-        totalPlanetInteractions
+        totalPlanetInteractions,
+        totalPolarityInteractions
       ] = await Promise.all([
         this.signsService.getTotal(),
         this.planetsService.getTotal(),
@@ -85,7 +89,8 @@ export class AdminAstrologyStatsService {
         this.planetaryPositionsService.getTotal(),
         this.elementInteractionsService.getTotal(),
         this.modalityInteractionsService.getTotal(),
-        this.planetInteractionsService.getTotal()
+        this.planetInteractionsService.getTotal(),
+        this.polarityInteractionsService.getTotal()
       ]);
 
       logger.info('Astrology summary stats generated', {
@@ -100,7 +105,8 @@ export class AdminAstrologyStatsService {
         totalPlanetaryPositions,
         totalElementInteractions,
         totalModalityInteractions,
-        totalPlanetInteractions
+        totalPlanetInteractions,
+        totalPolarityInteractions
       }, 'AdminAstrologyStatsService');
 
       return {
@@ -115,7 +121,8 @@ export class AdminAstrologyStatsService {
         totalPlanetaryPositions,
         totalElementInteractions,
         totalModalityInteractions,
-        totalPlanetInteractions
+        totalPlanetInteractions,
+        totalPolarityInteractions
       };
 
     } catch (error) {

@@ -2,7 +2,7 @@ import { Controller, UseGuards, Get, Query, Param, NotFoundException } from '@ne
 
 import { UserRole } from 'mystyc-common/constants';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
-import { SignComplete, SignInteraction } from 'mystyc-common/index';
+import { SignComplete, SignInteraction, SignInteractionComplete } from 'mystyc-common/index';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
@@ -81,7 +81,7 @@ export class AstrologyKnowledgeController {
         throw new NotFoundException('Sign not found');
       }
 
-      // Fetch related data in parallel
+      // Fetch related data in parallel (existing logic)
       const [houseData, elementData, modalityData, polarityData, energyTypeData] = await Promise.all([
         this.housesService.findByNumber(signResult.basics.naturalHouse),
         this.elementsService.findByName(signResult.element),
@@ -93,12 +93,18 @@ export class AstrologyKnowledgeController {
       // Fetch house sign data
       const houseSignData = await this.signsService.findByName(signResult.basics.rulingPlanet);
 
-      // Fetch energy types for element and modality
+      // Fetch energy types for element and modality (existing logic)
       const [houseEnergyTypeData, elementEnergyTypeData, modalityEnergyTypeData, polarityEnergyTypeData] = await Promise.all([
         houseData ? this.energyTypesService.findByName(houseData.energyType) : null,
         elementData ? this.energyTypesService.findByName(elementData.energyType) : null,
         modalityData ? this.energyTypesService.findByName(modalityData.energyType) : null,
         polarityData ? this.energyTypesService.findByName(polarityData.energyType) : null
+      ]);
+
+      // NEW: Fetch best and worst interactions
+      const [bestInteraction, worstInteraction] = await Promise.all([
+        this.signInteractionsService.findBestInteraction(sign),
+        this.signInteractionsService.findWorstInteraction(sign)
       ]);
 
       logger.info('Sign with complete related data retrieved successfully', { 
@@ -112,9 +118,11 @@ export class AstrologyKnowledgeController {
         hasElementEnergyType: !!elementEnergyTypeData,
         hasModalityEnergyType: !!modalityEnergyTypeData,
         hasPolarityEnergyType: !!polarityEnergyTypeData,
+        hasBestInteraction: !!bestInteraction,
+        hasWorstInteraction: !!worstInteraction
       }, 'AstrologyKnowledgeController');
       
-      // Return SignComplete with all nested data
+      // Return SignComplete with all nested data + best/worst interactions
       const signComplete: SignComplete = {
         ...signResult,
         houseData: houseData ? {
@@ -134,7 +142,9 @@ export class AstrologyKnowledgeController {
           ...polarityData,
           energyTypeData: polarityEnergyTypeData
         } : null,
-        energyTypeData
+        energyTypeData,
+        bestInteraction,
+        worstInteraction
       };
 
       return signComplete;
@@ -265,6 +275,43 @@ export class AstrologyKnowledgeController {
       
       logger.error('Failed to get sign interactions', {
         sign,
+        error
+      }, 'AstrologyKnowledgeController');
+      
+      throw error;
+    }
+  }
+
+  @Get('sign-interaction/:sign1/:sign2')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  async getSignInteractionComplete(
+    @Param('sign1') sign1: string, 
+    @Param('sign2') sign2: string
+  ): Promise<SignInteractionComplete | null> {
+    logger.info('User fetching complete sign interaction', { sign1, sign2 }, 'AstrologyKnowledgeController');
+    
+    try {
+      const signInteractionComplete = await this.signInteractionsService.findSignInteractionComplete(sign1, sign2);
+      
+      if (!signInteractionComplete) {
+        logger.warn('Sign interaction not found', { sign1, sign2 }, 'AstrologyKnowledgeController');
+        return null;
+      }
+
+      logger.info('Complete sign interaction retrieved successfully', { 
+        sign1, 
+        sign2
+      }, 'AstrologyKnowledgeController');
+      
+      return signInteractionComplete;
+    } catch (error) {
+      if (isErrorWithStatus(error) && error.status === 404) {
+        throw error;
+      }
+      
+      logger.error('Failed to get complete sign interaction', {
+        sign1,
+        sign2,
         error
       }, 'AstrologyKnowledgeController');
       

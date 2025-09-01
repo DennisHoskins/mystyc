@@ -12,4 +12,5 @@ export interface AstrologySummary {
   elementInteractions: number;
   modalityInteractions: number;
   planetInteractions: number;
+  polarityInteractions: number;
 }

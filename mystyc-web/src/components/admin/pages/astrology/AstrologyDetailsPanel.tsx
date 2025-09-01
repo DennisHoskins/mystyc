@@ -14,6 +14,7 @@ import { getElementIcon } from '@/components/ui/icons/astrology/elements';
 import { getPlanetIcon } from '@/components/ui/icons/astrology/planets';
 import { getModalityIcon } from '@/components/ui/icons/astrology/modalities';
 import { getDynamicIcon } from '@/components/ui/icons/astrology/dynamics';
+import { getPolarityIcon } from '@/components/ui/icons/astrology/polarities';
 import Energy from '@/components/ui/icons/astrology/Energy';
 import { formatStringForDisplay } from '@/util/util';
 
@@ -321,21 +322,21 @@ export default function AstrologyTabPanel() {
         href='/admin/astrology/polarities'
         sublinks={[
           {
-//            icon: getPolarityIcon("masculine", 'w-2 h-2'),
+            icon: getPolarityIcon("masculine", 'w-2 h-2'),
             label: "Masculine",
             href: '/admin/astrology/polarities/Masculine'
           },
           {
-//            icon: getPolarityIcon("feminine", 'w-2 h-2'),
+            icon: getPolarityIcon("feminine", 'w-2 h-2'),
             label: "Feminine",
             href: '/admin/astrology/polarities/Feminine'
           },
         ]}
         links={[
           {
-            label: "Modality Interactions",
-            total: summary?.modalityInteractions,
-            href: '/admin/astrology/modality-interactions'
+            label: "Polarity Interactions",
+            total: summary?.polarityInteractions,
+            href: '/admin/astrology/polarity-interactions'
           },
         ]}
       />

@@ -76,7 +76,25 @@ export const PlanetInteractionSchema = PlanetInteractionInputSchema.extend({
   updatedAt: z.date().optional()
 });
 
-// 5. Sign Interactions Schema
+
+// 5. Polarity Interactions Schema  
+export const PolarityInteractionInputSchema = z.object({
+  polarity1: PolarityType,
+  polarity2: PolarityType,
+  dynamic: DynamicType,
+  description: z.string().min(50).max(500).trim(),
+  keywords: z.array(z.string().min(1).trim()).min(2).max(8),
+  energyType: z.string().min(1).max(50).trim(),
+  action: z.string().min(20).max(300).trim()
+}).strict();
+
+export const PolarityInteractionSchema = PolarityInteractionInputSchema.extend({
+  _id: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+});
+
+// 6. Sign Interactions Schema
 export const SignInteractionInputSchema = z.object({
   sign1: ZodiacSign,
   sign2: ZodiacSign,
@@ -89,6 +107,7 @@ export const SignInteractionInputSchema = z.object({
   totalScore: z.number().min(-1).max(1),
   elementScore: z.number().min(-1).max(1),
   modalityScore: z.number().min(-1).max(1),
+  polarityScore: z.number().min(-1).max(1),
   dynamicScore: z.number().min(-1).max(1)
 }).strict();
 
@@ -113,6 +132,8 @@ export type ModalityInteraction = z.infer<typeof ModalityInteractionSchema>;
 export type ModalityInteractionInput = z.infer<typeof ModalityInteractionInputSchema>;
 export type PlanetInteraction = z.infer<typeof PlanetInteractionSchema>;
 export type PlanetInteractionInput = z.infer<typeof PlanetInteractionInputSchema>;
+export type PolarityInteraction = z.infer<typeof PolarityInteractionSchema>;
+export type PolarityInteractionInput = z.infer<typeof PolarityInteractionInputSchema>;
 export type SignInteraction = z.infer<typeof SignInteractionSchema>;
 export type SignInteractionInput = z.infer<typeof SignInteractionInputSchema>;
 
@@ -136,6 +157,11 @@ export const validatePlanetInteraction = (data: unknown) =>
   validateWithError(PlanetInteractionSchema, data, { schema: 'PlanetInteraction' });
 export const validatePlanetInteractionSafe = (data: unknown) => 
   validateSafely(PlanetInteractionSchema, data);
+
+export const validatePolarityInteraction = (data: unknown) => 
+  validateWithError(PolarityInteractionSchema, data, { schema: 'PolarityInteraction' });
+export const validatePolarityInteractionSafe = (data: unknown) => 
+  validateSafely(PolarityInteractionSchema, data);
 
 export const validateSignInteraction = (data: unknown) => 
   validateWithError(SignInteractionSchema, data, { schema: 'SignInteraction' });

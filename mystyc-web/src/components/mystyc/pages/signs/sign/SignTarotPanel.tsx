@@ -8,7 +8,7 @@ import { getTarotIcon } from '@/components/ui/icons/astrology/tarot/';
 
 export default function SignTarotPanel({ sign } : { sign: Sign | null }) {
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-2 h-full">
 
       <div className='flex items-center space-x-2'>
         <SquareStar className='w-6 h-6 text-white' />
@@ -17,8 +17,8 @@ export default function SignTarotPanel({ sign } : { sign: Sign | null }) {
 
       <Text variant='small' className="!text-gray-500">{sign?.tarot.meaning}</Text>
 
-      <div className="flex space-x-4">
-        <Panel className="!w-36 !p-2 items-center justify-center">
+      <div className="flex space-x-2 h-full !mt-2">
+        <Panel className="!w-36 h-full !p-2 items-center justify-center">
           {getTarotIcon(sign?.tarot.majorArcana.replace("The ", ""), 'w-24 h-24 text-white')}
         </Panel>
         <div className="flex-1 flex flex-col space-y-2 p-2">

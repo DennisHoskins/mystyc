@@ -20,6 +20,7 @@ import { ElementInteractionsService } from '@/astrology/services/element-interac
 import { ModalityInteractionsService } from '@/astrology/services/modality-interactions.service';
 import { PlanetInteractionsService } from '@/astrology/services/planet-interactions.service';
 import { PlanetaryPositionsService } from '@/astrology/services/planetary-positions.service';
+import { PolarityInteractionsService } from '@/astrology/services/polarity-interactions.service';
 
 @Controller('admin/astrology')
 export class AdminAstrologyController {
@@ -39,6 +40,7 @@ export class AdminAstrologyController {
     private readonly modalityInteractionsService: ModalityInteractionsService,
     private readonly planetInteractionsService: PlanetInteractionsService,
     private readonly planetaryPositionsService: PlanetaryPositionsService,
+    private readonly polarityInteractionsService: PolarityInteractionsService,
   ) {}
 
   // GET Methods (Read Operations)
@@ -65,7 +67,8 @@ export class AdminAstrologyController {
       planetaryPositions,
       elementInteractions,
       modalityInteractions,
-      planetInteractions
+      planetInteractions,
+      polarityInteractions,
     ] = await Promise.all([
       this.signsService.getTotal(),
       this.planetsService.getTotal(),
@@ -79,7 +82,8 @@ export class AdminAstrologyController {
       this.planetaryPositionsService.getTotal(),
       this.elementInteractionsService.getTotal(),
       this.modalityInteractionsService.getTotal(),
-      this.planetInteractionsService.getTotal()
+      this.planetInteractionsService.getTotal(),
+      this.polarityInteractionsService.getTotal()
     ]);
 
     return {
@@ -95,7 +99,8 @@ export class AdminAstrologyController {
       planetaryPositions,
       elementInteractions,
       modalityInteractions,
-      planetInteractions
+      planetInteractions,
+      polarityInteractions,
     };
   }
 }

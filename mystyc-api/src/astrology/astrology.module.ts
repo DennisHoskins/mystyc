@@ -14,7 +14,9 @@ import { PlanetsService } from './services/planets.service';
 import { ElementsService } from './services/elements.service';
 import { ModalitiesService } from './services/modalities.service';
 import { DynamicsService } from './services/dynamics.service';
+import { PolarityInteractionSchema } from './schemas/polarity-interaction.schema';
 import { EnergyTypesService } from './services/energy-types.service';
+import { PolarityInteractionsService } from './services/polarity-interactions.service';
 import { PlanetaryPositionsService } from './services/planetary-positions.service';
 import { SignInteractionsService } from './services/sign-interactions.service';
 import { ElementInteractionsService } from './services/element-interactions.service';
@@ -25,20 +27,20 @@ import { HousesService } from './services/houses.service';
 
 import { UserProfileSchema } from '@/users/schemas/user-profile.schema';
 
-import { Sign, SignSchema } from './schemas/sign.schema';
-import { Planet, PlanetSchema } from './schemas/planet.schema';
-import { Element, ElementSchema } from './schemas/element.schema';
-import { Modality, ModalitySchema } from './schemas/modality.schema';
-import { Dynamic, DynamicSchema } from './schemas/dynamic.schema';
-import { EnergyType, EnergyTypeSchema } from './schemas/energy-type.schema';
-import { SignInteraction, SignInteractionSchema } from './schemas/sign-interaction.schema';
-import { PlanetaryPosition, PlanetaryPositionSchema } from './schemas/planetary-position.schema';
-import { ElementInteraction, ElementInteractionSchema } from './schemas/element-interaction.schema';
-import { ModalityInteraction, ModalityInteractionSchema } from './schemas/modality-interaction.schema';
-import { PlanetInteraction, PlanetInteractionSchema } from './schemas/planet-interaction.schema';
-import { AstrologyDocument, AstrologyDocumentSchema } from './schemas/astrology.schema';
-import { Polarity, PolaritySchema } from './schemas/polarity.schema';
-import { House, HouseSchema } from './schemas/house.schema';
+import { SignSchema } from './schemas/sign.schema';
+import { PlanetSchema } from './schemas/planet.schema';
+import { ElementSchema } from './schemas/element.schema';
+import { ModalitySchema } from './schemas/modality.schema';
+import { DynamicSchema } from './schemas/dynamic.schema';
+import { EnergyTypeSchema } from './schemas/energy-type.schema';
+import { SignInteractionSchema } from './schemas/sign-interaction.schema';
+import { PlanetaryPositionSchema } from './schemas/planetary-position.schema';
+import { ElementInteractionSchema } from './schemas/element-interaction.schema';
+import { ModalityInteractionSchema } from './schemas/modality-interaction.schema';
+import { PlanetInteractionSchema } from './schemas/planet-interaction.schema';
+import { AstrologyDocumentSchema } from './schemas/astrology.schema';
+import { PolaritySchema } from './schemas/polarity.schema';
+import { HouseSchema } from './schemas/house.schema';
 
 @Module({
   imports: [
@@ -52,6 +54,7 @@ import { House, HouseSchema } from './schemas/house.schema';
       { name: 'Dynamic', schema: DynamicSchema },
       { name: 'EnergyType', schema: EnergyTypeSchema },      
       { name: 'SignInteraction', schema: SignInteractionSchema },
+      { name: 'PolarityInteraction', schema: PolarityInteractionSchema },
       { name: 'PlanetaryPosition', schema: PlanetaryPositionSchema },
       { name: 'ElementInteraction', schema: ElementInteractionSchema },
       { name: 'ModalityInteraction', schema: ModalityInteractionSchema },
@@ -73,6 +76,7 @@ import { House, HouseSchema } from './schemas/house.schema';
     DynamicsService,
     EnergyTypesService,    
     SignInteractionsService,
+    PolarityInteractionsService,
     PlanetaryPositionsService,
     ElementInteractionsService,
     ModalityInteractionsService,
@@ -90,6 +94,7 @@ import { House, HouseSchema } from './schemas/house.schema';
     DynamicsService,
     EnergyTypesService,
     SignInteractionsService,
+    PolarityInteractionsService,
     PlanetaryPositionsService,
     ElementInteractionsService,
     ModalityInteractionsService,
