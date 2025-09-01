@@ -54,7 +54,7 @@ export const AstrologySchema = z.object({
   venusSign: ZodiacSign,
   marsSign: ZodiacSign,
   
-  // Complete pre-assembled astrology data (OPTIONAL for legacy support)
+  // Complete pre-assembled astrology data
   planetaryData: PlanetaryDataSchema.optional(),
   interactions: InteractionsSchema.optional(),
   

@@ -8,6 +8,7 @@ import { AppUser } from '@/interfaces/app/app-user.interface';
 
 const transformUserToAppUser = (user: User): AppUser => ({
   ...user,
+  name: `${user.userProfile.firstName} ${user.userProfile.lastName}`,
   isAdmin: user.userProfile.roles.includes(UserRole.ADMIN),
   isOnboard: user.userProfile.astrology != null,
   isPlus: user.userProfile.subscription.level == 'plus'

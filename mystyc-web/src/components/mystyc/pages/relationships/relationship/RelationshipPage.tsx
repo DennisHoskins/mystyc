@@ -77,7 +77,7 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
           heading='Relationships'
           href='/relationships'
           title={user.userProfile.astrology?.sunSign}
-          subtitle={`Discover How the Stars Shape Your Connections`}
+          subtitle={`Explore Your Cosmic Chemistry`}
         />
         <Card>
           <Panel className='items-center'>
