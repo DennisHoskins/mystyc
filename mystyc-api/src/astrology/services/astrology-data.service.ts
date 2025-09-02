@@ -13,6 +13,8 @@ import {
   ElementInteraction,
   ModalityInteraction
 } from 'mystyc-common/schemas';
+import { AstrologyCalculated } from 'mystyc-common/interfaces/astrology.interface';
+import { calculatePlanetaryInteractions } from 'mystyc-common/util/astrology-calculations';
 
 import { logger } from '@/common/util/logger';
 import { SignsService } from './signs.service';
@@ -32,12 +34,65 @@ export class AstrologyDataService {
   ) {}
 
   /**
-   * Assembles complete astrology data from a set of planetary signs
+   * Calculates user-specific astrology data with planetary interaction scores
+   * @param signs - Record mapping planets to their zodiac signs
+   * @returns Promise<AstrologyCalculated> - Calculated astrology data with planetary interaction scores
+   */
+  async calculateUserAstrologyData(signs: Record<PlanetType, ZodiacSignType>): Promise<AstrologyCalculated> {
+    logger.info('Calculating user astrology data', { signs }, 'AstrologyDataService');
+
+    try {
+      // Get sign data for all user signs
+      const uniqueSigns = [...new Set(Object.values(signs))];
+      const signDataMap = new Map<ZodiacSignType, Sign>();
+      
+      const signDataPromises = uniqueSigns.map(async (sign) => {
+        const signInfo = await this.signsService.findByName(sign);
+        if (signInfo) signDataMap.set(sign, signInfo);
+        return signInfo;
+      });
+      
+      await Promise.all(signDataPromises);
+      const signData = Object.fromEntries(signDataMap) as Record<ZodiacSignType, Sign>;
+
+      // Verify we have all required sign data
+      for (const sign of uniqueSigns) {
+        if (!signData[sign]) {
+          throw new Error(`Missing sign data for: ${sign}`);
+        }
+      }
+
+      // Calculate planetary interactions
+      const calculations = calculatePlanetaryInteractions(signs, signData);
+      
+      const now = new Date();
+      const astrologyData: AstrologyCalculated = {
+        ...calculations,
+        createdAt: now,
+        lastCalculatedAt: now
+      };
+
+      logger.info('User astrology data calculated successfully', {
+        planetsCalculated: Object.keys(calculations).length,
+        sunTotalScore: calculations.sun.totalScore,
+        moonTotalScore: calculations.moon.totalScore
+      }, 'AstrologyDataService');
+
+      return astrologyData;
+      
+    } catch (error) {
+      logger.error('Failed to calculate user astrology data', { signs, error }, 'AstrologyDataService');
+      throw error;
+    }
+  }
+
+  /**
+   * Assembles complete astrology data from a set of planetary signs (LEGACY - for reference data assembly)
    * @param signs - Record mapping planets to their zodiac signs
    * @returns Promise<UserAstrologyData> - Complete astrology data with planetary positions and interactions
    */
   async assembleAstrologyData(signs: Record<PlanetType, ZodiacSignType>): Promise<UserAstrologyData> {
-    logger.info('Assembling astrology data', { signs }, 'AstrologyDataService');
+    logger.info('Assembling reference astrology data', { signs }, 'AstrologyDataService');
 
     try {
       // Get all unique signs for batching
@@ -52,7 +107,7 @@ export class AstrologyDataService {
       // Get all required interactions
       const interactions = await this.fetchAllInteractions(signInfoMap);
 
-      logger.info('Astrology data assembled successfully', { 
+      logger.info('Reference astrology data assembled successfully', { 
         planetsCount: Object.keys(planetaryData).length,
         planetInteractionsCount: Object.keys(interactions.planets).length,
         elementInteractionsCount: Object.keys(interactions.elements).length,
@@ -62,7 +117,7 @@ export class AstrologyDataService {
       return { planetaryData, interactions };
       
     } catch (error) {
-      logger.error('Failed to assemble astrology data', {
+      logger.error('Failed to assemble reference astrology data', {
         signs,
         error
       }, 'AstrologyDataService');

@@ -3,7 +3,6 @@ import { Document } from 'mongoose';
 
 import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { SubscriptionLevel } from 'mystyc-common/constants/subscription-levels.enum';
-import { Astrology, AstrologySchema } from '@/astrology/schemas/astrology.schema';
 
 @Schema()
 export class Subscription {
@@ -53,6 +52,42 @@ export class BirthLocation {
   };
 }
 
+@Schema({ _id: false })
+export class PlanetaryData {
+  @Prop({ required: true, enum: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'] })
+  sign!: string;
+
+  @Prop({ required: true, min: -1, max: 1 })
+  totalScore!: number;
+
+  @Prop({ type: Object })
+  interactions?: Record<string, { score: number }>;
+}
+
+@Schema({ _id: false })
+export class Astrology {
+  @Prop({ type: PlanetaryData, required: true })
+  sun!: PlanetaryData;
+
+  @Prop({ type: PlanetaryData, required: true })
+  moon!: PlanetaryData;
+
+  @Prop({ type: PlanetaryData, required: true })
+  rising!: PlanetaryData;
+
+  @Prop({ type: PlanetaryData, required: true })
+  venus!: PlanetaryData;
+
+  @Prop({ type: PlanetaryData, required: true })
+  mars!: PlanetaryData;
+
+  @Prop({ type: Date, required: true })
+  createdAt!: Date;
+
+  @Prop({ type: Date, required: true })
+  lastCalculatedAt!: Date;
+}
+
 @Schema({ timestamps: true, collection: 'userProfiles' })
 export class UserProfile {
   @Prop({ required: true })
@@ -82,8 +117,8 @@ export class UserProfile {
   @Prop({ type: BirthLocation })
   birthLocation?: BirthLocation;
 
-  // Now using the imported generic Astrology schema
-  @Prop({ type: AstrologySchema })
+  // Updated to use new calculated astrology schema
+  @Prop({ type: Astrology })
   astrology?: Astrology;
 
   @Prop({ type: Subscription, default: () => ({}) })
@@ -114,7 +149,7 @@ UserProfileSchema.index({ firstName: 1, createdAt: -1 }); // Users with first na
 UserProfileSchema.index({ lastName: 1, createdAt: -1 }); // Users with last names
 UserProfileSchema.index({ dateOfBirth: 1, createdAt: -1 }); // Users with birthdays  
 UserProfileSchema.index({ 'birthLocation.placeId': 1, createdAt: -1 }); // Users with birth locations
-UserProfileSchema.index({ 'astrology.sunSign': 1, createdAt: -1 }); // Users with astrology data
+UserProfileSchema.index({ 'astrology.sun.sign': 1, createdAt: -1 }); // Users with astrology data
 
 // Birthday messaging indexes
 UserProfileSchema.index({ dateOfBirth: 1 }); // General birthday queries

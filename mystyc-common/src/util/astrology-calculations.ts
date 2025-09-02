@@ -1,6 +1,4 @@
-// mystyc-common/src/util/astrology-calculations.ts
-
-import { Sign, ZodiacSignType, ElementType, ModalityType, PolarityType } from '../schemas';
+import { Sign, ZodiacSignType, ElementType, ModalityType, PolarityType, PlanetType } from '../schemas';
 
 export interface CompatibilityScores {
   dynamic: 'harmony' | 'tension' | 'complementary' | 'amplification';
@@ -9,6 +7,70 @@ export interface CompatibilityScores {
   polarityScore: number;
   dynamicScore: number;
   totalScore: number;
+}
+
+export interface PlanetaryInteractionResult {
+  score: number;
+}
+
+export interface PlanetaryCalculations {
+  sun: { sign: ZodiacSignType; totalScore: number; interactions: Record<string, PlanetaryInteractionResult> };
+  moon: { sign: ZodiacSignType; totalScore: number; interactions: Record<string, PlanetaryInteractionResult> };
+  rising: { sign: ZodiacSignType; totalScore: number; interactions: Record<string, PlanetaryInteractionResult> };
+  venus: { sign: ZodiacSignType; totalScore: number; interactions: Record<string, PlanetaryInteractionResult> };
+  mars: { sign: ZodiacSignType; totalScore: number; };
+}
+
+/**
+ * Calculates all planetary interactions and weighted totals for a user's chart
+ * @param signs - Record mapping planets to their zodiac signs
+ * @param signData - Record mapping zodiac signs to their complete Sign data
+ * @returns PlanetaryCalculations - All planetary interaction scores and totals
+ */
+export function calculatePlanetaryInteractions(
+  signs: Record<PlanetType, ZodiacSignType>,
+  signData: Record<ZodiacSignType, Sign>
+): PlanetaryCalculations {
+  const planets: PlanetType[] = ['Sun', 'Moon', 'Rising', 'Venus', 'Mars'];
+  const planetImportance: Record<PlanetType, number> = {
+    Sun: 5, Moon: 5, Rising: 4, Venus: 3, Mars: 3
+  };
+
+  const interactions: any = {};
+
+  // Calculate all pairwise interactions
+  for (let i = 0; i < planets.length; i++) {
+    const planet1 = planets[i].toLowerCase() as keyof PlanetaryCalculations;
+    interactions[planet1] = {
+      sign: signs[planets[i]],
+      interactions: {},
+      totalScore: 0
+    };
+
+    const scores: number[] = [];
+    const weights: number[] = [];
+
+    for (let j = i + 1; j < planets.length; j++) {
+      const planet2 = planets[j].toLowerCase() as keyof PlanetaryCalculations;
+      const sign1Data = signData[signs[planets[i]]];
+      const sign2Data = signData[signs[planets[j]]];
+      
+      const compatibility = calculateCompatibility(sign1Data, sign2Data);
+      interactions[planet1].interactions[planet2] = { score: compatibility.totalScore };
+      
+      scores.push(compatibility.totalScore);
+      weights.push(planetImportance[planets[j]]);
+    }
+
+    // Calculate weighted average for this planet
+    if (scores.length > 0) {
+      const weightedSum = scores.reduce((sum, score, idx) => sum + (score * weights[idx]), 0);
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      interactions[planet1].totalScore = Math.round((weightedSum / totalWeight) * 100) / 100;
+    }
+  }
+
+  return interactions as PlanetaryCalculations;
 }
 
 /**

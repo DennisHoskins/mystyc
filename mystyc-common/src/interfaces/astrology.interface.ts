@@ -10,7 +10,8 @@ import {
   SignInteraction,
   ElementInteraction,
   ModalityInteraction,
-  PolarityInteraction
+  PolarityInteraction,
+  ZodiacSignType
 } from '../schemas';
 
 export interface ElementComplete extends Element {
@@ -74,4 +75,25 @@ export interface SignInteractionComplete extends SignInteraction {
   elementInteractionData: ElementInteractionComplete | null;
   modalityInteractionData: ModalityInteractionComplete | null;
   polarityInteractionData: PolarityInteractionComplete | null;
+}
+
+// Calculated Astrology Interfaces
+export interface PlanetaryInteractionScore {
+  score: number;
+}
+
+export interface PlanetaryData {
+  sign: ZodiacSignType;
+  totalScore: number;
+  interactions?: Record<string, PlanetaryInteractionScore>;
+}
+
+export interface AstrologyCalculated {
+  sun: PlanetaryData;
+  moon: PlanetaryData;
+  rising: PlanetaryData;
+  venus: PlanetaryData;
+  mars: PlanetaryData;
+  createdAt: Date;
+  lastCalculatedAt: Date;
 }

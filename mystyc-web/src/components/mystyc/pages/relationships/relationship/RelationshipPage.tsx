@@ -100,7 +100,7 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
         href='/relationships'
         title={user.userProfile.astrology?.sunSign}
         titleIcon={getZodiacIcon(user.userProfile.astrology?.sunSign, 'w-6 h-6 text-gray-400')}
-        subtitle={`How do the stars shape your connections?`}
+        subtitle={`Explore Your Cosmic Chemistry`}
       />
       <div className='grid grid-cols-4 gap-4'>
         <Panel className='flex-col justify-center'>

@@ -77,7 +77,7 @@ export default function RelationshipsPage() {
         heading='Relationships'
         title={user.userProfile.astrology?.sunSign}
         titleIcon={getZodiacIcon(user.userProfile.astrology?.sunSign, 'w-6 h-6 text-gray-400')}
-        subtitle={`How do the stars shape your connections?`}
+        subtitle={`Discover How the Stars Shape Your Connections`}
       />
       <div className='flex flex-col space-y-4'>
         {(interactions && interactions.length == 12) &&

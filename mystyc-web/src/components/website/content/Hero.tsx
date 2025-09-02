@@ -17,7 +17,7 @@ export default function Hero() {
           mystyc
         </Heading>
         <Heading level={1} className="mb-6">
-          Let the stars be your guide
+          Your Personal Map of the Stars
         </Heading>
         <Text className="text-gray-400 mb-8 text-lg md:text-xl max-w-2xl mx-auto">
           Discover insights about yourself, connect with your journey, and grow with our personalized tools.
