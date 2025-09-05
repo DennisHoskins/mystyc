@@ -47,37 +47,6 @@ export default function ProfilePage() {
     return null;
   }
 
-  const aisummary = {
-    "patterns": {
-      "themes": [
-        "Strong Pisces influence across identity, emotions, and relationships.",
-        "Balance between softness (Pisces) and strength (Scorpio/Taurus).",
-        "Recurring theme of 'water nourishes earth, earth contains water' — emotional depth paired with structure and persistence.",
-        "Tension between change/flexibility (Pisces) and stability/consistency (Taurus/Scorpio)."
-      ]
-    },
-    "strengths": [
-      "High empathy and intuition.",
-      "Creative and imaginative with artistic or spiritual depth.",
-      "Persistent and able to follow through where others give up.",
-      "Magnetic presence that attracts others naturally."
-    ],
-    "challenges": [
-      "Can be overwhelmed by emotions (own or others’).",
-      "Tendency to struggle with boundaries in relationships.",
-      "Pulled between craving change and needing stability.",
-      "Risk of reacting impulsively when emotions run high."
-    ],
-    "growth_path": [
-      "Balance sensitivity with structure and boundaries.",
-      "Learn when to adapt and when to hold steady.",
-      "Channel persistence into turning dreams into tangible results.",
-      "Pause before reacting to align emotions with conscious choices."
-    ],
-    "core_snapshot": "An empathetic, intuitive person who combines deep compassion with persistence and intensity. Strong creative and emotional sensitivity pairs with determination to build and sustain. Growth comes from balancing flexibility with grounding and learning to manage emotions without being consumed by them."    
-  }
-
-
   const formatTime = (time: string | undefined): string => {
     if (!time) return "12:00am";
     const [hoursStr, minutes = "00"] = time.split(":");
@@ -111,6 +80,8 @@ export default function ProfilePage() {
     );
   }
 
+console.log(astrologyData);
+
   return (
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
@@ -123,7 +94,7 @@ export default function ProfilePage() {
 
         <div className='grid grid-cols-4 gap-4'>
           <Panel className='!p-4 justify-center'>
-            <RadialGauge label='Profile Energy' totalScore={0.9} />
+            <RadialGauge label='Profile Energy' totalScore={astrologyData.user.userProfile.astrology?.totalScore || 0} />
           </Panel>
           <Card className='!p-10 col-span-3'>
             <ProfileHeaderPanel user={astrologyData.user} astrology={astrologyData.astrology} />
@@ -135,24 +106,23 @@ export default function ProfilePage() {
             <Text variant='muted' className='!text-gray-300 flex items-center'>
               <CirclePlus className='w-3 h-3 text-gray-300 mr-1'/>Strengths
             </Text>
-            <Text variant='muted' className="!text-gray-500 !mt-1">{aisummary.strengths.join(" ")}</Text>
+            <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.strengths}</Text>
           </Panel>
 
           <Panel>
             <Text variant='muted' className='!text-gray-300 flex items-center'>
               <CircleMinus className='w-3 h-3 text-gray-300 mr-1'/>Challenges
             </Text>
-            <Text variant='muted' className="!text-gray-500 !mt-1">{aisummary.challenges.join(" ")}</Text>
+            <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.challenges}</Text>
           </Panel>
 
           <Panel>
             <Text variant='muted' className='!text-gray-300 flex items-center'>
               <KeySquare className='w-3 h-3 text-gray-300 mr-1'/>Keys to Success
             </Text>
-            <Text variant='muted' className="!text-gray-500 !mt-1">{aisummary.growth_path.join(" ")}</Text>
+            <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.action}</Text>
           </Panel>
         </div>
-
 
         <div className='grid grid-cols-5 gap-4 !mt-4'>
           <div className='flex flex-col space-y-4 col-span-3'>
@@ -162,7 +132,8 @@ export default function ProfilePage() {
                 heading='Core Identity'
                 subheading='The way your inner self meets your outer image'
                 planet='Sun'
-                score={user.userProfile.astrology.sun.totalScore}
+                score={astrologyData.user.userProfile.astrology?.sun.totalScore || 0}
+                astrology={astrologyData?.user?.userProfile?.astrology?.sun}
                 data={astrologyData.astrology.sun}
                 totals={[
                   {label: "Sun - Moon", total: astrologyData.astrology.sun.interactions.moon.score},
@@ -178,8 +149,9 @@ export default function ProfilePage() {
                 heading='Emotional Expression'
                 subheading='How your feelings shape the way you act'
                 planet='Moon'
-                score={user.userProfile.astrology.moon.totalScore}
                 data={astrologyData.astrology.moon}
+                score={astrologyData.user.userProfile.astrology?.moon.totalScore || 0}
+                astrology={astrologyData?.user?.userProfile?.astrology?.moon}
                 totals={[
                   {label: "Moon - Rising", total: astrologyData.astrology.moon.interactions.rising.score},
                   {label: "Moon - Venus", total: astrologyData.astrology.moon.interactions.venus.score},
@@ -193,8 +165,9 @@ export default function ProfilePage() {
                 heading='Social Dynamics'
                 subheading='The ways your outer self connects with others'
                 planet='Rising'
-                score={user.userProfile.astrology.rising.totalScore}
                 data={astrologyData.astrology.rising}
+                score={astrologyData.user.userProfile.astrology?.rising.totalScore || 0}
+                astrology={astrologyData?.user?.userProfile?.astrology?.rising}
                 totals={[
                   {label: "Rising - Venus", total: astrologyData.astrology.rising.interactions.venus.score},
                   {label: "Rising - Mars", total: astrologyData.astrology.rising.interactions.mars.score},

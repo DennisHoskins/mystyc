@@ -60,13 +60,63 @@ export class AstrologyDataService {
 
       // Calculate planetary interactions
       const calculations = calculatePlanetaryInteractions(signs, signData);
-      
+
+      // Generate summary data with OpenAI
+      const aiSummaries = this.generateMockAISummaries(signs, calculations);
+      const profileSummary = aiSummaries.profileSummary;
+
+      calculations.sun.summary = aiSummaries.planetSummaries.sun;
+      calculations.sun.interactions!.moon.description = aiSummaries.interactionSummaries["sun-moon"].description;
+      calculations.sun.interactions!.rising.description = aiSummaries.interactionSummaries["sun-rising"].description;
+      calculations.sun.interactions!.venus.description = aiSummaries.interactionSummaries["sun-venus"].description;
+      calculations.sun.interactions!.mars.description = aiSummaries.interactionSummaries["sun-mars"].description;
+
+      calculations.moon.summary = aiSummaries.planetSummaries.moon;
+      calculations.moon.interactions!.rising.description = aiSummaries.interactionSummaries["moon-rising"].description;
+      calculations.moon.interactions!.venus.description = aiSummaries.interactionSummaries["moon-venus"].description;
+      calculations.moon.interactions!.mars.description = aiSummaries.interactionSummaries["moon-mars"].description;
+
+      calculations.rising.summary = aiSummaries.planetSummaries.rising;
+      calculations.rising.interactions!.venus.description = aiSummaries.interactionSummaries["rising-venus"].description;
+      calculations.rising.interactions!.mars.description = aiSummaries.interactionSummaries["rising-mars"].description;
+      calculations.venus.interactions!.mars.description = aiSummaries.interactionSummaries["venus-mars"].description;
+   
+
       const now = new Date();
       const astrologyData: AstrologyCalculated = {
         ...calculations,
+        summary: profileSummary,
         createdAt: now,
         lastCalculatedAt: now
       };
+
+
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log(calculations);
+console.log(calculations.sun.interactions!.moon);
+console.log(calculations.sun.interactions!.rising);
+console.log(calculations.sun.interactions!.mars);
+console.log(calculations.sun.interactions!.venus);
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+console.log("============================");
+
 
       logger.info('User astrology data calculated successfully', {
         planetsCalculated: Object.keys(calculations).length,
@@ -81,6 +131,70 @@ export class AstrologyDataService {
       throw error;
     }
   }
+
+  // todo: remove me!
+private generateMockAISummaries(signs: Record<PlanetType, ZodiacSignType>, calculations: any) {
+  return {
+    profileSummary: {
+      description: `Mock analysis for ${signs.Sun} Sun, ${signs.Moon} Moon, ${signs.Rising} Rising combination`,
+      strengths: "Mock strengths based on planetary positions and calculated compatibility scores",
+      challenges: "Mock challenges identified from planetary tensions and low-scoring interactions", 
+      action: "Mock actionable advice for personal growth and development"
+    },
+    planetSummaries: {
+      "sun": {
+        description: `Mock analysis of ${signs.Sun} Sun`,
+        strengths: "Mock strengths of Sun planetary relationships",
+        challenges: "Mock challenges of Sun planetary relationships",
+        action: "Mock advice for integrating these energies"
+      },
+      "moon": {
+        description: `Mock analysis of ${signs.Moon} Moon`,
+        strengths: "Mock strengths of Moon planetary relationships",
+        challenges: "Mock challenges of Moon planetary relationships",
+        action: "Mock advice for integrating these energies"
+      },
+      "rising": {
+        description: `Mock analysis of ${signs.Rising} Rising`,
+        strengths: "Mock strengths of Rising planetary relationships",
+        challenges: "Mock challenges of Rising planetary relationships",
+        action: "Mock advice for integrating these energies"
+      },
+    },
+    interactionSummaries: {
+      "sun-moon": {
+        description: `Mock analysis of ${signs.Sun} Sun and ${signs.Moon} Moon interaction`,
+      },
+      "sun-rising": {
+        description: `Mock analysis of ${signs.Sun} Sun and ${signs.Rising} Rising interaction`,
+      },
+      "sun-venus": {
+        description: `Mock analysis of ${signs.Sun} Sun and ${signs.Venus} Venus interaction`,
+      },
+      "sun-mars": {
+        description: `Mock analysis of ${signs.Sun} Sun and ${signs.Mars} Mars interaction`,
+      },
+      "moon-rising": {
+        description: `Mock analysis of ${signs.Moon} Moon and ${signs.Rising} Rising interaction`,
+      },
+      "moon-venus": {
+        description: `Mock analysis of ${signs.Moon} Moon and ${signs.Venus} Venus interaction`,
+      },
+      "moon-mars": {
+        description: `Mock analysis of ${signs.Moon} Moon and ${signs.Mars} Mars interaction`,
+      },
+      "rising-venus": {
+        description: `Mock analysis of ${signs.Rising} Rising and ${signs.Venus} Venus interaction`,
+      },
+      "rising-mars": {
+        description: `Mock analysis of ${signs.Rising} Rising and ${signs.Mars} Mars interaction`,
+      },
+      "venus-mars": {
+        description: `Mock analysis of ${signs.Venus} Venus and ${signs.Mars} Mars interaction`,
+      }
+    }
+  };
+}  
 
   /**
    * Assembles complete astrology data with rich reference information
@@ -104,6 +218,7 @@ export class AstrologyDataService {
       const planetaryInteractions = await this.buildAllPlanetaryInteractions();
 
       const completeData: AstrologyComplete = {
+        totalScore: calculatedData.totalScore,
         sun: sunComplete,
         moon: moonComplete,
         rising: risingComplete,

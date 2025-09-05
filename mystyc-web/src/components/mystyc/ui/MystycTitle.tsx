@@ -19,7 +19,7 @@ export default function MystycTitle({
   subtitle?: string
 }) {
   return(
-    <div className="flex-1 flex items-center space-x-1 max-h-10 overflow-hidden">
+    <div className="ml-1 flex-1 flex items-center space-x-1 max-h-10 overflow-hidden">
       {icon}
       {href ? (
         <Link href={href} className="hover:!no-underline">

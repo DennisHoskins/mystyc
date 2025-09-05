@@ -5,19 +5,6 @@ import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
 import Link from '@/components/ui/Link';
 
 export default function ProfileHeaderPanel({ user, astrology } : { user: User, astrology: AstrologyComplete }) {
-
-  const aisummary = {
-    "patterns": {
-      "themes": [
-        "Strong Pisces influence across identity, emotions, and relationships.",
-        "Balance between softness (Pisces) and strength (Scorpio/Taurus).",
-        "Recurring theme of 'water nourishes earth, earth contains water' — emotional depth paired with structure and persistence.",
-        "Tension between change/flexibility (Pisces) and stability/consistency (Taurus/Scorpio)."
-      ]
-    },
-    "core_snapshot": "An empathetic, intuitive person who combines deep compassion with persistence and intensity. Strong creative and emotional sensitivity pairs with determination to build and sustain. Growth comes from balancing flexibility with grounding and learning to manage emotions without being consumed by them."    
-  }
-
   return (
     <div className='flex flex-col space-y-4'>
       <Link href={`/astrology/signs/${user.userProfile?.astrology?.sun.sign}`} className='flex items-center hover:!no-underline'>
@@ -29,8 +16,9 @@ export default function ProfileHeaderPanel({ user, astrology } : { user: User, a
         {astrology.sun.signData.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}
       </Text>
 
-      <Text variant='muted' className="!text-gray-400 !mt-2">{aisummary.core_snapshot}</Text>
-      <Text variant='muted' className="!text-gray-400 !mt-4">{aisummary.patterns.themes.join(" ")}</Text>
+      <Text variant='muted' className="!text-gray-400 !mt-2">{astrology.sun.signData?.description}</Text>
+
+      <Text variant='muted' className="!text-gray-400 !mt-4">{user.userProfile.astrology?.summary?.description}</Text>
     </div>
   );
 }

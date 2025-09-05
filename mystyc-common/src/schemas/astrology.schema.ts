@@ -4,13 +4,22 @@ import { ZodiacSign } from './astrology-knowledge.schema';
 
 // Schema for individual planetary interaction scores
 const PlanetaryInteractionScoreSchema = z.object({
-  score: z.number().min(-1).max(1)
+  score: z.number().min(-1).max(1),
+  description: z.string().min(50).max(500),
+}).strict();
+
+const AISummarySchema = z.object({
+  description: z.string().min(50).max(500),
+  strengths: z.string().min(20).max(300),
+  challenges: z.string().min(20).max(300),
+  action: z.string().min(20).max(300)
 }).strict();
 
 // Schema for calculated planetary data
 const PlanetaryDataCalculatedSchema = z.object({
   sign: ZodiacSign,
   totalScore: z.number().min(-1).max(1),
+  summary: AISummarySchema.optional(),
   interactions: z.record(PlanetaryInteractionScoreSchema).optional()
 }).strict();
 
@@ -21,6 +30,8 @@ export const AstrologyCalculatedSchema = z.object({
   rising: PlanetaryDataCalculatedSchema,
   venus: PlanetaryDataCalculatedSchema,
   mars: PlanetaryDataCalculatedSchema,
+  totalScore: z.number().min(-1).max(1),
+  summary: AISummarySchema.optional(),
   createdAt: z.date(),
   lastCalculatedAt: z.date()
 }).strict();
@@ -46,3 +57,4 @@ export const validateAstrologyCalculated = (data: unknown) =>
   validateWithError(AstrologyCalculatedSchema, data, { schema: 'AstrologyCalculated' });
 export const validateAstrologyCalculatedSafe = (data: unknown) => 
   validateSafely(AstrologyCalculatedSchema, data);
+

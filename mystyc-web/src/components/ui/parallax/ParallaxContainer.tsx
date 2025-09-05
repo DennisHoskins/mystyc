@@ -52,7 +52,7 @@ export default function ParallaxContainer({ children, className }: ParallaxConta
           startColor='#4a0e4e'
           endColor='#1a0033'
         />
-        {/* <div className='h-[25em] w-full -mt-4 bg-[#1a0033]' /> */}
+        <div className='h-[15em] w-full -mt-4 bg-[#1a0033] z-0' />
       </div>
       
       <div className={`${styles.content} flex flex-1 flex-col items-center`}>

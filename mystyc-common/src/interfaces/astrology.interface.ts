@@ -87,11 +87,20 @@ export interface SignInteractionComplete extends SignInteraction {
 // Calculated Astrology Interfaces
 export interface PlanetaryInteractionScore {
   score: number;
+  description: string;
+}
+
+export interface AISummary {
+  description: string;
+  strengths: string;
+  challenges: string;
+  action: string;
 }
 
 export interface PlanetaryData {
   sign: ZodiacSignType;
   totalScore: number;
+  summary?: AISummary;
   interactions?: Record<string, PlanetaryInteractionScore>;
 }
 
@@ -101,6 +110,8 @@ export interface AstrologyCalculated {
   rising: PlanetaryData;
   venus: PlanetaryData;
   mars: PlanetaryData;
+  totalScore: number;
+  summary?: AISummary;
   createdAt: Date;
   lastCalculatedAt: Date;
 }
@@ -120,12 +131,14 @@ export interface PlanetaryCompleteData {
 }
 
 export interface AstrologyComplete {
+  totalScore: number;
+
   sun: PlanetaryCompleteData;
   moon: PlanetaryCompleteData;
   rising: PlanetaryCompleteData;
   venus: PlanetaryCompleteData;
   mars: PlanetaryCompleteData;
-  
+
   // Rich interaction data between planets
   planetaryInteractions: {
     'sun-moon': PlanetInteractionComplete;

@@ -446,15 +446,15 @@ export class UsersController {
 
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
     const user = await this.userService.getUser(firebaseUser);
-
+    
     // Check if calculated astrology data already exists
-    if (user.userProfile.astrology) {
-      const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(user.userProfile.astrology)
-      return {
-        user,
-        astrology: astrologyComplete
-      };
-    }
+    // if (user.userProfile.astrology) {
+    //   const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(user.userProfile.astrology)
+    //   return {
+    //     user,
+    //     astrology: astrologyComplete
+    //   };
+    // }
 
     // Calculate astrology if user has complete birth data
     const birthLocation = user.userProfile.birthLocation as any;
@@ -480,7 +480,7 @@ export class UsersController {
 
         // Calculate interaction scores
         const calculatedData = await this.astrologyDataService.calculateUserAstrologyData(signs);
-        
+
         // Store calculated data
         const updatedProfile = await this.userProfileService.updateProfile(
           firebaseUser.uid,
