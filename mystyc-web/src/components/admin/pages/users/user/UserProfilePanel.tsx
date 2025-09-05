@@ -16,9 +16,9 @@ export default function UserProfilePanel({ user }: { user?: UserProfile | null }
         heading='Profile'
         tag={user?.astrology?.createdAt && (
             <Capsule
-              label={user?.astrology?.sunSign || "Astrology"}
+              label={user?.astrology?.sun.sign || "Astrology"}
               href={`/admin/users/${user?.firebaseUid}/astrology`}
-              icon={getZodiacIcon(user?.astrology?.sunSign, '!w-2 !h-2')}
+              icon={getZodiacIcon(user?.astrology?.sun.sign, '!w-2 !h-2')}
             />
           )
         }

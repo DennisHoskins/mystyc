@@ -52,8 +52,15 @@ export class BirthLocation {
   };
 }
 
+// Updated calculated astrology schemas
 @Schema({ _id: false })
-export class PlanetaryData {
+export class PlanetaryInteractionScore {
+  @Prop({ required: true, min: -1, max: 1 })
+  score!: number;
+}
+
+@Schema({ _id: false })
+export class PlanetaryDataSchema {
   @Prop({ required: true, enum: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'] })
   sign!: string;
 
@@ -66,20 +73,20 @@ export class PlanetaryData {
 
 @Schema({ _id: false })
 export class Astrology {
-  @Prop({ type: PlanetaryData, required: true })
-  sun!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  sun!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  moon!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  moon!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  rising!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  rising!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  venus!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  venus!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  mars!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  mars!: PlanetaryDataSchema;
 
   @Prop({ type: Date, required: true })
   createdAt!: Date;

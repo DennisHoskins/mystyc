@@ -1,6 +1,6 @@
 import { HandHeart } from 'lucide-react';
 
-import { UserProfile, UserAstrologyData } from 'mystyc-common';
+import { UserProfile, AstrologyCalculated } from 'mystyc-common';
 import AdminCard from '@/components/admin/ui/AdminCard';
 import Moon from '@/components/ui/icons/astrology/planets/Moon';
 import Rising from '@/components/ui/icons/astrology/planets/Rising';
@@ -13,7 +13,7 @@ export default function UserEmotionalExpressionCard({
   astrologyData 
 }: { 
   user?: UserProfile | null;
-  astrologyData: UserAstrologyData;
+  astrologyData: AstrologyCalculated;
 }) {
   if (!user || !user.astrology) {
     return null;
@@ -27,8 +27,8 @@ export default function UserEmotionalExpressionCard({
     >
       <UserEmotionalExpressionInteraction
         interactionKey="Moon-Rising"
-        sign1={user.astrology.moonSign}
-        sign2={user.astrology.risingSign}
+        sign1={user.astrology.moon.sign}
+        sign2={user.astrology.rising.sign}
         astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
@@ -42,8 +42,8 @@ export default function UserEmotionalExpressionCard({
 
       <UserEmotionalExpressionInteraction
         interactionKey="Moon-Venus"
-        sign1={user.astrology.moonSign}
-        sign2={user.astrology.venusSign}
+        sign1={user.astrology.moon.sign}
+        sign2={user.astrology.venus.sign}
         astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
@@ -57,8 +57,8 @@ export default function UserEmotionalExpressionCard({
 
       <UserEmotionalExpressionInteraction
         interactionKey="Moon-Mars"
-        sign1={user.astrology.moonSign}
-        sign2={user.astrology.marsSign}
+        sign1={user.astrology.moon.sign}
+        sign2={user.astrology.mars.sign}
         astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>

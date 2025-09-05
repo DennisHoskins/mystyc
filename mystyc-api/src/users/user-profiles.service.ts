@@ -5,7 +5,8 @@ import Stripe from 'stripe';
 
 import { z } from 'zod';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants';
-import { UserProfile, Astrology, BirthLocation } from 'mystyc-common/schemas';
+import { UserProfile, BirthLocation } from 'mystyc-common/schemas';
+import { AstrologyCalculated } from 'mystyc-common/interfaces';
 import { UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
 import { CreateUserProfileSchema } from 'mystyc-common/schemas/user-profile.schema';
 import { BaseAdminQuery, validateBaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
@@ -319,7 +320,7 @@ export class UserProfilesService {
       name: customerName,
       metadata: { 
         firebaseUid,
-        source: 'mystyc-api'
+        source: 'mystyc-server'
       }
     });
 
@@ -513,6 +514,16 @@ export class UserProfilesService {
    * @returns UserProfile - Clean user profile object
    */
   private transformToUserProfile(doc: UserProfileDocument): UserProfile {
+    let astrology;
+    if (doc.astrology) {
+      const astrologyPlain = JSON.parse(JSON.stringify(doc.astrology));
+      astrology = {
+        ...astrologyPlain,
+        createdAt: new Date(astrologyPlain.createdAt),
+        lastCalculatedAt: new Date(astrologyPlain.lastCalculatedAt)
+      };
+    }
+
     return {
       id: doc._id.toString(),
       firebaseUid: doc.firebaseUid,
@@ -522,11 +533,11 @@ export class UserProfilesService {
       dateOfBirth: doc.dateOfBirth,
       timeOfBirth: doc.timeOfBirth,
       hasTimeOfBirth: doc.hasTimeOfBirth,
-      birthLocation: doc.birthLocation as BirthLocation | undefined,
-      astrology: doc.astrology as Astrology | undefined,
+      birthLocation: doc.birthLocation ? JSON.parse(JSON.stringify(doc.birthLocation)) : undefined,
+      astrology: astrology,
       roles: doc.roles,
       stripeCustomerId: doc.stripeCustomerId,
-      subscription: doc.subscription,
+      subscription: JSON.parse(JSON.stringify(doc.subscription)),
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

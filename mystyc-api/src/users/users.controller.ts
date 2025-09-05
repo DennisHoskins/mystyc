@@ -20,6 +20,7 @@ import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
 import { AstrologyService } from '@/astrology/services/astrology.service'; 
 import { AstrologyDataService } from '@/astrology/services/astrology-data.service';
+import { AstrologyComplete } from 'mystyc-common/interfaces';
 
 @Controller('users')
 export class UsersController {
@@ -428,7 +429,7 @@ export class UsersController {
     return content;
   }
 
-/**
+  /**
    * Gets user astrology data - calculates if missing, returns if exists
    * @param firebaseUserFromDecorator - Firebase user from auth guard
    * @returns Promise<User | null> - User object with astrology data
@@ -438,7 +439,7 @@ export class UsersController {
   async getAstrologyData(
     @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
     @Body() body: { deviceInfo?: any }
-  ): Promise<User | null> {
+  ): Promise<{user: User, astrology: AstrologyComplete} | null> {
     this.logger.debug('Getting astrology data via POST /calculate-astrology', { 
       uid: firebaseUserFromDecorator.uid 
     });
@@ -446,30 +447,29 @@ export class UsersController {
     const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
     const user = await this.userService.getUser(firebaseUser);
 
-    // Check if complete astrology data already exists
-    if (user.userProfile.astrology?.planetaryData && user.userProfile.astrology?.interactions) {
-      this.logger.debug('Complete astrology data already exists, returning cached data', {
-        uid: firebaseUser.uid,
-        createdAt: user.userProfile.astrology.createdAt,
-        lastCalculatedAt: user.userProfile.astrology.lastCalculatedAt
-      });
-      return user;
+    // Check if calculated astrology data already exists
+    if (user.userProfile.astrology) {
+      const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(user.userProfile.astrology)
+      return {
+        user,
+        astrology: astrologyComplete
+      };
     }
 
     // Calculate astrology if user has complete birth data
+    const birthLocation = user.userProfile.birthLocation as any;
     if (user.userProfile.dateOfBirth && 
         user.userProfile.timeOfBirth && 
-        user.userProfile.birthLocation) {
+        birthLocation) {
       try {
-        // Step 1: Calculate core signs using Swiss Ephemeris
+        // Calculate core signs
         const coreAstrology = await this.astrologyService.calculateCoreAstrology(
-          user.userProfile.dateOfBirth,
+          user.userProfile.dateOfBirth as Date,
           user.userProfile.timeOfBirth,
-          user.userProfile.birthLocation.timezone.name,
-          user.userProfile.birthLocation.coordinates
+          birthLocation.timezone.name,
+          birthLocation.coordinates
         );
         
-        // Step 2: Extract signs for assembly
         const signs: Record<PlanetType, ZodiacSignType> = {
           Sun: coreAstrology.sunSign,
           Moon: coreAstrology.moonSign,
@@ -478,72 +478,42 @@ export class UsersController {
           Mars: coreAstrology.marsSign
         };
 
-        // Step 3: Assemble complete astrology data
-        const assembledData = await this.astrologyDataService.assembleAstrologyData(signs);
+        // Calculate interaction scores
+        const calculatedData = await this.astrologyDataService.calculateUserAstrologyData(signs);
         
-        // Step 4: Create complete astrology object for storage
-        const now = new Date();
-        const completeAstrologyData = {
-          // Top-level signs for easy access
-          sunSign: coreAstrology.sunSign,
-          moonSign: coreAstrology.moonSign,
-          risingSign: coreAstrology.risingSign,
-          venusSign: coreAstrology.venusSign,
-          marsSign: coreAstrology.marsSign,
-          
-          // Complete assembled data
-          planetaryData: assembledData.planetaryData,
-          interactions: assembledData.interactions,
-          
-          // Metadata
-          createdAt: now,
-          lastCalculatedAt: now
-        };
-        
-        // Step 5: Store complete astrology data in user profile
+        // Store calculated data
         const updatedProfile = await this.userProfileService.updateProfile(
           firebaseUser.uid,
           firebaseUser.email!,
-          { 
-            astrology: completeAstrologyData
-          }
+          { astrology: calculatedData }
         );
         
-        this.logger.debug('Updated profile contents', {
-          uid: firebaseUser.uid,
-          astrologyKeys: Object.keys(updatedProfile.astrology || {}),
-          hasPlanetaryData: !!updatedProfile.astrology?.planetaryData,
-          hasInteractions: !!updatedProfile.astrology?.interactions
-        });
-
         user.userProfile = updatedProfile;
         
-        this.logger.info('Complete astrology data calculated and stored successfully', {
+        this.logger.info('Astrology data calculated and stored successfully', {
           uid: firebaseUser.uid,
-          signs: signs,
-          planetsCount: Object.keys(assembledData.planetaryData).length,
-          planetInteractionsCount: Object.keys(assembledData.interactions.planets).length,
-          elementInteractionsCount: Object.keys(assembledData.interactions.elements).length,
-          modalityInteractionsCount: Object.keys(assembledData.interactions.modalities).length
+          signs: signs
         });
+
         
       } catch (error) {
-        this.logger.error('Failed to calculate complete astrology data', {
+        this.logger.error('Failed to calculate astrology data', {
           uid: firebaseUser.uid,
           error
         });
         throw error;
       }
-    } else {
-      this.logger.warn('Incomplete birth data for astrology calculation', {
-        uid: firebaseUser.uid,
-        hasDateOfBirth: !!user.userProfile.dateOfBirth,
-        hasTimeOfBirth: !!user.userProfile.timeOfBirth,
-        hasBirthLocation: !!user.userProfile.birthLocation
-      });
     }
 
-    return user;
+    if (user.userProfile.astrology) {
+      const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(user.userProfile.astrology)
+      return {
+        user,
+        astrology: astrologyComplete
+      };
+    }
+
+    return null;
   }
 
   private transformFirebaseUser(decodedToken: any): FirebaseUserInterface {

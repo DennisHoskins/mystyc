@@ -9,6 +9,7 @@ import { logger } from '@/util/logger';
 import { useUser } from '@/components/ui/context/AppContext';
 import { getSignInteraction } from '@/server/actions/astrology';
 import { getZodiacIcon } from '@/components/ui/icons/astrology/zodiac';
+import PageTransition from '@/components/ui/transition/PageTransition';
 import MystycTitle from '../../../ui/MystycTitle';
 import Card from '@/components/ui/Card';
 import Panel from '@/components/ui/Panel';
@@ -51,7 +52,7 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
     }
     try {
       setError(null);
-      const interaction = await getSignInteraction({deviceInfo: getDeviceInfo(), sign1: user.userProfile.astrology.sunSign, sign2: sign});
+      const interaction = await getSignInteraction({deviceInfo: getDeviceInfo(), sign1: user.userProfile.astrology.sun.sign, sign2: sign});
       setInteraction(interaction);
     } catch (err) {
       logger.error('Failed to load sign interaction:', err);
@@ -71,89 +72,95 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
 
   if (error) {
     return (
-      <div className='w-full flex flex-col space-y-4'>
-        <MystycTitle
-          icon={<Drama className='w-14 h-14 text-white' />}
-          heading='Relationships'
-          href='/relationships'
-          title={user.userProfile.astrology?.sunSign}
-          subtitle={`Explore Your Cosmic Chemistry`}
-        />
-        <Card>
-          <Panel className='items-center'>
-            <MystycError 
-              title={`Sorry, ${user.userProfile.astrology.sunSign} :(`}
-              error={error}
-              onRetry={() => loadInteraction(sign)}
-            />
-          </Panel>
-        </Card>
-      </div>
+      <PageTransition>
+        <div className='w-full flex flex-col space-y-4'>
+          <MystycTitle
+            icon={<Drama className='w-8 h-8 text-white' />}
+            heading='Relationships'
+            href='/relationships'
+            title={user.userProfile.astrology?.sun.sign}
+            subtitle={`Explore Your Cosmic Chemistry`}
+          />
+          <Card>
+            <Panel className='items-center'>
+              <MystycError 
+                title={`Sorry, ${user.userProfile.astrology.sun.sign} :(`}
+                error={error}
+                onRetry={() => loadInteraction(sign)}
+              />
+            </Panel>
+          </Card>
+        </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className='w-full flex flex-col space-y-4'>
-      <MystycTitle
-        icon={<Drama className='w-14 h-14 text-white' />}
-        heading='Relationships'
-        href='/relationships'
-        title={user.userProfile.astrology?.sunSign}
-        titleIcon={getZodiacIcon(user.userProfile.astrology?.sunSign, 'w-6 h-6 text-gray-400')}
-        subtitle={`Explore Your Cosmic Chemistry`}
-      />
-      <div className='grid grid-cols-4 gap-4'>
-        <Panel className='flex-col justify-center'>
-          <RadialGauge label='Compatible' size={150}  totalScore={interaction?.totalScore} />
-          <div className='flex flex-col !mt-10'>
-            <LinearGauge score={interaction.dynamicScore} label="Dynamic" />
-            <LinearGauge score={interaction.elementScore} label="Element" />
-            <LinearGauge score={interaction.modalityScore} label="Modality" />
-            <LinearGauge score={interaction.polarityScore} label="Polarity" />
+    <PageTransition>
+      <div className='w-full flex flex-col space-y-4'>
+        <MystycTitle
+          icon={<Drama className='w-8 h-8 text-white' />}
+          heading='Relationships'
+          href='/relationships'
+          title={user.userProfile.astrology?.sun.sign}
+          titleIcon={getZodiacIcon(user.userProfile.astrology?.sun.sign, 'w-6 h-6 text-gray-400')}
+          subtitle={`Explore Your Cosmic Chemistry`}
+        />
+        <div className='grid grid-cols-4 gap-4'>
+          <Panel className='flex-col justify-center'>
+            <RadialGauge label='Compatible' size={150} totalScore={interaction?.totalScore} />
+            <div className='flex flex-col !mt-10'>
+              <LinearGauge score={interaction.dynamicScore} label="Dynamic" />
+              <LinearGauge score={interaction.elementScore} label="Element" />
+              <LinearGauge score={interaction.modalityScore} label="Modality" />
+              <LinearGauge score={interaction.polarityScore} label="Polarity" />
+            </div>
+          </Panel>
+          <Card className='!p-10 col-span-3'>
+            <Link href={`/signs/${interaction.sign2}`} className='flex items-center space-x-2 hover:!no-underline'>
+              {getZodiacIcon(interaction.sign2, 'w-10 h-10 text-gray-300')}
+              <Heading level={1}>{interaction.sign2}</Heading>
+            </Link>
+
+            <Text variant='small' className="!text-gray-500 !mt-1 flex space-x-2">
+              {interaction.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}
+            </Text>
+
+            <Text variant='muted' className="!text-gray-400 flex space-x-2 !mt-2">
+              {getDistanceLabel(interaction.distance)}
+            </Text>
+
+            <Text variant='muted' className="!text-gray-400 !mt-2">{interaction.description}</Text>
+
+            <Text variant='xs' className="!text-gray-500 !mt-2">Keys to success</Text>
+            <Text variant='muted' className="!text-gray-400 !mt-0 !mb-4">{interaction.action}</Text>
+
+            <DynamicDetailsPanel dynamic={interaction.dynamicData} score={interaction.dynamicScore} />
+          </Card>
+        </div>
+        <div className='grid grid-cols-5 gap-4 !mt-4'>
+          <div className='col-span-3 space-y-4'>
+            <ElementInteractionCard interaction={interaction} />
+            <ModalityInteractionCard interaction={interaction} />
+            <PolarityInteractionCard interaction={interaction} />
           </div>
-        </Panel>
-        <Card className='!p-10 col-span-3'>
-          <Link href={`/signs/${interaction.sign2}`} className='flex items-center space-x-2 hover:!no-underline'>
-            {getZodiacIcon(interaction.sign2, 'w-10 h-10 text-gray-300')}
-            <Heading level={1}>{interaction.sign2}</Heading>
-          </Link>
-
-          <Text variant='small' className="!text-gray-500 !mt-1 flex space-x-2">
-            {interaction.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}
-          </Text>
-
-          <Text variant='muted' className="!text-gray-400 flex space-x-2 !mt-2">
-            {getDistanceLabel(interaction.distance)}
-          </Text>
-
-          <Text variant='muted' className="!text-gray-400 !mt-2">{interaction.description}</Text>
-
-          <Text variant='xs' className="!text-gray-500 !mt-2">Keys to success</Text>
-          <Text variant='muted' className="!text-gray-400 !mb-4">{interaction.action}</Text>
-
-          <DynamicDetailsPanel dynamic={interaction.dynamicData} score={interaction.dynamicScore} />
-        </Card>
-      </div>
-      <div className='grid grid-cols-5 gap-4 !mt-4'>
-        <div className='col-span-3 space-y-4'>
-          <ElementInteractionCard interaction={interaction} />
-          <ModalityInteractionCard interaction={interaction} />
-          <PolarityInteractionCard interaction={interaction} />
-        </div>
-        <div className='col-span-2 flex flex-col space-y-4'>
-          <EnergyTypesPanel 
-            energyTypes={[
-              interaction.energyTypeData as EnergyType,
-              interaction.elementInteractionData?.energyTypeData as EnergyType,
-              interaction.modalityInteractionData?.energyTypeData as EnergyType,
-              interaction.polarityInteractionData?.energyTypeData as EnergyType,
-              interaction.sign1Data.energyTypeData as EnergyType,
-              interaction.sign2Data.energyTypeData as EnergyType,
-            ]} 
-          />
-          <KeywordsPanel interaction={interaction} />
+          <div className='col-span-2 flex flex-col space-y-4'>
+            <Panel>
+              <EnergyTypesPanel 
+                energyTypes={[
+                  interaction.energyTypeData as EnergyType,
+                  interaction.elementInteractionData?.energyTypeData as EnergyType,
+                  interaction.modalityInteractionData?.energyTypeData as EnergyType,
+                  interaction.polarityInteractionData?.energyTypeData as EnergyType,
+                  interaction.sign1Data.energyTypeData as EnergyType,
+                  interaction.sign2Data.energyTypeData as EnergyType,
+                ]} 
+              />
+            </Panel>
+            <KeywordsPanel interaction={interaction} />
+          </div>
         </div>
       </div>
-    </div>
-  )
+    </PageTransition>      
+  );
 }

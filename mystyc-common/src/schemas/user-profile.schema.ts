@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { UserRole } from '../constants/roles.enum';
 import { SubscriptionLevel } from '../constants/subscription-levels.enum';
 import { validateWithError, validateSafely } from '../util/validation';
-import { AstrologySchema } from './astrology.schema';
+import { AstrologyCalculatedSchema } from './astrology.schema';
 
 // Reusable base schemas
 const BaseNameSchema = z.string()
@@ -59,7 +59,7 @@ export const UserProfileInputSchema = BasePersonSchema.extend({
     .optional(),
   hasTimeOfBirth: z.boolean().default(false),
   birthLocation: BirthLocationSchema.optional(),
-  astrology: AstrologySchema.optional(),
+  astrology: AstrologyCalculatedSchema.optional(),
   roles: z.array(z.nativeEnum(UserRole)).min(1),
   subscription: SubscriptionSchema,
   stripeCustomerId: z.string().optional()

@@ -11,6 +11,8 @@ import {
   ElementInteraction,
   ModalityInteraction,
   PolarityInteraction,
+  PlanetaryPosition,
+  PlanetInteraction,
   ZodiacSignType
 } from '../schemas';
 
@@ -62,6 +64,11 @@ export interface PolarityInteractionComplete extends PolarityInteraction {
   energyTypeData: EnergyType | null;
 }
 
+export interface PlanetInteractionComplete extends PlanetInteraction {
+  dynamicData: Dynamic | null;
+  energyTypeData: EnergyType | null;
+}
+
 export interface SignInteractionComplete extends SignInteraction {
   // Complete data for both signs
   sign1Data: SignComplete;
@@ -94,6 +101,45 @@ export interface AstrologyCalculated {
   rising: PlanetaryData;
   venus: PlanetaryData;
   mars: PlanetaryData;
+  createdAt: Date;
+  lastCalculatedAt: Date;
+}
+
+export interface PlanetaryPositionComplete extends PlanetaryPosition {
+  signData: SignComplete;
+  energyTypeData: EnergyType | null;
+}
+
+export interface PlanetaryCompleteData {
+  sign: ZodiacSignType;
+  totalScore: number;
+  interactions: Record<string, { score: number }>;
+  signData: SignComplete;
+  planetData: Planet;
+  positionData: PlanetaryPositionComplete;
+}
+
+export interface AstrologyComplete {
+  sun: PlanetaryCompleteData;
+  moon: PlanetaryCompleteData;
+  rising: PlanetaryCompleteData;
+  venus: PlanetaryCompleteData;
+  mars: PlanetaryCompleteData;
+  
+  // Rich interaction data between planets
+  planetaryInteractions: {
+    'sun-moon': PlanetInteractionComplete;
+    'sun-rising': PlanetInteractionComplete;
+    'sun-mars': PlanetInteractionComplete;
+    'sun-venus': PlanetInteractionComplete;
+    'moon-rising': PlanetInteractionComplete;
+    'moon-venus': PlanetInteractionComplete;
+    'moon-mars': PlanetInteractionComplete;
+    'rising-venus': PlanetInteractionComplete;
+    'rising-mars': PlanetInteractionComplete;
+    'venus-mars': PlanetInteractionComplete;
+  };
+  
   createdAt: Date;
   lastCalculatedAt: Date;
 }

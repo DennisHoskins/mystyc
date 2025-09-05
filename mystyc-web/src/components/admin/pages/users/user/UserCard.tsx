@@ -120,7 +120,7 @@ export default function UserCard({ firebaseUid, className }: { firebaseUid?: str
           />
           <AdminDetailField
             label="Zodiac Sign"
-            value={user.astrology?.sunSign || 'Not Set'}
+            value={user.astrology?.sun.sign || 'Not Set'}
             href={`/admin/users/${firebaseUid}/astrology`}
           />
         </AdminDetailGrid>

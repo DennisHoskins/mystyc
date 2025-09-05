@@ -1,6 +1,6 @@
 import { Fingerprint } from 'lucide-react';
 
-import { UserProfile, UserAstrologyData } from 'mystyc-common';
+import { UserProfile, AstrologyCalculated } from 'mystyc-common';
 import AdminCard from '@/components/admin/ui/AdminCard';
 import Sun from '@/components/ui/icons/astrology/planets/Sun';
 import Moon from '@/components/ui/icons/astrology/planets/Moon';
@@ -14,7 +14,7 @@ export default function UserCoreIdentityCard({
   astrologyData 
 }: { 
   user?: UserProfile | null;
-  astrologyData: UserAstrologyData;
+  astrologyData: AstrologyCalculated;
 }) {
   if (!user?.astrology) return null;
 
@@ -22,8 +22,8 @@ export default function UserCoreIdentityCard({
     <AdminCard icon={<Fingerprint className='w-3 h-3' />} title='Core Identity Dynamics' className='space-y-2'>
       <UserCoreIdentityInteraction
         interactionKey="Sun-Moon"
-        sign1={user.astrology.sunSign}
-        sign2={user.astrology.moonSign}
+        sign1={user.astrology.sun.sign}
+        sign2={user.astrology.moon.sign}
         astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
@@ -36,8 +36,8 @@ export default function UserCoreIdentityCard({
       
       <UserCoreIdentityInteraction
         interactionKey="Sun-Rising"
-        sign1={user.astrology.sunSign}
-        sign2={user.astrology.risingSign}
+        sign1={user.astrology.sun.sign}
+        sign2={user.astrology.rising.sign}
         astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
@@ -50,8 +50,8 @@ export default function UserCoreIdentityCard({
       
       <UserCoreIdentityInteraction
         interactionKey="Sun-Mars"
-        sign1={user.astrology.sunSign}
-        sign2={user.astrology.marsSign}
+        sign1={user.astrology.sun.sign}
+        sign2={user.astrology.mars.sign}
         astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>
@@ -64,8 +64,8 @@ export default function UserCoreIdentityCard({
       
       <UserCoreIdentityInteraction
         interactionKey="Sun-Venus"
-        sign1={user.astrology.sunSign}
-        sign2={user.astrology.venusSign}
+        sign1={user.astrology.sun.sign}
+        sign2={user.astrology.venus.sign}
         astrologyData={astrologyData}
         label={
           <div className='text-[11px] text-gray-500 flex flex-1 items-center space-x-1'>

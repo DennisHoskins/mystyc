@@ -11,7 +11,7 @@ export default function MystycTitle({
   titleIcon,
   subtitle = "" 
 } : {
-  icon: React.ReactNode,
+  icon?: React.ReactNode,
   heading?: string,
   href?: string,
   title?: string,
@@ -19,7 +19,7 @@ export default function MystycTitle({
   subtitle?: string
 }) {
   return(
-    <div className="flex-1 flex items-center space-x-1">
+    <div className="flex-1 flex items-center space-x-1 max-h-10 overflow-hidden">
       {icon}
       {href ? (
         <Link href={href} className="hover:!no-underline">

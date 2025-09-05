@@ -4,7 +4,6 @@ import { EnergyType } from "mystyc-common";
 import { formatStringForDisplay } from "@/util/util";
 import { getCategoryIcon } from "@/components/ui/icons/astrology/categories";
 import Text from "@/components/ui/Text";
-import Panel from "@/components/ui/Panel";
 import Heading from "@/components/ui/Heading";
 
 interface AggregatedEnergyType {
@@ -56,33 +55,31 @@ export default function EnergyTypesPanel({ energyTypes } : { energyTypes: Energy
   }
 
   return (
-    <Panel className="!p-12">
-      <div className="flex flex-col space-y-10">
-        {categories.map((categoryData) => (
-          <div key={categoryData.category} className="space-y-2 !bg-transparen1t">
-            <div className="flex">
-              <div className="flex w-full items-center space-x-2">
-                <div className="p-1 rounded-full bg-blue-500">
-                  {getCategoryIcon(categoryData.category, 'w-3 h-3 text-white')} 
-                </div>
-                <Heading level={3} className="flex items-center flex-1 !text-white">
-                  {formatStringForDisplay(categoryData.category)} Energy <Zap className="w-3 h-3 ml-2 text-white" />
-                </Heading>
+    <div className="flex flex-col space-y-10">
+      {categories.map((categoryData) => (
+        <div key={categoryData.category} className="space-y-2 !bg-transparen1t">
+          <div className="flex">
+            <div className="flex w-full items-center space-x-2">
+              <div className="p-1 rounded-full bg-blue-500">
+                {getCategoryIcon(categoryData.category, 'w-3 h-3 text-white')} 
               </div>
+              <Heading level={3} className="flex items-center flex-1 !text-white">
+                {formatStringForDisplay(categoryData.category)} Energy <Zap className="w-3 h-3 ml-2 text-white" />
+              </Heading>
             </div>
-
-            <Text variant='small' className='!text-gray-600'>
-              {Array.from(categoryData.keywords).map((word: string) => 
-                word.charAt(0).toUpperCase() + word.slice(1)
-              ).join(", ")}
-            </Text>
-
-            <Text variant='muted' className="mt-1">
-              {[...(categoryData.descriptions as Set<string>)].join(". ")}
-            </Text>
           </div>
-        ))}
-      </div>
-    </Panel>
+
+          <Text variant='small' className='!text-gray-600'>
+            {Array.from(categoryData.keywords).map((word: string) => 
+              word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(", ")}
+          </Text>
+
+          <Text variant='muted' className="mt-1">
+            {[...(categoryData.descriptions as Set<string>)].join(". ")}
+          </Text>
+        </div>
+      ))}
+    </div>
   );
 }

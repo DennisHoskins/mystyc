@@ -6,6 +6,7 @@ import { sessionManager } from '@/server/services/sessionManager';
 import { authTokenManager } from '@/server/services/authTokenManager';
 import { logger } from '@/util/logger';
 import { withSession } from '../util/withSession';
+import { AstrologyComplete } from 'mystyc-common';
 
 export async function getUser(deviceInfo: DeviceInfo): Promise<User | null> {
   return withSession(async (session) => {
@@ -70,7 +71,7 @@ export async function getUserContent(deviceInfo: DeviceInfo): Promise<Content | 
   }, deviceInfo, 'getUserContent');
 }
 
-export async function getUserAstrologyData(deviceInfo: DeviceInfo, user: User): Promise<User | null> {
+export async function getUserAstrologyData(deviceInfo: DeviceInfo, user: User): Promise<{user: User, astrology: AstrologyComplete} | null> {
   return withSession(async (session) => {
     logger.log('[getUserAstrologyData] Fetching astrology data');
 

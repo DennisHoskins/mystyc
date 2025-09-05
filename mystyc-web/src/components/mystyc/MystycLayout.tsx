@@ -17,7 +17,7 @@ export default function MystycLayout({ children }: { children: React.ReactNode }
       <ScrollWrapper className='z-10'>
         <div className='flex flex-row w-full max-w-content flex-grow pt-[59px]'>
           <MystycSidebar />
-          <Main className='flex w-full flex-grow ml-8'>
+          <Main className='flex w-full flex-grow ml-4 -mt-10'>
             {children}
           </Main>
         </div>

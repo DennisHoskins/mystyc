@@ -16,28 +16,28 @@ export default function UserStarSignCard({ user }: { user?: UserProfile | null }
       <AdminDetailGrid cols={5} className='mt-1'>
         <AdminDetailField
           label="Sun Sign"
-          icon={getZodiacIcon(user?.astrology?.sunSign)}
-          value={user && (user.astrology?.sunSign || 'Not set')}
+          icon={getZodiacIcon(user?.astrology?.sun.sign)}
+          value={user && (user.astrology?.sun.sign || 'Not set')}
         />
         <AdminDetailField
           label="Moon Sign"
-          icon={getZodiacIcon(user?.astrology?.moonSign)}
-          value={user && (user.astrology?.moonSign || 'Not set')}
+          icon={getZodiacIcon(user?.astrology?.moon.sign)}
+          value={user && (user.astrology?.moon.sign || 'Not set')}
         />
         <AdminDetailField
           label="Rising Sign"
-          icon={getZodiacIcon(user?.astrology?.risingSign)}
-          value={user && (user.astrology?.risingSign || 'Not set')}
+          icon={getZodiacIcon(user?.astrology?.rising.sign)}
+          value={user && (user.astrology?.rising.sign || 'Not set')}
         />
         <AdminDetailField
           label="Venus Sign"
-          icon={getZodiacIcon(user?.astrology?.venusSign)}
-          value={user && (user.astrology?.venusSign || 'Not set')}
+          icon={getZodiacIcon(user?.astrology?.venus.sign)}
+          value={user && (user.astrology?.venus.sign || 'Not set')}
         />
         <AdminDetailField
           label="Mars Sign"
-          icon={getZodiacIcon(user?.astrology?.marsSign)}
-          value={user && (user.astrology?.marsSign || 'Not set')}
+          icon={getZodiacIcon(user?.astrology?.mars.sign)}
+          value={user && (user.astrology?.mars.sign || 'Not set')}
         />
       </AdminDetailGrid>
     </AdminCard>

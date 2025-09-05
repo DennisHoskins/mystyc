@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 import { AppUser } from '@/interfaces/app/app-user.interface';
-import { User } from 'mystyc-common';
+import { AstrologyComplete, User } from 'mystyc-common';
 import { DeviceInfo } from '@/interfaces/';
 import { getUserAstrologyData } from '@/server/actions/user';
 import { useSetUser } from '@/components/ui/context/AppContext'; 
@@ -23,7 +23,7 @@ export default function SuccessPanel({ user, deviceInfo, setIsWorking }: Success
   const setUser = useSetUser();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const [updatedUser, setUpdatedUser] = useState<User | null>(null);
+  const [updatedUser, setUpdatedUser] = useState<{user: User, astrology: AstrologyComplete} | null>(null);
   const hasRun = useRef(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -71,20 +71,17 @@ export default function SuccessPanel({ user, deviceInfo, setIsWorking }: Success
       return;
     }
 
-    window.dispatchEvent(new CustomEvent('wizard-next'));
-
-    setTimeout(() => {
-      const newUser = {
-        ...user,
-        userProfile: updatedUser.userProfile,
-      };
-      setUser(newUser);
-    }, 1000);      
+    debugger
+    const newUser = {
+      ...user,
+      userProfile: updatedUser.user.userProfile,
+    };
+    setUser(newUser);
   }
 
   return (
     <>
-      <Heading level={3} className='mb-16'>{isReady ? `Welcome to mystyc, ${updatedUser?.userProfile.astrology?.sunSign}` : "Building your star chart"}</Heading>
+      <Heading level={3} className='mb-16'>{isReady ? `Welcome to mystyc, ${updatedUser?.user.userProfile.astrology?.sun.sign}` : "Building your star chart"}</Heading>
       <FormLayout
         subtitle={isReady 
           ? <>

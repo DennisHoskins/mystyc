@@ -161,7 +161,7 @@ export class SignInteractionsService {
    * @param signName - Sign name to build complete data for
    * @returns Promise<SignComplete> - Complete sign with all nested data
    */
-  private async buildCompleteSignData(signName: string): Promise<SignComplete> {
+  async buildCompleteSignData(signName: string): Promise<SignComplete> {
     // Get base sign data
     const signResult = await this.signsService.findByName(signName);
     if (!signResult) {

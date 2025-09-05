@@ -112,12 +112,12 @@ export class AdminUsersStatsService {
     
     const usersWithFullName = allUsers.filter(user => user.firstName && user.firstName.trim() && user.lastName && user.lastName.trim()).length;
     const usersWithDateOfBirth = allUsers.filter(user => user.dateOfBirth).length;
-    const usersWithZodiacSign = allUsers.filter(user => user.astrology?.sunSign && user.astrology?.sunSign.trim()).length;
+    const usersWithZodiacSign = allUsers.filter(user => user.astrology?.sun.sign && user.astrology?.sun.sign.trim()).length;
     
     const usersWithAllFields = allUsers.filter(user => 
       user.firstName && user.firstName.trim() && user.lastName && user.lastName.trim() &&
       user.dateOfBirth &&
-      user.astrology?.sunSign && user.astrology?.sunSign.trim()
+      user.astrology?.sun.sign && user.astrology?.sun.sign.trim()
     ).length;
 
     const stats = {

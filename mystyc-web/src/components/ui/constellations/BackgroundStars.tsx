@@ -21,9 +21,9 @@ export function BackgroundStars({
 }: BackgroundStarsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const staticCanvasRef = useRef<HTMLCanvasElement>(null);
-  const sparkleCanvasRef = useRef<HTMLCanvasElement>(null);
+  // const sparkleCanvasRef = useRef<HTMLCanvasElement>(null);
   const starsRef = useRef<BackgroundStar[]>([]);
-  const animationRef = useRef<number>(0);
+  // const animationRef = useRef<number>(0);
   const resizeTimeoutRef = useRef<NodeJS.Timeout>(null);
   const lastDrawSizeRef = useRef({ width: 0, height: 0 });
 
@@ -79,7 +79,7 @@ export function BackgroundStars({
     ctx.shadowColor = `rgba(255, 255, 255, 1)`;
 
     starsRef.current.forEach(star => {
-      if (star.isSparkle) return; // Skip sparkling stars
+      // if (star.isSparkle) return; // Skip sparkling stars
 
       const x = star.x * width;
       const y = star.y * height;
@@ -104,67 +104,67 @@ export function BackgroundStars({
     ctx.globalAlpha = 1;
   }, []);
 
-  // Draw only sparkling stars
-  const drawSparklingStars = useCallback(() => {
-    const canvas = sparkleCanvasRef.current;
-    if (!canvas) return;
+  // // Draw only sparkling stars
+  // const drawSparklingStars = useCallback(() => {
+  //   const canvas = sparkleCanvasRef.current;
+  //   if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+  //   const ctx = canvas.getContext('2d');
+  //   if (!ctx) return;
 
-    const { width, height } = canvas;
-    ctx.clearRect(0, 0, width, height);
-    ctx.globalAlpha = 0.5;
+  //   const { width, height } = canvas;
+  //   ctx.clearRect(0, 0, width, height);
+  //   ctx.globalAlpha = 0.5;
 
-    let hasSparklingStars = false;
+  //   let hasSparklingStars = false;
 
-    starsRef.current.forEach(star => {
-      // Random chance to start sparkling
-      if (!star.isSparkle && Math.random() < 0.001) {
-        star.isSparkle = true;
-        star.sparkleTimer = 0;
-      }
+  //   starsRef.current.forEach(star => {
+  //     // Random chance to start sparkling
+  //     if (!star.isSparkle && Math.random() < 0.001) {
+  //       star.isSparkle = true;
+  //       star.sparkleTimer = 0;
+  //     }
 
-      if (!star.isSparkle) return;
+  //     if (!star.isSparkle) return;
 
-      hasSparklingStars = true;
-      star.sparkleTimer += 16;
+  //     hasSparklingStars = true;
+  //     star.sparkleTimer += 16;
 
-      const x = star.x * width;
-      const y = star.y * height;
+  //     const x = star.x * width;
+  //     const y = star.y * height;
       
-      if (star.sparkleTimer < 1000) {
-        const progress = star.sparkleTimer / 1000;
-        let fadeAlpha, sizeMultiplier;
+  //     if (star.sparkleTimer < 1000) {
+  //       const progress = star.sparkleTimer / 1000;
+  //       let fadeAlpha, sizeMultiplier;
         
-        if (progress < 0.5) {
-          // Fade in
-          const fadeProgress = progress * 2;
-          fadeAlpha = star.brightness * fadeProgress;
-          sizeMultiplier = 1.0 + fadeProgress * 0.3;
-        } else {
-          // Fade out
-          const fadeProgress = (progress - 0.5) * 2;
-          fadeAlpha = star.brightness * (1 - fadeProgress);
-          sizeMultiplier = 1.3 - fadeProgress * 0.3;
-        }
+  //       if (progress < 0.5) {
+  //         // Fade in
+  //         const fadeProgress = progress * 2;
+  //         fadeAlpha = star.brightness * fadeProgress;
+  //         sizeMultiplier = 1.0 + fadeProgress * 0.3;
+  //       } else {
+  //         // Fade out
+  //         const fadeProgress = (progress - 0.5) * 2;
+  //         fadeAlpha = star.brightness * (1 - fadeProgress);
+  //         sizeMultiplier = 1.3 - fadeProgress * 0.3;
+  //       }
         
-        const size = star.size * sizeMultiplier * 2;
+  //       const size = star.size * sizeMultiplier * 2;
         
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(255, 255, 255, ${fadeAlpha})`;
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        // End sparkle
-        star.isSparkle = false;
-        star.sparkleTimer = 0;
-      }
-    });
+  //       ctx.beginPath();
+  //       ctx.fillStyle = `rgba(255, 255, 255, ${fadeAlpha})`;
+  //       ctx.arc(x, y, size, 0, Math.PI * 2);
+  //       ctx.fill();
+  //     } else {
+  //       // End sparkle
+  //       star.isSparkle = false;
+  //       star.sparkleTimer = 0;
+  //     }
+  //   });
 
-    ctx.globalAlpha = 1;
-    return hasSparklingStars;
-  }, []);
+  //   ctx.globalAlpha = 1;
+  //   return hasSparklingStars;
+  // }, []);
 
   // Debounced resize handler
   const handleResize = useCallback(() => {
@@ -175,9 +175,10 @@ export function BackgroundStars({
     resizeTimeoutRef.current = setTimeout(() => {
       const container = containerRef.current;
       const staticCanvas = staticCanvasRef.current;
-      const sparkleCanvas = sparkleCanvasRef.current;
+      // const sparkleCanvas = sparkleCanvasRef.current;
       
-      if (!container || !staticCanvas || !sparkleCanvas) return;
+      // if (!container || !staticCanvas || !sparkleCanvas) return;
+      if (!container || !staticCanvas) return;
 
       const width = container.clientWidth;
       const height = container.clientHeight;
@@ -188,8 +189,8 @@ export function BackgroundStars({
         
         staticCanvas.width = width;
         staticCanvas.height = height;
-        sparkleCanvas.width = width;
-        sparkleCanvas.height = height;
+        // sparkleCanvas.width = width;
+        // sparkleCanvas.height = height;
 
         // If no stars exist, generate them
         if (starsRef.current.length === 0) {
@@ -204,21 +205,21 @@ export function BackgroundStars({
   }, [generateStars, drawStaticStars]);
 
   // Animation loop for sparkling stars only
-  useEffect(() => {
-    const animate = () => {
-      drawSparklingStars();
-      animationRef.current = requestAnimationFrame(animate);
-    };
+  // useEffect(() => {
+  //   const animate = () => {
+  //     // drawSparklingStars();
+  //     animationRef.current = requestAnimationFrame(animate);
+  //   };
 
-    animationRef.current = requestAnimationFrame(animate);
+  //   animationRef.current = requestAnimationFrame(animate);
 
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = 0;
-      }
-    };
-  }, [drawSparklingStars]);
+  //   return () => {
+  //     if (animationRef.current) {
+  //       cancelAnimationFrame(animationRef.current);
+  //       animationRef.current = 0;
+  //     }
+  //   };
+  // }, [drawSparklingStars]);
 
   // Initial setup and resize listener
   useEffect(() => {
@@ -249,7 +250,7 @@ export function BackgroundStars({
           pointerEvents: 'none'
         }}
       />
-      <canvas
+      {/* <canvas
         ref={sparkleCanvasRef}
         style={{
           position: 'absolute',
@@ -259,7 +260,7 @@ export function BackgroundStars({
           height: '100%',
           pointerEvents: 'none'
         }}
-      />
+      /> */}
     </div>
   );
 }

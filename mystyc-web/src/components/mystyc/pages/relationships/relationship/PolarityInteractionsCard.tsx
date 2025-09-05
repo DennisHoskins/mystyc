@@ -4,6 +4,8 @@ import Heading from "@/components/ui/Heading";
 import Text from "@/components/ui/Text";
 import Card from "@/components/ui/Card";
 import LinearGauge from "@/components/mystyc/ui/LinearGauge";
+import { getDynamicIcon } from "@/components/ui/icons/astrology/dynamics";
+import { formatStringForDisplay } from "@/util/util";
 
 export default function PolarityInteractionCard({ interaction } : { interaction: SignInteractionComplete | null | undefined }) {
   if (!interaction || !interaction.polarityInteractionData) {
@@ -30,6 +32,11 @@ export default function PolarityInteractionCard({ interaction } : { interaction:
       </div>
 
       <Text variant='muted' className="!text-gray-400 !mt-2">{interaction.polarityInteractionData.description}</Text>
+
+      <div className='flex items-center space-x-2 !mt-2'>
+        <Heading level={5} className='!text-gray-300'>Dynamic: {formatStringForDisplay(interaction.polarityInteractionData.dynamic)}</Heading>
+        {getDynamicIcon(interaction.polarityInteractionData.dynamic, 'w-3 h-3 text-gray-300')}
+      </div>
 
       <Text variant='xs' className="!text-gray-500 !mt-2">Keys to success</Text>
       <Text variant='muted' className="!text-gray-400">{interaction.polarityInteractionData.action}</Text>

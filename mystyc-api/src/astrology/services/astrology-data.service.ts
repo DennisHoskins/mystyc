@@ -1,36 +1,32 @@
 import { Injectable } from '@nestjs/common';
 
 import { 
-  UserAstrologyData, 
-  REQUIRED_PLANET_INTERACTIONS, 
-  createInteractionKey 
-} from 'mystyc-common/schemas/astrology.schema';
-import { 
   Sign, 
   PlanetType, 
   ZodiacSignType,
-  PlanetInteraction,
-  ElementInteraction,
-  ModalityInteraction
 } from 'mystyc-common/schemas';
-import { AstrologyCalculated } from 'mystyc-common/interfaces/astrology.interface';
+import { AstrologyCalculated, AstrologyComplete, PlanetaryData, PlanetaryCompleteData } from 'mystyc-common/interfaces/astrology.interface';
 import { calculatePlanetaryInteractions } from 'mystyc-common/util/astrology-calculations';
 
 import { logger } from '@/common/util/logger';
 import { SignsService } from './signs.service';
+import { PlanetsService } from './planets.service';
+import { DynamicsService } from './dynamics.service';
+import { EnergyTypesService } from './energy-types.service';
 import { PlanetaryPositionsService } from './planetary-positions.service';
 import { PlanetInteractionsService } from './planet-interactions.service';
-import { ElementInteractionsService } from './element-interactions.service';
-import { ModalityInteractionsService } from './modality-interactions.service';
+import { SignInteractionsService } from './sign-interactions.service';
 
 @Injectable()
 export class AstrologyDataService {
   constructor(
     private readonly signsService: SignsService,
+    private readonly planetsService: PlanetsService,
+    private readonly dynamicsService: DynamicsService,
+    private readonly energyTypesService: EnergyTypesService,
     private readonly planetaryPositionsService: PlanetaryPositionsService,
     private readonly planetInteractionsService: PlanetInteractionsService,
-    private readonly elementInteractionsService: ElementInteractionsService,
-    private readonly modalityInteractionsService: ModalityInteractionsService,
+    private readonly signInteractionsService: SignInteractionsService,
   ) {}
 
   /**
@@ -87,158 +83,111 @@ export class AstrologyDataService {
   }
 
   /**
-   * Assembles complete astrology data from a set of planetary signs (LEGACY - for reference data assembly)
-   * @param signs - Record mapping planets to their zodiac signs
-   * @returns Promise<UserAstrologyData> - Complete astrology data with planetary positions and interactions
+   * Assembles complete astrology data with rich reference information
+   * @param calculatedData - Base calculated astrology data with scores
+   * @returns Promise<AstrologyComplete> - Complete astrology data with full reference information
    */
-  async assembleAstrologyData(signs: Record<PlanetType, ZodiacSignType>): Promise<UserAstrologyData> {
-    logger.info('Assembling reference astrology data', { signs }, 'AstrologyDataService');
+  async assembleCompleteAstrologyData(calculatedData: AstrologyCalculated): Promise<AstrologyComplete> {
+    logger.info('Assembling complete astrology data', {}, 'AstrologyDataService');
 
     try {
-      // Get all unique signs for batching
-      const uniqueSigns = [...new Set(Object.values(signs))];
-      
-      // Batch fetch all sign information  
-      const signInfoMap = await this.fetchAllSignInfo(uniqueSigns);
+      // Build complete data for each planet in parallel
+      const [sunComplete, moonComplete, risingComplete, venusComplete, marsComplete] = await Promise.all([
+        this.buildPlanetaryCompleteData('Sun', calculatedData.sun),
+        this.buildPlanetaryCompleteData('Moon', calculatedData.moon),
+        this.buildPlanetaryCompleteData('Rising', calculatedData.rising),
+        this.buildPlanetaryCompleteData('Venus', calculatedData.venus),
+        this.buildPlanetaryCompleteData('Mars', calculatedData.mars),
+      ]);
 
-      // Build planetary data
-      const planetaryData = await this.buildPlanetaryData(signs, signInfoMap);
+      // Build all planetary interactions
+      const planetaryInteractions = await this.buildAllPlanetaryInteractions();
 
-      // Get all required interactions
-      const interactions = await this.fetchAllInteractions(signInfoMap);
+      const completeData: AstrologyComplete = {
+        sun: sunComplete,
+        moon: moonComplete,
+        rising: risingComplete,
+        venus: venusComplete,
+        mars: marsComplete,
+        planetaryInteractions,
+        createdAt: calculatedData.createdAt,
+        lastCalculatedAt: calculatedData.lastCalculatedAt
+      };
 
-      logger.info('Reference astrology data assembled successfully', { 
-        planetsCount: Object.keys(planetaryData).length,
-        planetInteractionsCount: Object.keys(interactions.planets).length,
-        elementInteractionsCount: Object.keys(interactions.elements).length,
-        modalityInteractionsCount: Object.keys(interactions.modalities).length
-      }, 'AstrologyDataService');
+      logger.info('Complete astrology data assembled successfully', {}, 'AstrologyDataService');
+      return completeData;
 
-      return { planetaryData, interactions };
-      
     } catch (error) {
-      logger.error('Failed to assemble reference astrology data', {
-        signs,
-        error
-      }, 'AstrologyDataService');
-      
+      logger.error('Failed to assemble complete astrology data', { error }, 'AstrologyDataService');
       throw error;
     }
-  }
+  }  
 
-  private async fetchAllSignInfo(uniqueSigns: ZodiacSignType[]): Promise<Map<string, Sign>> {
-    const signInfoMap = new Map<string, Sign>();
+  /**
+   * Builds complete data for a single planet
+   */
+  private async buildPlanetaryCompleteData(
+    planetType: string, 
+    calculatedPlanet: PlanetaryData
+  ): Promise<PlanetaryCompleteData> {
+    // Use existing SignInteractionsService method instead of duplicating
+    const signComplete = await this.signInteractionsService.buildCompleteSignData(calculatedPlanet.sign);
+
+    const planet = await this.planetsService.findByName(planetType as PlanetType);
     
-    const signInfoPromises = uniqueSigns.map(async (sign) => {
-      const signInfo = await this.signsService.findByName(sign);
-      if (signInfo) signInfoMap.set(sign, signInfo);
-      return signInfo;
-    });
-    
-    await Promise.all(signInfoPromises);
-    return signInfoMap;
-  }
+    const positionData = await this.planetaryPositionsService.findByPosition(planetType as PlanetType, calculatedPlanet.sign);
 
-  private async buildPlanetaryData(
-    signs: Record<PlanetType, ZodiacSignType>,
-    signInfoMap: Map<string, Sign>
-  ): Promise<UserAstrologyData['planetaryData']> {
-    const planetaryData = {} as UserAstrologyData['planetaryData'];
-    
-    const planetaryPromises = (Object.entries(signs) as [PlanetType, ZodiacSignType][]).map(
-      async ([planet, sign]) => {
-        const [position, signInfo] = await Promise.all([
-          this.planetaryPositionsService.findByPosition(planet, sign),
-          Promise.resolve(signInfoMap.get(sign))
-        ]);
-        
-        if (position && signInfo) {
-          planetaryData[planet] = { sign, position, signInfo };
-        }
-      }
-    );
-
-    await Promise.all(planetaryPromises);
-    return planetaryData;
-  }
-
-  private async fetchAllInteractions(signInfoMap: Map<string, Sign>) {
-    // Get all unique elements and modalities from the signs
-    const elements = [...new Set([...signInfoMap.values()].map(s => s.element))];
-    const modalities = [...new Set([...signInfoMap.values()].map(s => s.modality))];
-
-    // Batch fetch all required interactions
-    const [planetInteractions, elementInteractions, modalityInteractions] = await Promise.all([
-      this.fetchPlanetInteractions(),
-      this.fetchElementInteractions(elements),  
-      this.fetchModalityInteractions(modalities)
-    ]);
+    let positionComplete = null;
+    if (positionData && signComplete) {
+      const energyTypeData = await this.energyTypesService.findByName(positionData.energyType);
+      positionComplete = {
+        ...positionData,
+        signData: signComplete,
+        energyTypeData
+      };
+    }
 
     return {
-      planets: planetInteractions,
-      elements: elementInteractions,
-      modalities: modalityInteractions
+      sign: calculatedPlanet.sign,
+      totalScore: calculatedPlanet.totalScore,
+      interactions: calculatedPlanet.interactions || {},
+      signData: signComplete,
+      positionData: positionComplete!,
+      planetData: planet!,
     };
   }
 
-  private async fetchPlanetInteractions(): Promise<Record<string, PlanetInteraction>> {
-    const interactions: Record<string, PlanetInteraction> = {};
-    
-    const interactionPromises = REQUIRED_PLANET_INTERACTIONS.map(async (key) => {
-      const [planet1, planet2] = key.split('-') as [PlanetType, PlanetType];
-      const interaction = await this.planetInteractionsService.findByPlanets(planet1, planet2);
-      if (interaction) {
-        interactions[key] = interaction;
-      }
-    });
+  /**
+   * Builds all planetary interactions with complete data
+   */
+  private async buildAllPlanetaryInteractions(): Promise<AstrologyComplete['planetaryInteractions']> {
+    const interactions = {} as AstrologyComplete['planetaryInteractions'];
+    const planetCombinations = [
+      ['Sun', 'Moon'], ['Sun', 'Rising'], ['Sun', 'Mars'], ['Sun', 'Venus'],
+      ['Moon', 'Rising'], ['Moon', 'Venus'], ['Moon', 'Mars'],
+      ['Rising', 'Venus'], ['Rising', 'Mars'], ['Venus', 'Mars']
+    ];
 
-    await Promise.all(interactionPromises);
+    await Promise.all(
+      planetCombinations.map(async ([p1, p2]) => {
+        const key = `${p1.toLowerCase()}-${p2.toLowerCase()}` as keyof AstrologyComplete['planetaryInteractions'];
+        const interaction = await this.planetInteractionsService.findByPlanets(p1 as PlanetType, p2 as PlanetType);
+        
+        if (interaction) {
+          const [dynamicData, energyTypeData] = await Promise.all([
+            this.dynamicsService.findByName(interaction.dynamic),
+            this.energyTypesService.findByName(interaction.energyType)
+          ]);
+          
+          interactions[key] = {
+            ...interaction,
+            dynamicData,
+            energyTypeData
+          } as any;
+        }
+      })
+    );
+
     return interactions;
-  }
-
-  private async fetchElementInteractions(elements: string[]): Promise<Record<string, ElementInteraction>> {
-    const interactions: Record<string, ElementInteraction> = {};
-    
-    // Get all unique element pairs
-    const elementPairs = this.getUniquePairs(elements);
-    
-    const interactionPromises = elementPairs.map(async ([element1, element2]) => {
-      const key = createInteractionKey(element1, element2);
-      const interaction = await this.elementInteractionsService.findByElements(element1, element2);
-      if (interaction) {
-        interactions[key] = interaction;
-      }
-    });
-
-    await Promise.all(interactionPromises);
-    return interactions;
-  }
-
-  private async fetchModalityInteractions(modalities: string[]): Promise<Record<string, ModalityInteraction>> {
-    const interactions: Record<string, ModalityInteraction> = {};
-    
-    // Get all unique modality pairs  
-    const modalityPairs = this.getUniquePairs(modalities);
-    
-    const interactionPromises = modalityPairs.map(async ([modality1, modality2]) => {
-      const key = createInteractionKey(modality1, modality2);
-      const interaction = await this.modalityInteractionsService.findByModalities(modality1, modality2);
-      if (interaction) {
-        interactions[key] = interaction;
-      }
-    });
-
-    await Promise.all(interactionPromises);
-    return interactions;
-  }
-
-  private getUniquePairs<T>(items: T[]): [T, T][] {
-    const pairs: [T, T][] = [];
-    for (let i = 0; i < items.length; i++) {
-      for (let j = i + 1; j < items.length; j++) {
-        pairs.push([items[i], items[j]]);
-      }
-    }
-    return pairs;
-  }
+  }  
 }

@@ -1,34 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-
-@Schema({ _id: false })
-export class PlanetaryData {
-  @Prop({ required: true, enum: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'] })
-  sign!: string;
-
-  @Prop({ required: true, min: -1, max: 1 })
-  totalScore!: number;
-
-  @Prop({ type: Object })
-  interactions?: Record<string, { score: number }>;
-}
+import { PlanetaryDataSchema } from '@/users/schemas/user-profile.schema';
 
 @Schema({ _id: false })
 export class Astrology {
-  @Prop({ type: PlanetaryData, required: true })
-  sun!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  sun!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  moon!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  moon!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  rising!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  rising!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  venus!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  venus!: PlanetaryDataSchema;
 
-  @Prop({ type: PlanetaryData, required: true })
-  mars!: PlanetaryData;
+  @Prop({ type: PlanetaryDataSchema, required: true })
+  mars!: PlanetaryDataSchema;
 
   @Prop({ type: Date, required: true })
   createdAt!: Date;
