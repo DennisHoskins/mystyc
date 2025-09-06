@@ -1,6 +1,6 @@
 'use client'
 
-import { LayoutDashboard, Clock, BookOpenText, CircleDollarSign, Globe, Sparkle, SunMoon, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
+import { LayoutDashboard, Clock, CircleDollarSign, Globe, Sparkle, SunMoon, Users, MonitorSmartphone, Shield, Bell, Activity } from 'lucide-react';
 
 import Sidebar from '@/components/ui/layout/sidebar/Sidebar';
 import SidebarItem from '@/components/ui/layout/sidebar/SidebarItem';
@@ -21,7 +21,6 @@ export default function AdminSidebar({
     { icon: <Sparkle />, label: 'OpenAI Usage', href: '/admin/openai' },
     { icon: <CircleDollarSign />, label: 'Subscriptions', href: '/admin/subscriptions' },
     { icon: <SunMoon />, label: 'Astrology', href: '/admin/astrology' },
-    { icon: <BookOpenText />, label: 'Content', href: '/admin/content' },
     { icon: <Clock />, label: 'Schedules', href: '/admin/schedules' },
     { icon: <Users />, label: 'Users', href: '/admin/users' },
     { icon: <MonitorSmartphone />, label: 'Devices', href: '/admin/devices' },

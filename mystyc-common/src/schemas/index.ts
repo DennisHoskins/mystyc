@@ -7,7 +7,6 @@ export * from './decoded-token.schema';
 export * from './schedule.schema';
 export * from './schedule-execution.schema';
 export * from './notification.schema';
-export * from './content.schema';
 export * from './payment-history.schema';
 export * from './openai-usage.schema';
 export * from './astrology-reference.schema';

@@ -4,7 +4,6 @@ import AdminDashboardTraffic from './AdminDashboardTraffic';
 import AdminDashboardSubscriptions from './AdminDashboardSubscriptions';
 import AdminDashboardOpenAI from './AdminDashboardOpenAI';
 import AdminDashboardSchedules from './AdminDashboardSchedules';
-import AdminDashboardContent from './AdminDashboardContent';
 import AdminDashboardUsers from './AdminDashboardUsers';
 import AdminDashboardDevices from './AdminDashboardDevices';
 import AdminDashboardNotifications from './AdminDashboardNotifications';
@@ -22,7 +21,6 @@ export default function AdminDashboard({ query, stats } : {
       <AdminDashboardOpenAI stats={stats?.openai} className='min-h-[12em] order-3 col-span-1 md:col-span-2 lg:col-span-2 xl:order-2 xl:col-span-4' />
 
       <AdminDashboardSchedules stats={stats?.schedule} className='min-h-[12em] order-4 col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2' />
-      <AdminDashboardContent query={query} stats={stats?.content} className='min-h-[12em] order-5 col-span-2 md:col-span-4 lg:col-span-4 xl:col-span-5' />
 
       <AdminDashboardUsers query={query} stats={stats?.users} className='min-h-[10em] order-6 col-span-2 md:col-span-2 lg:col-span-3' />
       <AdminDashboardDevices stats={stats?.devices} className='min-h-[10em] order-7 col-span-2 md:col-span-2 lg:col-span-3' />

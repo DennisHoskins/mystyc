@@ -1,6 +1,6 @@
 'use server'
 
-import { User, Content, Device } from 'mystyc-common/schemas/';
+import { User, Device } from 'mystyc-common/schemas/';
 import { DeviceInfo } from '@/interfaces/';
 import { sessionManager } from '@/server/services/sessionManager';
 import { authTokenManager } from '@/server/services/authTokenManager';
@@ -43,32 +43,6 @@ export async function getUser(deviceInfo: DeviceInfo): Promise<User | null> {
     
     return user;
   }, deviceInfo, 'getUser');
-}
-
-export async function getUserContent(deviceInfo: DeviceInfo): Promise<Content | null> {
-  return withSession(async (session) => {
-    logger.log('[getUserContent] Fetching user content');
-
-    if (!session.authToken) {
-      throw new Error(`Failed to fetch user: No Auth Token`);
-    }
-    
-    const nestResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/content`, {
-      method: 'POST',
-      headers: {
-        'Authorization': authTokenManager.createAuthHeader(session.authToken),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ deviceInfo })
-    });
-
-    if (!nestResponse.ok) {
-      logger.error('[getUserContent] Failed to fetch content:', nestResponse.status);
-      throw new Error(`Failed to fetch content: ${nestResponse.status}`);
-    }
-
-    return nestResponse.json();
-  }, deviceInfo, 'getUserContent');
 }
 
 export async function getUserAstrologyData(deviceInfo: DeviceInfo, user: User): Promise<{user: User, astrology: AstrologyComplete} | null> {

@@ -31,9 +31,3 @@ export const ServerLogoutSchema = z.object({
   deviceId: z.string().min(8).max(64),
   timestamp: z.string().datetime()
 }).strict();
-
-export const ContentRequestSchema = z.object({
-  deviceInfo: z.object({
-    timezone: z.string().optional()
-  }).optional()
-}).strict();

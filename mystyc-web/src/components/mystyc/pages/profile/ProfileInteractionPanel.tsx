@@ -1,4 +1,4 @@
-import { AstrologyCalculated, PlanetaryCompleteData, PlanetaryData, PlanetType } from 'mystyc-common';
+import { PlanetaryCompleteData, PlanetaryData, PlanetType } from 'mystyc-common';
 import { getPlanetIcon } from '@/components/ui/icons/astrology/planets';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
@@ -32,8 +32,6 @@ export default function ProfileInteractionPanel({ href, planet, heading, subhead
         </Text>
         <Text variant='muted' className='!text-gray-300 !mt-2'>{heading}: {subheading}</Text>
 
-        <Text variant='muted' className="!text-gray-400 !mt-2">{data.planetData.description}</Text>
-
         <div className='!mt-4 max-w-md'>
           <LinearGauge label='' score={score} />
         </div>
@@ -42,14 +40,16 @@ export default function ProfileInteractionPanel({ href, planet, heading, subhead
           <Text variant='muted' className="!text-gray-400 !mt-4 !mb-4">{astrology.summary?.description}</Text>
         }     
 
-        <div className='grid grid-cols-4 gap-2 !mt-4'>
-          {totals?.map((total) => (
-            <Panel key={total.label} className='!p-4 justify-center items-center'>
-              <Text variant='xs' className='!text-gray-500'>{total.label}</Text>
-              <RadialGauge label={total.label} totalScore={total.total} inline={true} />
-            </Panel>
-          ))}
-        </div>
+        {(totals && totals.length) &&
+          <div className='grid grid-cols-4 gap-2 !mt-4'>
+            {totals?.map((total) => (
+              <Panel key={total.label} className='!p-4 justify-center items-center'>
+                <Text variant='xs' className='!text-gray-500'>{total.label}</Text>
+                <RadialGauge label={total.label} totalScore={total.total} inline={true} />
+              </Panel>
+            ))}
+          </div>
+        }
       </Link>
     </div>
   );

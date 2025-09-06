@@ -1,219 +1,242 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { UserProfile } from 'mystyc-common/schemas/';
-
-import { Content, ContentDocument } from '@/content/schemas/content.schema';
 import { logger } from '@/common/util/logger';
 import { OpenAIUsage, OpenAIUsageDocument } from './schemas/openai-usage.schema';
-import { OpenAICoreService } from './openai-core.service';
+import { OpenAIUsageService } from './openai-usage.service';
+import { AstrologyCalculated, AstrologyComplete } from 'mystyc-common/interfaces';
+import { PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
 
 @Injectable()
-export class OpenAIUserService extends OpenAICoreService {
+export class OpenAIUserService extends OpenAIUsageService {
   constructor(
     @InjectModel(OpenAIUsage.name) usageModel: Model<OpenAIUsageDocument>,
-    @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
   ) {
     super(usageModel);
   }
 
   async onModuleInit(): Promise<void> {}
 
-  getPrompt(date: string): string {
-    return `
-      Generate mystical daily content for ${date}. Include:
-      1. A mystical title (max 50 characters) that uses {USER_NAME} as a placeholder for the user's name
-      2. A mystical message (max 200 characters) that uses {USER_NAME} as a placeholder for personalized content
-      
-      Use {USER_NAME} wherever you would normally put the person's name.
-      Make the content feel personal and directed at {USER_NAME} specifically.
-      
-      Format as JSON: { "title": "...", "message": "..." }`;
-  }
-
-  async generateUserContent(userProfile: UserProfile, date: string, content: ContentDocument): Promise<ContentDocument> {
-    const startTime = Date.now();
-    let lastError;
-
-    for (let attempt = 0; attempt <= this.MAX_RETRIES; attempt++) {
-      try {
-        // check budget
-        if (!(await this.checkBudgetWithBuffer())) {
-          logger.warn('OpenAI budget exceeded, generating fallback content', { date, contentId: content._id }, 'OpenAIUserService');
-          return await this.generateFallbackContent(userProfile, date, content, startTime, 'Budget exceeded');
-        }
-
-        const prompt = this.getPrompt(date);
-
-        // get response
-        const completion = await this.openai.chat.completions.create({
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: this.MAX_TOKENS_PER_REQUEST,
-          temperature: 0.8,
-          response_format: { type: "json_object" }
-        });        
-
-        const response = completion.choices[0]?.message?.content;
-        if (!response) throw new Error('No response from OpenAI');        
-
-        // JSON.parse & record to DB
-        const { title, message } = JSON.parse(response);
-
-        const usage = completion.usage;
-        const cost = this.calculateCost(usage?.prompt_tokens, usage?.completion_tokens);
-
-        if (usage?.prompt_tokens && usage?.completion_tokens === undefined) {
-          await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
-        } 
-
-        content.title = title;
-        content.message = message;
-        content.imageUrl = this.getDefaultImageUrl(date);
-        content.linkUrl = 'https://mystyc.app';
-        content.linkText = 'Explore Your Mystical Journey';
-        content.data = this.formatContentData(title, message);
-        content.sources = ['openai-user'];
-        content.status = 'generated';
-        content.generationDuration = Date.now() - startTime;
-        content.openAIData = {
-          prompt: prompt.slice(0, 500), // Truncate prompt for storage
-          model: 'gpt-4o-mini',
-          inputTokens: usage?.prompt_tokens || 0,
-          outputTokens: usage?.completion_tokens || 0,
-          cost,
-          retryCount: attempt
-        }
-
-        // Update content record with successful AI generation
-        const savedContent = await content.save();
-
-        logger.info('User content generated successfully with OpenAI', { 
-          date, 
-          contentId: savedContent._id,
-          duration: Date.now() - startTime,
-          cost,
-          tokensUsed: usage?.prompt_tokens && usage?.completion_tokens ? usage.prompt_tokens + usage.completion_tokens : 0,
-          retryCount: attempt
-        }, 'OpenAIUserService');
-
-        return savedContent;
-      } catch (err) {
-        lastError = err;
-        logger.warn(`OpenAI attempt ${attempt + 1} failed`, { 
-          date, 
-          contentId: content._id,
-          error: err,
-          attempt: attempt + 1,
-          maxRetries: this.MAX_RETRIES + 1
-        }, 'OpenAIUserService');
-
-        if (attempt === this.MAX_RETRIES || !this.isRetryableError(err)) break;
-        await new Promise(r => setTimeout(r, Math.min(1000 * 2 ** attempt, 10000)));
-      }
-    }
-
-    // All retries failed - generate fallback content
-    logger.error('All OpenAI attempts failed, generating fallback content', {
-      date,
-      contentId: content._id,
-      error: lastError,
-      totalAttempts: this.MAX_RETRIES + 1
-    }, 'OpenAIUserService');
-
-    const message = lastError instanceof Error ? lastError?.message : 'OpenAI generation failed';
-    return await this.generateFallbackContent(userProfile, date, content, startTime, message);
-  }
-
-  private async generateFallbackContent(userPorfile: UserProfile, date: string, content: ContentDocument, startTime: number, error?: string): Promise<ContentDocument> {
-    logger.info('Generating fallback content for user', { date, contentId: content._id }, 'OpenAIUserService');
-
+  async getUserAstrologicalProfileSummary(
+    signs: Record<PlanetType, ZodiacSignType>,
+    calculations: AstrologyCalculated, 
+    astrology: AstrologyComplete
+  ): Promise<AstrologyCalculated> {
     try {
-      // Try to get the most recent generated content as fallback
-      const recentContent = await this.contentModel
-        .findOne({ 
-          type: 'user_content',
-          status: 'generated',
-          date: { $lt: date }
-        })
-        .sort({ date: -1 })
-        .exec();
-
-      if (recentContent) {
-        // Update with fallback based on recent content
-        content.title = recentContent.title;
-        content.message = recentContent.message;
-        content.imageUrl = this.getDefaultImageUrl(date);
-        content.linkUrl = 'https://mystyc.app';
-        content.linkText = 'Explore Your Mystical Journey';
-        content.data = recentContent.data;
-        content.sources = ['fallback-user'];
-        content.status = 'fallback';
-        content.error = error || 'OpenAI generation failed, using fallback content';
-        content.generationDuration = Date.now() - startTime;
-
-        const savedContent = await content.save();
-
-        logger.info('Fallback content created from recent content', {
-          date,
-          contentId: savedContent._id,
-          fallbackSourceDate: recentContent.date
-        }, 'OpenAIWebsiteService');
-
-        return savedContent;
+      if (!(await this.checkBudgetWithBuffer())) {
+        logger.warn('OpenAI budget exceeded, unable to generate content', {}, 'OpenAIUserService');
+        return calculations;
       }
 
-      // No recent content available - create generic fallback
-      content.title = 'Mystical Insights Await';
-      content.message = 'The universe whispers secrets to those who listen. Today brings opportunities for growth and discovery.';
-      content.imageUrl = this.getDefaultImageUrl(date);
-      content.linkUrl = 'https://mystyc.app';
-      content.linkText = 'Explore Your Mystical Journey';
-      content.data = [
-          { key: 'Cosmic Message', value: 'The stars align in your favor today.' },
-          { key: 'Daily Wisdom', value: 'Trust in the journey, even when the path is unclear.' },
-          { key: 'Mystical Insight', value: 'Your intuition is your greatest guide.' }
-        ];
-      content.sources = ['fallback-user'];
-      content.status = 'fallback';
-      content.error = error || 'OpenAI generation failed, using generic fallback content';
-      content.generationDuration = Date.now() - startTime;
+      const prompt = this.buildPrompt(signs, calculations, astrology);
 
-      const savedContent = await content.save();
-      logger.info('Generic fallback content created', { date, contentId: savedContent._id }, 'OpenAIWebsiteService');
-      return savedContent;
-    } catch (fallbackError) {
-      logger.error('Fallback content generation failed', {
-        date,
-        contentId: content._id,
-        originalError: error,
-        fallbackError
-      }, 'OpenAIWebsiteService');
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: this.MAX_TOKENS_PER_REQUEST,
+        temperature: 0,
+        response_format: { type: "json_object" }
+      });        
 
-      content.status = 'failed';
-      content.error = `Both OpenAI and fallback failed: ${fallbackError}`;
-      content.generationDuration = Date.now() - startTime;
+      const usage = completion.usage;
+      const cost = this.calculateCost(usage?.prompt_tokens, usage?.completion_tokens);
+      if (usage?.prompt_tokens && usage?.completion_tokens !== undefined) {
+        await this.incrementUsage(usage.prompt_tokens + usage.completion_tokens, cost);
+      } 
 
-      const savedContent = await content.save();
-      return savedContent;
+      const response = completion.choices[0]?.message?.content;
+      if (!response) throw new Error('No response from OpenAI');
+
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(response);
+      } catch (parseError) {
+        logger.error('Failed to parse OpenAI JSON response', {
+          response,
+          parseError
+        }, 'OpenAIUserService');
+        throw new Error('Invalid JSON response from OpenAI');
+      }
+
+      if (!parsedResponse.aiSummaries) {
+        throw new Error('Missing aiSummaries in OpenAI response');
+      }
+
+      const { aiSummaries } = parsedResponse;
+
+      calculations.summary = aiSummaries.profileSummary;
+
+      calculations.sun.summary = aiSummaries.planetSummaries.sun;
+      calculations.sun.interactions!.moon.description = aiSummaries.interactionSummaries["sun-moon"].description;
+      calculations.sun.interactions!.rising.description = aiSummaries.interactionSummaries["sun-rising"].description;
+      calculations.sun.interactions!.venus.description = aiSummaries.interactionSummaries["sun-venus"].description;
+      calculations.sun.interactions!.mars.description = aiSummaries.interactionSummaries["sun-mars"].description;
+
+      calculations.moon.summary = aiSummaries.planetSummaries.moon;
+      calculations.moon.interactions!.rising.description = aiSummaries.interactionSummaries["moon-rising"].description;
+      calculations.moon.interactions!.venus.description = aiSummaries.interactionSummaries["moon-venus"].description;
+      calculations.moon.interactions!.mars.description = aiSummaries.interactionSummaries["moon-mars"].description;
+
+      calculations.rising.summary = aiSummaries.planetSummaries.rising;
+      calculations.rising.interactions!.venus.description = aiSummaries.interactionSummaries["rising-venus"].description;
+      calculations.rising.interactions!.mars.description = aiSummaries.interactionSummaries["rising-mars"].description;
+      calculations.venus.interactions!.mars.description = aiSummaries.interactionSummaries["venus-mars"].description;
+
+      calculations.venus.summary = aiSummaries.planetSummaries.venus;
+
+      calculations.mars.summary = aiSummaries.planetSummaries.mars;
+
+      return calculations;
+    } catch(err) {
+      logger.error('All OpenAI generation attempt failed', {
+        error: err,
+      }, 'OpenAIUserService');
+      return calculations;    
     }
   }
 
-  private formatContentData(title: string, message: string): Array<{key: string, value: string}> {
-    return [
-      { key: 'Daily Insight', value: title },
-      { key: 'Cosmic Message', value: message },
-    ];
-  }
+  private buildPrompt(
+    signs: Record<PlanetType, ZodiacSignType>, 
+    calculations: AstrologyCalculated, 
+    astrology: AstrologyComplete
+  ): string {
+    
+    const coreData = {
+      positions: {
+        sun: signs.Sun,
+        moon: signs.Moon, 
+        rising: signs.Rising,
+        venus: signs.Venus,
+        mars: signs.Mars
+      },
+      scores: {
+        totalScore: calculations.totalScore,
+        planetScores: {
+          sun: calculations.sun.totalScore,
+          moon: calculations.moon.totalScore,
+          rising: calculations.rising.totalScore,
+          venus: calculations.venus.totalScore,
+          mars: calculations.mars.totalScore
+        },
+        interactions: {
+          "sun-moon": calculations.sun.interactions?.moon?.score,
+          "sun-rising": calculations.sun.interactions?.rising?.score,
+          "sun-venus": calculations.sun.interactions?.venus?.score,
+          "sun-mars": calculations.sun.interactions?.mars?.score,
+          "moon-rising": calculations.moon.interactions?.rising?.score,
+          "moon-venus": calculations.moon.interactions?.venus?.score,
+          "moon-mars": calculations.moon.interactions?.mars?.score,
+          "rising-venus": calculations.rising.interactions?.venus?.score,
+          "rising-mars": calculations.rising.interactions?.mars?.score,
+          "venus-mars": calculations.venus.interactions?.mars?.score
+        }
+      },
+      signKeywords: {
+        [signs.Sun]: astrology.sun.signData.keywords,
+        [signs.Moon]: astrology.moon.signData.keywords,
+        [signs.Rising]: astrology.rising.signData.keywords,
+        [signs.Venus]: astrology.venus.signData.keywords,
+        [signs.Mars]: astrology.mars.signData.keywords
+      }
+    };
 
-  private getDefaultImageUrl(date: string): string {
-    const images = [
-      'https://images.unsplash.com/photo-1516912481808-3406841bd33c',
-      'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d'
-    ];
-    const dateHash = date.split('-').reduce((acc, part) => acc + parseInt(part), 0);
-    return images[dateHash % images.length];
+    return `You are an expert astrologer creating personalized insights. Generate meaningful, actionable content based on this astrological data:
+
+PLANETARY POSITIONS:
+- Sun: ${coreData.positions.sun}
+- Moon: ${coreData.positions.moon}  
+- Rising: ${coreData.positions.rising}
+- Venus: ${coreData.positions.venus}
+- Mars: ${coreData.positions.mars}
+
+COMPATIBILITY SCORES (0-1 scale, higher = more harmonious):
+${Object.entries(coreData.scores.interactions)
+  .map(([pair, score]) => `- ${pair}: ${score?.toFixed(2) || 'N/A'}`)
+  .join('\n')}
+
+SIGN CHARACTERISTICS:
+${Object.entries(coreData.signKeywords)
+  .map(([sign, keywords]) => `- ${sign}: ${keywords.join(', ')}`)
+  .join('\n')}
+
+CRITICAL WRITING STYLE REQUIREMENTS:
+- ALWAYS use "you" and "your" - NEVER use "this person", "this individual", "they", or "them"
+- Write as if speaking directly to the person about their chart
+- Avoid woo, jargon, or mystical language - use clear, practical terms
+- Acknowledge both strengths AND challenges (avoid toxic positivity)
+- Provide specific, actionable advice, especially for low scores
+- Reference the interaction scores to explain personality dynamics
+
+CRITICAL: Return ONLY valid JSON in this exact format:
+{
+  "aiSummaries": {
+    "profileSummary": {
+      "description": "4-5 sentences about YOUR core astrological profile using YOU/YOUR",
+      "strengths": "YOUR key positive traits and natural abilities",
+      "challenges": "Areas for YOUR growth and potential difficulties", 
+      "action": "Specific advice for YOUR personal development"
+    },
+    "planetSummaries": {
+      "sun": {
+        "description": "How YOUR ${coreData.positions.sun} Sun shapes YOUR core identity",
+        "strengths": "Positive expressions of YOUR placement",
+        "challenges": "Shadow aspects YOU should be aware of",
+        "action": "How YOU can best express this energy"
+      },
+      "moon": {
+        "description": "How YOUR ${coreData.positions.moon} Moon affects YOUR emotional nature",
+        "strengths": "YOUR emotional gifts and intuitive abilities", 
+        "challenges": "Emotional patterns that may cause YOU difficulty",
+        "action": "How YOU can nurture YOUR emotional wellbeing"
+      },
+      "rising": {
+        "description": "How YOUR ${coreData.positions.rising} Rising shapes YOUR first impressions",
+        "strengths": "YOUR natural social and presentation abilities",
+        "challenges": "Ways this mask might limit YOUR authentic expression",
+        "action": "How YOU can align YOUR outer presentation with YOUR inner truth"
+      },
+      "venus": {
+        "description": "How YOUR ${coreData.positions.venus} Venus influences YOUR relationships and values",
+      },
+      "mars": {
+        "description": "How YOUR ${coreData.positions.mars} Mars drives YOUR actions and ambitions",
+      }
+    },
+    "interactionSummaries": {
+      "sun-moon": {
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.moon} Moon work together in YOUR personality (score: ${coreData.scores.interactions['sun-moon']?.toFixed(2)})"
+      },
+      "sun-rising": {
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.rising} Rising align in YOUR self-expression (score: ${coreData.scores.interactions['sun-rising']?.toFixed(2)})"
+      },
+      "sun-venus": {
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.venus} Venus interact in YOUR relationships (score: ${coreData.scores.interactions['sun-venus']?.toFixed(2)})"
+      },
+      "sun-mars": {
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.mars} Mars drive YOUR actions (score: ${coreData.scores.interactions['sun-mars']?.toFixed(2)})"
+      },
+      "moon-rising": {
+        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.rising} Rising balance YOUR inner/outer worlds (score: ${coreData.scores.interactions['moon-rising']?.toFixed(2)})"
+      },
+      "moon-venus": {
+        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.venus} Venus create YOUR emotional connections (score: ${coreData.scores.interactions['moon-venus']?.toFixed(2)})"
+      },
+      "moon-mars": {
+        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.mars} Mars handle YOUR emotional reactions (score: ${coreData.scores.interactions['moon-mars']?.toFixed(2)})"
+      },
+      "rising-venus": {
+        "description": "How YOUR ${coreData.positions.rising} Rising and ${coreData.positions.venus} Venus affect YOUR social charm (score: ${coreData.scores.interactions['rising-venus']?.toFixed(2)})"
+      },
+      "rising-mars": {
+        "description": "How YOUR ${coreData.positions.rising} Rising and ${coreData.positions.mars} Mars project YOUR energy (score: ${coreData.scores.interactions['rising-mars']?.toFixed(2)})"
+      },
+      "venus-mars": {
+        "description": "How YOUR ${coreData.positions.venus} Venus and ${coreData.positions.mars} Mars balance YOUR attraction and action (score: ${coreData.scores.interactions['venus-mars']?.toFixed(2)})"
+      }
+    }
+  }
+}`;
+
   }
 }

@@ -18,7 +18,6 @@ import { SchedulesService } from '@/schedules/schedules.service';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { ScheduleDocument } from '@/schedules/schemas/schedule.schema';
 import { ScheduleExecutionDocument } from '@/schedules/schemas/schedule-execution.schema';
-import { ContentDocument } from '@/content/schemas/content.schema';
 import { NotificationDocument } from '@/notifications/schemas/notification.schema';
 import { RegisterStatsModule } from '@/admin/stats/stats-registry';
 
@@ -36,7 +35,6 @@ export class AdminScheduleExecutionsStatsService {
   constructor(
     @InjectModel('Schedule') private scheduleModel: Model<ScheduleDocument>,
     @InjectModel('ScheduleExecution') private scheduleExecutionModel: Model<ScheduleExecutionDocument>,
-    @InjectModel('Content') private contentModel: Model<ContentDocument>,
     @InjectModel('Notification') private notificationModel: Model<NotificationDocument>,
     private readonly scheduleService: SchedulesService,
     private readonly scheduleExecutionService: ScheduleExecutionsService,
@@ -232,56 +230,7 @@ export class AdminScheduleExecutionsStatsService {
     failed: number;
     successRate: number;
   }> {
-    const eventType = this.determineEventType(eventName);
-    
-    if (eventType === 'content') {
-      return this.getContentStatistics(scheduleId, dateFilter);
-    } else {
-      return this.getNotificationStatistics(scheduleId, dateFilter);
-    }
-  }
-
-  private async getContentStatistics(scheduleId: string, dateFilter: any): Promise<{
-    total: number;
-    sent: number;
-    failed: number;
-    successRate: number;
-  }> {
-    const matchCondition: any = { scheduleId };
-    if (dateFilter) {
-      matchCondition.createdAt = dateFilter;
-    }
-
-    const pipeline: any[] = [
-      { $match: matchCondition },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: 1 },
-          generated: {
-            $sum: { $cond: [{ $eq: ['$status', 'generated'] }, 1, 0] }
-          },
-          failed: {
-            $sum: { $cond: [{ $eq: ['$status', 'failed'] }, 1, 0] }
-          }
-        }
-      }
-    ];
-
-    const [result] = await this.contentModel.aggregate(pipeline);
-    
-    if (!result) {
-      return { total: 0, sent: 0, failed: 0, successRate: 0 };
-    }
-
-    const successRate = result.total > 0 ? Math.round((result.generated / result.total) * 100) : 0;
-
-    return {
-      total: result.total,
-      sent: result.generated,
-      failed: result.failed,
-      successRate
-    };
+    return this.getNotificationStatistics(scheduleId, dateFilter);
   }
 
   private async getNotificationStatistics(scheduleId: string, dateFilter: any): Promise<{
@@ -473,38 +422,13 @@ export class AdminScheduleExecutionsStatsService {
     const [executionResult] = await this.scheduleExecutionModel.aggregate(pipeline);
     
     // Get content and notification rates
-    const contentRate = await this.getContentGenerationRate(dateFilter);
     const notificationRate = await this.getNotificationDeliveryRate(dateFilter);
 
     return {
       totalExecutions: executionResult?.totalExecutions || 0,
       successRate: executionResult ? Math.round((executionResult.successful / executionResult.totalExecutions) * 100) : 0,
-      contentGenerationRate: contentRate,
       notificationDeliveryRate: notificationRate
     };
-  }
-
-  private async getContentGenerationRate(dateFilter: any): Promise<number> {
-    const matchCondition: any = { scheduleId: { $exists: true } };
-    if (dateFilter) {
-      matchCondition.createdAt = dateFilter;
-    }
-
-    const pipeline: any[] = [
-      { $match: matchCondition },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: 1 },
-          generated: {
-            $sum: { $cond: [{ $eq: ['$status', 'generated'] }, 1, 0] }
-          }
-        }
-      }
-    ];
-
-    const [result] = await this.contentModel.aggregate(pipeline);
-    return result && result.total > 0 ? Math.round((result.generated / result.total) * 100) : 0;
   }
 
   private async getNotificationDeliveryRate(dateFilter: any): Promise<number> {
@@ -590,8 +514,8 @@ export class AdminScheduleExecutionsStatsService {
     }));
   }
 
-  private determineEventType(eventName: string): 'content' | 'notification' {
-    return eventName.includes('content') ? 'content' : 'notification';
+  private determineEventType(eventName: string): 'notification' {
+    return 'notification';
   }
 
   private buildDateFilter(query?: AdminStatsQuery): any {

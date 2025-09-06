@@ -1,6 +1,6 @@
 import { Controller, Get, Param, UseGuards, NotFoundException, Query } from '@nestjs/common';
 
-import { Content, Notification, ScheduleExecution } from 'mystyc-common/schemas';
+import { Notification, ScheduleExecution } from 'mystyc-common/schemas';
 import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
@@ -10,7 +10,6 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { logger } from '@/common/util/logger';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
-import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { AdminController } from './admin.controller';
 
@@ -20,7 +19,6 @@ export class AdminScheduleExecutionsController extends AdminController<ScheduleE
   
   constructor(
     protected service: ScheduleExecutionsService,
-    protected contentService: ContentService,
     protected notificationsService: NotificationsService
   ) {
     super();
@@ -30,79 +28,13 @@ export class AdminScheduleExecutionsController extends AdminController<ScheduleE
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getScheduleExecutionSummary(@Param('executionId') executionId: string) {
-    const [contentsCount, notificationsCount] = await Promise.all([
-      this.contentService.getTotalByExecutionId(executionId),
+    const [notificationsCount] = await Promise.all([
       this.notificationsService.getTotalByExecutionId(executionId)
     ]);
 
     return {
-      contents: { total: contentsCount },
       notifications: { total: notificationsCount },
     };
-  }
-
-  /**
-   * Gets content created by a specific schedule
-   * @param id - Schedule ID
-   * @param query - Query parameters for pagination and sorting
-   * @returns Promise<AdminListResponse<Content>> - Paginated content list
-   */
-  @Get(':id/content')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getScheduleExecutionContent(
-    @Param('id') id: string,
-    @Query() query: BaseAdminQuery
-  ): Promise<AdminListResponse<Content>> {
-    logger.info('Admin fetching schedule content', {
-      executionId: id,
-      limit: query.limit,
-      offset: query.offset,
-      sortBy: query.sortBy,
-      sortOrder: query.sortOrder
-    }, 'AdminScheduleExecutionController');
-
-    try {
-      // Verify schedule exists
-      const scheduleExecution = await this.service.findById(id);
-      if (!scheduleExecution) {
-        throw new NotFoundException('Schedule execution not found');
-      }
-
-      const [data, totalItems] = await Promise.all([
-        this.contentService.findByExecutionId(id, query),
-        this.contentService.getTotalByExecutionId(id)
-      ]);
-
-      const totalPages = Math.ceil(totalItems / (query.limit || 50));
-
-      logger.info('Schedule execution content retrieved', {
-        executionId: id,
-        count: data.length,
-        totalItems
-      }, 'AdminScheduleExecutionController');
-
-      return {
-        data,
-        pagination: {
-          limit: query.limit || 50,
-          offset: query.offset || 0,
-          hasMore: data.length === (query.limit || 50),
-          totalItems,
-          totalPages
-        },
-        sort: query.sortBy ? {
-          field: query.sortBy,
-          order: query.sortOrder || 'desc'
-        } : undefined
-      };
-    } catch (error) {
-      logger.error('Failed to fetch schedule execution content', {
-        executionId: id,
-        error
-      }, 'AdminScheduleExecutionController');
-      throw error;
-    }
   }
 
   /**

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Delete,  Param, UseGuards, NotFoundException, Query } from '@nestjs/common';
 
-import { Content, Notification, Schedule, ScheduleExecution } from 'mystyc-common/schemas';
+import { Notification, Schedule, ScheduleExecution } from 'mystyc-common/schemas';
 import { UserRole } from 'mystyc-common/constants/roles.enum';
 import { BaseAdminQuery } from 'mystyc-common/admin/schemas/admin-queries.schema';
 import { AdminListResponse } from 'mystyc-common/admin/interfaces/responses/admin-list-response.interface';
@@ -10,7 +10,6 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { SchedulesService } from '@/schedules/schedules.service';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
-import { ContentService } from '@/content/content.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { logger } from '@/common/util/logger';
 import { AdminController } from './admin.controller';
@@ -22,7 +21,6 @@ export class AdminSchedulesController extends AdminController<Schedule> {
   constructor(
     protected service: SchedulesService,
     private readonly scheduleExecutionService: ScheduleExecutionsService,
-    private readonly contentService: ContentService,
     private readonly notificationsService: NotificationsService
   ) {
     super();
@@ -254,70 +252,6 @@ export class AdminSchedulesController extends AdminController<Schedule> {
   }
 
   /**
-   * Gets content created by a specific schedule
-   * @param id - Schedule ID
-   * @param query - Query parameters for pagination and sorting
-   * @returns Promise<AdminListResponse<Content>> - Paginated content list
-   */
-  @Get(':id/content')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getScheduleContent(
-    @Param('id') id: string,
-    @Query() query: BaseAdminQuery
-  ): Promise<AdminListResponse<Content>> {
-    logger.info('Admin fetching schedule content', {
-      scheduleId: id,
-      limit: query.limit,
-      offset: query.offset,
-      sortBy: query.sortBy,
-      sortOrder: query.sortOrder
-    }, 'AdminScheduleController');
-
-    try {
-      // Verify schedule exists
-      const schedule = await this.service.findById(id);
-      if (!schedule) {
-        throw new NotFoundException('Schedule not found');
-      }
-
-      const [data, totalItems] = await Promise.all([
-        this.contentService.findByScheduleId(id, query),
-        this.contentService.getTotalByScheduleId(id)
-      ]);
-
-      const totalPages = Math.ceil(totalItems / (query.limit || 50));
-
-      logger.info('Schedule content retrieved', {
-        scheduleId: id,
-        count: data.length,
-        totalItems
-      }, 'AdminScheduleController');
-
-      return {
-        data,
-        pagination: {
-          limit: query.limit || 50,
-          offset: query.offset || 0,
-          hasMore: data.length === (query.limit || 50),
-          totalItems,
-          totalPages
-        },
-        sort: query.sortBy ? {
-          field: query.sortBy,
-          order: query.sortOrder || 'desc'
-        } : undefined
-      };
-    } catch (error) {
-      logger.error('Failed to fetch schedule content', {
-        scheduleId: id,
-        error
-      }, 'AdminScheduleController');
-      throw error;
-    }
-  }
-
-  /**
    * Gets notifications sent by a specific schedule
    * @param id - Schedule ID
    * @param query - Query parameters for pagination and sorting
@@ -399,9 +333,8 @@ export class AdminSchedulesController extends AdminController<Schedule> {
         throw new NotFoundException('Schedule not found');
       }
 
-      const [executionStats, contentCount, notificationsCount, latestExecution] = await Promise.all([
+      const [executionStats, notificationsCount, latestExecution] = await Promise.all([
         this.scheduleExecutionService.getExecutionStats(id),
-        this.contentService.getTotalByScheduleId(id),
         this.notificationsService.getTotalByScheduleId(id),
         this.scheduleExecutionService.findLatestByScheduleId(id)
       ]);
@@ -419,9 +352,6 @@ export class AdminSchedulesController extends AdminController<Schedule> {
           successful: executionStats.successful,
           failed: executionStats.failed,
           successRate: executionStats.successRate
-        },
-        content: {
-          total: contentCount
         },
         notifications: {
           total: notificationsCount

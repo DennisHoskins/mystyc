@@ -8,13 +8,12 @@ import { FirebaseAuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { logger } from '@/common/util/logger';
-import { OpenAICoreService } from '@/openai/openai-core.service';
+import { OpenAIUsageService } from '@/openai/openai-usage.service';
 import { AdminUsersStatsService } from '@/admin/services/admin-users-stats.service';
 import { AdminDevicesStatsService } from '@/admin/services/admin-devices-stats.service';
 import { AdminAuthEventsStatsService } from '@/admin/services/admin-auth-events-stats.service';
 import { AdminNotificationsStatsService } from '@/admin/services/admin-notifications-stats.service';
 import { AdminOpenAIStatsService } from '@/admin/services/admin-openai-stats.service';
-import { AdminContentStatsService } from '@/admin/services/admin-content-stats.service';
 import { AdminSchedulesStatsService } from '@/admin/services/admin-schedules-stats.service';
 import { AdminScheduleExecutionsStatsService } from '@/admin/services/admin-schedule-executions-stats.service';
 import { AdminSubscriptionsStatsService } from '@/admin/services/admin-subscriptions-stats.service';
@@ -27,9 +26,8 @@ export class AdminStatsController {
     private readonly adminDevicesStatsService: AdminDevicesStatsService,
     private readonly adminAuthEventsStatsService: AdminAuthEventsStatsService,
     private readonly adminNotificationsStatsService: AdminNotificationsStatsService,
-    private readonly openAICoreService: OpenAICoreService,
+    private readonly openAIUsageService: OpenAIUsageService,
     private readonly adminOpenAIStatsService: AdminOpenAIStatsService,
-    private readonly adminContentStatsService: AdminContentStatsService,
     private readonly adminScheduleStatsService: AdminSchedulesStatsService,
     private readonly adminScheduleExecutionStatsService: AdminScheduleExecutionsStatsService,
     private readonly adminSubscriptionStatsService: AdminSubscriptionsStatsService,
@@ -52,8 +50,6 @@ export class AdminStatsController {
       authSummary, duration, authEventsPattern, distribution,
       // Notifications
       delivery, notificationType, engagement, notificationPattern,
-      // Content
-      contentSummary, sources, generation, timeline,
       // Schedule
       scheduleSummary, performance, failures, executions,
       // OpenAI
@@ -86,12 +82,6 @@ export class AdminStatsController {
       this.adminNotificationsStatsService.getEngagementStats(query),
       this.adminNotificationsStatsService.getPatternStats(query),
       
-      // Content
-      this.adminContentStatsService.getSummaryStats(query),
-      this.adminContentStatsService.getSourceStats(query),
-      this.adminContentStatsService.getGenerationStats(query),
-      this.adminContentStatsService.getTimelineStats(query),
-      
       // Schedule
       this.adminScheduleStatsService.getSummaryStats(query),
       this.adminScheduleStatsService.getPerformanceStats(query),
@@ -99,7 +89,7 @@ export class AdminStatsController {
       this.adminScheduleExecutionStatsService.getOverallScheduleStats(query),
       
       // OpenAI
-      this.openAICoreService.getUsageStats(),
+      this.openAIUsageService.getUsageStats(),
       this.adminOpenAIStatsService.getSummaryStats(query),
       this.adminOpenAIStatsService.getMonthlyUsageStats(query),
       this.adminOpenAIStatsService.getContentTypeUsageStats(query),
@@ -119,7 +109,6 @@ export class AdminStatsController {
       devices: { platforms, fcmTokens, activity: deviceActivity, userAgents },
       authEvents: { summary: authSummary, duration, pattern: authEventsPattern, distribution },
       notifications: { delivery, type: notificationType, engagement, pattern: notificationPattern },
-      content: { summary: contentSummary, sources, generation, timeline },
       schedule: { summary: scheduleSummary, performance, failures, executions },
       openai: { currentMonthlyUsage, usageSummary: openaiSummary, monthlyUsage, contentTypeUsage },
       subscriptions: { summary: subscriptionsSummary, revenue: subscriptionsRevenue, lifecycle: subscriptionsLifecycle, paymentHealth: subscriptionsPaymentHealth },

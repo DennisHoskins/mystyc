@@ -9,7 +9,7 @@ export interface ScheduleExecutionSummaryStats {
 export interface ScheduleExecutionPerformanceStats {
   scheduleId: string;
   eventName: string;
-  eventType: 'content' | 'notification';
+  eventType: 'notification';
   executions: ScheduleExecutionSummaryStats;
   lastExecuted?: Date;
   averageDuration: number;
@@ -24,7 +24,7 @@ export interface ScheduleExecutionPerformanceStats {
 export interface ScheduleHistoryStats {
   scheduleId: string;
   eventName: string;
-  eventType: 'content' | 'notification';
+  eventType: 'notification';
   timeRange: {
     start: Date;
     end: Date;
@@ -44,7 +44,6 @@ export interface ScheduleHistoryStats {
 export interface ScheduleSystemOverviewStats {
   totalExecutions: number;
   successRate: number;
-  contentGenerationRate: number;
   notificationDeliveryRate: number;
 }
 

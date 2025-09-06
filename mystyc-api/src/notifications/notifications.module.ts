@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FirebaseModule } from '@/auth/firebase.module';
 import { UsersModule } from '@/users/users.module';
 import { DevicesModule } from '@/devices/devices.module';
-import { ContentModule } from '@/content/content.module';
 import { SchedulesModule } from '@/schedules/schedules.module';
 
 import { NotificationsService } from './notifications.service';
@@ -15,7 +14,6 @@ import { Notification, NotificationSchema } from './schemas/notification.schema'
     FirebaseModule, 
     UsersModule, 
     DevicesModule,
-    ContentModule,
     SchedulesModule,
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema }

@@ -15,7 +15,6 @@ import UserDetailsPanel from './UserDetailsPanel';
 import UserProfilePanel from './UserProfilePanel';
 import UserSubscriptionCard from './cards/UserSubscriptionCard';
 import UserDevicesCard from './cards/UserDevicesCard';
-import UserContentCard from './cards/UserContentCard';
 import UserNotificationsCard from './cards/UserNotificationsCard';
 import UserAuthEventsCard from './cards/UserAuthEventsCard';
 
@@ -61,7 +60,6 @@ export default function UserPage({ firebaseUid }: { firebaseUid: string }) {
       headerContent={<UserDetailsPanel user={user} />}
       sideContent={[
         <UserDevicesCard key='devices' firebaseUid={user?.firebaseUid} total={summary?.devices || null} />,
-        <UserContentCard key='content' firebaseUid={user?.firebaseUid} total={summary?.content || null} />,
         <UserNotificationsCard key='notifications' firebaseUid={user?.firebaseUid} total={summary?.notifications || null} />,
         <UserAuthEventsCard key='authEvents' firebaseUid={user?.firebaseUid} total={summary?.authEvents || null} />,
       ]}

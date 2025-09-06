@@ -5,7 +5,6 @@ import { DeviceStats } from '../stats/admin-device-stats.interface'
 import { AuthEventStats } from '../stats/admin-auth-event-stats.interface'
 import { NotificationStats } from '../stats/admin-notification-stats.interface'
 import { OpenAIUsageStats } from '../stats/admin-openai-usage-stats.interface'
-import { ContentStats } from '../stats/admin-content-stats.interface'
 import { ScheduleStats } from '../stats/admin-schedule-stats.interface'
 import { ScheduleExecutionStats } from '../stats/admin-schedule-execution-stats.interface'
 import { SubscriptionStats } from '../stats/admin-subscription-stats.interface'
@@ -17,7 +16,6 @@ export interface AdminStatsResponse {
   authEvents: AuthEventStats,
   notifications: NotificationStats,
   openai: OpenAIUsageStats,
-  content: ContentStats,
   schedule: ScheduleStats & {
     executions: ScheduleExecutionStats;
   },

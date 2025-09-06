@@ -11,14 +11,13 @@ import { logger } from '@/common/util/logger';
 import { OpenAIUsageDocument, OpenAIUsage } from './schemas/openai-usage.schema';
 
 @Injectable()
-export class OpenAICoreService implements OnModuleInit {
+export class OpenAIUsageService implements OnModuleInit {
   protected openai: OpenAI;
 
-  protected MAX_RETRIES = 2; // Maximum number of retry attempts
   protected REQUEST_TIMEOUT_MS = 30000; // 30 seconds timeout
   protected MONTHLY_BUDGET = 10.00; // $/month budget
   protected TOKEN_BUDGET = Math.floor(this.MONTHLY_BUDGET * 50000);
-  protected MAX_TOKENS_PER_REQUEST = 500; // ~$0.15 max per request
+  protected MAX_TOKENS_PER_REQUEST = 2500; // max per request
   protected ESTIMATED_REQUEST_COST = 0.20; // Buffer for budget checking
 
   constructor(

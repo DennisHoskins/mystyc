@@ -11,7 +11,6 @@ import AdminItemLayout from '@/components/admin/ui/AdminItemLayout';
 import ScheduleIcon from '@/components/admin/ui/icons/ScheduleIcon';
 import ScheduleExecutionDetailsPanel from './ScheduleExecutionDetailsPanel';
 import ScheduleExecutionNotificationsCard from './cards/ScheduleExecutionNotificationsCard';
-import ScheduleExecutionContentCard from './cards/ScheduleExecutionContentCard';
 
 export default function ScheduleExecutionPage({ executionId }: { executionId: string }) {
   const { setBusy } = useBusy();
@@ -46,10 +45,8 @@ export default function ScheduleExecutionPage({ executionId }: { executionId: st
     { label: execution ? (execution.eventName || `Schedule Execution ${executionId}`) : ``},
   ], [execution, executionId]);
 
-  const contentClass = summary?.notifications.total ? "!flex-none" : "flex-1 grow";
   const notificationsClass = summary?.notifications.total ? "flex-1 grow" : "";
   const sidecontent = [];
-  if (summary?.contents.total) sidecontent.push(<ScheduleExecutionContentCard key='content' executionId={execution?._id} className={contentClass} />);
   if (summary?.notifications.total) sidecontent.push(<ScheduleExecutionNotificationsCard key='notifications' executionId={execution?._id} className={notificationsClass} />);
 
 console.log(summary?.contents.total, summary?.notifications.total, sidecontent.length);

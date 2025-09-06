@@ -87,14 +87,14 @@ export interface SignInteractionComplete extends SignInteraction {
 // Calculated Astrology Interfaces
 export interface PlanetaryInteractionScore {
   score: number;
-  description: string;
+  description?: string;
 }
 
 export interface AISummary {
-  description: string;
-  strengths: string;
-  challenges: string;
-  action: string;
+  description?: string;
+  strengths?: string;
+  challenges?: string;
+  action?: string;
 }
 
 export interface PlanetaryData {

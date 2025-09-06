@@ -1,14 +1,12 @@
 import { Controller } from '@nestjs/common';
 
-import { OpenAICoreService } from './openai-core.service';
-import { OpenAIWebsiteService } from './openai-website.service';
+import { OpenAIUsageService } from './openai-usage.service';
 import { OpenAIUserService } from './openai-user.service';
 
 @Controller('openai')
 export class OpenAIController {
   constructor(
-    private core: OpenAICoreService,
-    private website: OpenAIWebsiteService,
+    private core: OpenAIUsageService,
     private user: OpenAIUserService,
   ) {}
 }

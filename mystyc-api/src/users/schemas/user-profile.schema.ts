@@ -57,21 +57,24 @@ export class BirthLocation {
 export class PlanetaryInteractionScore {
   @Prop({ required: true, min: -1, max: 1 })
   score!: number;
+
+  @Prop({ minlength: 50, maxlength: 500 })
+  description?: string;
 }
 
 @Schema({ _id: false })
 export class AISummary {
-  @Prop({ required: true, minlength: 50, maxlength: 500 })
-  description!: string;
+  @Prop({ minlength: 50, maxlength: 500 })
+  description?: string;
 
-  @Prop({ required: true, minlength: 20, maxlength: 300 })
-  strengths!: string;
+  @Prop({ minlength: 20, maxlength: 300 })
+  strengths?: string;
 
-  @Prop({ required: true, minlength: 20, maxlength: 300 })
-  challenges!: string;
+  @Prop({ minlength: 20, maxlength: 300 })
+  challenges?: string;
 
-  @Prop({ required: true, minlength: 20, maxlength: 300 })
-  action!: string;
+  @Prop({ minlength: 20, maxlength: 300 })
+  action?: string;
 }
 
 @Schema({ _id: false })

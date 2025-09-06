@@ -12,7 +12,6 @@ import { logger } from '@/common/util/logger';
 import { firebaseAdmin } from '@/auth/firebase-admin.provider';
 import { DevicesService } from '@/devices/devices.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
-import { NotificationContentService, NotificationContentTimeoutError } from '@/content/notification-content.service';
 import { ScheduleExecutionsService } from '@/schedules/schedule-executions.service';
 import { Notification, NotificationDocument } from './schemas/notification.schema';
 
@@ -22,9 +21,19 @@ export class NotificationsService {
     @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
     private readonly deviceService: DevicesService,
     private readonly userProfileService: UserProfilesService,
-    private readonly notificationContentService: NotificationContentService,
     private readonly scheduleExecutionService: ScheduleExecutionsService
   ) {}
+
+  /**
+   * Return notification title, body and url
+   */
+  private getNotificationContent(): { title: string, body: string, url: string } {
+    return {
+      title: "Your mystyc horoscope is ready",
+      body: "See what the stars have to say about your day",
+      url: 'https://mystyc.app'
+    }
+  } 
 
   // Notification schedule methods
 
@@ -53,9 +62,7 @@ export class NotificationsService {
         details: []
       };
 
-      // Generate content once
-      const { title, body, fullContent } = await this.notificationContentService.getNotificationData(payload.scheduleId, payload.executionId);
-      const url = 'https://mystyc.app';
+      const { title, body, url } = this.getNotificationContent();
 
       if (payload.timezone) {
         // Send to devices in specific timezone
@@ -66,7 +73,6 @@ export class NotificationsService {
           payload.timezone, 
           payload.scheduleId, 
           payload.executionId, 
-          fullContent._id,
           results
         );
       } else {
@@ -77,7 +83,6 @@ export class NotificationsService {
           url,
           payload.scheduleId, 
           payload.executionId, 
-          fullContent._id,
           results, 
           'system'
         );
@@ -100,32 +105,16 @@ export class NotificationsService {
 
       const error = err instanceof Error ? err : new Error(String(err));
       
-      // Check if this is a timeout error from content generation
-      if (error instanceof NotificationContentTimeoutError || error.name === 'NotificationContentTimeoutError') {
-        logger.warn('Scheduled notifications timed out during content generation', {
-          scheduleId: payload.scheduleId,
-          executionId: payload.executionId,
-          timezone: payload.timezone || 'global',
-          error,
-          duration,
-          scheduledTime: payload.scheduledTime,
-        }, 'NotificationsService');
+      logger.error('Scheduled notifications failed', {
+        scheduleId: payload.scheduleId,
+        executionId: payload.executionId,
+        timezone: payload.timezone || 'global',
+        error,
+        duration,
+        scheduledTime: payload.scheduledTime,
+      }, 'NotificationsService');
 
-        await this.scheduleExecutionService.updateStatus(payload.executionId, 'timeout', error.message, duration);
-      } else {
-        logger.error('Scheduled notifications failed', {
-          scheduleId: payload.scheduleId,
-          executionId: payload.executionId,
-          timezone: payload.timezone || 'global',
-          error,
-          duration,
-          scheduledTime: payload.scheduledTime,
-        }, 'NotificationsService');
-
-        await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
-      }
-      
-      // Don't throw - we don't want to crash the scheduler
+      await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
     }
   }
 
@@ -154,9 +143,7 @@ export class NotificationsService {
         details: []
       };
 
-      // Generate updated content once
-      const { title, body, fullContent } = await this.notificationContentService.getNotificationData(payload.scheduleId, payload.executionId);
-      const url = 'https://mystyc.app';
+      const { title, body, url } = this.getNotificationContent();
 
       if (payload.timezone) {
         // Send to devices in specific timezone
@@ -167,7 +154,6 @@ export class NotificationsService {
           payload.timezone, 
           payload.scheduleId, 
           payload.executionId, 
-          fullContent._id,
           results
         );
       } else {
@@ -178,7 +164,6 @@ export class NotificationsService {
           url,
           payload.scheduleId, 
           payload.executionId, 
-          fullContent._id,
           results, 
           'system'
         );
@@ -201,19 +186,6 @@ export class NotificationsService {
 
       const error = err instanceof Error ? err : new Error(String(err));
   
-    // Check if this is a timeout error from content generation
-      if (error instanceof NotificationContentTimeoutError || error.name === 'NotificationContentTimeoutError') {
-        logger.warn('Scheduled notifications timed out during content generation', {
-        scheduleId: payload.scheduleId,
-        executionId: payload.executionId,
-        timezone: payload.timezone || 'global',
-        error,
-        duration,
-        scheduledTime: payload.scheduledTime,
-      }, 'NotificationsService');
-
-      await this.scheduleExecutionService.updateStatus(payload.executionId, 'timeout', error.message, duration);
-    } else {
       logger.error('Scheduled notifications failed', {
         scheduleId: payload.scheduleId,
         executionId: payload.executionId,
@@ -225,9 +197,6 @@ export class NotificationsService {
 
       await this.scheduleExecutionService.updateStatus(payload.executionId, 'failed', error.message, duration);
     }
-    
-    // Don't throw - we don't want to crash the scheduler
-  }
   }
 
   /**
@@ -241,14 +210,12 @@ export class NotificationsService {
     timezone: string, 
     scheduleId?: string,
     executionId?: string,
-    contentId?: string,
     results?: any,
   ): Promise<void> {
     logger.info('Sending notifications to timezone', { 
       timezone, 
       scheduleId,
       executionId,
-      contentId
     }, 'NotificationsService');
 
     try {
@@ -259,7 +226,6 @@ export class NotificationsService {
         timezone,
         scheduleId,
         executionId,
-        contentId,
         timezoneDevices: timezoneDevices.length
       }, 'NotificationsService');
 
@@ -279,7 +245,6 @@ export class NotificationsService {
           'system',
           scheduleId,
           executionId,
-          contentId,
           results
         );
       }
@@ -289,7 +254,6 @@ export class NotificationsService {
         timezone,
         scheduleId,
         executionId,
-        contentId,
         error
       }, 'NotificationsService');
       throw error;
@@ -306,7 +270,6 @@ export class NotificationsService {
     url: string,
     scheduleId?: string,
     executionId?: string,
-    contentId?: string,
     results?: any, 
     sentBy?: string
   ): Promise<void> {
@@ -327,7 +290,6 @@ export class NotificationsService {
       notifiableDevices: notifiableDevices.length,
       scheduleId,
       executionId,
-      contentId
     }, 'NotificationsService');
 
     for (const device of notifiableDevices) {
@@ -340,7 +302,6 @@ export class NotificationsService {
         sentBy || 'system',
         scheduleId,
         executionId,
-        contentId,
         results
       );
     }
@@ -391,7 +352,6 @@ export class NotificationsService {
     sentBy: string,
     scheduleId?: string | null,
     executionId?: string | null,
-    contentId?: string | null,
     results?: any,
   ): Promise<void> {
     if (!device.fcmToken) {
@@ -409,7 +369,6 @@ export class NotificationsService {
       sentBy,
       scheduleId,
       executionId,
-      contentId
     });
 
     const notificationId = notification._id.toString();
@@ -430,7 +389,6 @@ export class NotificationsService {
           notificationId,
           scheduleId,
           executionId,
-          contentId
         });
       }
 
@@ -457,7 +415,6 @@ export class NotificationsService {
           notificationId,
           scheduleId,
           executionId,
-          contentId
         });
       }
 
@@ -769,15 +726,14 @@ export class NotificationsService {
     sentBy: string;
     scheduleId?: string | null;
     executionId?: string | null;
-    contentId?: string | null;
   }): Promise<NotificationDocument> {
 
 
-  const notificationData = {
-    ...data,
-    source: 'api' as const,
-    status: 'pending' as const
-  };
+    const notificationData = {
+      ...data,
+      source: 'api' as const,
+      status: 'pending' as const
+    };
 
     const validation = validateNotificationInputSafe(notificationData);
     if (!validation.success) {
@@ -836,7 +792,6 @@ export class NotificationsService {
       sentAt: doc.sentAt,
       scheduleId: doc.scheduleId,
       executionId: doc.executionId,
-      contentId: doc.contentId,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

@@ -5,14 +5,14 @@ import { ZodiacSign } from './astrology-knowledge.schema';
 // Schema for individual planetary interaction scores
 const PlanetaryInteractionScoreSchema = z.object({
   score: z.number().min(-1).max(1),
-  description: z.string().min(50).max(500),
+  description: z.string().min(50).max(500).optional(),
 }).strict();
 
 const AISummarySchema = z.object({
-  description: z.string().min(50).max(500),
-  strengths: z.string().min(20).max(300),
-  challenges: z.string().min(20).max(300),
-  action: z.string().min(20).max(300)
+  description: z.string().min(50).max(500).optional(),
+  strengths: z.string().min(20).max(300).optional(),
+  challenges: z.string().min(20).max(300).optional(),
+  action: z.string().min(20).max(300).optional()
 }).strict();
 
 // Schema for calculated planetary data

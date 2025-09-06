@@ -182,6 +182,7 @@ console.log(astrologyData);
                 planet='Venus'
                 score={astrologyData.astrology.venus.interactions.mars.score}
                 data={astrologyData.astrology.venus}
+                astrology={astrologyData?.user?.userProfile?.astrology?.venus}
               />
             </Card>
             <Card className='!p-10'>
@@ -192,6 +193,7 @@ console.log(astrologyData);
                 planet='Mars'
                 score={astrologyData.astrology.venus.interactions.mars.score}
                 data={astrologyData.astrology.mars}
+                astrology={astrologyData?.user?.userProfile?.astrology?.mars}
               />
             </Card>
           </div>

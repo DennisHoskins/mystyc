@@ -3,7 +3,7 @@ import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 
 import { z } from 'zod';
-import { FirebaseUser as FirebaseUserInterface, User, UserProfile, Content, PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
+import { FirebaseUser as FirebaseUserInterface, User, UserProfile, PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants/';
 import { LoginRegisterRequestSchema, LogoutRequestSchema, UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
 
@@ -15,9 +15,9 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod-validation.pipe';
 import { logger, createServiceLogger } from '@/common/util/logger';
 
-import { UserContentService } from '@/content/user-content.service';
 import { UsersService } from './users.service';
 import { UserProfilesService } from './user-profiles.service';
+import { OpenAIUserService } from '@/openai/openai-user.service';
 import { AstrologyService } from '@/astrology/services/astrology.service'; 
 import { AstrologyDataService } from '@/astrology/services/astrology-data.service';
 import { AstrologyComplete } from 'mystyc-common/interfaces';
@@ -29,7 +29,7 @@ export class UsersController {
   constructor(
     private readonly userService: UsersService,
     private readonly userProfileService: UserProfilesService,
-    private readonly userContentService: UserContentService,
+    private readonly openAiUserService: OpenAIUserService,
     private readonly astrologyService: AstrologyService,
     private readonly astrologyDataService: AstrologyDataService,
   ) {}
@@ -405,31 +405,6 @@ export class UsersController {
   }
 
   /**
-   * Gets user content data
-   * @param firebaseUserFromDecorator - Firebase user from auth guard
-   * @returns Promise<{content: Content | null}> - Content data or null if not found
-   */
-  @Post('content')
-  @UseGuards(FirebaseAuthGuard)
-  async getContent(
-    @FirebaseUser() firebaseUserFromDecorator: FirebaseUserInterface,
-    @Body() body: { deviceInfo?: any }
-  ): Promise<Content | null> {
-    this.logger.debug('Getting content via GET /content', { 
-      uid: firebaseUserFromDecorator.uid 
-    });
-
-    const firebaseUser = this.transformFirebaseUser(firebaseUserFromDecorator);
-
-    const timezone = body.deviceInfo?.timezone || 'UTC';
-    const userLocalDate = new Intl.DateTimeFormat('en-CA', { timeZone: timezone }).format(new Date());
-
-    const content = await this.userContentService.getOrGenerateUserContent(firebaseUser.uid, userLocalDate);
-
-    return content;
-  }
-
-  /**
    * Gets user astrology data - calculates if missing, returns if exists
    * @param firebaseUserFromDecorator - Firebase user from auth guard
    * @returns Promise<User | null> - User object with astrology data
@@ -448,13 +423,13 @@ export class UsersController {
     const user = await this.userService.getUser(firebaseUser);
     
     // Check if calculated astrology data already exists
-    // if (user.userProfile.astrology) {
-    //   const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(user.userProfile.astrology)
-    //   return {
-    //     user,
-    //     astrology: astrologyComplete
-    //   };
-    // }
+    if (user.userProfile.astrology && user.userProfile.astrology.summary) {
+      const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(user.userProfile.astrology)
+      return {
+        user,
+        astrology: astrologyComplete
+      };
+    }
 
     // Calculate astrology if user has complete birth data
     const birthLocation = user.userProfile.birthLocation as any;
@@ -481,11 +456,15 @@ export class UsersController {
         // Calculate interaction scores
         const calculatedData = await this.astrologyDataService.calculateUserAstrologyData(signs);
 
+        const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(calculatedData)
+
+        const calculatedDataWithSummary = await this.openAiUserService.getUserAstrologicalProfileSummary(signs, calculatedData, astrologyComplete);
+
         // Store calculated data
         const updatedProfile = await this.userProfileService.updateProfile(
           firebaseUser.uid,
           firebaseUser.email!,
-          { astrology: calculatedData }
+          { astrology: calculatedDataWithSummary }
         );
         
         user.userProfile = updatedProfile;
@@ -495,7 +474,10 @@ export class UsersController {
           signs: signs
         });
 
-        
+        return {
+          user,
+          astrology: astrologyComplete
+        }
       } catch (error) {
         this.logger.error('Failed to calculate astrology data', {
           uid: firebaseUser.uid,
@@ -503,14 +485,6 @@ export class UsersController {
         });
         throw error;
       }
-    }
-
-    if (user.userProfile.astrology) {
-      const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(user.userProfile.astrology)
-      return {
-        user,
-        astrology: astrologyComplete
-      };
     }
 
     return null;

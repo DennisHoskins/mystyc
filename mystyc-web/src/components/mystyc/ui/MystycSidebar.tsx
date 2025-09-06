@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, Home, SunMoon, Drama, BookHeart } from 'lucide-react';
+import { CalendarDays, SunMoon, Drama, BookHeart } from 'lucide-react';
 
 import { useUser } from '@/components/ui/context/AppContext';
 import UserStar from '@/components/ui/icons/UserStar';

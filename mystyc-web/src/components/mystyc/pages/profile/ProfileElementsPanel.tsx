@@ -1,4 +1,4 @@
-import { AstrologyComplete, ElementComplete } from "mystyc-common";
+import { ElementComplete } from "mystyc-common";
 import { getElementIcon } from "@/components/ui/icons/astrology/elements";
 import Panel from "@/components/ui/Panel";
 import Heading from "@/components/ui/Heading";

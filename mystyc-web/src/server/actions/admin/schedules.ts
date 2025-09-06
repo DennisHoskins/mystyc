@@ -1,7 +1,7 @@
 'use server'
 
 import { AdminStatsQuery, AdminListResponse, BaseAdminQuery } from 'mystyc-common/admin';
-import { Schedule, ScheduleExecution, Content, Notification } from 'mystyc-common/schemas/';
+import { Schedule, ScheduleExecution, Notification } from 'mystyc-common/schemas/';
 import { ScheduleStats, ScheduleExecutionStats } from 'mystyc-common/admin/interfaces/stats';
 import { DeviceInfo } from '@/interfaces/device-info.interface';
 import { logger } from '@/util/logger';
@@ -108,22 +108,6 @@ export async function getExecutionSummary(params: {
     return nestGet<{ contents: { total: number }; notifications: { total: number } }>(
       session,
       `admin/schedule-executions/${executionId}/summary`
-    );
-  }, params);
-}
-
-// Execution Content
-export async function getExecutionContent(params: {
-  deviceInfo: DeviceInfo;
-  scheduleExecutionId: string;
-} & Partial<BaseAdminQuery>) {
-  return withAdminAuth(async (session, fullParams) => {
-    const { deviceInfo, scheduleExecutionId, ...query } = fullParams;
-    logger.log('[getExecutionContent] Fetching content for execution:', scheduleExecutionId);
-    return nestGet<AdminListResponse<Content>>(
-      session,
-      `admin/schedule-executions/${scheduleExecutionId}/content`,
-      query
     );
   }, params);
 }

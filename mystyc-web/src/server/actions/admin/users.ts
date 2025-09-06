@@ -4,7 +4,6 @@ import { AdminStatsQuery, AdminListResponse, BaseAdminQuery } from 'mystyc-commo
 import { 
   UserProfile,
   Device, 
-  Content, 
   AuthEvent, 
   Notification, 
   PaymentHistory,
@@ -114,21 +113,6 @@ export async function getUserDevices(params: {
     return nestGet<AdminListResponse<Device>>(
       session, 
       `admin/users/${firebaseUid}/devices`,
-      query
-    );
-  }, params);
-}
-
-export async function getUserContent(params: {
-  deviceInfo: DeviceInfo;
-  firebaseUid: string;
-} & Partial<BaseAdminQuery>) {
-  return withAdminAuth(async (session, fullParams) => {
-    const { deviceInfo, firebaseUid, ...query } = fullParams;
-    logger.log('[getUserContent] Fetching content for user:', firebaseUid);
-    return nestGet<AdminListResponse<Content>>(
-      session,
-      `admin/users/${firebaseUid}/content`,
       query
     );
   }, params);

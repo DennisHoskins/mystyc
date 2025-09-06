@@ -48,9 +48,6 @@ export class Notification {
   @Prop({ index: true })
   executionId?: string;
 
-  @Prop({ index: true })
-  contentId?: string;
-
   createdAt!: Date;
   updatedAt!: Date;
 }
@@ -64,7 +61,6 @@ NotificationSchema.index({ firebaseUid: 1, createdAt: -1 });
 NotificationSchema.index({ deviceId: 1, createdAt: -1 });
 NotificationSchema.index({ scheduleId: 1, createdAt: -1 });
 NotificationSchema.index({ executionId: 1, createdAt: -1 });
-NotificationSchema.index({ contentId: 1, createdAt: -1 });
 NotificationSchema.index({ sentBy: 1, createdAt: -1 });
 NotificationSchema.index({ status: 1, createdAt: -1 });
 NotificationSchema.index({ type: 1, source: 1, createdAt: -1 });

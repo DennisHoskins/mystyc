@@ -1,5 +1,4 @@
 export * from './admin-auth-event-stats.interface';
-export * from './admin-content-stats.interface';
 export * from './admin-notification-stats.interface';
 export * from './admin-openai-usage-stats.interface';
 export * from './admin-schedule-execution-stats.interface';
