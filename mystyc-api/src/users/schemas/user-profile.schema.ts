@@ -52,28 +52,27 @@ export class BirthLocation {
   };
 }
 
-// Updated calculated astrology schemas
 @Schema({ _id: false })
 export class PlanetaryInteractionScore {
   @Prop({ required: true, min: -1, max: 1 })
   score!: number;
 
-  @Prop({ minlength: 50, maxlength: 500 })
+  @Prop({ minlength: 50, maxlength: 1000 })
   description?: string;
 }
 
 @Schema({ _id: false })
 export class AISummary {
-  @Prop({ minlength: 50, maxlength: 500 })
+  @Prop({ minlength: 50, maxlength: 1000 })
   description?: string;
 
-  @Prop({ minlength: 20, maxlength: 300 })
+  @Prop({ minlength: 20, maxlength: 1000 })
   strengths?: string;
 
-  @Prop({ minlength: 20, maxlength: 300 })
+  @Prop({ minlength: 20, maxlength: 1000 })
   challenges?: string;
 
-  @Prop({ minlength: 20, maxlength: 300 })
+  @Prop({ minlength: 20, maxlength: 1000 })
   action?: string;
 }
 
@@ -81,6 +80,12 @@ export class AISummary {
 export class PlanetaryDataSchema {
   @Prop({ required: true, enum: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'] })
   sign!: string;
+
+  @Prop({ required: false, min: 0, max: 29.999 })
+  degreesInSign?: number;
+
+  @Prop({ required: false, min: 0, max: 359.999 })
+  absoluteDegrees?: number;
 
   @Prop({ required: true, min: -1, max: 1 })
   totalScore!: number;
@@ -151,7 +156,6 @@ export class UserProfile {
   @Prop({ type: BirthLocation })
   birthLocation?: BirthLocation;
 
-  // Updated to use new calculated astrology schema
   @Prop({ type: Astrology })
   astrology?: Astrology;
 

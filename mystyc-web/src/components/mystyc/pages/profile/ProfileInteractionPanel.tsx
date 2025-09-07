@@ -15,7 +15,7 @@ export default function ProfileInteractionPanel({ href, planet, heading, subhead
   subheading: string,
   score: number, 
   astrology?: PlanetaryData | undefined,
-  totals?: { label: string, total: number }[],
+  totals?: { label: string, total: number, description?: string }[],
   data: PlanetaryCompleteData 
 }) {
   return (
@@ -25,6 +25,7 @@ export default function ProfileInteractionPanel({ href, planet, heading, subhead
         <Heading level={2} className='!text-white'>{planet}: </Heading>
         <Heading level={2} className='!text-white ml-1'>{data.sign}</Heading>
         {getZodiacIcon(data.sign, "w-5 h-5 ml-1 text-white")}
+        <Text variant='xs' className='!text-gray-300 ml-1 !mt-1'>{astrology?.degreesInSign}°</Text>
       </Link>
       <Link href={href} className='flex flex-col hover:!no-underline'>
         <Text variant='small' className="!text-gray-500 !mt-1 flex space-x-2">
@@ -32,21 +33,26 @@ export default function ProfileInteractionPanel({ href, planet, heading, subhead
         </Text>
         <Text variant='muted' className='!text-gray-300 !mt-2'>{heading}: {subheading}</Text>
 
-        <div className='!mt-4 max-w-md'>
+        <div className='!mt-2 max-w-md'>
           <LinearGauge label='' score={score} />
         </div>
 
         {astrology?.summary?.description && 
-          <Text variant='muted' className="!text-gray-400 !mt-4 !mb-4">{astrology.summary?.description}</Text>
+          <Text variant='muted' className="!text-gray-400 !mt-2 !mb-4">{astrology.summary?.description}</Text>
         }     
 
         {(totals && totals.length) &&
-          <div className='grid grid-cols-4 gap-2 !mt-4'>
+          <div className='flex flex-col space-y-4 !mt-4'>
             {totals?.map((total) => (
-              <Panel key={total.label} className='!p-4 justify-center items-center'>
-                <Text variant='xs' className='!text-gray-500'>{total.label}</Text>
-                <RadialGauge label={total.label} totalScore={total.total} inline={true} />
-              </Panel>
+              <div className='flex space-x-4'>
+                <Panel key={total.label} className='!p-4 justify-center items-center max-w-32'>
+                  <RadialGauge label={total.label} size={100} totalScore={total.total} inline={true} />
+                </Panel>
+                <div className="flex flex-col">
+                  <Heading level={3}>{total.label}</Heading>
+                  <Text variant='muted' className="!text-gray-400">{total.description}</Text>
+                </div>
+              </div>
             ))}
           </div>
         }

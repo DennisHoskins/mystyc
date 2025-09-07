@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { OpenAIUsage, OpenAIUsageSchema } from './schemas/openai-usage.schema';
 import { OpenAIUsageService } from './openai-usage.service';
 import { OpenAIUserService } from './openai-user.service';
+import { OpenAIHoroscopeService } from './openai-horoscope.service';
 
 @Module({
   imports: [
@@ -14,10 +15,12 @@ import { OpenAIUserService } from './openai-user.service';
   providers: [
     OpenAIUsageService, 
     OpenAIUserService,
+    OpenAIHoroscopeService,
   ],
   exports: [
     OpenAIUsageService, 
     OpenAIUserService,
+    OpenAIHoroscopeService,
   ],
 })
 export class OpenAIModule {}

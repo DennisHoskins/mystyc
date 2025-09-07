@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { FirebaseUser as FirebaseUserInterface, User, UserProfile, PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
 import { UserRole, SubscriptionLevel } from 'mystyc-common/constants/';
 import { LoginRegisterRequestSchema, LogoutRequestSchema, UpdateUserProfileSchema } from 'mystyc-common/schemas/requests';
+import { PlanetaryDegrees } from 'mystyc-common/interfaces';
 
 import { Public } from '@/common/decorators/public.decorator';
 import { Roles } from '@/common/decorators/roles.decorator';
@@ -453,8 +454,16 @@ export class UsersController {
           Mars: coreAstrology.marsSign
         };
 
+        const positions: Record<PlanetType, PlanetaryDegrees> = {
+          Sun: coreAstrology.sunPosition,
+          Moon: coreAstrology.moonPosition,
+          Rising: coreAstrology.risingPosition,
+          Venus: coreAstrology.venusPosition,
+          Mars: coreAstrology.marsPosition
+        };
+
         // Calculate interaction scores
-        const calculatedData = await this.astrologyDataService.calculateUserAstrologyData(signs);
+        const calculatedData = await this.astrologyDataService.calculateUserAstrologyData(signs, positions);
 
         const astrologyComplete = await this.astrologyDataService.assembleCompleteAstrologyData(calculatedData)
 

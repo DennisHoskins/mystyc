@@ -61,7 +61,7 @@ export default function ProfilePage() {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-            icon={<UserStar width={34} height={34} className='text-white mr-1' />}
+            icon={<UserStar width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
             heading={user.name}
             title={formatDateForDisplay(user.userProfile.dateOfBirth, false) + " @ " + formatTime(user.userProfile.timeOfBirth)}
             subtitle={user.userProfile.birthLocation?.formattedAddress + " (" + user.userProfile.birthLocation?.coordinates.lat + " ° , " + user.userProfile.birthLocation?.coordinates.lng + " ° )"}
@@ -80,13 +80,11 @@ export default function ProfilePage() {
     );
   }
 
-console.log(astrologyData);
-
   return (
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<UserStar width={34} height={34} className='text-white mr-1' />}
+          icon={<UserStar width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
           heading={user.name}
           title={formatDateForDisplay(user.userProfile.dateOfBirth, false) + " @ " + formatTime(user.userProfile.timeOfBirth)}
           subtitle={user.userProfile.birthLocation?.formattedAddress + " (" + user.userProfile.birthLocation?.coordinates.lat + " ° , " + user.userProfile.birthLocation?.coordinates.lng + " ° )"}
@@ -136,10 +134,10 @@ console.log(astrologyData);
                 astrology={astrologyData?.user?.userProfile?.astrology?.sun}
                 data={astrologyData.astrology.sun}
                 totals={[
-                  {label: "Sun - Moon", total: astrologyData.astrology.sun.interactions.moon.score},
-                  {label: "Sun - Rising", total: astrologyData.astrology.sun.interactions.rising.score},
-                  {label: "Sun - Venus", total: astrologyData.astrology.sun.interactions.venus.score},
-                  {label: "Sun - Mars", total: astrologyData.astrology.sun.interactions.mars.score}
+                  {label: "Sun - Moon", total: astrologyData.astrology.sun.interactions.moon.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.moon.description},
+                  {label: "Sun - Rising", total: astrologyData.astrology.sun.interactions.rising.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.rising.description},
+                  {label: "Sun - Venus", total: astrologyData.astrology.sun.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.venus.description},
+                  {label: "Sun - Mars", total: astrologyData.astrology.sun.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.mars.description},
                 ]}
               />
             </Card>
@@ -153,9 +151,9 @@ console.log(astrologyData);
                 score={astrologyData.user.userProfile.astrology?.moon.totalScore || 0}
                 astrology={astrologyData?.user?.userProfile?.astrology?.moon}
                 totals={[
-                  {label: "Moon - Rising", total: astrologyData.astrology.moon.interactions.rising.score},
-                  {label: "Moon - Venus", total: astrologyData.astrology.moon.interactions.venus.score},
-                  {label: "Moon - Mars", total: astrologyData.astrology.moon.interactions.mars.score}
+                  {label: "Moon - Rising", total: astrologyData.astrology.moon.interactions.rising.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.rising.description},
+                  {label: "Moon - Venus", total: astrologyData.astrology.moon.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.venus.description},
+                  {label: "Moon - Mars", total: astrologyData.astrology.moon.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.mars.description},
                 ]}
               />
             </Card>
@@ -169,8 +167,8 @@ console.log(astrologyData);
                 score={astrologyData.user.userProfile.astrology?.rising.totalScore || 0}
                 astrology={astrologyData?.user?.userProfile?.astrology?.rising}
                 totals={[
-                  {label: "Rising - Venus", total: astrologyData.astrology.rising.interactions.venus.score},
-                  {label: "Rising - Mars", total: astrologyData.astrology.rising.interactions.mars.score},
+                  {label: "Rising - Venus", total: astrologyData.astrology.rising.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.rising.interactions!.venus.description},
+                  {label: "Rising - Mars", total: astrologyData.astrology.rising.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.rising.interactions!.venus.description},
                 ]}
               />
             </Card>
@@ -183,6 +181,9 @@ console.log(astrologyData);
                 score={astrologyData.astrology.venus.interactions.mars.score}
                 data={astrologyData.astrology.venus}
                 astrology={astrologyData?.user?.userProfile?.astrology?.venus}
+                totals={[
+                  {label: "Venus - Mars", total: astrologyData.astrology.venus.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.venus.interactions!.mars.description},
+                ]}
               />
             </Card>
             <Card className='!p-10'>

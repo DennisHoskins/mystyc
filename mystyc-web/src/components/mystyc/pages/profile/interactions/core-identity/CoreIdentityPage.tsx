@@ -49,7 +49,7 @@ export default function CoreIdentityPage() {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<Fingerprint width={34} height={34} className='text-white mr-1' />}
+            icon={<Fingerprint width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
             heading='Core Identity'
             title='Sun'
             titleIcon={getPlanetIcon("Sun", 'w-4 h-4 mr-1 text-gray-400')}
@@ -73,7 +73,7 @@ export default function CoreIdentityPage() {
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<Fingerprint width={34} height={34} className='text-white mr-1' />}
+          icon={<Fingerprint width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
           heading='Core Identity'
           title='Sun'
           titleIcon={getPlanetIcon("Sun", 'w-4 h-4 mr-1 text-gray-400')}

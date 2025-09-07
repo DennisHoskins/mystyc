@@ -75,7 +75,7 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<Drama className='w-8 h-8 text-white' />}
+            icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
             heading='Relationships'
             href='/relationships'
             title={user.userProfile.astrology?.sun.sign}
@@ -99,7 +99,7 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<Drama className='w-8 h-8 text-white' />}
+          icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
           heading='Relationships'
           href='/relationships'
           title={user.userProfile.astrology?.sun.sign}
@@ -117,7 +117,7 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
             </div>
           </Panel>
           <Card className='!p-10 col-span-3'>
-            <Link href={`/signs/${interaction.sign2}`} className='flex items-center space-x-2 hover:!no-underline'>
+            <Link href={`/astrology/signs/${interaction.sign2}`} className='flex items-center space-x-2 hover:!no-underline'>
               {getZodiacIcon(interaction.sign2, 'w-10 h-10 text-gray-300')}
               <Heading level={1}>{interaction.sign2}</Heading>
             </Link>

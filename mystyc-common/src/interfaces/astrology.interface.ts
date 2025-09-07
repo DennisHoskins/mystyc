@@ -99,6 +99,8 @@ export interface AISummary {
 
 export interface PlanetaryData {
   sign: ZodiacSignType;
+  degreesInSign?: number;
+  absoluteDegrees?: number;
   totalScore: number;
   summary?: AISummary;
   interactions?: Record<string, PlanetaryInteractionScore>;
@@ -114,6 +116,12 @@ export interface AstrologyCalculated {
   summary?: AISummary;
   createdAt: Date;
   lastCalculatedAt: Date;
+}
+
+export interface PlanetaryDegrees {
+  sign: ZodiacSignType;
+  degreesInSign: number;
+  absoluteDegrees: number;
 }
 
 export interface PlanetaryPositionComplete extends PlanetaryPosition {

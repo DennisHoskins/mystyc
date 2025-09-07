@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ZodiacSignType } from 'mystyc-common/schemas';
+import { PlanetaryDegrees } from 'mystyc-common/interfaces';
+import { getLongitudeDetails } from 'mystyc-common/util/astrology-degrees';
 import { logger } from '@/common/util/logger';
 import * as fs from 'fs';
 
@@ -11,6 +13,11 @@ export interface CoreAstrology {
   risingSign: ZodiacSignType;
   venusSign: ZodiacSignType;
   marsSign: ZodiacSignType;
+  sunPosition: PlanetaryDegrees;
+  moonPosition: PlanetaryDegrees;
+  risingPosition: PlanetaryDegrees;
+  venusPosition: PlanetaryDegrees;
+  marsPosition: PlanetaryDegrees;  
 }
 
 @Injectable()
@@ -107,14 +114,26 @@ export class AstrologyService {
         this.getPlanetPosition(julianDay, swisseph.SE_MARS),
         this.getRisingSign(julianDay, coordinates.lat, coordinates.lng)
       ]);
-      
+
+      // Extract detailed position information
+      const sunPosition = getLongitudeDetails(sunLongitude);
+      const moonPosition = getLongitudeDetails(moonLongitude);
+      const risingPosition = getLongitudeDetails(risingLongitude);
+      const venusPosition = getLongitudeDetails(venusLongitude);
+      const marsPosition = getLongitudeDetails(marsLongitude);
+
       // Map to zodiac signs
       const coreAstrology: CoreAstrology = {
         sunSign: this.mapLongitudeToZodiacSign(sunLongitude),
         moonSign: this.mapLongitudeToZodiacSign(moonLongitude),
         risingSign: this.mapLongitudeToZodiacSign(risingLongitude),
         venusSign: this.mapLongitudeToZodiacSign(venusLongitude),
-        marsSign: this.mapLongitudeToZodiacSign(marsLongitude)
+        marsSign: this.mapLongitudeToZodiacSign(marsLongitude),
+        sunPosition,
+        moonPosition,
+        risingPosition,
+        venusPosition,
+        marsPosition        
       };
       
       logger.debug('Core astrology calculated successfully', {

@@ -5,7 +5,7 @@ import {
   PlanetType, 
   ZodiacSignType,
 } from 'mystyc-common/schemas';
-import { AstrologyCalculated, AstrologyComplete, PlanetaryData, PlanetaryCompleteData } from 'mystyc-common/interfaces/astrology.interface';
+import { AstrologyCalculated, AstrologyComplete, PlanetaryDegrees, PlanetaryData, PlanetaryCompleteData } from 'mystyc-common/interfaces/astrology.interface';
 import { calculatePlanetaryInteractions } from 'mystyc-common/util/astrology-calculations';
 
 import { logger } from '@/common/util/logger';
@@ -34,7 +34,10 @@ export class AstrologyDataService {
    * @param signs - Record mapping planets to their zodiac signs
    * @returns Promise<AstrologyCalculated> - Calculated astrology data with planetary interaction scores
    */
-  async calculateUserAstrologyData(signs: Record<PlanetType, ZodiacSignType>): Promise<AstrologyCalculated> {
+  async calculateUserAstrologyData(
+    signs: Record<PlanetType, ZodiacSignType>,
+    positions?: Record<PlanetType, PlanetaryDegrees> 
+  ): Promise<AstrologyCalculated> {
     logger.info('Calculating user astrology data', { signs }, 'AstrologyDataService');
 
     try {
@@ -59,15 +62,50 @@ export class AstrologyDataService {
       }
 
       // Calculate planetary interactions
-      const calculations = calculatePlanetaryInteractions(signs, signData);
+      const calculations = calculatePlanetaryInteractions(signs, signData, positions);
 
       const now = new Date();
       const astrologyData: AstrologyCalculated = {
-        ...calculations,
+        sun: {
+          sign: signs.Sun,
+          degreesInSign: positions?.Sun?.degreesInSign,      // NEW
+          absoluteDegrees: positions?.Sun?.absoluteDegrees,  // NEW
+          totalScore: calculations.sun.totalScore,
+          interactions: calculations.sun.interactions
+        },
+        moon: {
+          sign: signs.Moon,
+          degreesInSign: positions?.Moon?.degreesInSign,     // NEW
+          absoluteDegrees: positions?.Moon?.absoluteDegrees, // NEW
+          totalScore: calculations.moon.totalScore,
+          interactions: calculations.moon.interactions
+        },
+        rising: {
+          sign: signs.Rising,
+          degreesInSign: positions?.Rising?.degreesInSign,     // NEW
+          absoluteDegrees: positions?.Rising?.absoluteDegrees, // NEW
+          totalScore: calculations.rising.totalScore,
+          interactions: calculations.rising.interactions
+        },
+        venus: {
+          sign: signs.Venus,
+          degreesInSign: positions?.Venus?.degreesInSign,     // NEW
+          absoluteDegrees: positions?.Venus?.absoluteDegrees, // NEW
+          totalScore: calculations.venus.totalScore,
+          interactions: calculations.venus.interactions
+        },
+        mars: {
+          sign: signs.Mars,
+          degreesInSign: positions?.Mars?.degreesInSign,     // NEW
+          absoluteDegrees: positions?.Mars?.absoluteDegrees, // NEW
+          totalScore: calculations.mars.totalScore,
+          interactions: calculations.mars.interactions
+        },
+        totalScore: calculations.totalScore,
         createdAt: now,
         lastCalculatedAt: now
       };
-
+        
       logger.info('User astrology data calculated successfully', {
         planetsCalculated: Object.keys(calculations).length,
         sunTotalScore: calculations.sun.totalScore,

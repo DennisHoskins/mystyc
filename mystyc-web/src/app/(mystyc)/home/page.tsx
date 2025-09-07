@@ -1,3 +1,5 @@
+// todo: make server
+
 'use client'
 
 import { useEffect } from 'react';

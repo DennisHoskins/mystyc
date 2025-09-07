@@ -12,6 +12,7 @@ export * from './openai-usage.schema';
 export * from './astrology-reference.schema';
 export * from './astrology-knowledge.schema';
 export * from './astrology.schema';
+export * from './horoscope.schema';
 
 export * from './requests';
 

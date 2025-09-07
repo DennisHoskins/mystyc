@@ -69,7 +69,7 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
     <PageTransition>
       <div className='w-full h-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={getZodiacIcon(signData?.sign, 'w-14 h-14 text-white')}
+          icon={getZodiacIcon(signData?.sign, 'w-10 h-10 text-white stroke-1')}
           heading={signData?.sign || ""}
           href='/astrology/signs'
           title={`${signData?.timing.dateRange.start || ""} - ${signData?.timing.dateRange.end || ""}, ${signData?.timing.season || ""}`}

@@ -1,5 +1,6 @@
-import { AstrologyCalculated } from '../interfaces';
+import { AstrologyCalculated, PlanetaryDegrees } from '../interfaces';
 import { Sign, ZodiacSignType, ElementType, ModalityType, PolarityType, PlanetType } from '../schemas';
+import { calculateAngularDistance, getExactAspect } from './astrology-degrees';
 
 export interface CompatibilityScores {
   dynamic: 'harmony' | 'tension' | 'complementary' | 'amplification';
@@ -8,38 +9,26 @@ export interface CompatibilityScores {
   polarityScore: number;
   dynamicScore: number;
   totalScore: number;
+  exactAspect?: {
+    type: string;
+    angle: number;
+    orb: number;
+    strength: number;
+  } | null;
+  degreeBasedScore?: number;
 }
 
 /**
- * Counts how many other planets are in the same sign as the target planet
- * @param targetPlanet - The planet to check conjunctions for
- * @param signs - Record mapping planets to their zodiac signs
- * @returns number - Count of other planets in same sign
- */
-function countConjunctions(
-  targetPlanet: PlanetType, 
-  signs: Record<PlanetType, ZodiacSignType>
-): number {
-  const targetSign = signs[targetPlanet];
-  let conjunctionCount = 0;
-  
-  for (const planet in signs) {
-    if (planet !== targetPlanet && signs[planet as PlanetType] === targetSign) {
-      conjunctionCount++;
-    }
-  }
-  return conjunctionCount;
-}
-
-/**
- * Calculates all planetary interactions and weighted totals for a user's chart
+ * Planetary interactions calculation with optional degree precision
  * @param signs - Record mapping planets to their zodiac signs
  * @param signData - Record mapping zodiac signs to their complete Sign data
+ * @param positions - Optional: Record mapping planets to their exact positions
  * @returns AstrologyCalculated - All planetary interaction scores and totals
  */
 export function calculatePlanetaryInteractions(
   signs: Record<PlanetType, ZodiacSignType>,
-  signData: Record<ZodiacSignType, Sign>
+  signData: Record<ZodiacSignType, Sign>,
+  positions?: Record<PlanetType, PlanetaryDegrees>
 ): AstrologyCalculated {
   const planets: PlanetType[] = ['Sun', 'Moon', 'Rising', 'Venus', 'Mars'];
   const planetImportance: Record<PlanetType, number> = {
@@ -53,6 +42,9 @@ export function calculatePlanetaryInteractions(
     const planet = planets[i].toLowerCase() as keyof AstrologyCalculated;
     interactions[planet] = {
       sign: signs[planets[i]],
+      // Store degree information if available
+      degreesInSign: positions?.[planets[i]]?.degreesInSign,
+      absoluteDegrees: positions?.[planets[i]]?.absoluteDegrees,
       interactions: {},
       totalScore: 0
     };
@@ -66,7 +58,11 @@ export function calculatePlanetaryInteractions(
       const sign1Data = signData[signs[planets[i]]];
       const sign2Data = signData[signs[planets[j]]];
       
-      const compatibility = calculateCompatibility(sign1Data, sign2Data);
+      // Pass position data for degree-aware calculations
+      const position1 = positions?.[planets[i]];
+      const position2 = positions?.[planets[j]];
+      
+      const compatibility = calculateCompatibility(sign1Data, sign2Data, position1, position2);
       
       // Store interaction for both planets
       interactions[planet1].interactions[planet2] = { score: compatibility.totalScore };
@@ -99,13 +95,16 @@ export function calculatePlanetaryInteractions(
       interactions[planet].totalScore = Math.round((weightedSum / totalWeight) * 100) / 100;
     }
 
-    // Apply stellium multipliers based on conjunctions
-    const conjunctionCount = countConjunctions(planets[i], signs);
+    // Apply stellium multipliers based on conjunctions (enhanced with degrees)
+    const conjunctionCount = positions 
+      ? countConjunctionsWithDegrees(planets[i], signs, positions)
+      : countConjunctions(planets[i], signs);
+      
     let stelliumMultiplier = 1.0;
-    if (conjunctionCount === 1) stelliumMultiplier = 1.2;      // 2 planets together
-    if (conjunctionCount === 2) stelliumMultiplier = 1.4;      // 3 planets together  
-    if (conjunctionCount === 3) stelliumMultiplier = 1.6;      // 4 planets together
-    if (conjunctionCount >= 4) stelliumMultiplier = 1.8;       // 5+ planets (rare)
+    if (conjunctionCount === 1) stelliumMultiplier = 1.2;
+    if (conjunctionCount === 2) stelliumMultiplier = 1.4;
+    if (conjunctionCount === 3) stelliumMultiplier = 1.6;
+    if (conjunctionCount >= 4) stelliumMultiplier = 1.8;
     
     interactions[planet].totalScore *= stelliumMultiplier;
     interactions[planet].totalScore = Math.round(interactions[planet].totalScore * 100) / 100;
@@ -132,19 +131,30 @@ export function calculatePlanetaryInteractions(
 }
 
 /**
- * Calculates comprehensive compatibility scores between two zodiac signs
+ * Compatibility calculation with optional degree precision
  * @param sign1Data - Complete sign data for first sign
  * @param sign2Data - Complete sign data for second sign
- * @returns CompatibilityScores - All component scores plus total weighted score
+ * @param position1 - Optional: Exact position of first planet
+ * @param position2 - Optional: Exact position of second planet
+ * @returns CompatibilityScores - All component scores plus enhanced degree-based scoring
  */
-export function calculateCompatibility(sign1Data: Sign, sign2Data: Sign): CompatibilityScores {
+export function calculateCompatibility(
+  sign1Data: Sign, 
+  sign2Data: Sign,
+  position1?: PlanetaryDegrees,
+  position2?: PlanetaryDegrees
+): CompatibilityScores {
   const element1 = sign1Data.element;
   const element2 = sign2Data.element;
   const modality1 = sign1Data.modality;
   const modality2 = sign2Data.modality;
   const polarity1 = sign1Data.basics.polarity;
   const polarity2 = sign2Data.basics.polarity;
-  const distance = getSignDistance(sign1Data.sign, sign2Data.sign);
+  
+  // Use degree-aware distance calculation if positions available
+  const distance = (position1 && position2) 
+    ? getDegreeBasedDistance(position1, position2)
+    : getSignDistance(sign1Data.sign, sign2Data.sign);
   
   let dynamic: CompatibilityScores['dynamic'];
   let elementScore: number;
@@ -152,63 +162,65 @@ export function calculateCompatibility(sign1Data: Sign, sign2Data: Sign): Compat
   let polarityScore: number;
   let dynamicScore: number;
   
-  // Element compatibility scoring (expanded range: -0.8 to 1.0)
+  // Element compatibility scoring
   if (element1 === element2) {
-    elementScore = 1.0; // Same element harmony (was 0.8)
+    elementScore = 1.0;
   } else if ((element1 === 'Fire' && element2 === 'Air') || (element1 === 'Air' && element2 === 'Fire')) {
-    elementScore = 0.7; // Fire + Air complementary
+    elementScore = 0.7;
   } else if ((element1 === 'Earth' && element2 === 'Water') || (element1 === 'Water' && element2 === 'Earth')) {
-    elementScore = 0.7; // Earth + Water complementary  
+    elementScore = 0.7;
   } else if ((element1 === 'Fire' && element2 === 'Water') || (element1 === 'Water' && element2 === 'Fire')) {
-    elementScore = -0.8; // Fire + Water tension (was -0.3)
+    elementScore = -0.8;
   } else if ((element1 === 'Earth' && element2 === 'Air') || (element1 === 'Air' && element2 === 'Earth')) {
-    elementScore = -0.6; // Earth + Air tension (was -0.2)
+    elementScore = -0.6;
   } else {
-    elementScore = 0.0; // Neutral
+    elementScore = 0.0;
   }
   
-  // Modality compatibility scoring (expanded range: -0.5 to 0.8)
+  // Modality compatibility scoring
   if (modality1 === modality2) {
     if (modality1 === 'Cardinal') {
-      modalityScore = -0.5; // Cardinal + Cardinal tension (was -0.2)
+      modalityScore = -0.5;
     } else if (modality1 === 'Fixed') {
-      modalityScore = 0.8; // Fixed + Fixed amplification (was 0.6)
-    } else { // Mutable
-      modalityScore = 0.7; // Mutable + Mutable harmony (was 0.5)
+      modalityScore = 0.8;
+    } else {
+      modalityScore = 0.7;
     }
   } else {
-    modalityScore = 0.4; // Cross-modality complementary
+    modalityScore = 0.4;
   }
   
-  // Polarity compatibility scoring (unchanged)
+  // Polarity compatibility scoring
   if (polarity1 === polarity2) {
-    polarityScore = 0.2; // Same polarity - comfortable but less magnetic
+    polarityScore = 0.2;
   } else {
-    polarityScore = 0.7; // Opposite polarities - magnetic attraction
+    polarityScore = 0.7;
   }
   
-  // Astrological aspect-based dynamic (expanded negative range)
-  if (distance === 0) {
-    dynamic = 'amplification';
-    dynamicScore = 0.5;
-  } else if (distance === 4) { // Trine (same element)
-    dynamic = 'harmony';
-    dynamicScore = 1.0;
-  } else if (distance === 2) { // Sextile
-    dynamic = 'complementary';
-    dynamicScore = 0.7;
-  } else if (distance === 3) { // Square
-    dynamic = 'tension';
-    dynamicScore = -0.8; // Was -0.5
-  } else if (distance === 6) { // Opposition
-    dynamic = 'complementary';
-    dynamicScore = 0.7;
-  } else if (distance === 1 || distance === 5) { // Adjacent/quincunx
-    dynamic = 'tension';
-    dynamicScore = -0.4; // Was -0.2
+  // Dynamic scoring with exact aspects
+  let exactAspect;
+  let degreeBasedScore;
+  
+  if (position1 && position2) {
+    // Use exact aspect calculation for more precise scoring
+    exactAspect = getExactAspect(position1.absoluteDegrees, position2.absoluteDegrees);
+    
+    if (exactAspect) {
+      // Use exact aspect strength
+      dynamicScore = exactAspect.strength;
+      dynamic = getAspectDynamic(exactAspect.type);
+      degreeBasedScore = exactAspect.strength;
+    } else {
+      // Fall back to sign-based calculation
+      const aspectInfo = getSignBasedAspect(distance);
+      dynamic = aspectInfo.dynamic;
+      dynamicScore = aspectInfo.score;
+    }
   } else {
-    dynamic = 'harmony';
-    dynamicScore = 0.3;
+    // Sign-based calculation
+    const aspectInfo = getSignBasedAspect(distance);
+    dynamic = aspectInfo.dynamic;
+    dynamicScore = aspectInfo.score;
   }
   
   // Calculate total score (weighted average)
@@ -225,16 +237,122 @@ export function calculateCompatibility(sign1Data: Sign, sign2Data: Sign): Compat
     modalityScore, 
     polarityScore, 
     dynamicScore, 
-    totalScore 
+    totalScore,
+    exactAspect,
+    degreeBasedScore
   };
 }
 
 /**
- * Calculates the distance between two zodiac signs
- * @param sign1 - First zodiac sign
- * @param sign2 - Second zodiac sign
- * @returns number - Distance between signs (0-6)
+ * Conjunction counting using exact degrees
+ * @param targetPlanet - The planet to check conjunctions for
+ * @param signs - Record mapping planets to their zodiac signs
+ * @param positions - Record mapping planets to their exact positions
+ * @returns number - Count of planets within orb of conjunction
  */
+function countConjunctionsWithDegrees(
+  targetPlanet: PlanetType,
+  signs: Record<PlanetType, ZodiacSignType>,
+  positions: Record<PlanetType, PlanetaryDegrees>
+): number {
+  const targetPosition = positions[targetPlanet];
+  if (!targetPosition) return countConjunctions(targetPlanet, signs);
+  
+  let conjunctionCount = 0;
+  const conjunctionOrb = 8; // degrees
+  
+  for (const planet in signs) {
+    if (planet !== targetPlanet) {
+      const otherPosition = positions[planet as PlanetType];
+      if (otherPosition) {
+        const distance = calculateAngularDistance(
+          targetPosition.absoluteDegrees,
+          otherPosition.absoluteDegrees
+        );
+        if (distance <= conjunctionOrb) {
+          conjunctionCount++;
+        }
+      }
+    }
+  }
+  
+  return conjunctionCount;
+}
+
+/**
+ * Get degree-aware distance between planetary positions
+ * @param position1 - First planetary position
+ * @param position2 - Second planetary position  
+ * @returns number - Traditional aspect distance (0-6) enhanced with degree precision
+ */
+function getDegreeBasedDistance(position1: PlanetaryDegrees, position2: PlanetaryDegrees): number {
+  const angle = calculateAngularDistance(position1.absoluteDegrees, position2.absoluteDegrees);
+  
+  // Map angular distance to traditional aspect distances with enhanced precision
+  if (angle <= 15) return 0;      // Conjunction (0-15°)
+  if (angle <= 45) return 1;      // Semi-sextile/Semi-square (15-45°)
+  if (angle <= 75) return 2;      // Sextile (45-75°)
+  if (angle <= 105) return 3;     // Square (75-105°)
+  if (angle <= 135) return 4;     // Trine (105-135°)
+  if (angle <= 165) return 5;     // Quincunx (135-165°)
+  return 6;                       // Opposition (165-180°)
+}
+
+/**
+ * Get dynamic type from exact aspect name
+ * @param aspectType - Type of aspect (conjunction, trine, etc.)
+ * @returns Dynamic classification
+ */
+function getAspectDynamic(aspectType: string): 'harmony' | 'tension' | 'complementary' | 'amplification' {
+  switch (aspectType) {
+    case 'conjunction': return 'amplification';
+    case 'trine': return 'harmony';
+    case 'sextile': return 'complementary';
+    case 'square': return 'tension';
+    case 'opposition': return 'complementary';
+    default: return 'harmony';
+  }
+}
+
+/**
+ * Get sign-based aspect information (extracted from original logic)
+ * @param distance - Sign distance (0-6)
+ * @returns Aspect dynamic and score
+ */
+function getSignBasedAspect(distance: number): { dynamic: CompatibilityScores['dynamic']; score: number } {
+  if (distance === 0) {
+    return { dynamic: 'amplification', score: 0.5 };
+  } else if (distance === 4) {
+    return { dynamic: 'harmony', score: 1.0 };
+  } else if (distance === 2) {
+    return { dynamic: 'complementary', score: 0.7 };
+  } else if (distance === 3) {
+    return { dynamic: 'tension', score: -0.8 };
+  } else if (distance === 6) {
+    return { dynamic: 'complementary', score: 0.7 };
+  } else if (distance === 1 || distance === 5) {
+    return { dynamic: 'tension', score: -0.4 };
+  } else {
+    return { dynamic: 'harmony', score: 0.3 };
+  }
+}
+
+export function countConjunctions(
+  targetPlanet: PlanetType, 
+  signs: Record<PlanetType, ZodiacSignType>
+): number {
+  // ... existing implementation unchanged
+  const targetSign = signs[targetPlanet];
+  let conjunctionCount = 0;
+  
+  for (const planet in signs) {
+    if (planet !== targetPlanet && signs[planet as PlanetType] === targetSign) {
+      conjunctionCount++;
+    }
+  }
+  return conjunctionCount;
+}
+
 export function getSignDistance(sign1: ZodiacSignType, sign2: ZodiacSignType): number {
   const signs: ZodiacSignType[] = [
     'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -249,7 +367,6 @@ export function getSignDistance(sign1: ZodiacSignType, sign2: ZodiacSignType): n
   }
   
   const rawDistance = Math.abs(index1 - index2);
-  // Return the shorter distance around the zodiac wheel
   return Math.min(rawDistance, 12 - rawDistance);
 }
 

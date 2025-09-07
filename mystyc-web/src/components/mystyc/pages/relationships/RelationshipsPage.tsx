@@ -50,7 +50,7 @@ export default function RelationshipsPage() {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<Drama className='w-8 h-8 text-white' />}
+            icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
             heading='Relationships'
             title={user.userProfile.astrology?.sun.sign}
             subtitle={`Discover How the Stars Shape Your Connections`}
@@ -77,7 +77,7 @@ export default function RelationshipsPage() {
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<Drama className='w-8 h-8 text-white' />}
+          icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
           heading='Relationships'
           title={user.userProfile.astrology?.sun.sign}
           titleIcon={getZodiacIcon(user.userProfile.astrology?.sun.sign, 'w-6 h-6 text-gray-400')}

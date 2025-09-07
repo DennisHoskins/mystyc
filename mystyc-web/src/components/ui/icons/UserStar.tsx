@@ -1,4 +1,4 @@
-export default function UserStar({ width = 24, height = 24, className } : { width: number, height: number, className?: string }) {
+export default function UserStar({ width = 24, height = 24, strokeWidth = 2, className } : { width: number, height: number, strokeWidth?: number, className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" 
       width={width} 
@@ -6,7 +6,7 @@ export default function UserStar({ width = 24, height = 24, className } : { widt
       viewBox={`0 0 24 24`} 
       fill="none" 
       stroke="currentColor" 
-      strokeWidth="2" 
+      strokeWidth={strokeWidth}
       strokeLinecap="round" 
       strokeLinejoin="round" 
       className={`lucide lucide-user-star-icon lucide-user-star ${className}`}
