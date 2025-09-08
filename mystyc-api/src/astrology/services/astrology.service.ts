@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ZodiacSignType } from 'mystyc-common/schemas';
 import { PlanetaryDegrees } from 'mystyc-common/interfaces';
+import { PlanetType } from 'mystyc-common/schemas';
 import { getLongitudeDetails } from 'mystyc-common/util/astrology-degrees';
 import { logger } from '@/common/util/logger';
 import * as fs from 'fs';
@@ -11,13 +12,22 @@ export interface CoreAstrology {
   sunSign: ZodiacSignType;
   moonSign: ZodiacSignType;
   risingSign: ZodiacSignType;
-  venusSign: ZodiacSignType;
-  marsSign: ZodiacSignType;
+  venusSign?: ZodiacSignType;
+  marsSign?: ZodiacSignType;
   sunPosition: PlanetaryDegrees;
   moonPosition: PlanetaryDegrees;
   risingPosition: PlanetaryDegrees;
-  venusPosition: PlanetaryDegrees;
-  marsPosition: PlanetaryDegrees;  
+  venusPosition?: PlanetaryDegrees;
+  marsPosition?: PlanetaryDegrees;  
+}
+
+export interface WeeklyAstrology {
+  sunSign: ZodiacSignType;
+  moonSign: ZodiacSignType;
+  risingSign: ZodiacSignType;
+  sunPosition: PlanetaryDegrees;
+  moonPosition: PlanetaryDegrees;
+  risingPosition: PlanetaryDegrees;
 }
 
 @Injectable()
@@ -55,6 +65,7 @@ export class AstrologyService {
    * @param timeOfBirth - Birth time in HH:mm format
    * @param timezoneName - IANA timezone string (e.g., 'America/Edmonton')
    * @param coordinates - Birth location coordinates
+   * @param planets - List of planets to use in calculations
    * @returns Promise<CoreAstrology> - All 5 core astrological positions
    * @throws Error if calculation fails or data is invalid
    */
@@ -62,7 +73,8 @@ export class AstrologyService {
     dateOfBirth: Date,
     timeOfBirth: string,
     timezoneName: string,
-    coordinates: { lat: number; lng: number }
+    coordinates: { lat: number; lng: number },
+    planets: PlanetType[] = ['Sun', 'Moon', 'Rising', 'Venus', 'Mars']
   ): Promise<CoreAstrology> {
     logger.debug('Calculating core astrology', {
       dateOfBirth: dateOfBirth.toISOString(),
@@ -106,38 +118,58 @@ export class AstrologyService {
       // Calculate Julian day
       const julianDay = await this.calculateJulianDay(birthMomentUTC);
       
-      // Calculate all positions in parallel
-      const [sunLongitude, moonLongitude, venusLongitude, marsLongitude, risingLongitude] = await Promise.all([
-        this.getPlanetPosition(julianDay, swisseph.SE_SUN),
-        this.getPlanetPosition(julianDay, swisseph.SE_MOON),
-        this.getPlanetPosition(julianDay, swisseph.SE_VENUS),
-        this.getPlanetPosition(julianDay, swisseph.SE_MARS),
-        this.getRisingSign(julianDay, coordinates.lat, coordinates.lng)
-      ]);
+      // Calculate positions conditionally based on requested planets
+      const calculations: Array<Promise<number>> = [];
+      const planetMap: { [key: string]: number } = {};
 
-      // Extract detailed position information
-      const sunPosition = getLongitudeDetails(sunLongitude);
-      const moonPosition = getLongitudeDetails(moonLongitude);
-      const risingPosition = getLongitudeDetails(risingLongitude);
-      const venusPosition = getLongitudeDetails(venusLongitude);
-      const marsPosition = getLongitudeDetails(marsLongitude);
+      // Always calculate required planets
+      if (planets.includes('Sun')) {
+        calculations.push(this.getPlanetPosition(julianDay, swisseph.SE_SUN));
+        planetMap['Sun'] = calculations.length - 1;
+      }
+      if (planets.includes('Moon')) {
+        calculations.push(this.getPlanetPosition(julianDay, swisseph.SE_MOON));
+        planetMap['Moon'] = calculations.length - 1;
+      }
+      if (planets.includes('Rising')) {
+        calculations.push(this.getRisingSign(julianDay, coordinates.lat, coordinates.lng));
+        planetMap['Rising'] = calculations.length - 1;
+      }
+      if (planets.includes('Venus')) {
+        calculations.push(this.getPlanetPosition(julianDay, swisseph.SE_VENUS));
+        planetMap['Venus'] = calculations.length - 1;
+      }
+      if (planets.includes('Mars')) {
+        calculations.push(this.getPlanetPosition(julianDay, swisseph.SE_MARS));
+        planetMap['Mars'] = calculations.length - 1;
+      }
 
-      // Map to zodiac signs
+      const results = await Promise.all(calculations);
+
+      // Extract position details for calculated planets
       const coreAstrology: CoreAstrology = {
-        sunSign: this.mapLongitudeToZodiacSign(sunLongitude),
-        moonSign: this.mapLongitudeToZodiacSign(moonLongitude),
-        risingSign: this.mapLongitudeToZodiacSign(risingLongitude),
-        venusSign: this.mapLongitudeToZodiacSign(venusLongitude),
-        marsSign: this.mapLongitudeToZodiacSign(marsLongitude),
-        sunPosition,
-        moonPosition,
-        risingPosition,
-        venusPosition,
-        marsPosition        
+        sunSign: this.mapLongitudeToZodiacSign(results[planetMap['Sun']]),
+        moonSign: this.mapLongitudeToZodiacSign(results[planetMap['Moon']]),
+        risingSign: this.mapLongitudeToZodiacSign(results[planetMap['Rising']]),
+        sunPosition: getLongitudeDetails(results[planetMap['Sun']]),
+        moonPosition: getLongitudeDetails(results[planetMap['Moon']]),
+        risingPosition: getLongitudeDetails(results[planetMap['Rising']])
       };
-      
+
+      // Add optional planets if calculated
+      if (planets.includes('Venus')) {
+        const venusLongitude = results[planetMap['Venus']];
+        coreAstrology.venusSign = this.mapLongitudeToZodiacSign(venusLongitude);
+        coreAstrology.venusPosition = getLongitudeDetails(venusLongitude);
+      }
+
+      if (planets.includes('Mars')) {
+        const marsLongitude = results[planetMap['Mars']];
+        coreAstrology.marsSign = this.mapLongitudeToZodiacSign(marsLongitude);
+        coreAstrology.marsPosition = getLongitudeDetails(marsLongitude);
+      }
+
       logger.debug('Core astrology calculated successfully', {
-        sunLongitude, moonLongitude, venusLongitude, marsLongitude, risingLongitude,
         coreAstrology,
         julianDay,
         timezoneOffset

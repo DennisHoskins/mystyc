@@ -144,6 +144,18 @@ export function calculateCompatibility(
   position1?: PlanetaryDegrees,
   position2?: PlanetaryDegrees
 ): CompatibilityScores {
+  if (!sign1Data || !sign2Data) {
+    return {
+      dynamic: 'harmony',
+      elementScore: 0.0,
+      modalityScore: 0.0, 
+      polarityScore: 0.0,
+      dynamicScore: 0.0,
+      totalScore: 0.0,
+      exactAspect: null,
+      degreeBasedScore: 0.0
+    };    
+  }
   const element1 = sign1Data.element;
   const element2 = sign2Data.element;
   const modality1 = sign1Data.modality;

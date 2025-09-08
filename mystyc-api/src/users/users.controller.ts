@@ -450,16 +450,16 @@ export class UsersController {
           Sun: coreAstrology.sunSign,
           Moon: coreAstrology.moonSign,
           Rising: coreAstrology.risingSign,
-          Venus: coreAstrology.venusSign,
-          Mars: coreAstrology.marsSign
+          Venus: coreAstrology.venusSign!,
+          Mars: coreAstrology.marsSign!
         };
 
         const positions: Record<PlanetType, PlanetaryDegrees> = {
           Sun: coreAstrology.sunPosition,
           Moon: coreAstrology.moonPosition,
           Rising: coreAstrology.risingPosition,
-          Venus: coreAstrology.venusPosition,
-          Mars: coreAstrology.marsPosition
+          Venus: coreAstrology.venusPosition!,
+          Mars: coreAstrology.marsPosition!
         };
 
         // Calculate interaction scores

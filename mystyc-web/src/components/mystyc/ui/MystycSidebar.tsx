@@ -62,10 +62,10 @@ export default function MystycSidebar() {
             <p className='!mt-2 text-[10px] text-center font-bold'>Relationships</p>
           </Card>
         </Link>
-        <Link href='/forecast' className={getLinkClasses('/forecast')}>
-          <Card className={getCardClasses('/forecast')}>
+        <Link href='/calendar' className={getLinkClasses('/calendar')}>
+          <Card className={getCardClasses('/calendar')}>
             <CalendarDays width={30} height={30} strokeWidth={1} />
-            <p className='!mt-2 text-[10px] text-center font-bold'>Forecast &amp; Planning</p>
+            <p className='!mt-2 text-[10px] text-center font-bold'>Astrological Calendar</p>
           </Card>
         </Link>
         <Link href='/astrology' className={getLinkClasses('/astrology')}>

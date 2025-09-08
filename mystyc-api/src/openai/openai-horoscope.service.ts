@@ -5,9 +5,8 @@ import { Model } from 'mongoose';
 import { logger } from '@/common/util/logger';
 import { OpenAIUsage, OpenAIUsageDocument } from '@/openai/schemas/openai-usage.schema';
 import { OpenAIUsageService } from '@/openai/openai-usage.service';
-import { AstrologyCalculated } from 'mystyc-common/interfaces';
+import { AstrologyCalculated, DailyInfluence } from 'mystyc-common/interfaces';
 import { PlanetType } from 'mystyc-common/schemas';
-import { DailyInfluence } from 'mystyc-common/util/astrology-chart-comparison';
 
 @Injectable()
 export class OpenAIHoroscopeService extends OpenAIUsageService {
@@ -65,38 +64,6 @@ export class OpenAIHoroscopeService extends OpenAIUsageService {
         throw new Error('Missing summary in OpenAI response');
       }
 
-
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log(parsedResponse);      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-console.log("-------------------------");      
-
       // Add personal daily summary and detailed planetary insights
       personalChart.summary = parsedResponse.summary;
 
@@ -144,7 +111,7 @@ PERSONAL ENERGY SCORE: ${personalChart.totalScore.toFixed(2)} (scale: -1 to 1)
 PLANETARY INFLUENCES FOR THIS PERSON TODAY:
 ${influenceDescriptions}
 
-INDIVIDUAL PLANET SCORES:
+INDIVIDUAL PLANET SCORES (use these for reference but do not include in response):
 - Sun: ${personalChart.sun.totalScore.toFixed(2)}
 - Moon: ${personalChart.moon.totalScore.toFixed(2)}
 - Rising: ${personalChart.rising.totalScore.toFixed(2)}
@@ -160,11 +127,13 @@ WRITING STYLE:
 - Include both opportunities and challenges
 - Provide actionable advice based on the energy
 - Be encouraging but realistic
+- Use the individual planet scores to explain energy dynamics but DO NOT include the scores or references to the scores in your response
+
 
 Return ONLY valid JSON in this exact format:
 {
   "summary": {
-    "description": "How today's energy specifically affects YOUR unique astrological makeup",
+    "description": "4-5 sentences about how today's energy specifically affects YOUR unique astrological makeup. This is a summary of the complete horoscope energy for the day",
     "strengths": "YOUR biggest opportunities and favorable energies today",
     "challenges": "Areas where YOU might face tension or need extra care",
     "action": "Specific advice for YOU to make the most of today's energy"

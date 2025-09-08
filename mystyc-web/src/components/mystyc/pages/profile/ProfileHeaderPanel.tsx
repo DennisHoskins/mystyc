@@ -16,7 +16,7 @@ export default function ProfileHeaderPanel({ user, astrology } : { user: User, a
         {astrology.sun.signData.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}
       </Text>
 
-      <Text variant='muted' className="!text-gray-400 !mt-4">{user.userProfile.astrology?.summary?.description}</Text>
+      <Text variant='muted' className="!text-gray-400 !mt-2">{user.userProfile.astrology?.summary?.description}</Text>
     </div>
   );
 }

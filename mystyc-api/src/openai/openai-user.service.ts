@@ -166,7 +166,7 @@ CRITICAL WRITING STYLE REQUIREMENTS:
 - Avoid woo, jargon, or mystical language - use clear, practical terms
 - Acknowledge both strengths AND challenges (avoid toxic positivity)
 - Provide specific, actionable advice, especially for low scores
-- Reference the interaction scores to explain personality dynamics
+- Use the interaction scores to explain personality dynamics but DO NOT include the scores or references to the scores in your response
 
 CRITICAL: Return ONLY valid JSON in this exact format:
 {
@@ -205,34 +205,34 @@ CRITICAL: Return ONLY valid JSON in this exact format:
     },
     "interactionSummaries": {
       "sun-moon": {
-        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.moon} Moon work together in YOUR personality (score: ${coreData.scores.interactions['sun-moon']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.moon} Moon work together in YOUR personality (score - do not include in response: ${coreData.scores.interactions['sun-moon']?.toFixed(2)})"
       },
       "sun-rising": {
-        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.rising} Rising align in YOUR self-expression (score: ${coreData.scores.interactions['sun-rising']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.rising} Rising align in YOUR self-expression (score - do not include in response: ${coreData.scores.interactions['sun-rising']?.toFixed(2)})"
       },
       "sun-venus": {
-        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.venus} Venus interact in YOUR relationships (score: ${coreData.scores.interactions['sun-venus']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.venus} Venus interact in YOUR relationships (score - do not include in response: ${coreData.scores.interactions['sun-venus']?.toFixed(2)})"
       },
       "sun-mars": {
-        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.mars} Mars drive YOUR actions (score: ${coreData.scores.interactions['sun-mars']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.sun} Sun and ${coreData.positions.mars} Mars drive YOUR actions (score - do not include in response: ${coreData.scores.interactions['sun-mars']?.toFixed(2)})"
       },
       "moon-rising": {
-        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.rising} Rising balance YOUR inner/outer worlds (score: ${coreData.scores.interactions['moon-rising']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.rising} Rising balance YOUR inner/outer worlds (score - do not include in response: ${coreData.scores.interactions['moon-rising']?.toFixed(2)})"
       },
       "moon-venus": {
-        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.venus} Venus create YOUR emotional connections (score: ${coreData.scores.interactions['moon-venus']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.venus} Venus create YOUR emotional connections (score - do not include in response: ${coreData.scores.interactions['moon-venus']?.toFixed(2)})"
       },
       "moon-mars": {
-        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.mars} Mars handle YOUR emotional reactions (score: ${coreData.scores.interactions['moon-mars']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.moon} Moon and ${coreData.positions.mars} Mars handle YOUR emotional reactions (score - do not include in response: ${coreData.scores.interactions['moon-mars']?.toFixed(2)})"
       },
       "rising-venus": {
-        "description": "How YOUR ${coreData.positions.rising} Rising and ${coreData.positions.venus} Venus affect YOUR social charm (score: ${coreData.scores.interactions['rising-venus']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.rising} Rising and ${coreData.positions.venus} Venus affect YOUR social charm (score - do not include in response: ${coreData.scores.interactions['rising-venus']?.toFixed(2)})"
       },
       "rising-mars": {
-        "description": "How YOUR ${coreData.positions.rising} Rising and ${coreData.positions.mars} Mars project YOUR energy (score: ${coreData.scores.interactions['rising-mars']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.rising} Rising and ${coreData.positions.mars} Mars project YOUR energy (score - do not include in response: ${coreData.scores.interactions['rising-mars']?.toFixed(2)})"
       },
       "venus-mars": {
-        "description": "How YOUR ${coreData.positions.venus} Venus and ${coreData.positions.mars} Mars balance YOUR attraction and action (score: ${coreData.scores.interactions['venus-mars']?.toFixed(2)})"
+        "description": "How YOUR ${coreData.positions.venus} Venus and ${coreData.positions.mars} Mars balance YOUR attraction and action (score - do not include in response: ${coreData.scores.interactions['venus-mars']?.toFixed(2)})"
       }
     }
   }

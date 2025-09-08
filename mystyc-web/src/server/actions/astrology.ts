@@ -81,3 +81,4 @@ export async function getSignInteraction(params: {
     return nestResponse.json();
   }, params.deviceInfo, 'getSignInteractionComplete');
 }
+

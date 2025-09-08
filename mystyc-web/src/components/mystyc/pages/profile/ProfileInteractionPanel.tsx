@@ -43,8 +43,8 @@ export default function ProfileInteractionPanel({ href, planet, heading, subhead
 
         {(totals && totals.length) &&
           <div className='flex flex-col space-y-4 !mt-4'>
-            {totals?.map((total) => (
-              <div className='flex space-x-4'>
+            {totals?.map((total, i) => (
+              <div key={i} className='flex space-x-4'>
                 <Panel key={total.label} className='!p-4 justify-center items-center max-w-32'>
                   <RadialGauge label={total.label} size={100} totalScore={total.total} inline={true} />
                 </Panel>

@@ -3,16 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Horoscope } from 'mystyc-common/interfaces/horoscope.interface';
+import { PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
 
 import { logger } from '@/common/util/logger';
-import { AstrologyService } from '@/astrology/services/astrology.service';
+import { AstrologyService, CoreAstrology } from '@/astrology/services/astrology.service';
 import { AstrologyDataService } from '@/astrology/services/astrology-data.service';
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { HoroscopeDocument } from './schemas/horoscope.schema';
 import { TimezoneCoordsService } from './timezone-coords.service';
 import { OpenAIHoroscopeService } from '../openai/openai-horoscope.service';
-import { PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
-import { generatePersonalDailyChart, getDefaultComparisonOptions } from 'mystyc-common/util/astrology-chart-comparison';
+import { CosmicNatalCompatibilityService } from './cosmic-natal-compatibility.service';
 
 @Injectable()
 export class HoroscopesService {
@@ -25,6 +25,7 @@ export class HoroscopesService {
     private readonly userProfilesService: UserProfilesService,
     private readonly timezoneCoordsService: TimezoneCoordsService,
     private readonly openAiHoroscopeService: OpenAIHoroscopeService,
+    private readonly cosmicNatalCompatibilityService: CosmicNatalCompatibilityService,
   ) {}
 
   async getOrCreatePersonalHoroscope(
@@ -106,52 +107,39 @@ export class HoroscopesService {
     coordinates: { lat: number; lng: number }
   ): Promise<HoroscopeDocument> {
     try {
-      // 1. Calculate today's cosmic energy chart
+      // 1. Calculate today's cosmic energy chart (all 5 planets)
       const cosmicAstrology = await this.astrologyService.calculateCoreAstrology(
         date,
         time,
         timezone,
         coordinates
+        // Use default (all planets) for complete cosmic chart
       );
 
-      const cosmicSigns: Record<PlanetType, ZodiacSignType> = {
-        Sun: cosmicAstrology.sunSign,
-        Moon: cosmicAstrology.moonSign,
-        Rising: cosmicAstrology.risingSign,
-        Venus: cosmicAstrology.venusSign,
-        Mars: cosmicAstrology.marsSign
+      // 2. Calculate cosmic chart total score (how well cosmic planets work together)
+      const cosmicChart = await this.calculateCosmicTotalScore(cosmicAstrology);
+
+      // 3. Calculate personal chart score (cosmic-natal compatibility)
+      const personalTotalScore = await this.cosmicNatalCompatibilityService
+        .calculateCosmicNatalCompatibility(cosmicAstrology, userBirthChart);
+
+      // 4. Create personal chart object with new score
+      const personalChart = {
+        ...userBirthChart,
+        totalScore: personalTotalScore,
+        createdAt: new Date(),
+        lastCalculatedAt: new Date()
       };
 
-      const cosmicPositions: Record<PlanetType, any> = {
-        Sun: cosmicAstrology.sunPosition,
-        Moon: cosmicAstrology.moonPosition,
-        Rising: cosmicAstrology.risingPosition,
-        Venus: cosmicAstrology.venusPosition,
-        Mars: cosmicAstrology.marsPosition
-      };
-
-      // Calculate cosmic chart with degree-aware scoring
-      const cosmicChart = await this.astrologyDataService.calculateUserAstrologyData(
-        cosmicSigns, 
-        cosmicPositions
-      );
-
-      // 2. Compare birth chart vs cosmic chart to generate personal daily chart
-      const comparisonResult = generatePersonalDailyChart(
-        userBirthChart,
-        cosmicChart,
-        getDefaultComparisonOptions()
-      );
-
-      // 3. Generate AI summary for the personal daily chart
+      // 5. Generate AI summary for the personal chart
       const personalChartWithSummary = await this.openAiHoroscopeService.generatePersonalDailySummary(
         userId,
-        comparisonResult.personalChart,
-        comparisonResult.influences,
+        personalChart,
+        [], // No influences array needed with new approach
         date
       );
 
-      // 4. Store personal horoscope
+      // 6. Store personal horoscope
       const horoscopeData = {
         userId,
         date,
@@ -172,9 +160,40 @@ export class HoroscopesService {
         time,
         timezone,
         error
-      }, 'HoroscopeService');
+      }, 'HoroscapeService');
       throw error;
     }
+  }
+
+  /**
+   * Calculate the cosmic chart's internal compatibility (how well cosmic planets work together)
+   * @param cosmicAstrology - Raw cosmic planetary positions
+   * @returns AstrologyCalculated with totalScore representing cosmic energy quality
+   */
+  private async calculateCosmicTotalScore(cosmicAstrology: CoreAstrology) {
+    // Create signs record for cosmic planets
+    const cosmicSigns: Record<PlanetType, ZodiacSignType> = {
+      Sun: cosmicAstrology.sunSign,
+      Moon: cosmicAstrology.moonSign,
+      Rising: cosmicAstrology.risingSign,
+      Venus: cosmicAstrology.venusSign || 'Aries', // Fallback if not calculated
+      Mars: cosmicAstrology.marsSign || 'Aries'
+    };
+
+    // Create positions record for cosmic planets
+    const cosmicPositions = {
+      Sun: cosmicAstrology.sunPosition,
+      Moon: cosmicAstrology.moonPosition,
+      Rising: cosmicAstrology.risingPosition,
+      Venus: cosmicAstrology.venusPosition || { sign: 'Aries' as ZodiacSignType, degreesInSign: 0, absoluteDegrees: 0 },
+      Mars: cosmicAstrology.marsPosition || { sign: 'Aries' as ZodiacSignType, degreesInSign: 0, absoluteDegrees: 0 }
+    };
+
+    // Use existing astrology data service to calculate cosmic chart
+    return await this.astrologyDataService.calculateUserAstrologyData(
+      cosmicSigns,
+      cosmicPositions
+    );
   }
 
   private transformToInterface(doc: HoroscopeDocument): Horoscope {

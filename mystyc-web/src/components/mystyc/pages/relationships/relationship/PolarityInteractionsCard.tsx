@@ -16,10 +16,10 @@ export default function PolarityInteractionCard({ interaction } : { interaction:
     <Card className={`!p-10`}>
       <div className='flex items-center space-x-2'>
         <div className="w-8 h-8 flex items-center justify-center rounded-md bg-[#230537]">
-          {getPolarityIcon(interaction.sign1Data.basics.polarity, 'w-3 h-3 text-white')}
+          {getPolarityIcon(interaction.sign1Data.basics.polarity, 'w-5 h-5 text-white')}
         </div>
         <div className="w-8 h-8 flex items-center justify-center rounded-md bg-[#230537]">
-          {getPolarityIcon(interaction.sign2Data.basics.polarity, 'w-3 h-3 text-white')}
+          {getPolarityIcon(interaction.sign2Data.basics.polarity, 'w-5 h-5 text-white')}
         </div>
         <Heading level={3}>Polarities: {interaction.sign1Data.basics.polarity} - {interaction.sign2Data.basics.polarity}</Heading>
       </div>

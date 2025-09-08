@@ -71,7 +71,6 @@ export default function SuccessPanel({ user, deviceInfo, setIsWorking }: Success
       return;
     }
 
-    debugger
     const newUser = {
       ...user,
       userProfile: updatedUser.user.userProfile,

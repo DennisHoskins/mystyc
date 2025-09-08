@@ -7,10 +7,10 @@ export default function InsightsStarPanel({ planet, iconClass, data } : { planet
   
   return (
     <Panel className="!p-4 items-center justify-center">
-      <div className="h-12 flex items-center">
+      <div className="h-12 mt-1 flex items-center">
         {getPlanetIcon(planet, `h-10 w-10 text-white ${iconClass}`)}
       </div>
-      <Text variant="small" className="text-white">{data.sign}</Text>
+      <Text variant="body" className="text-white">{data.sign}</Text>
       <Text variant="xs" className="text-gray-300 !text-[8px] !mt-0">{data.degreesInSign}°</Text>
     </Panel>
   );

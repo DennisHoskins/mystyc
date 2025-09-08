@@ -12,7 +12,7 @@ export default function PolarityDetailsPanel({ polarity } : { polarity: Polarity
   return (
     <Panel className="flex flex-col space-y-2">
       <div className='flex items-center space-x-2'>
-        {getPolarityIcon(polarity.polarity, 'text-[20px] text-white text-bold')}
+        {getPolarityIcon(polarity.polarity, 'w-8 h-8 mt-1 text-white text-bold')}
         <Heading level={3}>Polarity: {polarity.polarity} / {polarity.alternativeName}</Heading>
       </div>
       <Text variant='small' className="!text-gray-600">

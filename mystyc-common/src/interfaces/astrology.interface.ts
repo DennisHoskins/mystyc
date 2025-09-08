@@ -4,6 +4,7 @@ import {
   Modality, 
   EnergyType, 
   Planet, 
+  PlanetType,
   Polarity,
   House,
   Dynamic,
@@ -163,4 +164,16 @@ export interface AstrologyComplete {
   
   createdAt: Date;
   lastCalculatedAt: Date;
+}
+
+
+
+export interface DailyInfluence {
+  planet: PlanetType;
+  birthPosition: PlanetaryDegrees;
+  cosmicPosition: PlanetaryDegrees;
+  aspectType?: string;      // 'trine', 'square', etc.
+  aspectStrength?: number;  // Aspect strength (-1 to 1)
+  dailyScore: number;       // This planet's energy for the day
+  influence: string;        // Brief description
 }

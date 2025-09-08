@@ -1,7 +1,7 @@
 'use client'
 
-import Panel from '@/components/ui/Panel';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
+import Panel from '@/components/ui/Panel';
 
 interface LineDataItem {
   [key: string]: string | number;

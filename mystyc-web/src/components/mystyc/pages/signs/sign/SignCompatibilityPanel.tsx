@@ -27,7 +27,7 @@ export default function SignRadialPanel({ sign } : { sign: SignComplete | null |
               {getZodiacIcon(sign.bestInteraction?.sign2, '-ml-2 w-8 h-8 text-gray-300')}
               <Heading level={2}>{sign.bestInteraction?.sign2}</Heading>
             </div>
-            <Text variant="xs">Most Compatible</Text>
+            <Text variant="xs" className='text-gray-500'>Most Compatible</Text>
           </div>
         </Link>
       </Panel>
@@ -46,7 +46,7 @@ export default function SignRadialPanel({ sign } : { sign: SignComplete | null |
               {getZodiacIcon(sign.worstInteraction?.sign2, '-ml-2 w-8 h-8 text-gray-300')}
               <Heading level={2}>{sign.worstInteraction?.sign2}</Heading>
             </div>
-            <Text variant="xs">Least Compatible</Text>
+            <Text variant="xs" className='text-gray-500'>Least Compatible</Text>
           </div>
         </Link>
       </Panel>

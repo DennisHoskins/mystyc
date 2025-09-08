@@ -1,23 +1,11 @@
-// todo: make server
+import type { Metadata } from 'next';
+export async function generateMetadata(): Promise<Metadata> {
+  const title = `Today | mystyc` + (process.env.NODE_ENV === 'production' ? '' : ' // dev');
+  return { title };
+}
 
-'use client'
+import MystycHome from '@/components/mystyc/MystycHome';
 
-import { useEffect } from 'react';
-
-import { useUser, useBusy } from '@/components/ui/context/AppContext';
-import MystycHome from "@/components/mystyc/MystycHome"
-
-export default function Page() {
-  const user = useUser();
-  const { setBusy } = useBusy();
-
-  useEffect(() => {
-    setBusy(false);
-  }, [setBusy])
-
-  if (!user) {
-    return null;
-  }
-
-  return <MystycHome user={user} />;
+export default async function Page() {
+  return <MystycHome />;
 }

@@ -101,21 +101,21 @@ export default function ProfilePage() {
 
         <div className='grid grid-cols-3 gap-4 !mt-4'>
           <Panel>
-            <Text variant='muted' className='!text-gray-300 flex items-center'>
+            <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
               <CirclePlus className='w-3 h-3 text-gray-300 mr-1'/>Strengths
             </Text>
             <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.strengths}</Text>
           </Panel>
 
           <Panel>
-            <Text variant='muted' className='!text-gray-300 flex items-center'>
+            <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
               <CircleMinus className='w-3 h-3 text-gray-300 mr-1'/>Challenges
             </Text>
             <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.challenges}</Text>
           </Panel>
 
           <Panel>
-            <Text variant='muted' className='!text-gray-300 flex items-center'>
+            <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
               <KeySquare className='w-3 h-3 text-gray-300 mr-1'/>Keys to Success
             </Text>
             <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.action}</Text>

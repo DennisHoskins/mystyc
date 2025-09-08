@@ -43,3 +43,16 @@ export interface ChartComparisonResult {
     challengingAspects: string[];
   };
 }
+
+export interface DailyEnergy {
+  date: string; // "2025-01-13"  
+  cosmicTotalScore: number; // -1 to 1
+  personalTotalScore: number; // -1 to 1
+}
+
+export interface DailyEnergyRangeResponse {
+  startDate: string; // "2025-01-13"
+  endDate: string; // "2025-01-19"
+  days: DailyEnergy[]; // Array of N days (7 for week, 30 for month, etc)
+}
+
