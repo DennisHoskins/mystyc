@@ -120,10 +120,20 @@ export class DailyEnergyService {
     const endDate = new Date(parsedStartDate);
     endDate.setDate(parsedStartDate.getDate() + 6);
 
+    const cosmicScoreTotal = days.length > 0 
+      ? Math.round((days.reduce((sum, day) => sum + day.cosmicTotalScore, 0) / days.length) * 100) / 100
+      : 0;
+
+    const personalScoreTotal = days.length > 0
+      ? Math.round((days.reduce((sum, day) => sum + day.personalTotalScore, 0) / days.length) * 100) / 100  
+      : 0;
+
     const response = {
       startDate: parsedStartDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
-      days
+      days,
+      cosmicScoreTotal,
+      personalScoreTotal
     };
 
     logger.info('Daily energy range calculated successfully', {

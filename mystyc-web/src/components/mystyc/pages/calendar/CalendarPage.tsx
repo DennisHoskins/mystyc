@@ -32,7 +32,7 @@ export default function CalendarPage() {
       
       const energy = await getWeeklyEnergy({
         deviceInfo,
-        date: startDate // Pass Date object directly
+        date: startDate
       });
       setEnergy(energy);
       setError(null);
@@ -89,6 +89,8 @@ export default function CalendarPage() {
     return dayName;
   }
 
+console.log(energy)
+
   return (
     <PageTransition>
       <div className='w-full h-full flex flex-col'>
@@ -100,7 +102,7 @@ export default function CalendarPage() {
         />
         <div className='grid grid-cols-4 gap-4 !mt-4'>
           <Panel className='justify-center'>
-            <RadialGauge label='' inline={true} size={150} totalScore={0.82} />
+            <RadialGauge label='' inline={true} size={150} totalScore={energy.personalScoreTotal} />
             <div className='flex flex-col !mt-6'>
               <LinearGauge score={energy.days[0].personalTotalScore || 0} label={getDayLabel(energy.days[0].date)} />
               <LinearGauge score={energy.days[1].personalTotalScore || 0} label={getDayLabel(energy.days[1].date)} />

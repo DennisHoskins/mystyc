@@ -122,6 +122,7 @@ export class HoroscopesService {
       // 3. Calculate personal chart score (cosmic-natal compatibility)
       const personalTotalScore = await this.cosmicNatalCompatibilityService
         .calculateCosmicNatalCompatibility(cosmicAstrology, userBirthChart);
+       
 
       // 4. Create personal chart object with new score
       const personalChart = {

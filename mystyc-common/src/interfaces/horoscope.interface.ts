@@ -75,4 +75,6 @@ export interface DailyEnergyRangeResponse {
   startDate: string; // "2025-01-13"
   endDate: string; // "2025-01-19"
   days: DailyEnergy[]; // Array of N days (7 for week, 30 for month, etc)
+  cosmicScoreTotal: number; // Average cosmic score across all days
+  personalScoreTotal: number; // Average personal score across all days
 }

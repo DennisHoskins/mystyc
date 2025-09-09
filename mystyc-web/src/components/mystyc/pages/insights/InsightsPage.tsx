@@ -76,6 +76,8 @@ export default function InsightsPage({ user } : { user: AppUser }) {
     );
   }
 
+console.log(insights);  
+
   return (
     <PageTransition>
       <div className='w-full h-full flex flex-col'>

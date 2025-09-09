@@ -127,6 +127,7 @@ export function calculatePlanetaryInteractions(
     ? Math.round((totalWeightedScore / totalImportanceWeight) * 100) / 100
     : 0;
 
+
   return interactions as AstrologyCalculated;
 }
 

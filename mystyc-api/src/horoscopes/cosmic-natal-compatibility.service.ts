@@ -99,6 +99,7 @@ export class CosmicNatalCompatibilityService {
             natalSign
           }, 'CosmicNatalCompatibilityService');
         }
+
       } catch (error) {
         logger.error('Failed to calculate planet compatibility', {
           planet,
