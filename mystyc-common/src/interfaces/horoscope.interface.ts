@@ -1,4 +1,5 @@
 import { AstrologyCalculated } from './astrology.interface';
+import { ZodiacSignType } from '../schemas';
 
 export interface Horoscope {
   _id?: string;
@@ -44,10 +45,30 @@ export interface ChartComparisonResult {
   };
 }
 
+export interface PlanetaryDayData {
+  sign: ZodiacSignType;
+  cosmicScore: number; // -1 to 1, how this cosmic planet harmonizes with other cosmic planets that day
+  personalScore: number; // -1 to 1, how this cosmic planet interacts with user's birth chart
+  interactions: {
+    sun?: number;
+    moon?: number; 
+    rising?: number;
+    venus?: number;
+    mars?: number;
+  };
+}
+
 export interface DailyEnergy {
   date: string; // "2025-01-13"  
   cosmicTotalScore: number; // -1 to 1
   personalTotalScore: number; // -1 to 1
+  planets: {
+    sun: PlanetaryDayData;
+    moon: PlanetaryDayData;
+    rising: PlanetaryDayData;
+    venus: PlanetaryDayData;
+    mars: PlanetaryDayData;
+  };
 }
 
 export interface DailyEnergyRangeResponse {
@@ -55,4 +76,3 @@ export interface DailyEnergyRangeResponse {
   endDate: string; // "2025-01-19"
   days: DailyEnergy[]; // Array of N days (7 for week, 30 for month, etc)
 }
-

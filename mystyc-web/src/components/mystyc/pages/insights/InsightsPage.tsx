@@ -43,8 +43,6 @@ export default function InsightsPage({ user } : { user: AppUser }) {
     return null;
   }
 
-console.log('User birth chart total:', user.userProfile.astrology.totalScore);
-
   // Format current date
   const today = new Date();
   const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });

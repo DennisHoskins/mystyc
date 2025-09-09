@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 
-import { DailyEnergyRangeResponse, DailyEnergy } from 'mystyc-common/interfaces/horoscope.interface';
+import { DailyEnergyRangeResponse, DailyEnergy, PlanetaryDayData } from 'mystyc-common/interfaces/horoscope.interface';
 import { AstrologyCalculated } from 'mystyc-common/interfaces/astrology.interface';
 import { PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
 
@@ -10,6 +10,15 @@ import { AstrologyDataService } from '@/astrology/services/astrology-data.servic
 import { UserProfilesService } from '@/users/user-profiles.service';
 import { TimezoneCoordsService } from './timezone-coords.service';
 import { CosmicNatalCompatibilityService } from './cosmic-natal-compatibility.service';
+
+// Planetary importance weights (same as in CosmicNatalCompatibilityService)
+const PLANETARY_IMPORTANCE: Record<PlanetType, number> = {
+  Sun: 5,
+  Moon: 4,
+  Rising: 3,
+  Venus: 2,
+  Mars: 2
+};
 
 @Injectable()
 export class DailyEnergyService {
@@ -78,20 +87,24 @@ export class DailyEnergyService {
         const cosmicChart = await this.calculateCosmicTotalScore(cosmicAstrology);
         const cosmicTotalScore = cosmicChart.totalScore;
 
-        // Calculate personal score (how does cosmic energy work with user's birth chart)
-        const personalTotalScore = await this.cosmicNatalCompatibilityService
-          .calculateCosmicNatalCompatibility(cosmicAstrology, userProfile.astrology);
+        // Calculate detailed personal score (how does cosmic energy work with user's birth chart)
+        const personalCompatibility = await this.cosmicNatalCompatibilityService
+          .calculateCosmicNatalCompatibilityDetailed(cosmicAstrology, userProfile.astrology);
+
+        // Extract planetary data for detailed response
+        const planets = this.extractPlanetaryData(cosmicAstrology, cosmicChart, personalCompatibility.planetaryScores);
 
         days.push({
           date: currentDate.toISOString().split('T')[0], // "2025-01-13"
           cosmicTotalScore: Math.round(cosmicTotalScore * 100) / 100,
-          personalTotalScore: Math.round(personalTotalScore * 100) / 100
+          personalTotalScore: Math.round(personalCompatibility.totalScore * 100) / 100,
+          planets
         });
 
         logger.debug('Daily energy calculated', {
           date: currentDate.toISOString().split('T')[0],
           cosmicScore: cosmicTotalScore,
-          personalScore: personalTotalScore
+          personalScore: personalCompatibility.totalScore
         }, 'DailyEnergyService');
 
       } catch (error) {
@@ -119,6 +132,98 @@ export class DailyEnergyService {
     }, 'DailyEnergyService');
 
     return response;
+  }
+
+  /**
+   * Extract planetary data for the enhanced daily energy response
+   * @param cosmicAstrology - Raw cosmic planetary positions and signs
+   * @param cosmicChart - Calculated cosmic chart with interactions
+   * @param personalScores - Individual cosmic-natal compatibility scores
+   * @returns Structured planetary data for the response
+   */
+  private extractPlanetaryData(
+    cosmicAstrology: CoreAstrology,
+    cosmicChart: AstrologyCalculated,
+    personalScores: { sun: number; moon: number; rising: number; venus: number; mars: number }
+  ): DailyEnergy['planets'] {
+    return {
+      sun: this.buildPlanetaryDayData('Sun', cosmicAstrology.sunSign, cosmicChart.sun, personalScores.sun),
+      moon: this.buildPlanetaryDayData('Moon', cosmicAstrology.moonSign, cosmicChart.moon, personalScores.moon),
+      rising: this.buildPlanetaryDayData('Rising', cosmicAstrology.risingSign, cosmicChart.rising, personalScores.rising),
+      venus: this.buildPlanetaryDayData('Venus', cosmicAstrology.venusSign || 'Aries', cosmicChart.venus, personalScores.venus),
+      mars: this.buildPlanetaryDayData('Mars', cosmicAstrology.marsSign || 'Aries', cosmicChart.mars, personalScores.mars)
+    };
+  }
+
+  /**
+   * Build planetary day data for a single planet
+   * @param planetType - The planet type (for logging/weights)
+   * @param sign - The zodiac sign the planet is in
+   * @param planetData - The calculated planetary data from cosmic chart
+   * @param personalScore - How this cosmic planet interacts with user's birth chart
+   * @returns Complete planetary day data
+   */
+  private buildPlanetaryDayData(
+    planetType: PlanetType,
+    sign: ZodiacSignType,
+    planetData: AstrologyCalculated['sun'], // All planets have same structure
+    personalScore: number
+  ): PlanetaryDayData {
+    // Calculate cosmicScore as weighted average of interactions
+    const interactions = planetData.interactions || {};
+    const cosmicScore = this.calculateCosmicScore(interactions);
+
+    return {
+      sign,
+      personalScore: Math.round(personalScore * 100) / 100,
+      cosmicScore: Math.round(cosmicScore * 100) / 100,
+      interactions: {
+        sun: interactions.sun?.score,
+        moon: interactions.moon?.score,
+        rising: interactions.rising?.score,
+        venus: interactions.venus?.score,
+        mars: interactions.mars?.score
+      }
+    };
+  }
+
+  /**
+   * Calculate cosmic score as weighted average of planetary interactions
+   * @param interactions - Raw interaction scores for this planet
+   * @returns Weighted average cosmic score (-1 to 1)
+   */
+  private calculateCosmicScore(interactions: Record<string, { score: number }>): number {
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    // Weight each interaction by the target planet's importance
+    for (const [planetName, interaction] of Object.entries(interactions)) {
+      const planetType = this.getPlanetTypeFromName(planetName);
+      if (planetType && PLANETARY_IMPORTANCE[planetType]) {
+        const weight = PLANETARY_IMPORTANCE[planetType];
+        totalWeightedScore += interaction.score * weight;
+        totalWeight += weight;
+      }
+    }
+
+    return totalWeight > 0 ? totalWeightedScore / totalWeight : 0;
+  }
+
+  /**
+   * Convert planet name string to PlanetType enum
+   * @param planetName - Planet name as string (lowercase)
+   * @returns PlanetType or null if not found
+   */
+  private getPlanetTypeFromName(planetName: string): PlanetType | null {
+    const nameMap: Record<string, PlanetType> = {
+      'sun': 'Sun',
+      'moon': 'Moon', 
+      'rising': 'Rising',
+      'venus': 'Venus',
+      'mars': 'Mars'
+    };
+    
+    return nameMap[planetName.toLowerCase()] || null;
   }
 
   /**

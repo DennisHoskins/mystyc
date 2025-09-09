@@ -32,6 +32,8 @@ export default function WeeklyEnergyPanel() {
     }
   }, []);
 
+console.log(error);
+
   useEffect(() => {
     loadWeeklyEnergy();
   }, [loadWeeklyEnergy])

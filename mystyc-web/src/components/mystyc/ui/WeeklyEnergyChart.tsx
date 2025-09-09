@@ -1,11 +1,11 @@
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, ResponsiveContainer } from 'recharts';
 import { DailyEnergyRangeResponse } from 'mystyc-common';
 
 interface WeeklyEnergyChartProps {
   data: DailyEnergyRangeResponse;
-  style?: {};
+  style?: object;
 }
 
 interface ChartDataPoint {

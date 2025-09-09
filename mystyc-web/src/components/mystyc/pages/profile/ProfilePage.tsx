@@ -195,6 +195,9 @@ export default function ProfilePage() {
                 score={astrologyData.astrology.venus.interactions.mars.score}
                 data={astrologyData.astrology.mars}
                 astrology={astrologyData?.user?.userProfile?.astrology?.mars}
+                totals={[
+                  {label: "Mars - Venus", total: astrologyData.astrology.venus.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.venus.interactions!.mars.description},
+                ]}
               />
             </Card>
           </div>
