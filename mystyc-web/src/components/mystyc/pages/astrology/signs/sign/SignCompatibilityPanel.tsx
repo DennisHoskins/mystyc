@@ -2,7 +2,7 @@ import { SignComplete } from "mystyc-common";
 import Panel from "@/components/ui/Panel";
 import Heading from "@/components/ui/Heading";
 import Text from "@/components/ui/Text";
-import RadialGauge from "../../../ui/RadialGauge";
+import RadialGauge from "../../../../ui/RadialGauge";
 import Link from "@/components/ui/Link";
 import { getZodiacIcon } from "@/components/ui/icons/astrology/zodiac";
 

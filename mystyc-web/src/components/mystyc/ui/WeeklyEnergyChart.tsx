@@ -46,14 +46,14 @@ export default function WeeklyEnergyChart({ data, style }: WeeklyEnergyChartProp
             cx={cx}
             cy={cy}
             r={6}
-            fill="#9CA3AF"
-            stroke="#374151"
+            fill="#380a57"
+            stroke="#380a57"
             strokeWidth={2}
           />
         </g>
       );
     }
-    return <circle cx={cx} cy={cy} r={3} fill="#9CA3AF" strokeWidth={2} />;
+    return <circle cx={cx} cy={cy} r={3} fill="#380a57" strokeWidth={2} />;
   };
 
   // Custom dot for personal line  
@@ -97,10 +97,10 @@ export default function WeeklyEnergyChart({ data, style }: WeeklyEnergyChartProp
           <Line
             type="monotone"
             dataKey="cosmic"
-            stroke="#9CA3AF"
+            stroke="#380a57"
             strokeWidth={2}
             dot={<CosmicDot />}
-            activeDot={{ r: 6, stroke: '#9CA3AF', strokeWidth: 2 }}
+            activeDot={{ r: 6, stroke: '#380a57', strokeWidth: 2 }}
             name="Cosmic Energy"
           />
           <Line

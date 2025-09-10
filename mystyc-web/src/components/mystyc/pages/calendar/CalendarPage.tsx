@@ -7,6 +7,7 @@ import { DailyEnergyRangeResponse } from 'mystyc-common';
 import { DeviceInfo } from '@/interfaces';
 import { getWeeklyEnergy } from '@/server/actions/insights';
 import { getDeviceInfo } from '@/util/getDeviceInfo';
+import { useUser } from '@/components/ui/context/AppContext';
 import PageTransition from '@/components/ui/transition/PageTransition';
 import Card from '@/components/ui/Card';
 import Panel from '@/components/ui/Panel';
@@ -17,8 +18,10 @@ import RadialGauge from '../../ui/RadialGauge';
 import DailySignPanel from './DailySignPanel';
 import LinearGauge from '../../ui/LinearGauge';
 import CalendarDayCard from './CalendarDayCard';
+import Text from '@/components/ui/Text';
 
 export default function CalendarPage() {
+  const user = useUser();
   const [energy, setEnergy] = useState<DailyEnergyRangeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const deviceInfo = useMemo(() => getDeviceInfo(), []);
@@ -89,7 +92,7 @@ export default function CalendarPage() {
     return dayName;
   }
 
-console.log(energy)
+console.log(energy);
 
   return (
     <PageTransition>
@@ -102,8 +105,9 @@ console.log(energy)
         />
         <div className='grid grid-cols-4 gap-4 !mt-4'>
           <Panel className='justify-center'>
+            <Text variant='small' className='text-center mb-1'>Weekly {user?.userProfile.astrology?.sun.sign} Energy</Text>
             <RadialGauge label='' inline={true} size={150} totalScore={energy.personalScoreTotal} />
-            <div className='flex flex-col !mt-6'>
+            <div className='flex flex-col !mt-4'>
               <LinearGauge score={energy.days[0].personalTotalScore || 0} label={getDayLabel(energy.days[0].date)} />
               <LinearGauge score={energy.days[1].personalTotalScore || 0} label={getDayLabel(energy.days[1].date)} />
               <LinearGauge score={energy.days[2].personalTotalScore || 0} label={getDayLabel(energy.days[2].date)} />

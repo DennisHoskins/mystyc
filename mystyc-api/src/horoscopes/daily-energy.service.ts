@@ -3,6 +3,8 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { DailyEnergyRangeResponse, DailyEnergy, PlanetaryDayData } from 'mystyc-common/interfaces/horoscope.interface';
 import { AstrologyCalculated } from 'mystyc-common/interfaces/astrology.interface';
 import { PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
+import { MonthlyAstronomicalSummary } from 'mystyc-common/interfaces';
+import { AstronomicalEventsService } from './astronomical-events.service';
 
 import { logger } from '@/common/util/logger';
 import { AstrologyService, CoreAstrology } from '@/astrology/services/astrology.service';
@@ -27,6 +29,7 @@ export class DailyEnergyService {
   constructor(
     private readonly astrologyService: AstrologyService,
     private readonly astrologyDataService: AstrologyDataService,
+    private readonly astronomicalEventsService: AstronomicalEventsService,
     private readonly userProfilesService: UserProfilesService,
     private readonly timezoneCoordsService: TimezoneCoordsService,
     private readonly cosmicNatalCompatibilityService: CosmicNatalCompatibilityService,
@@ -117,6 +120,8 @@ export class DailyEnergyService {
       }
     }
 
+    const monthlyAstronomicalSummary = await this.astronomicalEventsService.getMonthlyAstronomicalSummary(parsedStartDate, coordinates);
+
     const endDate = new Date(parsedStartDate);
     endDate.setDate(parsedStartDate.getDate() + 6);
 
@@ -133,7 +138,8 @@ export class DailyEnergyService {
       endDate: endDate.toISOString().split('T')[0],
       days,
       cosmicScoreTotal,
-      personalScoreTotal
+      personalScoreTotal,
+      monthlyAstronomicalSummary
     };
 
     logger.info('Daily energy range calculated successfully', {

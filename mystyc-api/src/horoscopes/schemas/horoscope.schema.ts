@@ -2,6 +2,28 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Astrology } from '@/users/schemas/user-profile.schema';
 
+@Schema({ _id: false })
+export class DailyAstronomicalEventsSchema {
+  @Prop({ type: Object, required: true })
+  moonPhase!: {
+    phase: string;
+    illumination: number;
+    nextNewMoon?: string;
+    nextFullMoon?: string;
+  };
+
+  @Prop({ type: [Object], required: true })
+  todaysEvents!: Array<{
+    type: string;
+    name: string;
+    date?: string;
+    startDate?: string;
+    endDate?: string;
+    eclipseType?: string;
+    visibility?: string;
+  }>;
+}
+
 @Schema({ timestamps: true, collection: 'horoscopes' })
 export class Horoscope {
   @Prop({ required: true })
@@ -26,6 +48,10 @@ export class Horoscope {
   // Today's cosmic energy for reference/debugging
   @Prop({ type: Astrology, required: true })
   cosmicChart!: Astrology;
+
+  // Daily asstronomical event summary
+  @Prop({ type: DailyAstronomicalEventsSchema, required: true })
+  astronomicalEvents!: DailyAstronomicalEventsSchema;
 
   createdAt!: Date;
   updatedAt!: Date;

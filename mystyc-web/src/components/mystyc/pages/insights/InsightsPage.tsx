@@ -19,6 +19,7 @@ import LinearGauge from '../.././ui/LinearGauge';
 import InsightsHeaderPanel from './InsightsHeaderPanel';
 import InsightInterationCard from './InsightInteractionCard';
 import WeeklyEnergyPanel from './WeeklyEnergyPanel';
+import StarChartPanel from '../../ui/starchart/StarChartPanel';
 
 export default function InsightsPage({ user } : { user: AppUser }) {
   const [insights, setInsights] = useState<Horoscope | null>(null);
@@ -76,8 +77,6 @@ export default function InsightsPage({ user } : { user: AppUser }) {
     );
   }
 
-console.log(insights);  
-
   return (
     <PageTransition>
       <div className='w-full h-full flex flex-col'>
@@ -102,7 +101,6 @@ console.log(insights);
           <Card className='!p-10 col-span-3'>
             <InsightsHeaderPanel insights={insights} />
           </Card>
-
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
@@ -148,8 +146,9 @@ console.log(insights);
               personalChart={insights.personalChart.mars} 
             />
           </div>
-          <div className='col-span-2'>
-            <WeeklyEnergyPanel />
+          <div className='col-span-2 space-y-4'>
+            <WeeklyEnergyPanel sign={user.userProfile.astrology.sun.sign}/>
+            <StarChartPanel data={insights.cosmicChart} size={350} label='Today&apos;s Star Chart' />
           </div>
         </div>
       </div>

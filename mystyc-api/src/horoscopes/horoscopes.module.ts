@@ -12,7 +12,7 @@ import { DailyEnergyService } from './daily-energy.service';
 import { TimezoneCoordsService } from './timezone-coords.service';
 import { CosmicNatalCompatibilityService } from './cosmic-natal-compatibility.service';
 import { OpenAIHoroscopeService } from '../openai/openai-horoscope.service';
-import { UserProfilesService } from '../users/user-profiles.service';
+import { AstronomicalEventsService } from './astronomical-events.service';
 
 import { HoroscopeSchema } from './schemas/horoscope.schema';
 import { OpenAIUsage, OpenAIUsageSchema } from '@/openai/schemas/openai-usage.schema';
@@ -35,15 +35,17 @@ import { UserProfileSchema } from '@/users/schemas/user-profile.schema';
     HoroscopesService,
     DailyEnergyService,
     TimezoneCoordsService,
-    CosmicNatalCompatibilityService, // Add the new service
+    CosmicNatalCompatibilityService,
     OpenAIHoroscopeService,
+    AstronomicalEventsService,
   ],
   exports: [
     HoroscopesService,
     DailyEnergyService,
     TimezoneCoordsService,
-    CosmicNatalCompatibilityService, // Export for potential use by other modules
+    CosmicNatalCompatibilityService,
     OpenAIHoroscopeService,
+    AstronomicalEventsService
   ],
 })
 export class HoroscopesModule {}

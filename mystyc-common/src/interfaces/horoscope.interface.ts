@@ -1,5 +1,6 @@
 import { AstrologyCalculated } from './astrology.interface';
 import { ZodiacSignType } from '../schemas';
+import { DailyAstronomicalEvents, MonthlyAstronomicalSummary } from './astronomical-events.interface';
 
 export interface Horoscope {
   _id?: string;
@@ -10,6 +11,7 @@ export interface Horoscope {
   coordinates: { lat: number; lng: number };
   personalChart: AstrologyCalculated;
   cosmicChart: AstrologyCalculated;
+  astronomicalEvents: DailyAstronomicalEvents;  
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -77,4 +79,5 @@ export interface DailyEnergyRangeResponse {
   days: DailyEnergy[]; // Array of N days (7 for week, 30 for month, etc)
   cosmicScoreTotal: number; // Average cosmic score across all days
   personalScoreTotal: number; // Average personal score across all days
+  monthlyAstronomicalSummary: MonthlyAstronomicalSummary;  
 }

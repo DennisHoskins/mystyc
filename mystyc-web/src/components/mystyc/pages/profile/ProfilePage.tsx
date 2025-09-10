@@ -22,6 +22,7 @@ import ProfileHeaderPanel from './ProfileHeaderPanel';
 import ProfileInteractionPanel from './ProfileInteractionPanel';
 import ProfileElementsPanel from './ProfileElementsPanel';
 import RadialGauge from '../../ui/RadialGauge';
+import StarChartPanel from '../../ui/starchart/StarChartPanel';
 
 export default function ProfilePage() {
   const [astrologyData, setAstrologyData] = useState<{user: User, astrology: AstrologyComplete} | null>(null);
@@ -203,6 +204,9 @@ export default function ProfilePage() {
           </div>
 
           <div className='flex flex-col space-y-4 col-span-2'>
+
+            <StarChartPanel data={astrologyData.user.userProfile.astrology!} size={350} label='Your Birth Star Chart'/>
+
             <ProfileElementsPanel 
               elementData={[
                 astrologyData.astrology.sun.signData.elementData!,

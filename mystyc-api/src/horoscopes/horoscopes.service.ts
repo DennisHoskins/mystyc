@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 
 import { Horoscope } from 'mystyc-common/interfaces/horoscope.interface';
 import { PlanetType, ZodiacSignType } from 'mystyc-common/schemas';
+import { DailyAstronomicalEvents } from 'mystyc-common/interfaces';
+import { AstronomicalEventsService } from './astronomical-events.service';
 
 import { logger } from '@/common/util/logger';
 import { AstrologyService, CoreAstrology } from '@/astrology/services/astrology.service';
@@ -12,7 +14,8 @@ import { UserProfilesService } from '@/users/user-profiles.service';
 import { HoroscopeDocument } from './schemas/horoscope.schema';
 import { TimezoneCoordsService } from './timezone-coords.service';
 import { OpenAIHoroscopeService } from '../openai/openai-horoscope.service';
-import { CosmicNatalCompatibilityService } from './cosmic-natal-compatibility.service';
+import { SignsService } from '@/astrology/services/signs.service';
+import { calculateCompatibility } from 'mystyc-common/util/astrology-calculations';
 
 @Injectable()
 export class HoroscopesService {
@@ -22,10 +25,11 @@ export class HoroscopesService {
     @InjectModel('Horoscope') private horoscopeModel: Model<HoroscopeDocument>,
     private readonly astrologyService: AstrologyService,
     private readonly astrologyDataService: AstrologyDataService,
+    private readonly astronomicalEventsService: AstronomicalEventsService,
     private readonly userProfilesService: UserProfilesService,
     private readonly timezoneCoordsService: TimezoneCoordsService,
     private readonly openAiHoroscopeService: OpenAIHoroscopeService,
-    private readonly cosmicNatalCompatibilityService: CosmicNatalCompatibilityService,
+    private readonly signsService: SignsService,
   ) {}
 
   async getOrCreatePersonalHoroscope(
@@ -119,20 +123,13 @@ export class HoroscopesService {
       // 2. Calculate cosmic chart total score (how well cosmic planets work together)
       const cosmicChart = await this.calculateCosmicTotalScore(cosmicAstrology);
 
-      // 3. Calculate personal chart score (cosmic-natal compatibility)
-      const personalTotalScore = await this.cosmicNatalCompatibilityService
-        .calculateCosmicNatalCompatibility(cosmicAstrology, userBirthChart);
-       
+      // 3. Calculate personal chart with cosmic-natal interactions for each planet
+      const personalChart = await this.calculateCosmicNatalPlanetScores(
+        cosmicAstrology,
+        userBirthChart
+      );
 
-      // 4. Create personal chart object with new score
-      const personalChart = {
-        ...userBirthChart,
-        totalScore: personalTotalScore,
-        createdAt: new Date(),
-        lastCalculatedAt: new Date()
-      };
-
-      // 5. Generate AI summary for the personal chart
+      // 4. Generate AI summary for the personal chart
       const personalChartWithSummary = await this.openAiHoroscopeService.generatePersonalDailySummary(
         userId,
         personalChart,
@@ -140,7 +137,9 @@ export class HoroscopesService {
         date
       );
 
-      // 6. Store personal horoscope
+      const astronomicalEvents = await this.astronomicalEventsService.getDailyAstronomicalEvents(date, coordinates);      
+
+      // 5. Store personal horoscope
       const horoscopeData = {
         userId,
         date,
@@ -148,7 +147,8 @@ export class HoroscopesService {
         timezone,
         coordinates,
         personalChart: personalChartWithSummary,
-        cosmicChart: cosmicChart
+        cosmicChart: cosmicChart,
+        astronomicalEvents
       };
 
       const newHoroscope = new this.horoscopeModel(horoscopeData);
@@ -161,9 +161,95 @@ export class HoroscopesService {
         time,
         timezone,
         error
-      }, 'HoroscapeService');
+      }, 'HoroscopeService');
       throw error;
     }
+  }
+
+  /**
+   * Calculate cosmic vs natal compatibility for each planet
+   * This is the KEY FIX - each planet gets scored based on cosmic vs natal interaction
+   */
+  private async calculateCosmicNatalPlanetScores(
+    cosmicAstrology: CoreAstrology,
+    userBirthChart: any
+  ) {
+    const planets: PlanetType[] = ['Sun', 'Moon', 'Rising', 'Venus', 'Mars'];
+    const weights = { Sun: 5, Moon: 4, Rising: 3, Venus: 2, Mars: 2 };
+    
+    const planetScores: any = {};
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    for (const planet of planets) {
+      const cosmicSign = this.getCosmicSign(cosmicAstrology, planet);
+      const natalSign = userBirthChart[planet.toLowerCase()].sign;
+      
+      // Use the same compatibility calculation as relationships
+      const compatibility = await this.calculateSignCompatibility(cosmicSign, natalSign);
+      
+      planetScores[planet.toLowerCase()] = {
+        sign: natalSign, // Keep natal sign (user's birth sign)
+        degreesInSign: userBirthChart[planet.toLowerCase()].degreesInSign,
+        absoluteDegrees: userBirthChart[planet.toLowerCase()].absoluteDegrees,
+        totalScore: Math.round(compatibility.totalScore * 100) / 100,
+        interactions: {
+          // Could add cosmic breakdown here if needed
+          cosmic: {
+            score: compatibility.totalScore,
+            description: `Today's cosmic ${cosmicSign} energy interacts with your natal ${natalSign} ${planet}`
+          }
+        }
+      };
+      
+      totalWeightedScore += compatibility.totalScore * weights[planet];
+      totalWeight += weights[planet];
+    }
+
+    return {
+      ...planetScores,
+      totalScore: Math.round((totalWeightedScore / totalWeight) * 100) / 100,
+      createdAt: new Date(),
+      lastCalculatedAt: new Date()
+    };
+  }
+
+  /**
+   * Extract cosmic planet sign from CoreAstrology
+   */
+  private getCosmicSign(cosmicAstrology: CoreAstrology, planet: PlanetType): ZodiacSignType {
+    switch (planet) {
+      case 'Sun': return cosmicAstrology.sunSign;
+      case 'Moon': return cosmicAstrology.moonSign;
+      case 'Rising': return cosmicAstrology.risingSign;
+      case 'Venus': return cosmicAstrology.venusSign || 'Aries'; // Fallback
+      case 'Mars': return cosmicAstrology.marsSign || 'Aries'; // Fallback
+      default: throw new Error(`Unknown planet: ${planet}`);
+    }
+  }
+
+  /**
+   * Calculate sign-to-sign compatibility using the same engine as relationships
+   */
+  private async calculateSignCompatibility(cosmicSign: ZodiacSignType, natalSign: ZodiacSignType) {
+    // Get sign data for both signs (same as relationships page)
+    const [cosmicSignData, natalSignData] = await Promise.all([
+      this.signsService.findByName(cosmicSign),
+      this.signsService.findByName(natalSign)
+    ]);
+
+    if (!cosmicSignData || !natalSignData) {
+      logger.warn('Missing sign data for compatibility calculation', {
+        cosmicSign,
+        natalSign,
+        hasCosmicData: !!cosmicSignData,
+        hasNatalData: !!natalSignData
+      }, 'HoroscopesService');
+      return { totalScore: 0 }; // Neutral score if data missing
+    }
+
+    // Use the exact same calculation as relationships
+    return calculateCompatibility(cosmicSignData, natalSignData);
   }
 
   /**
@@ -207,6 +293,7 @@ export class HoroscopesService {
       coordinates: doc.coordinates,
       personalChart: JSON.parse(JSON.stringify(doc.personalChart)),
       cosmicChart: JSON.parse(JSON.stringify(doc.cosmicChart)),
+      astronomicalEvents: doc.astronomicalEvents as DailyAstronomicalEvents,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

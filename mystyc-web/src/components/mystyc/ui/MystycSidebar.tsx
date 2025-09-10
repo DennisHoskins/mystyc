@@ -65,13 +65,13 @@ export default function MystycSidebar() {
         <Link href='/calendar' className={getLinkClasses('/calendar')}>
           <Card className={getCardClasses('/calendar')}>
             <CalendarDays width={30} height={30} strokeWidth={1} />
-            <p className='!mt-2 text-[10px] text-center font-bold'>Astrological Calendar</p>
+            <p className='!mt-2 text-[10px] text-center font-bold'>Calendar</p>
           </Card>
         </Link>
         <Link href='/astrology' className={getLinkClasses('/astrology')}>
           <Card className={getCardClasses('/astrology')}>
             <BookHeart width={30} height={30} strokeWidth={1} />
-            <p className='!mt-2 text-[10px] text-center font-bold'>Reference Library</p>
+            <p className='!mt-2 text-[10px] text-center font-bold'>Astrology Library</p>
           </Card>
         </Link>
       </div>

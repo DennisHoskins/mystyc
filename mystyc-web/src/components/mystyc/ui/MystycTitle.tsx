@@ -19,15 +19,17 @@ export default function MystycTitle({
   subtitle?: string
 }) {
   return(
-    <div className="ml-1 flex-1 flex items-center space-x-1 max-h-10 overflow-hidden">
+    <div className="ml-1 flex-1 flex items-center space-x-1 max-h-10">
       {icon}
-      {href ? (
-        <Link href={href} className="hover:!no-underline">
-          <Heading level={1} className="!text-4xl">{heading}</Heading>
-        </Link>
-      ) : (
-        <Heading level={1} className="!text-4xl">{heading}</Heading>
-      )}
+      <div className="overflow-hidden max-w-3xl">
+        {href ? (
+          <Link href={href} className="hover:!no-underline truncate">
+            <Heading level={1} className="!text-4xl">{heading}</Heading>
+          </Link>
+        ) : (
+          <Heading level={1} className="!text-4xl truncate">{heading}</Heading>
+        )}
+      </div>
       <div className="flex space-x-2 items-center">
         <div className="flex flex-col !space-y-0 border-l border-gray-700 pl-4 ml-3">
           <Text variant="body" className="!text-gray-300 flex space-x-2 items-center">{titleIcon}{title}</Text>

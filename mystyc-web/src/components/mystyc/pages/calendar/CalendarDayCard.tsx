@@ -1,4 +1,4 @@
-import { DailyEnergy, DailyEnergyRangeResponse } from 'mystyc-common';
+import { DailyEnergy } from 'mystyc-common';
 import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import LinearGauge from '../../ui/LinearGauge';
@@ -30,24 +30,29 @@ export default function CalendarDayCard({ energy } : { energy: DailyEnergy }) {
       </div>
       <div className='grid grid-cols-5 gap-2 !mt-4'>
         <Panel className='!p-4 items-center justify-center'>
-          <Text variant='small' className='flex items-center'>Sun {getZodiacIcon(energy.planets.sun.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
+          <Text variant='small' className='flex items-center'>Sun</Text>
           <RadialGauge label='Sun' size={100} totalScore={energy.planets.sun.personalScore} inline={true} />
+          <Text variant='xs' className='flex items-center'>{energy.planets.sun.sign} {getZodiacIcon(energy.planets.sun.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
         </Panel>
         <Panel className='!p-4 items-center justify-center'>
-          <Text variant='small' className='flex items-center'>Moon {getZodiacIcon(energy.planets.moon.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
+          <Text variant='small' className='flex items-center'>Moon</Text>
           <RadialGauge label='Moon' size={100} totalScore={energy.planets.moon.personalScore} inline={true} />
+          <Text variant='xs' className='flex items-center'>{energy.planets.moon.sign} {getZodiacIcon(energy.planets.moon.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
         </Panel>
         <Panel className='!p-4 items-center justify-center'>
-          <Text variant='small' className='flex items-center'>Rising {getZodiacIcon(energy.planets.rising.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
+          <Text variant='small' className='flex items-center'>Rising</Text>
           <RadialGauge label='Rising' size={100} totalScore={energy.planets.rising.personalScore} inline={true} />
+          <Text variant='xs' className='flex items-center'>{energy.planets.rising.sign} {getZodiacIcon(energy.planets.rising.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
         </Panel>
         <Panel className='!p-4 items-center justify-center'>
-          <Text variant='small' className='flex items-center'>Venus {getZodiacIcon(energy.planets.venus.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
+          <Text variant='small' className='flex items-center'>Venus</Text>
           <RadialGauge label='Venus' size={100} totalScore={energy.planets.venus.personalScore} inline={true} />
+          <Text variant='xs' className='flex items-center'>{energy.planets.venus.sign} {getZodiacIcon(energy.planets.venus.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
         </Panel>
         <Panel className='!p-4 items-center justify-center'>
-          <Text variant='small' className='flex items-center'>Mars {getZodiacIcon(energy.planets.mars.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
+          <Text variant='small' className='flex items-center'>Mars</Text>
           <RadialGauge label='Mars' size={100} totalScore={energy.planets.mars.personalScore} inline={true} />
+          <Text variant='xs' className='flex items-center'>{energy.planets.mars.sign} {getZodiacIcon(energy.planets.mars.sign, 'w-4 h-4 !text-gray-400 ml-1')}</Text>
         </Panel>
       </div>
     </Card>
