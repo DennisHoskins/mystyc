@@ -18,12 +18,12 @@ COPY mystyc-common/tsconfig.json /mystyc-common/
 COPY mystyc-common/src /mystyc-common/src
 RUN cd /mystyc-common && npm install && npm run build && npm link
 
-COPY mystyc-api/package*.json ./
+COPY mystyc-server/package*.json ./
 RUN npm cache clean --force
 RUN npm install
 RUN npm link mystyc-common
 
-COPY mystyc-api/ ./
+COPY mystyc-server/ ./
 # Ensure swisseph is rebuilt for this environment
 RUN npm rebuild swisseph
 

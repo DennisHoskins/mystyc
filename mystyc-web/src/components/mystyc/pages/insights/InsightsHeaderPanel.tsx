@@ -13,7 +13,7 @@ export default function InsightsDetailsPanel({ insights } : { insights: Horoscop
       <Text variant='muted' className="!text-gray-400 !mt-4">{insights.personalChart.summary?.description}</Text>
       <ul>
         {insights.astronomicalEvents.todaysEvents.map((event, i) => (
-          <li>
+          <li key={i}>
             <Text variant='small' className="!text-gray-500 !mt-4">{event.name}</Text>
           </li>    
         ))}

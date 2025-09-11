@@ -1,5 +1,5 @@
 import React from "react";
-import WordCloud from "react-d3-cloud";
+import { WordCloud } from '@isoterik/react-word-cloud';
 
 export interface Keyword {
   text: string;
@@ -11,10 +11,10 @@ export default function KeywordCloud({ words }: { words: Keyword[] }) {
 
   return (
     <WordCloud
-      data={words}
+      words={words}
       font={'Google Sans Text, Google Sans, Roboto, Arial, sans-serif'}
       fontSize={fontSize}
-      rotate={0}
+      rotate={() => 0}
       padding={2}
       width={600}
       height={300}
