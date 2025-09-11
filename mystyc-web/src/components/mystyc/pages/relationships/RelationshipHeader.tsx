@@ -27,7 +27,12 @@ export default function RelationshipHeader({ interaction, dark = false } : { int
       <Link href={`/relationships/${interaction.sign2}`} className='flex items-center space-x-1 hover:!no-underline'>
         {getZodiacIcon(interaction.sign2, 'w-10 h-10 text-gray-300')}
         <Heading level={1}>{interaction.sign2}</Heading>
-        <Heading level={3} className='!text-gray-300'> - {formatStringForDisplay(interaction.dynamic)}</Heading>
+        <Heading level={3} className='!text-gray-300'><span className='hidden md:visible'> - {formatStringForDisplay(interaction.dynamic)}</span></Heading>
+        {getDynamicIcon(interaction.dynamic, 'w-4 h-4 text-gray-300 hidden md:visible')}
+      </Link>
+
+      <Link href={`/relationships/${interaction.sign2}`} className='flex items-center space-x-1 hover:!no-underline md:hidden !mb-2'>
+        <Heading level={4} className='!text-gray-300'>{formatStringForDisplay(interaction.dynamic)}</Heading>
         {getDynamicIcon(interaction.dynamic, 'w-4 h-4 text-gray-300')}
       </Link>
 

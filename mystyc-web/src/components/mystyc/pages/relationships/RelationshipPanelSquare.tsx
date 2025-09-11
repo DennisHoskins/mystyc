@@ -5,7 +5,7 @@ import CompatibilityPanelSquare from './CompatibilityPanelSquare';
 
 export default function RelationshipPanelSquare({ interaction } : { interaction: SignInteraction }) {
   return (
-    <Panel className='!p-10 !flex-col'>
+    <Panel className='!p-4 md:!p-10 !flex-col'>
       <RelationshipHeader interaction={interaction} dark={true} />
       <CompatibilityPanelSquare interaction={interaction} />
     </Panel>

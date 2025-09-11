@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CircleMinus, CirclePlus, KeySquare } from 'lucide-react';
 
-import { AstrologyComplete, EnergyType, User } from 'mystyc-common';
+import { AstrologyCalculated, AstrologyComplete, EnergyType, User } from 'mystyc-common';
 import { AppUser } from '@/interfaces/app/app-user.interface';
 import { useUser } from '@/components/ui/context/AppContext';
 import { formatDateForDisplay } from '@/util/dateTime';
@@ -23,6 +23,8 @@ import ProfileInteractionPanel from './ProfileInteractionPanel';
 import ProfileElementsPanel from './ProfileElementsPanel';
 import RadialGauge from '../../ui/RadialGauge';
 import StarChartPanel from '../../ui/starchart/StarChartPanel';
+import LinearGauge from '../../ui/LinearGauge';
+import ProfileStarsPanel from './ProfileStarsPanel';
 
 export default function ProfilePage() {
   const [astrologyData, setAstrologyData] = useState<{user: User, astrology: AstrologyComplete} | null>(null);
@@ -91,31 +93,48 @@ export default function ProfilePage() {
           subtitle={user.userProfile.birthLocation?.formattedAddress + " (" + user.userProfile.birthLocation?.coordinates.lat + " ° , " + user.userProfile.birthLocation?.coordinates.lng + " ° )"}
         />
 
-        <div className='grid grid-cols-4 gap-4'>
-          <Panel className='!p-4 justify-center'>
-            <RadialGauge label='Profile Energy' totalScore={astrologyData.user.userProfile.astrology?.totalScore || 0} />
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mt-4'>
+          <Panel className='!flex-row md:!flex-col justify-center items-center order-2 md:order-1'>
+            <div>
+              <Text variant='small' className='text-center mb-1'>Profile Energy</Text>
+              <RadialGauge label='' inline={true} totalScore={astrologyData.user.userProfile.astrology?.totalScore || 0} />
+            </div>
+            <div className='flex flex-col ml-4 md:ml-0 md:!mt-4 w-full flex-1 md:flex-none'>
+              <LinearGauge score={astrologyData.user.userProfile.astrology?.sun.totalScore || 0} label="Sun" />
+              <LinearGauge score={astrologyData.user.userProfile.astrology?.moon.totalScore || 0} label="Moon" />
+              <LinearGauge score={astrologyData.user.userProfile.astrology?.rising.totalScore || 0} label="Rising" />
+              <LinearGauge score={astrologyData.user.userProfile.astrology?.venus.totalScore || 0} label="Venus" />
+              <LinearGauge score={astrologyData.user.userProfile.astrology?.mars.totalScore || 0} label="Mars" />
+            </div>
           </Panel>
-          <Card className='!p-10 col-span-3'>
+          <Card className='!p-4 md:!p-10 md:col-span-3 space-y-4 order-1 md:order-2'>
             <ProfileHeaderPanel user={astrologyData.user} astrology={astrologyData.astrology} />
+
+            <Panel className='!p-4 md:!p-10 hidden md:block'>
+              <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
+                <KeySquare className='w-3 h-3 text-gray-300 mr-1'/>Keys to Success
+              </Text>
+              <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.action}</Text>
+            </Panel>
+
+            <ProfileStarsPanel astrology={astrologyData.user.userProfile.astrology as AstrologyCalculated} />
           </Card>
         </div>
 
-        <div className='grid grid-cols-3 gap-4 !mt-4'>
-          <Panel>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <Panel className='!p-4 md:!p-10'>
             <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
               <CirclePlus className='w-3 h-3 text-gray-300 mr-1'/>Strengths
             </Text>
             <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.strengths}</Text>
           </Panel>
-
-          <Panel>
+          <Panel className='!p-4 md:!p-10'>
             <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
               <CircleMinus className='w-3 h-3 text-gray-300 mr-1'/>Challenges
             </Text>
             <Text variant='muted' className="!text-gray-500 !mt-1">{astrologyData.user.userProfile.astrology?.summary?.challenges}</Text>
           </Panel>
-
-          <Panel>
+          <Panel className='!p-4 md:!p-10 md:hidden'>
             <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
               <KeySquare className='w-3 h-3 text-gray-300 mr-1'/>Keys to Success
             </Text>
@@ -123,9 +142,13 @@ export default function ProfilePage() {
           </Panel>
         </div>
 
-        <div className='grid grid-cols-5 gap-4 !mt-4'>
-          <div className='flex flex-col space-y-4 col-span-3'>
-            <Card className='!p-10'>
+        <div className='!mt-4 md:hidden'>
+          <StarChartPanel data={astrologyData.user.userProfile.astrology!} size={350} label='Your Birth Star Chart'/>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 !mt-4'>
+          <div className='flex flex-col space-y-4 md:col-span-3'>
+            <Card className='p-4 md:!p-10'>
               <ProfileInteractionPanel
                 href='/profile/core-identity'
                 heading='Core Identity'
@@ -135,14 +158,14 @@ export default function ProfilePage() {
                 astrology={astrologyData?.user?.userProfile?.astrology?.sun}
                 data={astrologyData.astrology.sun}
                 totals={[
-                  {label: "Sun - Moon", total: astrologyData.astrology.sun.interactions.moon.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.moon.description},
-                  {label: "Sun - Rising", total: astrologyData.astrology.sun.interactions.rising.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.rising.description},
-                  {label: "Sun - Venus", total: astrologyData.astrology.sun.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.venus.description},
-                  {label: "Sun - Mars", total: astrologyData.astrology.sun.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.mars.description},
+                  {label: "Moon", total: astrologyData.astrology.sun.interactions.moon.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.moon.description},
+                  {label: "Rising", total: astrologyData.astrology.sun.interactions.rising.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.rising.description},
+                  {label: "Venus", total: astrologyData.astrology.sun.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.venus.description},
+                  {label: "Mars", total: astrologyData.astrology.sun.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.sun.interactions!.mars.description},
                 ]}
               />
             </Card>
-            <Card className='!p-10'>
+            <Card className='p-4 md:!p-10'>
               <ProfileInteractionPanel 
                 href='/profile/emotional-expression'
                 heading='Emotional Expression'
@@ -152,13 +175,13 @@ export default function ProfilePage() {
                 score={astrologyData.user.userProfile.astrology?.moon.totalScore || 0}
                 astrology={astrologyData?.user?.userProfile?.astrology?.moon}
                 totals={[
-                  {label: "Moon - Rising", total: astrologyData.astrology.moon.interactions.rising.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.rising.description},
-                  {label: "Moon - Venus", total: astrologyData.astrology.moon.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.venus.description},
-                  {label: "Moon - Mars", total: astrologyData.astrology.moon.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.mars.description},
+                  {label: "Rising", total: astrologyData.astrology.moon.interactions.rising.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.rising.description},
+                  {label: "Venus", total: astrologyData.astrology.moon.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.venus.description},
+                  {label: "Mars", total: astrologyData.astrology.moon.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.moon.interactions!.mars.description},
                 ]}
               />
             </Card>
-            <Card className='!p-10'>
+            <Card className='p-4 md:!p-10'>
               <ProfileInteractionPanel 
                 href='/profile/social-dynamics'
                 heading='Social Dynamics'
@@ -168,12 +191,12 @@ export default function ProfilePage() {
                 score={astrologyData.user.userProfile.astrology?.rising.totalScore || 0}
                 astrology={astrologyData?.user?.userProfile?.astrology?.rising}
                 totals={[
-                  {label: "Rising - Venus", total: astrologyData.astrology.rising.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.rising.interactions!.venus.description},
-                  {label: "Rising - Mars", total: astrologyData.astrology.rising.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.rising.interactions!.venus.description},
+                  {label: "Venus", total: astrologyData.astrology.rising.interactions.venus.score, description: astrologyData.user.userProfile.astrology?.rising.interactions!.venus.description},
+                  {label: "Mars", total: astrologyData.astrology.rising.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.rising.interactions!.venus.description},
                 ]}
               />
             </Card>
-            <Card className='!p-10'>
+            <Card className='p-4 md:!p-10'>
               <ProfileInteractionPanel 
                 href='/profile/social-dynamics'
                 heading='Social Dynamics'
@@ -183,11 +206,11 @@ export default function ProfilePage() {
                 data={astrologyData.astrology.venus}
                 astrology={astrologyData?.user?.userProfile?.astrology?.venus}
                 totals={[
-                  {label: "Venus - Mars", total: astrologyData.astrology.venus.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.venus.interactions!.mars.description},
+                  {label: "Mars", total: astrologyData.astrology.venus.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.venus.interactions!.mars.description},
                 ]}
               />
             </Card>
-            <Card className='!p-10'>
+            <Card className='p-4 md:!p-10'>
               <ProfileInteractionPanel 
                 href='/profile/social-dynamics'
                 heading='Social Dynamics'
@@ -197,16 +220,16 @@ export default function ProfilePage() {
                 data={astrologyData.astrology.mars}
                 astrology={astrologyData?.user?.userProfile?.astrology?.mars}
                 totals={[
-                  {label: "Mars - Venus", total: astrologyData.astrology.venus.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.venus.interactions!.mars.description},
+                  {label: "Venus", total: astrologyData.astrology.venus.interactions.mars.score, description: astrologyData.user.userProfile.astrology?.venus.interactions!.mars.description},
                 ]}
               />
             </Card>
           </div>
 
-          <div className='flex flex-col space-y-4 col-span-2'>
-
-            <StarChartPanel data={astrologyData.user.userProfile.astrology!} size={350} label='Your Birth Star Chart'/>
-
+          <div className='flex flex-col space-y-4 md:col-span-2'>
+            <div className='hidden md:visible'>
+              <StarChartPanel data={astrologyData.user.userProfile.astrology!} size={350} label='Your Birth Star Chart'/>
+            </div>
             <ProfileElementsPanel 
               elementData={[
                 astrologyData.astrology.sun.signData.elementData!,
@@ -216,7 +239,7 @@ export default function ProfilePage() {
                 astrologyData.astrology.mars.signData.elementData!,
               ]}
             />
-            <Panel className='!p-10 col-span-3'>
+            <Panel className='p-4 md:!p-10 col-span-3'>
               <EnergyTypesPanel
                 energyTypes={[
                   astrologyData.astrology.sun.positionData.energyTypeData as EnergyType,
@@ -258,5 +281,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </PageTransition>
-  )
+  );
 }

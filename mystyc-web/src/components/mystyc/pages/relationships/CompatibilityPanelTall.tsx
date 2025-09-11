@@ -7,9 +7,9 @@ import Link from '@/components/ui/Link';
 export default function CompatibilityPanelTall({ interaction } : { interaction: SignInteraction }) {
   return (
     <Link href={`/relationships/${interaction.sign2}`} className='h-full flex hover:!no-underline !mt-4'>
-      <Panel className='!p-4 flex-col justify-center'>
+      <Panel className='!p-4 !flex-row md:!flex-col justify-center'>
         <RadialGauge label='Compatible' totalScore={interaction.totalScore} inline={true} />
-        <div className='col-span-2 p-6 !pt-2'>
+        <div className='pl-4 md:p-6 md:!pt-2 w-full md:flex-1'>
           <LinearGauge score={interaction.dynamicScore} label="Dynamic" />
           <LinearGauge score={interaction.elementScore} label="Element" />
           <LinearGauge score={interaction.modalityScore} label="Modality" />

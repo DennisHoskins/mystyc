@@ -33,7 +33,7 @@ export default function KeywordsPanel({ keywords }: { keywords: string[] }) {
   }
 
   return (
-    <Panel>
+    <Panel className="!p-4 md:!p-10">
       <KeywordCloud words={uniqueKeywords} />
     </Panel>
   );

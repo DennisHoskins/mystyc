@@ -3,7 +3,7 @@ import { getPlanetIcon } from "@/components/ui/icons/astrology/planets";
 import Panel from "@/components/ui/Panel";
 import Text from "@/components/ui/Text";
 
-export default function InsightsStarPanel({ planet, iconClass, data } : { planet: PlanetType, iconClass?: string, data: PlanetaryData }) {
+export default function ProfileStarPanel({ planet, iconClass, data } : { planet: PlanetType, iconClass?: string, data: PlanetaryData }) {
   
   return (
     <Panel className="!p-4 items-center justify-center">

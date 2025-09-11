@@ -11,7 +11,7 @@ export default function CompatibilityPanelSquare({ interaction } : { interaction
         <div className='flex justify-center'>
           <RadialGauge label='Compatible' totalScore={interaction.totalScore} inline={true} />
         </div>
-        <div className='col-span-2'>
+        <div className='col-span-2 ml-4 md:ml-0'>
           <LinearGauge score={interaction.dynamicScore} label="Dynamic" />
           <LinearGauge score={interaction.elementScore} label="Element" />
           <LinearGauge score={interaction.modalityScore} label="Modality" />

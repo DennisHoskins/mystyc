@@ -133,11 +133,11 @@ export class HoroscopesService {
       const personalChartWithSummary = await this.openAiHoroscopeService.generatePersonalDailySummary(
         userId,
         personalChart,
-        [], // No influences array needed with new approach
+        [],
         date
       );
 
-      const astronomicalEvents = await this.astronomicalEventsService.getDailyAstronomicalEvents(date, coordinates);      
+      const astronomicalEvents = await this.astronomicalEventsService.getDailyAstronomicalEvents(date, coordinates, timezone);      
 
       // 5. Store personal horoscope
       const horoscopeData = {

@@ -49,7 +49,7 @@ export default function SocialDynamicsPage() {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<Atom width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
+            icon={<Atom width={34} height={34} strokeWidth={1.5} className='text-white' />}
             heading='Social Dynamics'
             title='Rising'
             titleIcon={getPlanetIcon("Rising", 'w-4 h-4 mr-1 text-gray-400')}
@@ -73,7 +73,7 @@ export default function SocialDynamicsPage() {
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<Atom width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
+          icon={<Atom width={34} height={34} strokeWidth={1.5} className='text-white' />}
           heading='Social Dynamics'
           title='Rising'
           titleIcon={getPlanetIcon("Rising", 'w-4 h-4 mr-1 text-gray-400')}
@@ -92,21 +92,21 @@ export default function SocialDynamicsPage() {
           data={astrologyData.astrology.rising}
         />
 
-        <div className='grid grid-cols-5 gap-4 !mt-4'>
-          <div className='flex flex-col space-y-4 col-span-3'>
-            <Card className='!p-10'>
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 !mt-4'>
+          <div className='flex flex-col space-y-4 md:col-span-3'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Public image vs attraction style' planet1="Rising" planet2="Venus" score={astrologyData.astrology.rising.interactions.venus.score} interaction={astrologyData.astrology.planetaryInteractions['rising-venus']} />
             </Card>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Social presentation vs assertiveness' planet1="Rising" planet2="Mars" score={astrologyData.astrology.rising.interactions.mars.score} interaction={astrologyData.astrology.planetaryInteractions['rising-mars']} />
             </Card>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Attraction vs pursuit/desire' planet1="Venus" planet2="Mars" score={astrologyData.astrology.venus.interactions.mars.score} interaction={astrologyData.astrology.planetaryInteractions['venus-mars']} />
             </Card>
           </div>
-          <div className='flex flex-col space-y-4 col-span-2'>
+          <div className='flex flex-col space-y-4 md:col-span-2'>
             <ProfileElementsPanel elementData={[astrologyData.astrology.rising.signData.elementData!]} />
-            <Panel className='!p-10 col-span-3'>
+            <Panel className='!p-4 md:!p-10'>
               <EnergyTypesPanel
                 energyTypes={[
                   astrologyData.astrology.rising.positionData.energyTypeData as EnergyType,

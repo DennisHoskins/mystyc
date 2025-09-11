@@ -5,21 +5,32 @@ import RadialGauge from '../../ui/RadialGauge';
 import LinearGauge from '../../ui/LinearGauge';
 import Link from '@/components/ui/Link';
 import RelationshipHeader from './RelationshipHeader';
+import Text from '@/components/ui/Text';
 
 export default function RelationshipCardWide({ interaction } : { interaction: SignInteraction }) {
   return (
-    <Card className='!p-10'>
-      <div className='grid grid-cols-4 gap-4'>
-        <Link href={`/relationships/${interaction.sign2}`} className='h-full flex hover:!no-underline'>
-          <Panel className='!p-4 justify-center'>
-            <RadialGauge label='Compatible' totalScore={interaction.totalScore} />
+    <Card className='!p-4 md:!p-10'>
+
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+        <Link href={`/relationships/${interaction.sign2}`} className='h-full flex hover:!no-underline order-2 md:order-1'>
+          <Panel className='!p-4 grid grid-cols-3'>
+            <div className='flex flex-col justify-center items-center col-span-1 md:col-span-3'>
+              <RadialGauge label='' totalScore={interaction.totalScore} />
+              <Text variant='xs' className='hidden md:block text-gray-600'>Compatible</Text>
+            </div>
+            <div className='col-span-2 ml-4 md:ml-0 md:hidden'>
+              <LinearGauge score={interaction.dynamicScore} label="Dynamic" />
+              <LinearGauge score={interaction.elementScore} label="Element" />
+              <LinearGauge score={interaction.modalityScore} label="Modality" />
+              <LinearGauge score={interaction.polarityScore} label="Polarity" />
+            </div>
           </Panel>
         </Link>
 
-        <div className='col-span-3'>
+        <div className='md:col-span-3 order-1 md:order-2'>
           <RelationshipHeader interaction={interaction} />
 
-          <Link href={`/relationships/${interaction.sign2}`} className='grid grid-cols-4 gap-2 mt-4 hover:!no-underline'>
+          <Link href={`/relationships/${interaction.sign2}`} className='hidden md:grid grid-cols-4 gap-2 mt-4 hover:!no-underline'>
             <Panel className='flex-col justify-center space-y-6 !p-4'>
               <LinearGauge score={interaction.dynamicScore} label="Dynamic" />
             </Panel>

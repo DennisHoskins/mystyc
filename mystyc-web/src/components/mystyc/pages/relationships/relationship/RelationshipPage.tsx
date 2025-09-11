@@ -75,7 +75,7 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
+            icon={<Drama strokeWidth={1.5} className='w-10 h-10 md:w-8 md:h-8 text-white' />}
             heading='Relationships'
             href='/relationships'
             title={user.userProfile.astrology?.sun.sign}
@@ -99,24 +99,24 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
+          icon={<Drama strokeWidth={1.5} className='w-10 h-10 md:w-8 md:h-8 text-white' />}
           heading='Relationships'
           href='/relationships'
           title={user.userProfile.astrology?.sun.sign}
           titleIcon={getZodiacIcon(user.userProfile.astrology?.sun.sign, 'w-6 h-6 text-gray-400')}
           subtitle={`Explore Your Cosmic Chemistry`}
         />
-        <div className='grid grid-cols-4 gap-4'>
-          <Panel className='flex-col justify-center'>
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+          <Panel className='!flex-row md:!flex-col justify-center !p4 md:!p-10'>
             <RadialGauge label='Compatible' size={150} totalScore={interaction?.totalScore} />
-            <div className='flex flex-col !mt-10'>
+            <div className='flex flex-col md:!mt-4 w-full flex-1 justify-center ml-4 md:ml-0 md:flex-none md:w-auto'>
               <LinearGauge score={interaction.dynamicScore} label="Dynamic" />
               <LinearGauge score={interaction.elementScore} label="Element" />
               <LinearGauge score={interaction.modalityScore} label="Modality" />
               <LinearGauge score={interaction.polarityScore} label="Polarity" />
             </div>
           </Panel>
-          <Card className='!p-10 col-span-3'>
+          <Card className='!p-4 md:!p-10 md:col-span-3'>
             <Link href={`/astrology/signs/${interaction.sign2}`} className='flex items-center space-x-2 hover:!no-underline'>
               {getZodiacIcon(interaction.sign2, 'w-10 h-10 text-gray-300')}
               <Heading level={1}>{interaction.sign2}</Heading>
@@ -138,14 +138,14 @@ export default function RelationshipPage({ sign } : { sign: ZodiacSignType }) {
             <DynamicDetailsPanel dynamic={interaction.dynamicData} score={interaction.dynamicScore} />
           </Card>
         </div>
-        <div className='grid grid-cols-5 gap-4 !mt-4'>
-          <div className='col-span-3 space-y-4'>
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 !mt-4'>
+          <div className='md:col-span-3 space-y-4'>
             <ElementInteractionCard interaction={interaction} />
             <ModalityInteractionCard interaction={interaction} />
             <PolarityInteractionCard interaction={interaction} />
           </div>
-          <div className='col-span-2 flex flex-col space-y-4'>
-            <Panel>
+          <div className='md:col-span-2 flex flex-col space-y-4'>
+            <Panel className='!p4 md:!p-10'>
               <EnergyTypesPanel 
                 energyTypes={[
                   interaction.energyTypeData as EnergyType,

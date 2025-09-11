@@ -19,7 +19,7 @@ export default function ElementDetailsPanel({ element, className } : { element: 
   const bgColor = elementColors[element.element] || "#333333";
 
   return (
-    <div className={`p-4 ${className} space-y-2`}>
+    <div className={`${className} space-y-2`}>
       <div className='flex items-center space-x-2'>
         <div className="p-1 rounded-md" style={{ backgroundColor: bgColor }}>
           {getElementIcon(element.element, 'w-4 h-4 text-white')}

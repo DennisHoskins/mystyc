@@ -13,7 +13,7 @@ export default function ModalityInteractionCard({ interaction } : { interaction:
   }
 
   return (
-    <Card className={`!p-10`}>
+    <Card className={`!p-4 md:!p-10`}>
       <div className='flex items-center space-x-2'>
         <div className="w-8 h-8 flex items-center justify-center rounded-md bg-[#230537]">
           {getModalityIcon(interaction.sign1Data.modality, 'w-4 h-4 text-white')}
@@ -21,7 +21,7 @@ export default function ModalityInteractionCard({ interaction } : { interaction:
         <div className="w-8 h-8 flex items-center justify-center rounded-md bg-[#230537]">
           {getModalityIcon(interaction.sign2Data.modality, 'w-4 h-4 text-white')}
         </div>
-        <Heading level={3}>Modalities: {interaction.sign1Data.modality} - {interaction.sign2Data.modality}</Heading>
+        <Heading level={3} className="flex"><span className="hidden md:block mr-2">Modalities: </span>{interaction.sign1Data.modality} - {interaction.sign2Data.modality}</Heading>
       </div>
       <Text variant='small' className="!text-gray-500 !mt-2">
         {interaction.modalityInteractionData.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}

@@ -12,7 +12,7 @@ export default function InsightInteractionCard({ planet, cosmicChart, personalCh
   personalChart: PlanetaryData,
 }) {
   return (
-    <Card className="!p-10">
+    <Card className="p-4 md:!p-10">
       <div className='flex items-center hover:!no-underline'>
         {getPlanetIcon(planet, "w-4 h-4 mr-2 text-white")}
         <Heading level={2} className='!text-white'>{planet}: </Heading>
@@ -23,7 +23,7 @@ export default function InsightInteractionCard({ planet, cosmicChart, personalCh
       <div className='!mt-2 max-w-md'>
         <LinearGauge label='' score={personalChart.totalScore} />
       </div>
-      <Text variant='muted' className="!text-gray-400 !mt-2 !mb-4">{personalChart.summary?.description}</Text>
+      <Text variant='muted' className="!text-gray-400 !mt-2">{personalChart.summary?.description}</Text>
     </Card>
   );
 }

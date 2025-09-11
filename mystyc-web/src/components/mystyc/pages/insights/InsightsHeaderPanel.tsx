@@ -9,8 +9,16 @@ export default function InsightsDetailsPanel({ insights } : { insights: Horoscop
   return (
     <div className='flex flex-col space-y-4'>
       <InsightsStarsPanel insights={insights} />
+      <Text variant='small' className="!text-gray-500 !mt-4">Moon Phase: {insights.astronomicalEvents.moonPhase.phase}</Text>
       <Text variant='muted' className="!text-gray-400 !mt-4">{insights.personalChart.summary?.description}</Text>
-      <Panel>
+      <ul>
+        {insights.astronomicalEvents.todaysEvents.map((event, i) => (
+          <li>
+            <Text variant='small' className="!text-gray-500 !mt-4">{event.name}</Text>
+          </li>    
+        ))}
+      </ul>
+      <Panel className="hidden md:block">
         <div className="flex items-center">
           <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
             <KeySquare className="w-4 h-4 mr-2 text-white" />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { SunMoon, CircleMinus, CirclePlus } from "lucide-react";
+import { SunMoon, CircleMinus, CirclePlus, KeySquare } from "lucide-react";
 
 import { Horoscope } from 'mystyc-common';
 import { AppUser } from '@/interfaces/app/app-user.interface';
@@ -58,7 +58,7 @@ export default function InsightsPage({ user } : { user: AppUser }) {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<SunMoon strokeWidth={1.5} className='w-10 h-10 mr-2 text-white' />}
+            icon={<SunMoon strokeWidth={1.5} className='w-10 h-10 text-white' />}
             heading={dayOfWeek}
             title={fullDate}
             subtitle={`${deviceInfo.timezone}`}
@@ -81,16 +81,19 @@ export default function InsightsPage({ user } : { user: AppUser }) {
     <PageTransition>
       <div className='w-full h-full flex flex-col'>
         <MystycTitle
-          icon={<SunMoon strokeWidth={1.5} className='w-10 h-10 mr-2 text-white' />}
+          icon={<SunMoon strokeWidth={1.5} className='w-10 h-10 text-white' />}
           heading={dayOfWeek}
           title={fullDate}
           subtitle={`${deviceInfo.timezone}`}
         />
-        <div className='grid grid-cols-4 gap-4 mt-4'>
-          <Panel className='flex-col justify-center'>
-            <Text variant='small' className='text-center mb-1'>Today&apos;s {user.userProfile.astrology.sun.sign} Energy</Text>
-            <RadialGauge label='' inline={true} size={150} totalScore={insights?.personalChart.totalScore || 0} />
-            <div className='flex flex-col !mt-6'>
+
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mt-4'>
+          <Panel className='!flex-row md:!flex-col justify-center items-center'>
+            <div>
+              <Text variant='small' className='text-center mb-1'>Today&apos;s {user.userProfile.astrology.sun.sign} Energy</Text>
+              <RadialGauge label='' inline={true} size={150} totalScore={insights?.personalChart.totalScore || 0} />
+            </div>
+            <div className='flex flex-col ml-4 md:ml-0 md:!mt-4 w-full flex-1 md:flex-none'>
               <LinearGauge score={insights?.personalChart.sun.totalScore || 0} label="Sun" />
               <LinearGauge score={insights?.personalChart.moon.totalScore || 0} label="Moon" />
               <LinearGauge score={insights?.personalChart.rising.totalScore || 0} label="Rising" />
@@ -98,12 +101,22 @@ export default function InsightsPage({ user } : { user: AppUser }) {
               <LinearGauge score={insights?.personalChart.mars.totalScore || 0} label="Mars" />
             </div>
           </Panel>
-          <Card className='!p-10 col-span-3'>
+          <Card className='!p-4 md:!p-10 md:col-span-3'>
             <InsightsHeaderPanel insights={insights} />
           </Card>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <Panel className="md:hidden">
+            <div className="flex items-center">
+              <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
+                <KeySquare className="w-4 h-4 mr-2 text-white" />
+                Key Insights
+              </Text>
+            </div>
+            <Text variant='muted' className="!text-gray-400">{insights.personalChart.summary?.action}</Text>
+          </Panel>
+
           <Panel>
             <Text variant='muted' className='!text-gray-300 flex items-center font-bold'>
               <CirclePlus className='w-3 h-3 text-gray-300 mr-1'/>Today&apos;s Strengths
@@ -118,8 +131,12 @@ export default function InsightsPage({ user } : { user: AppUser }) {
           </Panel>
         </div>
 
-        <div className='grid grid-cols-5 gap-4 mt-4'>
-          <div className='col-span-3 flex flex-col space-y-4'>
+        <div className='md:hidden mt-4'>
+          <StarChartPanel data={insights.cosmicChart} size={350} label={fullDate} />
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 mt-4'>
+          <div className='md:col-span-3 flex flex-col space-y-4'>
             <InsightInterationCard 
               planet="Sun" 
               cosmicChart={insights.cosmicChart.sun} 
@@ -146,9 +163,11 @@ export default function InsightsPage({ user } : { user: AppUser }) {
               personalChart={insights.personalChart.mars} 
             />
           </div>
-          <div className='col-span-2 space-y-4'>
+          <div className='md:col-span-2 space-y-4'>
             <WeeklyEnergyPanel sign={user.userProfile.astrology.sun.sign}/>
-            <StarChartPanel data={insights.cosmicChart} size={350} label='Today&apos;s Star Chart' />
+            <div className='hidden md:visible'>
+              <StarChartPanel data={insights.cosmicChart} size={350} label='Today&apos;s Star Chart' />
+            </div>
           </div>
         </div>
       </div>

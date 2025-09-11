@@ -13,7 +13,7 @@ export default function PolarityInteractionCard({ interaction } : { interaction:
   }
 
   return (
-    <Card className={`!p-10`}>
+    <Card className={`!p-4 md:!p-10`}>
       <div className='flex items-center space-x-2'>
         <div className="w-8 h-8 flex items-center justify-center rounded-md bg-[#230537]">
           {getPolarityIcon(interaction.sign1Data.basics.polarity, 'w-5 h-5 text-white')}
@@ -21,7 +21,7 @@ export default function PolarityInteractionCard({ interaction } : { interaction:
         <div className="w-8 h-8 flex items-center justify-center rounded-md bg-[#230537]">
           {getPolarityIcon(interaction.sign2Data.basics.polarity, 'w-5 h-5 text-white')}
         </div>
-        <Heading level={3}>Polarities: {interaction.sign1Data.basics.polarity} - {interaction.sign2Data.basics.polarity}</Heading>
+        <Heading level={3} className="flex"><span className="hidden md:block mr-2">Polarities: </span>{interaction.sign1Data.basics.polarity} - {interaction.sign2Data.basics.polarity}</Heading>
       </div>
       <Text variant='small' className="!text-gray-500 !mt-2">
         {interaction.polarityInteractionData.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}

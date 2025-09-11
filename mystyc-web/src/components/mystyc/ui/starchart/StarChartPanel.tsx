@@ -17,7 +17,7 @@ export default function StarChartPanel({ data, label, size = 400, className } : 
 
   return (
     <Panel className={`items-center justify-center ${className}`}>
-      <Text variant='small' className='mb-2'>{label}</Text>
+      <Text variant='small' className='mt-2'>{label}</Text>
       <StarChart 
         data={sampleData}
         showAspects={true}

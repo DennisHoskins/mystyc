@@ -19,6 +19,8 @@ import DailySignPanel from './DailySignPanel';
 import LinearGauge from '../../ui/LinearGauge';
 import CalendarDayCard from './CalendarDayCard';
 import Text from '@/components/ui/Text';
+import UpcomingEvents from './UpcomingEvents';
+import Calendar from './Calendar';
 
 export default function CalendarPage() {
   const user = useUser();
@@ -62,7 +64,7 @@ export default function CalendarPage() {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<CalendarDays strokeWidth={1.5} className='w-10 h-10 mr-2 text-white' />}
+            icon={<CalendarDays strokeWidth={1.5} className='w-10 h-10 text-white' />}
             heading='Calendar'
             title={fullDate}
             subtitle={`${deviceInfo.timezone}`}
@@ -92,22 +94,23 @@ export default function CalendarPage() {
     return dayName;
   }
 
-console.log(energy);
-
   return (
     <PageTransition>
       <div className='w-full h-full flex flex-col'>
         <MystycTitle
-          icon={<CalendarDays strokeWidth={1.5} className='w-10 h-10 mr-2 text-white' />}
+          icon={<CalendarDays strokeWidth={1.5} className='w-10 h-10 text-white' />}
           heading='Calendar'
           title={fullDate}
           subtitle={`${deviceInfo.timezone}`}
         />
-        <div className='grid grid-cols-4 gap-4 !mt-4'>
-          <Panel className='justify-center'>
-            <Text variant='small' className='text-center mb-1'>Weekly {user?.userProfile.astrology?.sun.sign} Energy</Text>
-            <RadialGauge label='' inline={true} size={150} totalScore={energy.personalScoreTotal} />
-            <div className='flex flex-col !mt-4'>
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-4 !mt-4'>
+
+          <Panel className='!flex-row md:!flex-col justify-center items-center'>
+            <div>
+              <Text variant='small' className='text-center mb-1'>Weekly {user?.userProfile.astrology?.sun.sign} Energy</Text>
+              <RadialGauge label='' inline={true} size={150} totalScore={energy.personalScoreTotal} />
+            </div>
+            <div className='flex flex-col ml-4 md:ml-0 md:!mt-4 w-full flex-1 md:flex-none pb-2'>
               <LinearGauge score={energy.days[0].personalTotalScore || 0} label={getDayLabel(energy.days[0].date)} />
               <LinearGauge score={energy.days[1].personalTotalScore || 0} label={getDayLabel(energy.days[1].date)} />
               <LinearGauge score={energy.days[2].personalTotalScore || 0} label={getDayLabel(energy.days[2].date)} />
@@ -118,15 +121,15 @@ console.log(energy);
             </div>
           </Panel>
 
-          <Card className='col-span-3 !p-10'>
+          <Card className='md:col-span-3 !p-4 md:!p-10'>
             <Panel className='flex-col justify-center'>
               <WeeklyEnergyChart data={energy} />
             </Panel>
-            <div className='grid grid-cols-7 gap-2 !mt-2'>
+            <div className='grid-cols-1 md:grid-cols-7 gap-2 !mt-2 hidden md:grid'>
               <DailySignPanel energy={energy.days[0]} />
               <DailySignPanel energy={energy.days[1]} />
               <DailySignPanel energy={energy.days[2]} />
-              <DailySignPanel energy={energy.days[3]} />
+              <DailySignPanel energy={energy.days[3]} today={true} />
               <DailySignPanel energy={energy.days[4]} />
               <DailySignPanel energy={energy.days[5]} />
               <DailySignPanel energy={energy.days[6]} />
@@ -134,15 +137,22 @@ console.log(energy);
           </Card>
         </div>
 
-        <div className='!mt-4 grid grid-cols-5 gap-4'>
-          <div className='flex flex-col space-y-4 col-span-3'>
-            <CalendarDayCard energy={energy.days[0]} />
-            <CalendarDayCard energy={energy.days[1]} />
-            <CalendarDayCard energy={energy.days[2]} />
-            <CalendarDayCard energy={energy.days[3]} />
-            <CalendarDayCard energy={energy.days[4]} />
-            <CalendarDayCard energy={energy.days[5]} />
-            <CalendarDayCard energy={energy.days[6]} />
+        <div className='!mt-4 grid grid-cols-1 md:grid-cols-5 gap-4'>
+          <div className='flex flex-col space-y-4 md:col-span-3'>
+            <CalendarDayCard energy={energy.days[0]} summary={energy.monthlyAstronomicalSummary} />
+            <CalendarDayCard energy={energy.days[1]} summary={energy.monthlyAstronomicalSummary} />
+            <CalendarDayCard energy={energy.days[2]} summary={energy.monthlyAstronomicalSummary} />
+            <CalendarDayCard energy={energy.days[3]} summary={energy.monthlyAstronomicalSummary} />
+            <CalendarDayCard energy={energy.days[4]} summary={energy.monthlyAstronomicalSummary} />
+            <CalendarDayCard energy={energy.days[5]} summary={energy.monthlyAstronomicalSummary} />
+            <CalendarDayCard energy={energy.days[6]} summary={energy.monthlyAstronomicalSummary} />
+          </div>
+
+          <div className='flex flex-col md:col-span-2 space-y-4'>
+            <Card className='!p4 md:!p-10'>
+              <Calendar summary={energy.monthlyAstronomicalSummary} date={new Date(energy.startDate)} />
+            </Card>
+            <UpcomingEvents summary={energy.monthlyAstronomicalSummary} />
           </div>
         </div>
 

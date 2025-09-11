@@ -43,7 +43,7 @@ export default function Modal({ children, isOpen, onClose, doTransition = true }
   return (
     <Overlay onClick={handleOverlayClick}>
       <ModalTransition doTransition={doTransition}>
-        <div className={`w-full max-w-xl bg-[var(--color-main)] border border-[var(--color-border)] p-6 text-center space-y-6 pointer-events-auto ${styles.modal}`} onClick={(e) => e.stopPropagation()}>
+        <div className={`h-full md:h-auto justify-center flex flex-col w-full max-w-xl bg-[var(--color-main)] border border-[var(--color-border)] p-6 text-center space-y-6 pointer-events-auto ${styles.modal}`} onClick={(e) => e.stopPropagation()}>
           <div className='flex justify-end'>
             <Button onClick={closeModal}  variant='ghost' className='!text-gray-700'><X /></Button>
           </div>

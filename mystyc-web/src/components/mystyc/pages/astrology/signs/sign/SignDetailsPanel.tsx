@@ -38,7 +38,7 @@ export default function SignDetailsPanel({ sign } : { sign: SignComplete | null 
   }
 
   return (
-    <div className="flex flex-col p-6 space-y-4">
+    <div className="flex flex-col space-y-4">
       <div className="flex space-x-2 items-center">
         {getSignIcon(sign.symbol.name, 'h-6 w-6 text-white')}
         <Heading level={1}>The {sign.symbol.name}</Heading>

@@ -49,7 +49,7 @@ export default function CoreIdentityPage() {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<Fingerprint width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
+            icon={<Fingerprint width={34} height={34} strokeWidth={1.5} className='text-white' />}
             heading='Core Identity'
             title='Sun'
             titleIcon={getPlanetIcon("Sun", 'w-4 h-4 mr-1 text-gray-400')}
@@ -73,7 +73,7 @@ export default function CoreIdentityPage() {
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<Fingerprint width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
+          icon={<Fingerprint width={34} height={34} strokeWidth={1.5} className='text-white' />}
           heading='Core Identity'
           title='Sun'
           titleIcon={getPlanetIcon("Sun", 'w-4 h-4 mr-1 text-gray-400')}
@@ -93,25 +93,25 @@ export default function CoreIdentityPage() {
           data={astrologyData.astrology.sun} 
         />
 
-        <div className='grid grid-cols-5 gap-4 !mt-4'>
-          <div className='flex flex-col space-y-4 col-span-3'>
-            <Card className='!p-10'>
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 !mt-4'>
+          <div className='flex flex-col space-y-4 md:col-span-3'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Core self vs emotional needs' planet1="Sun" planet2="Moon" score={astrologyData.astrology.sun.interactions.moon.score} interaction={astrologyData.astrology.planetaryInteractions['sun-moon']} />
             </Card>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Inner identity vs outer presentation' planet1="Sun" planet2="Rising" score={astrologyData.astrology.sun.interactions.rising.score} interaction={astrologyData.astrology.planetaryInteractions['sun-rising']} />
             </Card>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Self-expression vs relationships/values' planet1="Sun" planet2="Venus" score={astrologyData.astrology.sun.interactions.venus.score} interaction={astrologyData.astrology.planetaryInteractions['sun-venus']} />
             </Card>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Identity vs drive/action' planet1="Sun" planet2="Mars" score={astrologyData.astrology.sun.interactions.mars.score} interaction={astrologyData.astrology.planetaryInteractions['sun-mars']} />
             </Card>
           </div>
 
-          <div className='flex flex-col space-y-4 col-span-2'>
+          <div className='flex flex-col space-y-4 md:col-span-2'>
             <ProfileElementsPanel elementData={[astrologyData.astrology.sun.signData.elementData!]} />
-            <Panel className='!p-10 col-span-3'>
+            <Panel className='!p-4 md:!p-10 col-span-3'>
               <EnergyTypesPanel
                 energyTypes={[
                   astrologyData.astrology.sun.positionData.energyTypeData as EnergyType,

@@ -120,7 +120,7 @@ export class DailyEnergyService {
       }
     }
 
-    const monthlyAstronomicalSummary = await this.astronomicalEventsService.getMonthlyAstronomicalSummary(parsedStartDate, coordinates);
+    const monthlyAstronomicalSummary = await this.astronomicalEventsService.getMonthlyAstronomicalSummary(parsedStartDate, coordinates, effectiveTimezone);
 
     const endDate = new Date(parsedStartDate);
     endDate.setDate(parsedStartDate.getDate() + 6);

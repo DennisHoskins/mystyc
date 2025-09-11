@@ -19,17 +19,19 @@ export class AstronomicalEventsService {
    */
   async getDailyAstronomicalEvents(
     date: Date,
-    coordinates: { lat: number; lng: number }
+    coordinates: { lat: number; lng: number },
+    timezone: string
   ): Promise<DailyAstronomicalEvents> {
     logger.debug('Getting daily astronomical events', { 
       date: date.toISOString(), 
-      coordinates 
+      coordinates,
+      timezone
     }, 'AstronomicalEventsService');
 
     try {
       const [moonPhase, todaysEvents] = await Promise.all([
-        this.calculateMoonPhase(date),
-        this.getTodaysEvents(date, coordinates)
+        this.calculateMoonPhase(date, timezone),
+        this.getTodaysEvents(date, coordinates, timezone)
       ]);
 
       logger.debug('Daily astronomical events calculated', {
@@ -41,6 +43,7 @@ export class AstronomicalEventsService {
     } catch (error) {
       logger.error('Failed to get daily astronomical events', {
         date: date.toISOString(),
+        timezone,
         error
       }, 'AstronomicalEventsService');
       
@@ -57,7 +60,8 @@ export class AstronomicalEventsService {
    */
   async getMonthlyAstronomicalSummary(
     date: Date,
-    coordinates: { lat: number; lng: number }
+    coordinates: { lat: number; lng: number },
+    timezone: string
   ): Promise<MonthlyAstronomicalSummary> {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -66,13 +70,14 @@ export class AstronomicalEventsService {
     logger.debug('Getting monthly astronomical summary', { 
       year, 
       month: month + 1, 
-      coordinates 
+      coordinates,
+      timezone
     }, 'AstronomicalEventsService');
 
     try {
       const [moonPhases, events] = await Promise.all([
-        this.getMonthlyMoonPhases(year, month),
-        this.getMonthlyEvents(year, month, coordinates)
+        this.getMonthlyMoonPhases(year, month, timezone),
+        this.getMonthlyEvents(year, month, coordinates, timezone)
       ]);
 
       logger.debug('Monthly astronomical summary calculated', {
@@ -86,6 +91,7 @@ export class AstronomicalEventsService {
       logger.error('Failed to get monthly astronomical summary', {
         year,
         month: month + 1,
+        timezone,
         error
       }, 'AstronomicalEventsService');
       
@@ -101,7 +107,7 @@ export class AstronomicalEventsService {
   /**
    * Calculate moon phase for a specific date
    */
-  private async calculateMoonPhase(date: Date): Promise<MoonPhase> {
+  private async calculateMoonPhase(date: Date, timezone: string): Promise<MoonPhase> {
     const julianDay = await this.calculateJulianDay(date);
     
     // Get Sun and Moon positions
@@ -121,17 +127,17 @@ export class AstronomicalEventsService {
     // Determine phase name
     const phase = this.getPhaseNameFromAngle(phaseAngle);
 
-    // Find next new and full moons
+    // Find next new and full moons (in user's timezone)
     const [nextNewMoon, nextFullMoon] = await Promise.all([
-      this.findNextMoonPhase(date, 'new'),
-      this.findNextMoonPhase(date, 'full')
+      this.findNextMoonPhase(date, 'new', timezone),
+      this.findNextMoonPhase(date, 'full', timezone)
     ]);
 
     return {
       phase,
       illumination: Math.round(illumination * 1000) / 1000,
-      nextNewMoon: nextNewMoon?.toISOString().split('T')[0],
-      nextFullMoon: nextFullMoon?.toISOString().split('T')[0]
+      nextNewMoon: nextNewMoon?.toLocaleDateString('en-CA', { timeZone: timezone }),
+      nextFullMoon: nextFullMoon?.toLocaleDateString('en-CA', { timeZone: timezone })
     };
   }
 
@@ -140,21 +146,21 @@ export class AstronomicalEventsService {
    */
   private async getTodaysEvents(
     date: Date, 
-    coordinates: { lat: number; lng: number }
+    coordinates: { lat: number; lng: number },
+    timezone: string
   ): Promise<AstronomicalEvent[]> {
     const events: AstronomicalEvent[] = [];
-    const dateStr = date.toISOString().split('T')[0];
 
     // Check for eclipses today
-    const eclipses = await this.checkForEclipsesToday(date, coordinates);
+    const eclipses = await this.checkForEclipsesToday(date, coordinates, timezone);
     events.push(...eclipses);
 
     // Check for mercury retrograde start/end
-    const mercuryEvents = await this.checkForMercuryEventsToday(date);
+    const mercuryEvents = await this.checkForMercuryEventsToday(date, timezone);
     events.push(...mercuryEvents);
 
     // Check for solstices/equinoxes
-    const seasonalEvents = await this.checkForSeasonalEventsToday(date);
+    const seasonalEvents = await this.checkForSeasonalEventsToday(date, timezone);
     events.push(...seasonalEvents);
 
     return events;
@@ -163,15 +169,21 @@ export class AstronomicalEventsService {
   /**
    * Get all moon phases for a month
    */
-  private async getMonthlyMoonPhases(year: number, month: number): Promise<Array<{
+  private async getMonthlyMoonPhases(year: number, month: number, timezone: string): Promise<Array<{
     phase: MoonPhase['phase'];
     date: string;
   }>> {
     const phases: Array<{ phase: MoonPhase['phase']; date: string }> = [];
     
-    // Start from beginning of month
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0); // Last day of month
+    // Start from beginning of month IN USER'S TIMEZONE
+    const startDate = new Date(new Date(year, month, 1).toLocaleString('en-US', { timeZone: timezone }));
+    const endDate = new Date(new Date(year, month + 1, 0).toLocaleString('en-US', { timeZone: timezone })); // Last day of month
+    
+    logger.debug('Searching for moon phases in user timezone', { 
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      timezone
+    }, 'AstronomicalEventsService');
 
     // Find all moon phases in this month
     const phaseTypes = [
@@ -182,17 +194,35 @@ export class AstronomicalEventsService {
     ];
 
     for (const phaseType of phaseTypes) {
-      const phaseDate = await this.findMoonPhaseInPeriod(
-        startDate, 
-        endDate, 
-        phaseType.targetAngle
-      );
-      
-      if (phaseDate) {
-        phases.push({
+      try {
+        const phaseDate = await this.findMoonPhaseInPeriod(
+          startDate, 
+          endDate, 
+          phaseType.targetAngle,
+          timezone
+        );
+        
+        if (phaseDate) {
+          // Format date in user's timezone
+          const formattedDate = phaseDate.toLocaleDateString('en-CA', { timeZone: timezone });
+          phases.push({
+            phase: phaseType.name,
+            date: formattedDate
+          });
+          
+          logger.debug('Found moon phase', {
+            phase: phaseType.name,
+            date: formattedDate,
+            timezone,
+            targetAngle: phaseType.targetAngle
+          }, 'AstronomicalEventsService');
+        }
+      } catch (error) {
+        logger.error('Failed to find moon phase', {
           phase: phaseType.name,
-          date: phaseDate.toISOString().split('T')[0]
-        });
+          targetAngle: phaseType.targetAngle,
+          error
+        }, 'AstronomicalEventsService');
       }
     }
 
@@ -205,14 +235,15 @@ export class AstronomicalEventsService {
   private async getMonthlyEvents(
     year: number, 
     month: number, 
-    coordinates: { lat: number; lng: number }
+    coordinates: { lat: number; lng: number },
+    timezone: string
   ): Promise<AstronomicalEvent[]> {
     const events: AstronomicalEvent[] = [];
 
     const [mercuryEvents, seasonalEvents, eclipses] = await Promise.all([
-      this.calculateMercuryRetrogradeForMonth(year, month),
-      this.calculateSolsticesEquinoxesForMonth(year, month),
-      this.calculateEclipsesForMonth(year, month, coordinates)
+      this.calculateMercuryRetrogradeForMonth(year, month, timezone),
+      this.calculateSolsticesEquinoxesForMonth(year, month, timezone),
+      this.calculateEclipsesForMonth(year, month, coordinates, timezone)
     ]);
 
     events.push(...mercuryEvents);
@@ -231,7 +262,8 @@ export class AstronomicalEventsService {
    */
   private async calculateMercuryRetrogradeForMonth(
     year: number, 
-    month: number
+    month: number,
+    timezone: string
   ): Promise<AstronomicalEvent[]> {
     const events: AstronomicalEvent[] = [];
     const startDate = new Date(year, month, 1);
@@ -250,19 +282,21 @@ export class AstronomicalEventsService {
 
         // Retrograde starts when speed goes from positive to negative
         if (currentSpeed > 0 && nextSpeed < 0) {
+          const formattedDate = currentDate.toLocaleDateString('en-CA', { timeZone: timezone });
           events.push({
             type: EventType.MERCURY_RETROGRADE_START,
             name: 'Mercury Retrograde Begins',
-            date: currentDate.toISOString().split('T')[0]
+            date: formattedDate
           });
         }
 
         // Retrograde ends when speed goes from negative to positive
         if (currentSpeed < 0 && nextSpeed > 0) {
+          const formattedDate = currentDate.toLocaleDateString('en-CA', { timeZone: timezone });
           events.push({
             type: EventType.MERCURY_RETROGRADE_END,
             name: 'Mercury Retrograde Ends',
-            date: currentDate.toISOString().split('T')[0]
+            date: formattedDate
           });
         }
       }
@@ -270,6 +304,7 @@ export class AstronomicalEventsService {
       logger.error('Failed to calculate Mercury retrograde for month', {
         year,
         month: month + 1,
+        timezone,
         error
       }, 'AstronomicalEventsService');
     }
@@ -282,7 +317,8 @@ export class AstronomicalEventsService {
    */
   private async calculateSolsticesEquinoxesForMonth(
     year: number, 
-    month: number
+    month: number,
+    timezone: string
   ): Promise<AstronomicalEvent[]> {
     const events: AstronomicalEvent[] = [];
 
@@ -297,12 +333,13 @@ export class AstronomicalEventsService {
     for (const event of seasonalEvents) {
       if (event.month === month) {
         try {
-          const eventDate = await this.calculateSeasonalEvent(year, event.type);
+          const eventDate = await this.calculateSeasonalEvent(year, event.type, timezone);
           if (eventDate) {
+            const formattedDate = eventDate.toLocaleDateString('en-CA', { timeZone: timezone });
             events.push({
               type: event.type,
               name: event.name,
-              date: eventDate.toISOString().split('T')[0]
+              date: formattedDate
             });
           }
         } catch (error) {
@@ -310,6 +347,7 @@ export class AstronomicalEventsService {
             year,
             month: month + 1,
             eventType: event.type,
+            timezone,
             error
           }, 'AstronomicalEventsService');
         }
@@ -325,7 +363,8 @@ export class AstronomicalEventsService {
   private async calculateEclipsesForMonth(
     year: number, 
     month: number, 
-    coordinates: { lat: number; lng: number }
+    coordinates: { lat: number; lng: number },
+    timezone: string
   ): Promise<AstronomicalEvent[]> {
     const events: AstronomicalEvent[] = [];
     const startDate = new Date(year, month, 1);
@@ -337,7 +376,8 @@ export class AstronomicalEventsService {
         startDate, 
         endDate, 
         'solar', 
-        coordinates
+        coordinates,
+        timezone
       );
       events.push(...solarEclipses);
 
@@ -346,7 +386,8 @@ export class AstronomicalEventsService {
         startDate, 
         endDate, 
         'lunar', 
-        coordinates
+        coordinates,
+        timezone
       );
       events.push(...lunarEclipses);
 
@@ -354,11 +395,325 @@ export class AstronomicalEventsService {
       logger.error('Failed to calculate eclipses for month', {
         year,
         month: month + 1,
+        timezone,
         error
       }, 'AstronomicalEventsService');
     }
 
     return events;
+  }
+
+  private async calculateSeasonalEvent(year: number, eventType: EventType, timezone: string): Promise<Date | null> {
+    try {
+      // Target longitudes for seasonal events
+      let targetLongitude: number;
+      switch (eventType) {
+        case EventType.SPRING_EQUINOX: targetLongitude = 0; break;
+        case EventType.SUMMER_SOLSTICE: targetLongitude = 90; break;
+        case EventType.AUTUMN_EQUINOX: targetLongitude = 180; break;
+        case EventType.WINTER_SOLSTICE: targetLongitude = 270; break;
+        default: return null;
+      }
+
+      // Approximate dates for each event (starting point for search)
+      const approximateDates = {
+        [EventType.SPRING_EQUINOX]: new Date(year, 2, 20), // March 20
+        [EventType.SUMMER_SOLSTICE]: new Date(year, 5, 21), // June 21
+        [EventType.AUTUMN_EQUINOX]: new Date(year, 8, 23), // September 23
+        [EventType.WINTER_SOLSTICE]: new Date(year, 11, 21) // December 21
+      };
+
+      const startDate = approximateDates[eventType];
+      if (!startDate) return null;
+
+      // Search within ±3 days of approximate date
+      const searchRange = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
+      
+      return await this.findSunLongitudeCrossing(
+        new Date(startDate.getTime() - searchRange),
+        new Date(startDate.getTime() + searchRange),
+        targetLongitude,
+        timezone
+      );
+
+    } catch (error) {
+      logger.error('Failed to calculate seasonal event', { year, eventType, timezone, error });
+      return null;
+    }
+  }
+
+  /**
+   * Find when the Sun crosses a specific longitude using binary search
+   */
+  private async findSunLongitudeCrossing(
+    startDate: Date,
+    endDate: Date,
+    targetLongitude: number,
+    timezone: string,
+    tolerance: number = 0.01 // degrees
+  ): Promise<Date | null> {
+    try {
+      let left = startDate.getTime();
+      let right = endDate.getTime();
+      
+      // Binary search for the crossing
+      while (right - left > 60000) { // 1 minute precision
+        const mid = left + (right - left) / 2;
+        const midDate = new Date(mid);
+        
+        const julianDay = await this.calculateJulianDay(midDate);
+        const sunLongitude = await this.getPlanetPosition(julianDay, swisseph.SE_SUN);
+        
+        // Normalize longitude to 0-360
+        const normalizedLongitude = ((sunLongitude % 360) + 360) % 360;
+        const normalizedTarget = ((targetLongitude % 360) + 360) % 360;
+        
+        // Handle crossing 0 degrees (360/0 boundary)
+        let difference = normalizedLongitude - normalizedTarget;
+        if (Math.abs(difference) > 180) {
+          difference = difference > 0 ? difference - 360 : difference + 360;
+        }
+        
+        if (Math.abs(difference) < tolerance) {
+          // Return date in user's timezone context
+          return new Date(midDate.toLocaleString('en-US', { timeZone: timezone }));
+        }
+        
+        // Determine which half contains the crossing
+        if (difference < 0) {
+          left = mid;
+        } else {
+          right = mid;
+        }
+      }
+      
+      const resultDate = new Date((left + right) / 2);
+      return new Date(resultDate.toLocaleString('en-US', { timeZone: timezone }));
+      
+    } catch (error) {
+      logger.error('Failed to find sun longitude crossing', {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        targetLongitude,
+        timezone,
+        error
+      }, 'AstronomicalEventsService');
+      return null;
+    }
+  }
+
+  private async findNextMoonPhase(date: Date, phaseType: 'new' | 'full', timezone: string): Promise<Date | null> {
+    const targetAngle = phaseType === 'new' ? 0 : 180;
+    const maxDays = 35; // Look ahead up to 35 days
+    
+    for (let i = 1; i <= maxDays; i++) {
+      // Create date in user's timezone context
+      const checkDate = new Date(date.getTime() + (i * 24 * 60 * 60 * 1000));
+      
+      try {
+        const julianDay = await this.calculateJulianDay(checkDate);
+        const [sunLongitude, moonLongitude] = await Promise.all([
+          this.getPlanetPosition(julianDay, swisseph.SE_SUN),
+          this.getPlanetPosition(julianDay, swisseph.SE_MOON)
+        ]);
+
+        let phaseAngle = moonLongitude - sunLongitude;
+        if (phaseAngle < 0) phaseAngle += 360;
+        if (phaseAngle > 360) phaseAngle -= 360;
+
+        // Check if we're close to the target angle (within 2 degrees)
+        const angleDiff = Math.min(
+          Math.abs(phaseAngle - targetAngle),
+          Math.abs(phaseAngle - targetAngle + 360),
+          Math.abs(phaseAngle - targetAngle - 360)
+        );
+
+        if (angleDiff < 2) {
+          // Return date adjusted for user's timezone calendar
+          return new Date(checkDate.toLocaleString('en-US', { timeZone: timezone }));
+        }
+      } catch (error) {
+        // Continue checking other dates if one fails
+        continue;
+      }
+    }
+    
+    return null;
+  }
+
+  private async findMoonPhaseInPeriod(
+    startDate: Date, 
+    endDate: Date, 
+    targetAngle: number,
+    timezone: string
+  ): Promise<Date | null> {
+    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    let closestDate: Date | null = null;
+    let closestDifference = Infinity;
+    
+    logger.debug('Searching for moon phase', {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      targetAngle,
+      totalDays,
+      timezone
+    }, 'AstronomicalEventsService');
+    
+    for (let i = 0; i <= totalDays; i++) {
+      const checkDate = new Date(startDate);
+      checkDate.setDate(checkDate.getDate() + i);
+      
+      if (checkDate > endDate) break;
+      
+      try {
+        const julianDay = await this.calculateJulianDay(checkDate);
+        const [sunLongitude, moonLongitude] = await Promise.all([
+          this.getPlanetPosition(julianDay, swisseph.SE_SUN),
+          this.getPlanetPosition(julianDay, swisseph.SE_MOON)
+        ]);
+
+        let phaseAngle = moonLongitude - sunLongitude;
+        if (phaseAngle < 0) phaseAngle += 360;
+        if (phaseAngle > 360) phaseAngle -= 360;
+
+        // Check if we're close to the target angle
+        const angleDiff = Math.min(
+          Math.abs(phaseAngle - targetAngle),
+          Math.abs(phaseAngle - targetAngle + 360),
+          Math.abs(phaseAngle - targetAngle - 360)
+        );
+
+        if (angleDiff < closestDifference) {
+          closestDifference = angleDiff;
+          closestDate = new Date(checkDate);
+        }
+
+        // If we're very close, we found it
+        if (angleDiff < 1.5) { // Tighter tolerance
+          logger.debug('Found moon phase match', {
+            date: checkDate.toISOString(),
+            phaseAngle,
+            targetAngle,
+            angleDiff,
+            timezone
+          }, 'AstronomicalEventsService');
+          
+          // Return date in user's timezone calendar context
+          return new Date(checkDate.toLocaleString('en-US', { timeZone: timezone }));
+        }
+      } catch (error) {
+        // Continue checking other dates if one fails
+        continue;
+      }
+    }
+    
+    // Return closest match if we found one within reasonable tolerance
+    if (closestDate && closestDifference < 10) {
+      logger.debug('Returning closest moon phase match', {
+        date: closestDate.toISOString(),
+        difference: closestDifference,
+        timezone
+      }, 'AstronomicalEventsService');
+      return new Date(closestDate.toLocaleString('en-US', { timeZone: timezone }));
+    }
+    
+    logger.warn('No moon phase found', {
+      targetAngle,
+      closestDifference,
+      timezone
+    }, 'AstronomicalEventsService');
+    
+    return null;
+  }
+
+  private async checkForEclipsesToday(
+    date: Date, 
+    coordinates: { lat: number; lng: number },
+    timezone: string
+  ): Promise<AstronomicalEvent[]> {
+    // For daily checks, we'll do a simplified check
+    // Full eclipse calculations are complex and should be done monthly
+    return [];
+  }
+
+  private async checkForMercuryEventsToday(date: Date, timezone: string): Promise<AstronomicalEvent[]> {
+    const events: AstronomicalEvent[] = [];
+    
+    try {
+      const yesterday = new Date(date);
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      const [yesterdaySpeed, todaySpeed] = await Promise.all([
+        this.getMercurySpeed(yesterday),
+        this.getMercurySpeed(date)
+      ]);
+
+      if (yesterdaySpeed > 0 && todaySpeed < 0) {
+        events.push({
+          type: EventType.MERCURY_RETROGRADE_START,
+          name: 'Mercury Retrograde Begins',
+          date: date.toLocaleDateString('en-CA', { timeZone: timezone })
+        });
+      }
+
+      if (yesterdaySpeed < 0 && todaySpeed > 0) {
+        events.push({
+          type: EventType.MERCURY_RETROGRADE_END,
+          name: 'Mercury Retrograde Ends',
+          date: date.toLocaleDateString('en-CA', { timeZone: timezone })
+        });
+      }
+    } catch (error) {
+      logger.error('Failed to check Mercury events for today', { 
+        date: date.toISOString(), 
+        timezone, 
+        error 
+      });
+    }
+
+    return events;
+  }
+
+  private async checkForSeasonalEventsToday(date: Date, timezone: string): Promise<AstronomicalEvent[]> {
+    const events: AstronomicalEvent[] = [];
+    const month = date.getMonth();
+    const day = date.getDate();
+
+    // Check if today might be a seasonal event (rough approximation)
+    const seasonalDates = [
+      { month: 2, day: 20, type: EventType.SPRING_EQUINOX, name: 'Spring Equinox' },
+      { month: 5, day: 21, type: EventType.SUMMER_SOLSTICE, name: 'Summer Solstice' },
+      { month: 8, day: 22, type: EventType.AUTUMN_EQUINOX, name: 'Autumn Equinox' },
+      { month: 11, day: 21, type: EventType.WINTER_SOLSTICE, name: 'Winter Solstice' }
+    ];
+
+    for (const seasonalDate of seasonalDates) {
+      if (seasonalDate.month === month && Math.abs(seasonalDate.day - day) <= 2) {
+        // Double-check with precise calculation
+        const preciseDate = await this.calculateSeasonalEvent(date.getFullYear(), seasonalDate.type, timezone);
+        if (preciseDate && Math.abs(preciseDate.getTime() - date.getTime()) < 24 * 60 * 60 * 1000) {
+          events.push({
+            type: seasonalDate.type,
+            name: seasonalDate.name,
+            date: date.toLocaleDateString('en-CA', { timeZone: timezone })
+          });
+        }
+      }
+    }
+
+    return events;
+  }
+
+  private async findEclipsesInPeriod(
+    startDate: Date,
+    endDate: Date,
+    eclipseType: 'solar' | 'lunar',
+    coordinates: { lat: number; lng: number },
+    timezone: string
+  ): Promise<AstronomicalEvent[]> {
+    // Eclipse calculations are very complex
+    // For MVP, return empty array and implement later
+    return [];
   }
 
   // Helper methods for Swiss Ephemeris calculations
@@ -431,87 +786,6 @@ export class AstronomicalEventsService {
     return 'Waning Crescent';
   }
 
-  private async findNextMoonPhase(date: Date, phaseType: 'new' | 'full'): Promise<Date | null> {
-    const targetAngle = phaseType === 'new' ? 0 : 180;
-    const maxDays = 35; // Look ahead up to 35 days
-    
-    for (let i = 1; i <= maxDays; i++) {
-      const checkDate = new Date(date);
-      checkDate.setDate(checkDate.getDate() + i);
-      
-      try {
-        const julianDay = await this.calculateJulianDay(checkDate);
-        const [sunLongitude, moonLongitude] = await Promise.all([
-          this.getPlanetPosition(julianDay, swisseph.SE_SUN),
-          this.getPlanetPosition(julianDay, swisseph.SE_MOON)
-        ]);
-
-        let phaseAngle = moonLongitude - sunLongitude;
-        if (phaseAngle < 0) phaseAngle += 360;
-        if (phaseAngle > 360) phaseAngle -= 360;
-
-        // Check if we're close to the target angle (within 2 degrees)
-        const angleDiff = Math.min(
-          Math.abs(phaseAngle - targetAngle),
-          Math.abs(phaseAngle - targetAngle + 360),
-          Math.abs(phaseAngle - targetAngle - 360)
-        );
-
-        if (angleDiff < 2) {
-          return checkDate;
-        }
-      } catch (error) {
-        // Continue checking other dates if one fails
-        continue;
-      }
-    }
-    
-    return null;
-  }
-
-  private async findMoonPhaseInPeriod(
-    startDate: Date, 
-    endDate: Date, 
-    targetAngle: number
-  ): Promise<Date | null> {
-    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    for (let i = 0; i <= totalDays; i++) {
-      const checkDate = new Date(startDate);
-      checkDate.setDate(checkDate.getDate() + i);
-      
-      if (checkDate > endDate) break;
-      
-      try {
-        const julianDay = await this.calculateJulianDay(checkDate);
-        const [sunLongitude, moonLongitude] = await Promise.all([
-          this.getPlanetPosition(julianDay, swisseph.SE_SUN),
-          this.getPlanetPosition(julianDay, swisseph.SE_MOON)
-        ]);
-
-        let phaseAngle = moonLongitude - sunLongitude;
-        if (phaseAngle < 0) phaseAngle += 360;
-        if (phaseAngle > 360) phaseAngle -= 360;
-
-        // Check if we're close to the target angle (within 1 degree)
-        const angleDiff = Math.min(
-          Math.abs(phaseAngle - targetAngle),
-          Math.abs(phaseAngle - targetAngle + 360),
-          Math.abs(phaseAngle - targetAngle - 360)
-        );
-
-        if (angleDiff < 1) {
-          return checkDate;
-        }
-      } catch (error) {
-        // Continue checking other dates if one fails
-        continue;
-      }
-    }
-    
-    return null;
-  }
-
   private async getMercurySpeed(date: Date): Promise<number> {
     try {
       const julianDay = await this.calculateJulianDay(date);
@@ -534,121 +808,5 @@ export class AstronomicalEventsService {
       logger.error('Failed to calculate Mercury speed', { date: date.toISOString(), error });
       return 0;
     }
-  }
-
-  private async calculateSeasonalEvent(year: number, eventType: EventType): Promise<Date | null> {
-    try {
-      const julianDay = await this.calculateJulianDay(new Date(year, 0, 1));
-      
-      // Calculate approximate dates for seasonal events
-      let targetLongitude: number;
-      switch (eventType) {
-        case EventType.SPRING_EQUINOX: targetLongitude = 0; break;
-        case EventType.SUMMER_SOLSTICE: targetLongitude = 90; break;
-        case EventType.AUTUMN_EQUINOX: targetLongitude = 180; break;
-        case EventType.WINTER_SOLSTICE: targetLongitude = 270; break;
-        default: return null;
-      }
-
-      // Use Swiss Ephemeris to find when Sun reaches target longitude
-      return new Promise((resolve) => {
-        swisseph.swe_solcross(targetLongitude, julianDay, swisseph.SEFLG_MOSEPH, (result: any) => {
-          if (result && typeof result === 'number') {
-            // Convert Julian day back to Date
-            const date = new Date((result - 2440587.5) * 86400000);
-            resolve(date);
-          } else {
-            resolve(null);
-          }
-        });
-      });
-    } catch (error) {
-      logger.error('Failed to calculate seasonal event', { year, eventType, error });
-      return null;
-    }
-  }
-
-  private async checkForEclipsesToday(
-    date: Date, 
-    coordinates: { lat: number; lng: number }
-  ): Promise<AstronomicalEvent[]> {
-    // For daily checks, we'll do a simplified check
-    // Full eclipse calculations are complex and should be done monthly
-    return [];
-  }
-
-  private async checkForMercuryEventsToday(date: Date): Promise<AstronomicalEvent[]> {
-    const events: AstronomicalEvent[] = [];
-    
-    try {
-      const yesterday = new Date(date);
-      yesterday.setDate(yesterday.getDate() - 1);
-      
-      const [yesterdaySpeed, todaySpeed] = await Promise.all([
-        this.getMercurySpeed(yesterday),
-        this.getMercurySpeed(date)
-      ]);
-
-      if (yesterdaySpeed > 0 && todaySpeed < 0) {
-        events.push({
-          type: EventType.MERCURY_RETROGRADE_START,
-          name: 'Mercury Retrograde Begins',
-          date: date.toISOString().split('T')[0]
-        });
-      }
-
-      if (yesterdaySpeed < 0 && todaySpeed > 0) {
-        events.push({
-          type: EventType.MERCURY_RETROGRADE_END,
-          name: 'Mercury Retrograde Ends',
-          date: date.toISOString().split('T')[0]
-        });
-      }
-    } catch (error) {
-      logger.error('Failed to check Mercury events for today', { date: date.toISOString(), error });
-    }
-
-    return events;
-  }
-
-  private async checkForSeasonalEventsToday(date: Date): Promise<AstronomicalEvent[]> {
-    const events: AstronomicalEvent[] = [];
-    const month = date.getMonth();
-    const day = date.getDate();
-
-    // Check if today might be a seasonal event (rough approximation)
-    const seasonalDates = [
-      { month: 2, day: 20, type: EventType.SPRING_EQUINOX, name: 'Spring Equinox' },
-      { month: 5, day: 21, type: EventType.SUMMER_SOLSTICE, name: 'Summer Solstice' },
-      { month: 8, day: 22, type: EventType.AUTUMN_EQUINOX, name: 'Autumn Equinox' },
-      { month: 11, day: 21, type: EventType.WINTER_SOLSTICE, name: 'Winter Solstice' }
-    ];
-
-    for (const seasonalDate of seasonalDates) {
-      if (seasonalDate.month === month && Math.abs(seasonalDate.day - day) <= 2) {
-        // Double-check with precise calculation
-        const preciseDate = await this.calculateSeasonalEvent(date.getFullYear(), seasonalDate.type);
-        if (preciseDate && Math.abs(preciseDate.getTime() - date.getTime()) < 24 * 60 * 60 * 1000) {
-          events.push({
-            type: seasonalDate.type,
-            name: seasonalDate.name,
-            date: date.toISOString().split('T')[0]
-          });
-        }
-      }
-    }
-
-    return events;
-  }
-
-  private async findEclipsesInPeriod(
-    startDate: Date,
-    endDate: Date,
-    eclipseType: 'solar' | 'lunar',
-    coordinates: { lat: number; lng: number }
-  ): Promise<AstronomicalEvent[]> {
-    // Eclipse calculations are very complex
-    // For MVP, return empty array and implement later
-    return [];
   }
 }

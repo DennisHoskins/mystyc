@@ -11,7 +11,7 @@ export default function AstrologyLinkPanel({ sign, label, sublabel } : { sign: Z
       <Panel className="items-center justify-center aspect-square">
         {getZodiacIcon(sign, 'w-10 h-10 text-white')}
         <Heading level={2}>{sign}</Heading>
-        <Text variant="muted" className="!mt-2">{label}</Text>
+        <Text variant="muted" className="!mt-0">{label}</Text>
         <Text variant="xs">{sublabel}</Text>
       </Panel>
     </Link>

@@ -50,7 +50,7 @@ export default function RelationshipsPage() {
       <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
           <MystycTitle
-            icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
+            icon={<Drama strokeWidth={1.5} className='w-10 h-10 md:w-8 md:h-8 text-white' />}
             heading='Relationships'
             title={user.userProfile.astrology?.sun.sign}
             subtitle={`Discover How the Stars Shape Your Connections`}
@@ -77,7 +77,7 @@ export default function RelationshipsPage() {
     <PageTransition>
       <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<Drama strokeWidth={1.5} className='w-8 h-8 text-white' />}
+          icon={<Drama strokeWidth={1.5} className='w-10 h-10 md:w-8 md:h-8 text-white' />}
           heading='Relationships'
           title={user.userProfile.astrology?.sun.sign}
           titleIcon={getZodiacIcon(user.userProfile.astrology?.sun.sign, 'w-6 h-6 text-gray-400')}
@@ -87,31 +87,32 @@ export default function RelationshipsPage() {
           {(interactions && interactions.length == 12) &&
             <>
               <RelationshipCardWide interaction={interactions[0]} />
-              <div className='grid grid-cols-5 gap-4'>
+
+              <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
                 
-                <div className='col-span-3 flex flex-col space-y-4'>
+                <div className='md:col-span-3 flex flex-col space-y-4'>
                   <RelationshipPanelSquare interaction={interactions[1]} />
                   <RelationshipPanelSquare interaction={interactions[3]} />
                   <RelationshipPanelSquare interaction={interactions[5]} />
                 </div>
                 
-                <div className='col-span-2 flex flex-col space-y-4'>
+                <div className='md:col-span-2 flex flex-col space-y-4'>
                   <RelationshipCardTall interaction={interactions[2]} />
                   <RelationshipCardTall interaction={interactions[4]} className='flex-1 grow' />
                 </div>
 
-                <div className='col-span-2 flex flex-col space-y-4'>
+                <div className='md:col-span-2 flex flex-col space-y-4'>
                   <RelationshipCardTall interaction={interactions[6]} />
                   <RelationshipCardTall interaction={interactions[8]} className='flex-1 grow' />
                 </div>
 
-                <div className='col-span-3 flex flex-col space-y-4'>
+                <div className='md:col-span-3 flex flex-col space-y-4'>
                   <RelationshipPanelSquare interaction={interactions[7]} />
                   <RelationshipPanelSquare interaction={interactions[9]} />
                   <RelationshipPanelSquare interaction={interactions[10]} />
                 </div>
 
-                <div className='col-span-5'>
+                <div className='md:col-span-5'>
                   <RelationshipCardWide interaction={interactions[11]} />
                 </div>
               </div>

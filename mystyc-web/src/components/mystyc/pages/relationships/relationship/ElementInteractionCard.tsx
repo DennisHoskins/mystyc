@@ -23,7 +23,7 @@ export default function ElementInteractionCard({ interaction } : { interaction: 
   const bgColor2 = interactionColors[interaction.sign2Data.element] || "#333333";
 
   return (
-    <Card className={`!p-10`}>
+    <Card className={`!p-4 md:!p-10`}>
       <div className='flex items-center space-x-2'>
         <div className="p-[5px] mr-[2px] flex items-center justify-center rounded-md" style={{ backgroundColor: bgColor1 }}>
           {getElementIcon(interaction.sign1Data.element, 'w-4 h-4 text-white')}
@@ -31,7 +31,7 @@ export default function ElementInteractionCard({ interaction } : { interaction: 
         <div className="p-[5px] flex items-center justify-center rounded-md" style={{ backgroundColor: bgColor2 }}>
           {getElementIcon(interaction.sign2Data.element, 'w-4 h-4 text-white')}
         </div>
-        <Heading level={3}>Elements: {interaction.sign1Data.element} - {interaction.sign2Data.element}</Heading>
+        <Heading level={3} className="flex"><span className="hidden md:block mr-2">Elements: </span>{interaction.sign1Data.element} - {interaction.sign2Data.element}</Heading>
       </div>
       <Text variant='small' className="!text-gray-500 !mt-2">
         {interaction.elementInteractionData.keywords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(", ")}

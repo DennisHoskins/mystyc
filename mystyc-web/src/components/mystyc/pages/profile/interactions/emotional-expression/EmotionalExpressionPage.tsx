@@ -49,7 +49,7 @@ export default function EmotionalExpressionPage() {
       <PageTransition>
           <div className='w-full flex flex-col space-y-4'>
             <MystycTitle
-              icon={<HandHeart width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
+              icon={<HandHeart width={34} height={34} strokeWidth={1.5} className='text-white' />}
               heading='Emotional Expression'
               title='Moon'
               titleIcon={getPlanetIcon("Moon", 'w-4 h-4 mr-1 text-gray-400')}
@@ -73,7 +73,7 @@ export default function EmotionalExpressionPage() {
     <PageTransition>
         <div className='w-full flex flex-col space-y-4'>
         <MystycTitle
-          icon={<HandHeart width={34} height={34} strokeWidth={1.5} className='text-white mr-1' />}
+          icon={<HandHeart width={34} height={34} strokeWidth={1.5} className='text-white' />}
           heading='Emotional Expression'
           title='Moon'
           titleIcon={getPlanetIcon("Moon", 'w-4 h-4 mr-1 text-gray-400')}
@@ -92,21 +92,21 @@ export default function EmotionalExpressionPage() {
           data={astrologyData.astrology.moon}
         />
 
-        <div className='grid grid-cols-5 gap-4 !mt-4'>
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 !mt-4'>
           <div className='flex flex-col space-y-4 col-span-3'>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='How emotions show up socially' planet1="Moon" planet2="Rising" score={astrologyData.astrology.moon.interactions.rising.score} interaction={astrologyData.astrology.planetaryInteractions['moon-rising']} />
             </Card>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Emotional needs vs relationship style' planet1="Moon" planet2="Venus" score={astrologyData.astrology.moon.interactions.venus.score} interaction={astrologyData.astrology.planetaryInteractions['moon-venus']} />
             </Card>
-            <Card className='!p-10'>
+            <Card className='!p-4 md:!p-10'>
               <PlanetInteractionPanel heading='Feelings vs action impulses' planet1="Moon" planet2="Mars" score={astrologyData.astrology.moon.interactions.mars.score} interaction={astrologyData.astrology.planetaryInteractions['moon-mars']} />
             </Card>
           </div>
           <div className='flex flex-col space-y-4 col-span-2'>
             <ProfileElementsPanel elementData={[astrologyData.astrology.moon.signData.elementData!]} />
-            <Panel className='!p-10 col-span-3'>
+            <Panel className='!p-4 md:!p-10 col-span-3'>
               <EnergyTypesPanel
                 energyTypes={[
                   astrologyData.astrology.moon.positionData.energyTypeData as EnergyType,

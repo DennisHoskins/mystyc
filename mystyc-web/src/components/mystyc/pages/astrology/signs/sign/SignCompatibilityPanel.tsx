@@ -12,7 +12,7 @@ export default function SignRadialPanel({ sign } : { sign: SignComplete | null |
   }
 
   return (
-    <div className="flex space-x-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       <Panel className="!p-4 flex flex-col space-y-2 justify-center">
         <Link href={`/relationships/${sign.bestInteraction?.sign2}`} className="flex space-x-2 hover:!no-underline">
           <RadialGauge 

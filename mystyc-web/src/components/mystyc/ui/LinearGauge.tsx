@@ -27,7 +27,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
   const color = getColor(percentage);
   
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col w-full'>
       <span className="text-xs text-gray-600 min-w-0 flex-shrink-0">{label}</span>
       <div className="flex items-center justify-between space-x-3">
         <div className="flex items-center space-x-2 flex-1">

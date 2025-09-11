@@ -4,7 +4,7 @@ import { useUser } from '@/components/ui/context/AppContext';
 import Main from '@/components/ui/layout/Main';
 import MystycFooter from "@/components/mystyc/MystycFooter";
 import ScrollWrapper from '@/components/ui/layout/scroll/ScrollWrapper';
-import MystycSidebar from './ui/MystycSidebar';
+import MystycNavigation from './ui/MystycNavigation';
 
 export default function MystycLayout({ children }: { children: React.ReactNode }) {
   const user = useUser();
@@ -15,13 +15,15 @@ export default function MystycLayout({ children }: { children: React.ReactNode }
   return(
     <div className='flex-1 flex flex-col w-full h-full overflow-hidden -mt-[59px]'>
       <ScrollWrapper className='z-10'>
-        <div className='flex flex-row w-full max-w-content flex-grow pt-[59px]'>
-          <MystycSidebar />
-          <Main className='flex w-full flex-grow ml-4 -mt-10'>
+        <div className='flex flex-row w-full max-w-content flex-grow pt-[59px] md:ml-4 xl:ml-0'>
+          <MystycNavigation />
+          <Main className='flex w-full flex-grow mx-4 md:mx-4 md:-mt-10 xl:mr-0'>
             {children}
           </Main>
         </div>
-        <MystycFooter user={user} />
+        <div className='mb-24 md:mb-0'>
+          <MystycFooter user={user} />
+        </div>          
       </ScrollWrapper>
     </div>
   );  

@@ -1,7 +1,7 @@
-import MenuItems from '@/components/ui/layout/menu/MenuItems';
 import MenuItem from '@/components/ui/layout/menu/MenuItem';
 
-import { Settings, CreditCard, LayoutDashboard, LogOut } from 'lucide-react';
+// import { Settings, CreditCard, LayoutDashboard, LogOut } from 'lucide-react';
+import { LayoutDashboard, LogOut } from 'lucide-react';
 import { useUser } from '@/components/ui/context/AppContext';
 import { useTransitionRouter } from '@/hooks/useTransitionRouter';
 
@@ -45,7 +45,7 @@ export default function MystycMenu() {
 
   return (
     <>
-      <div className='pb-4'>
+      {/* <div className='pb-4'>
         <MenuItems>
           <MenuItem onClick={() => router.push('/account')}>
             <CreditCard className="inline-block mr-2 h-4 w-4" />
@@ -56,10 +56,10 @@ export default function MystycMenu() {
             Settings
           </MenuItem>
         </MenuItems>
-      </div>
+      </div> */}
 
       {user.isAdmin && (
-        <div className='h-full'>
+        <div className='h-full border-b border-[#ffffff24] pb-4 mb-4'>
           <div className='pt-4 pb-4 sm:hidden border-t border-[#ffffff24]'>
             <AdminMenu />
           </div>
@@ -72,7 +72,7 @@ export default function MystycMenu() {
         </div>
       )}
 
-      <div className="mt-auto pt-4 border-t border-[#ffffff24]">
+      <div className="mt-auto">
         <MenuItem className='pb-0' onClick={() => router.push('/logout')}>
           <LogOut className="inline-block mr-2 h-4 w-4" />
           Logout

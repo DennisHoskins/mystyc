@@ -75,47 +75,46 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
           title={`${signData?.timing.dateRange.start || ""} - ${signData?.timing.dateRange.end || ""}, ${signData?.timing.season || ""}`}
           subtitle={signData?.timing.seasonDescription || ""}
         />
-        <div className='grid grid-cols-3 gap-4 relative'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 relative'>
           <ConstellationPanel sign={sign} />
-          <Card className='col-span-2'>
+          <Card className='!p-4 md:!p-10 md:col-span-2 space-y-4'>
             <SignDetailsPanel sign={signData} />
             <SignCompatibilityPanel sign={signData} />
           </Card>
         </div>
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <HouseDetailsPanel house={signData?.houseData} />
-          <Card>
+          <Card className='!p-4 md:!p-10'>
             <ElementDetailsPanel element={signData?.elementData} />
           </Card>
         </div>
 
-        <div className='grid grid-cols-5 gap-4'>
-          <Card className='!p-10 col-span-2'>
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
+          <Card className='!p-4 md:!p-10 md:col-span-2'>
             <SignTarotPanel sign={signData} />
           </Card>
-          <Card className='!p-10 col-span-3'>
+          <Card className='!p-4 md:!p-10 md:col-span-3'>
             <SignGemsPanel sign={signData} />
           </Card>
         </div>
 
-        <div className='grid grid-cols-5 gap-4'>
-          
-          <div className='flex flex-col space-y-4 col-span-3'>
-            <Card className='space-y-10 !p-10'>
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
+          <div className='flex flex-col space-y-4 md:col-span-3'>
+            <Card className='space-y-10 !p-4 md:!p-10'>
               <SignLuckPanel sign={signData} />
             </Card>
 
-            <Card className='space-y-10 !p-10'>
+            <Card className='space-y-10 !p-4 md:!p-10'>
               <SignAestheticPanel sign={signData} />
               <SignLifestylePanel sign={signData} />
               <SignPhysicalityPanel sign={signData} />
             </Card>
           </div>
 
-          <div className='flex flex-col space-y-4 col-span-2'>
+          <div className='flex flex-col space-y-4 md:col-span-2'>
             <ModalityDetailsPanel modality={signData?.modalityData} />
             <PolarityDetailsPanel polarity={signData?.polarityData} />
-            <Panel>
+            <Panel className='!p-4 md:!p-10'>
               <EnergyTypesPanel 
                 energyTypes={[
                   signData.energyTypeData as EnergyType,
