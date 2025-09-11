@@ -1,51 +1,10 @@
 import { MonthlyAstronomicalSummary } from 'mystyc-common';
 
 export interface MoonPhaseResult {
-  phase: 'New Moon' | 'First Quarter' | 'Full Moon' | 'Last Quarter';
+  phase: 'New Moon' | 'Waxing Crescent' | 'First Quarter' | 'Waxing Gibbous' | 
+         'Full Moon' | 'Waning Gibbous' | 'Last Quarter' | 'Waning Crescent';
   percent: number;
 }
-
-export const getMoonPhaseForDate = (
-  date: string | Date, 
-  summary: MonthlyAstronomicalSummary
-): MoonPhaseResult => {
-  const currentDate = typeof date === 'string' ? new Date(date) : date;
-  
-  const sortedPhases = summary.moonPhases?.sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
-  ) || [];
-  
-  if (sortedPhases.length === 0) {
-    return { phase: 'New Moon', percent: 0 };
-  }
-  
-  // Find the most recent phase before or on the current date
-  let currentPhase = sortedPhases[0];
-  let nextPhase = sortedPhases[1] || sortedPhases[0];
-  
-  for (let i = 0; i < sortedPhases.length - 1; i++) {
-    const phaseDate = new Date(sortedPhases[i].date);
-    const nextPhaseDate = new Date(sortedPhases[i + 1].date);
-    
-    if (currentDate >= phaseDate && currentDate < nextPhaseDate) {
-      currentPhase = sortedPhases[i];
-      nextPhase = sortedPhases[i + 1];
-      break;
-    }
-  }
-  
-  // Calculate simple progress between phases
-  const currentPhaseDate = new Date(currentPhase.date);
-  const nextPhaseDate = new Date(nextPhase.date);
-  const totalDays = (nextPhaseDate.getTime() - currentPhaseDate.getTime()) / (1000 * 60 * 60 * 24);
-  const daysPassed = (currentDate.getTime() - currentPhaseDate.getTime()) / (1000 * 60 * 60 * 24);
-  const progress = totalDays > 0 ? Math.max(0, Math.min(1, daysPassed / totalDays)) : 0;
-  
-  return {
-    phase: currentPhase.phase as 'New Moon' | 'First Quarter' | 'Full Moon' | 'Last Quarter',
-    percent: progress
-  };
-};
 
 export const getMoonPhaseForExactDate = (
   date: string, 
@@ -59,4 +18,102 @@ export const getEventsForDate = (
   summary: MonthlyAstronomicalSummary
 ) => {
   return summary.events?.filter(event => event.date === date) || [];
+};
+
+export const getMoonPhaseForDate = (targetDate: Date, summary: MonthlyAstronomicalSummary): MoonPhaseResult => {
+  const sortedPhases = summary.moonPhases?.sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  ) || [];
+  
+  if (sortedPhases.length === 0) return { phase: 'New Moon', percent: 0 };
+  
+  const dateString = targetDate.toISOString().split('T')[0];
+  
+  // Check for exact match - use percent: 0 for exact phase position
+  const exactMatch = sortedPhases.find(phase => phase.date === dateString);
+  if (exactMatch) {
+    console.log('📅 Exact match found:', { date: dateString, phase: exactMatch.phase, percent: 0 });
+    return { phase: exactMatch.phase as MoonPhaseResult['phase'], percent: 0 };
+  }
+  
+  // Find the phase before this date
+  let beforePhase = null;
+  let afterPhase = null;
+  
+  for (let i = 0; i < sortedPhases.length; i++) {
+    const phaseDate = new Date(sortedPhases[i].date);
+    if (targetDate >= phaseDate) {
+      beforePhase = sortedPhases[i];
+    } else {
+      afterPhase = sortedPhases[i];
+      break;
+    }
+  }
+  
+  // FIXED: Better handling of missing data
+  if (!beforePhase && afterPhase) {
+    // Date is before first known phase - estimate previous phase in cycle
+    const firstPhaseIndex = getPhaseIndex(afterPhase.phase);
+    const estimatedPhaseIndex = firstPhaseIndex === 0 ? 7 : firstPhaseIndex - 1;
+    const estimatedPhase = getAllPhaseNames()[estimatedPhaseIndex];
+    
+    console.log('📅 Before first phase, estimating:', { 
+      date: dateString, 
+      afterPhase: afterPhase.phase,
+      estimatedPhase 
+    });
+    return { phase: estimatedPhase, percent: 0.8 };
+  }
+  
+  if (beforePhase && !afterPhase) {
+    // Date is after last known phase - estimate next phase in cycle  
+    const lastPhaseIndex = getPhaseIndex(beforePhase.phase);
+    const estimatedPhaseIndex = (lastPhaseIndex + 1) % 8;
+    const estimatedPhase = getAllPhaseNames()[estimatedPhaseIndex];
+    
+    console.log('📅 After last phase, estimating:', { 
+      date: dateString, 
+      beforePhase: beforePhase.phase,
+      estimatedPhase 
+    });
+    return { phase: estimatedPhase, percent: 0.2 };
+  }
+  
+  if (!beforePhase || !afterPhase) {
+    return { phase: 'New Moon', percent: 0 };
+  }
+  
+  // Calculate progress between the two phases
+  const beforeDate = new Date(beforePhase.date);
+  const afterDate = new Date(afterPhase.date);
+  
+  const totalDays = (afterDate.getTime() - beforeDate.getTime()) / (1000 * 60 * 60 * 24);
+  const daysPassed = (targetDate.getTime() - beforeDate.getTime()) / (1000 * 60 * 60 * 24);
+  const progressPercent = totalDays > 0 ? Math.max(0, Math.min(1, daysPassed / totalDays)) : 0;
+  
+  console.log('📅 Interpolated phase:', {
+    date: dateString,
+    beforePhase: beforePhase.phase,
+    beforeDate: beforePhase.date,
+    afterPhase: afterPhase.phase,
+    afterDate: afterPhase.date,
+    totalDays,
+    daysPassed,
+    progressPercent: progressPercent.toFixed(3)
+  });
+  
+  return {
+    phase: beforePhase.phase as MoonPhaseResult['phase'],
+    percent: progressPercent
+  };
+};
+
+// Helper functions for the calendar
+const getAllPhaseNames = (): MoonPhaseResult['phase'][] => [
+  'New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous',
+  'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'
+];
+
+const getPhaseIndex = (phaseName: string): number => {
+  return getAllPhaseNames().indexOf(phaseName as MoonPhaseResult['phase']);
 };

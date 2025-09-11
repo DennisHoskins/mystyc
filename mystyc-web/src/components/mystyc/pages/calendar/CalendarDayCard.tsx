@@ -31,17 +31,23 @@ export default function CalendarDayCard({ energy, summary }: CalendarDayCardProp
     <Card className='flex flex-col !p-4 md:!p-10'>
       <div className='flex items-center hover:!no-underline'>
         <MoonPhaseIcon 
-          {...getMoonPhaseForDate(energy.date, summary)} 
+          {...getMoonPhaseForDate(new Date(energy.date), summary)} 
           size={16} 
           color="#FFFFFF" 
         />
         <Heading level={2} className='!text-white ml-2'>{getDayLabel(energy.date)}</Heading>
         {getMoonPhaseForExactDate(energy.date, summary) && (
-          <Text variant='xs' className='text-gray-500 !mt-2 ml-2'>
+          <Text variant='xs' className='text-gray-500 !mt-2 ml-2 hidden md:block'>
             {getMoonPhaseForExactDate(energy.date, summary)!.phase}
           </Text>
         )}
       </div>
+
+      {getMoonPhaseForExactDate(energy.date, summary) && (
+        <Text variant='xs' className='text-gray-500 md:hidden'>
+          {getMoonPhaseForExactDate(energy.date, summary)!.phase}
+        </Text>
+      )}
 
       {getEventsForDate(energy.date, summary).map((event, index) => (
         <Text key={index} className='!mt-1 text-gray-300'>

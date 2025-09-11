@@ -42,7 +42,6 @@ export class DailyEnergyService {
     timezone?: string
   ): Promise<DailyEnergyRangeResponse> {
     const effectiveTime = time || this.DEFAULT_TIME;
-    const parsedStartDate = new Date(startDate);
 
     // Get user profile for birth chart and location
     const userProfile = await this.userProfilesService.findByFirebaseUid(userId);
@@ -62,24 +61,32 @@ export class DailyEnergyService {
     const effectiveTimezone = timezone || userProfile.birthLocation.timezone.name;
     const coordinates = this.timezoneCoordsService.getCoordinatesForTimezone(effectiveTimezone);
 
+    // Parse the date in the user's timezone context
+    // This ensures "2025-01-13" means Jan 13th in THEIR timezone, not server timezone
+    const parsedStartDate = new Date(`${startDate}T12:00:00`); // Use noon to avoid DST issues
+    
     const days: DailyEnergy[] = [];
     
     logger.info('Calculating daily energy range', {
       userId,
       startDate,
       effectiveTime,
-      effectiveTimezone
+      effectiveTimezone,
+      parsedDate: parsedStartDate.toISOString()
     }, 'DailyEnergyService');
 
     // Calculate energy for 7 days starting from startDate
     for (let i = 0; i < 7; i++) {
+      // Create date in user's timezone context
       const currentDate = new Date(parsedStartDate);
       currentDate.setDate(parsedStartDate.getDate() + i);
+
+      const userLocalDate = new Date(currentDate.toLocaleString('en-US', { timeZone: effectiveTimezone }));      
 
       try {
         // Calculate cosmic energy for this day (all 5 planets)
         const cosmicAstrology = await this.astrologyService.calculateCoreAstrology(
-          currentDate,
+          userLocalDate,
           effectiveTime,
           effectiveTimezone,
           coordinates
@@ -98,14 +105,14 @@ export class DailyEnergyService {
         const planets = this.extractPlanetaryData(cosmicAstrology, cosmicChart, personalCompatibility.planetaryScores);
 
         days.push({
-          date: currentDate.toISOString().split('T')[0], // "2025-01-13"
+          date: userLocalDate.toISOString().split('T')[0], // "2025-01-13"
           cosmicTotalScore: Math.round(cosmicTotalScore * 100) / 100,
           personalTotalScore: Math.round(personalCompatibility.totalScore * 100) / 100,
           planets
         });
 
         logger.debug('Daily energy calculated', {
-          date: currentDate.toISOString().split('T')[0],
+          date: userLocalDate.toISOString().split('T')[0],
           cosmicScore: cosmicTotalScore,
           personalScore: personalCompatibility.totalScore
         }, 'DailyEnergyService');
@@ -113,7 +120,7 @@ export class DailyEnergyService {
       } catch (error) {
         logger.error('Failed to calculate daily energy for date', {
           userId,
-          date: currentDate.toISOString().split('T')[0],
+          date: userLocalDate.toISOString().split('T')[0],
           error
         }, 'DailyEnergyService');
         throw error;

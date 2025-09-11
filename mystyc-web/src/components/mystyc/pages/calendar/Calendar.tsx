@@ -4,6 +4,7 @@ import Panel from '@/components/ui/Panel';
 import Text from '@/components/ui/Text';
 import MoonPhaseIcon from '@/components/mystyc/ui/MoonPhaseIcon';
 import { Star } from 'lucide-react';
+import { getMoonPhaseForDate } from '@/util/moonPhaseUtils';
 
 interface CalendarProps {
   date: Date;
@@ -68,91 +69,6 @@ const Calendar: React.FC<CalendarProps> = ({ date, summary }) => {
     return eventMap;
   };
 
-  // Calculate moon phase for any given date
-  const getMoonPhaseForDate = (targetDate: Date, summary: MonthlyAstronomicalSummary) => {
-    //const dateString = targetDate.toISOString().split('T')[0];
-    const sortedPhases = summary.moonPhases?.sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    ) || [];
-    
-    if (sortedPhases.length === 0) return { phase: 'New Moon' as const, percent: 0 };
-    
-    // Map phase names to their position in the 0-1 cycle
-    const getPhaseValue = (phaseName: string): number => {
-      switch (phaseName) {
-        case 'New Moon': return 0;
-        case 'First Quarter': return 0.25;
-        case 'Full Moon': return 0.5;
-        case 'Last Quarter': return 0.75;
-        default: return 0;
-      }
-    };
-    
-    // Find the two phases this date falls between
-    let beforePhase = sortedPhases[sortedPhases.length - 1]; // Default to last phase of cycle
-    let afterPhase = sortedPhases[0];
-    
-    for (let i = 0; i < sortedPhases.length; i++) {
-      const phaseDate = new Date(sortedPhases[i].date);
-      if (targetDate >= phaseDate) {
-        beforePhase = sortedPhases[i];
-        afterPhase = sortedPhases[(i + 1) % sortedPhases.length];
-      } else {
-        break;
-      }
-    }
-    
-    const beforeDate = new Date(beforePhase.date);
-    const afterDate = new Date(afterPhase.date);
-    
-    // Handle month wrapping
-    if (afterDate <= beforeDate) {
-      afterDate.setMonth(afterDate.getMonth() + 1);
-    }
-    
-    const totalDays = (afterDate.getTime() - beforeDate.getTime()) / (1000 * 60 * 60 * 24);
-    const daysPassed = (targetDate.getTime() - beforeDate.getTime()) / (1000 * 60 * 60 * 24);
-    const progressPercent = totalDays > 0 ? Math.max(0, Math.min(1, daysPassed / totalDays)) : 0;
-    
-    const beforeValue = getPhaseValue(beforePhase.phase);
-    const afterValue = getPhaseValue(afterPhase.phase);
-    
-    // Handle cycle wrapping (e.g., Last Quarter 0.75 -> New Moon 0)
-    let phaseProgress;
-    if (afterValue < beforeValue) {
-      phaseProgress = beforeValue + progressPercent * ((1 - beforeValue) + afterValue);
-      if (phaseProgress >= 1) phaseProgress -= 1;
-    } else {
-      phaseProgress = beforeValue + progressPercent * (afterValue - beforeValue);
-    }
-    
-    // Convert back to phase name and percent for the component
-    let phaseName: 'New Moon' | 'First Quarter' | 'Full Moon' | 'Last Quarter';
-    let phasePercent: number;
-    
-    if (phaseProgress < 0.125) {
-      phaseName = 'New Moon';
-      phasePercent = phaseProgress * 8; // 0-1 within this phase
-    } else if (phaseProgress < 0.375) {
-      phaseName = 'First Quarter';
-      phasePercent = (phaseProgress - 0.125) * 4; // 0-1 within this phase
-    } else if (phaseProgress < 0.625) {
-      phaseName = 'Full Moon';
-      phasePercent = (phaseProgress - 0.375) * 4; // 0-1 within this phase
-    } else if (phaseProgress < 0.875) {
-      phaseName = 'Last Quarter';
-      phasePercent = (phaseProgress - 0.625) * 4; // 0-1 within this phase
-    } else {
-      phaseName = 'New Moon';
-      phasePercent = (phaseProgress - 0.875) * 8; // 0-1 within this phase
-    }
-    
-    return {
-      phase: phaseName,
-      percent: phasePercent
-    };
-  };
-
   const formatDateKey = (date: Date): string => {
     return date.toISOString().split('T')[0];
   };
@@ -181,11 +97,16 @@ const Calendar: React.FC<CalendarProps> = ({ date, summary }) => {
           const dayEvents = eventMap.get(dateKey);
           const hasOtherEvent = dayEvents?.event;
           const moonPhase = getMoonPhaseForDate(calendarDay.date, summary);
+
+          const today = new Date();
+          const isToday = calendarDay.date.toDateString() === today.toDateString();
           
           return (
             <Panel 
               key={index} 
-              className="!p-0 !rounded-none aspect-square flex flex-col items-center justify-center min-h-[60px]"
+              className={`!p-0 !rounded-none aspect-square flex flex-col items-center justify-center min-h-[60px] ${
+                isToday ? 'border-1 border-gray-400' : ''
+              }`}
             >
               <Text 
                 variant="small" 

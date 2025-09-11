@@ -1,53 +1,14 @@
 import React from 'react';
 
-type PhaseName = 'New Moon' | 'First Quarter' | 'Full Moon' | 'Last Quarter';
-
-interface PhaseType {
-  name: PhaseName;
-  targetAngle: number;
-}
+type PhaseName = 'New Moon' | 'Waxing Crescent' | 'First Quarter' | 'Waxing Gibbous' | 
+                 'Full Moon' | 'Waning Gibbous' | 'Last Quarter' | 'Waning Crescent';
 
 interface MoonPhaseIconProps {
   phase?: PhaseName;
   percent?: number;
   size?: number;
   color?: string;
-  border?: string;
 }
-
-const phaseTypes: PhaseType[] = [
-  { name: 'New Moon', targetAngle: 0 },
-  { name: 'First Quarter', targetAngle: 90 },
-  { name: 'Full Moon', targetAngle: 180 },
-  { name: 'Last Quarter', targetAngle: 270 }
-];
-
-const getNormalizedPhase = (phase: number): number => (phase <= 0.5 ? phase : 1 - phase);
-
-const getRotationRad = (phase: number): number => {
-  const normalizedPhase = getNormalizedPhase(phase);
-  const rad = (Math.PI * normalizedPhase) / 0.5;
-  return rad;
-};
-
-const convertToPhaseValue = (phaseName: PhaseName, percent: number): number => {
-  const currentPhase = phaseTypes.find(p => p.name === phaseName);
-  if (!currentPhase) return 0;
-  
-  const currentIndex = phaseTypes.indexOf(currentPhase);
-  const nextIndex = (currentIndex + 1) % phaseTypes.length;
-  
-  // Convert angles to 0-1 scale (360° = 1.0)
-  const currentAngle = currentPhase.targetAngle / 360;
-  const nextAngle = phaseTypes[nextIndex].targetAngle / 360;
-  
-  // Handle wrapping from Last Quarter (270°) to New Moon (0°)
-  const angleDiff = nextAngle >= currentAngle ? 
-    nextAngle - currentAngle : 
-    (1 - currentAngle) + nextAngle;
-  
-  return currentAngle + (percent * angleDiff);
-};
 
 const MoonPhaseIcon: React.FC<MoonPhaseIconProps> = ({ 
   phase = 'New Moon', 
@@ -55,64 +16,83 @@ const MoonPhaseIcon: React.FC<MoonPhaseIconProps> = ({
   size = 24, 
   color = '#ffffff',
 }) => {
+  // Convert phase to 0-1 value for rendering
+  const convertToPhaseValue = (phaseName: PhaseName, percent: number): number => {
+    const phasePositions: Record<PhaseName, number> = {
+      'New Moon': 0,
+      'Waxing Crescent': 0.125,
+      'First Quarter': 0.25,
+      'Waxing Gibbous': 0.375,
+      'Full Moon': 0.5,
+      'Waning Gibbous': 0.625,
+      'Last Quarter': 0.75,
+      'Waning Crescent': 0.875
+    };
+
+    const phases: PhaseName[] = [
+      'New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous',
+      'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'
+    ];
+
+    const currentIndex = phases.indexOf(phaseName);
+    const nextIndex = (currentIndex + 1) % 8;
+    
+    const current = phasePositions[phaseName];
+    const next = phasePositions[phases[nextIndex]];
+    
+    // Handle wrap from Waning Crescent back to New Moon
+    if (phaseName === 'Waning Crescent') {
+      const result = current + (percent * (1 - current));
+      console.log(`Moon: ${phaseName} ${percent.toFixed(2)} -> ${result.toFixed(3)}`);
+      return result >= 1 ? 0 : result;
+    }
+    
+    const result = current + (percent * (next - current));
+    console.log(`Moon: ${phaseName} ${percent.toFixed(2)} -> ${result.toFixed(3)}`);
+    return result;
+  };
+
   const phaseValue = convertToPhaseValue(phase, percent);
+
+  // FIXED: Proper shadow positioning for full lunar cycle
+  let shadowOffset;
   
+  if (phaseValue <= 0.5) {
+    // Waxing: illuminated area grows from right side
+    // Shadow (illuminated circle) moves from far right to center
+    shadowOffset = size - (phaseValue * size * 2);
+  } else {
+    // Waning: illuminated area shrinks from right side  
+    // Shadow (illuminated circle) moves from center to far left
+    shadowOffset = -((phaseValue - 0.5) * size * 2);
+  }
+
   const wrapperStyle: React.CSSProperties = {
     display: 'flex',
     position: 'relative',
-    backgroundColor: 'transparent',
     width: `${size}px`,
     height: `${size}px`,
     borderRadius: '50%',
     border: `0.5px solid ${color}`,
+    backgroundColor: 'black',
+    overflow: 'hidden',
     boxSizing: 'content-box',
   };
   
-  const halfStyle: React.CSSProperties = {
-    width: '100%',
-    overflow: 'hidden'
-  };
-  
-  const circleStyle: React.CSSProperties = {
+  const shadowStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: '50%',
     width: `${size}px`,
     height: `${size}px`,
     backgroundColor: color,
     borderRadius: '50%',
-  };
-  
-  const differenceStyle: React.CSSProperties = {
-    position: 'absolute',
-    zIndex: 1,
-    left: '50%',
-    width: `${size}px`,
-    height: `${size}px`,
-    borderRadius: '50%',
-    backgroundColor: 0.5 / getNormalizedPhase(phaseValue) > 2 ? 'transparent' : color,
-    transform: `translateX(-50%) rotateY(${getRotationRad(phaseValue)}rad)`
+    transform: `translateX(calc(-50% + ${shadowOffset}px))`,
   };
   
   return (
     <div style={wrapperStyle}>
-      <div 
-        style={{
-          ...halfStyle,
-          opacity: phaseValue >= 0.5 ? 1 : 0
-        }}
-      >
-        <div style={circleStyle} />
-      </div>
-      
-      <div style={differenceStyle} />
-      
-      <div 
-        style={{
-          ...halfStyle,
-          transform: 'scaleX(-1)',
-          opacity: phaseValue <= 0.5 ? 1 : 0
-        }}
-      >
-        <div style={circleStyle} />
-      </div>
+      <div style={shadowStyle} />
     </div>
   );
 };

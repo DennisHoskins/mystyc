@@ -188,9 +188,13 @@ export class AstronomicalEventsService {
     // Find all moon phases in this month
     const phaseTypes = [
       { name: 'New Moon' as const, targetAngle: 0 },
+      { name: 'Waxing Crescent' as const, targetAngle: 45 },
       { name: 'First Quarter' as const, targetAngle: 90 },
+      { name: 'Waxing Gibbous' as const, targetAngle: 135 },
       { name: 'Full Moon' as const, targetAngle: 180 },
-      { name: 'Last Quarter' as const, targetAngle: 270 }
+      { name: 'Waning Gibbous' as const, targetAngle: 225 },
+      { name: 'Last Quarter' as const, targetAngle: 270 },
+      { name: 'Waning Crescent' as const, targetAngle: 315 }
     ];
 
     for (const phaseType of phaseTypes) {

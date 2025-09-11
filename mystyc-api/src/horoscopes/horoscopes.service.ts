@@ -39,7 +39,7 @@ export class HoroscopesService {
     timezone?: string
   ): Promise<Horoscope> {
     const effectiveTime = time || this.DEFAULT_HOROSCOPE_TIME;
-    const parsedDate = new Date(date);
+    const parsedDate = new Date(`${date}T12:00:00`);    
 
     // Get user profile for birth chart and location
     const userProfile = await this.userProfilesService.findByFirebaseUid(userId);
@@ -117,7 +117,6 @@ export class HoroscopesService {
         time,
         timezone,
         coordinates
-        // Use default (all planets) for complete cosmic chart
       );
 
       // 2. Calculate cosmic chart total score (how well cosmic planets work together)
