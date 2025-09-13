@@ -227,9 +227,27 @@ export default function ProfilePage() {
           </div>
 
           <div className='flex flex-col space-y-4 md:col-span-2'>
-            <div className='hidden md:visible'>
+            <div className='hidden md:block'>
               <StarChartPanel data={astrologyData.user.userProfile.astrology!} size={350} label='Your Birth Star Chart'/>
             </div>
+            <KeywordsPanel
+              keywords={[
+                ...(astrologyData.astrology.sun.positionData.keywords || []),
+                ...(astrologyData.astrology.moon.positionData.keywords || []),
+                ...(astrologyData.astrology.rising.positionData.keywords || []),
+                ...(astrologyData.astrology.venus.positionData.keywords || []),
+                ...(astrologyData.astrology.mars.positionData.keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["sun-moon"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["sun-rising"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["sun-venus"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["sun-mars"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["moon-rising"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["moon-venus"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["moon-mars"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["rising-venus"].keywords || []),
+                ...(astrologyData.astrology.planetaryInteractions["rising-mars"].keywords || []),
+              ]}
+            />
             <ProfileElementsPanel 
               elementData={[
                 astrologyData.astrology.sun.signData.elementData!,
@@ -259,24 +277,6 @@ export default function ProfilePage() {
                 ]} 
               />
             </Panel>
-            <KeywordsPanel
-              keywords={[
-                ...(astrologyData.astrology.sun.positionData.keywords || []),
-                ...(astrologyData.astrology.moon.positionData.keywords || []),
-                ...(astrologyData.astrology.rising.positionData.keywords || []),
-                ...(astrologyData.astrology.venus.positionData.keywords || []),
-                ...(astrologyData.astrology.mars.positionData.keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["sun-moon"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["sun-rising"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["sun-venus"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["sun-mars"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["moon-rising"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["moon-venus"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["moon-mars"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["rising-venus"].keywords || []),
-                ...(astrologyData.astrology.planetaryInteractions["rising-mars"].keywords || []),
-              ]}
-            />
           </div>
         </div>
       </div>

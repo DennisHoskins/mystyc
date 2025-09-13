@@ -50,7 +50,7 @@ export async function getWeeklyEnergy(params: {
       throw new Error(`Failed to fetch weekly energy: No Auth Token`);
     }
 
-    const dateString = params.date.toISOString().split('T')[0];
+    const dateString = `${params.date.getFullYear()}-${String(params.date.getMonth() + 1).padStart(2, '0')}-${String(params.date.getDate()).padStart(2, '0')}`;
     
     // Build query string with timezone
     const queryParams = new URLSearchParams({
@@ -58,7 +58,7 @@ export async function getWeeklyEnergy(params: {
     });
     
     const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/horoscopes/week/${dateString}?${queryParams}`;
-    
+
     const nestResponse = await fetch(url, {
       method: 'GET',
       headers: {

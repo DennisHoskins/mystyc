@@ -32,7 +32,6 @@ export const getMoonPhaseForDate = (targetDate: Date, summary: MonthlyAstronomic
   // Check for exact match - use percent: 0 for exact phase position
   const exactMatch = sortedPhases.find(phase => phase.date === dateString);
   if (exactMatch) {
-    console.log('📅 Exact match found:', { date: dateString, phase: exactMatch.phase, percent: 0 });
     return { phase: exactMatch.phase as MoonPhaseResult['phase'], percent: 0 };
   }
   
@@ -56,12 +55,6 @@ export const getMoonPhaseForDate = (targetDate: Date, summary: MonthlyAstronomic
     const firstPhaseIndex = getPhaseIndex(afterPhase.phase);
     const estimatedPhaseIndex = firstPhaseIndex === 0 ? 7 : firstPhaseIndex - 1;
     const estimatedPhase = getAllPhaseNames()[estimatedPhaseIndex];
-    
-    console.log('📅 Before first phase, estimating:', { 
-      date: dateString, 
-      afterPhase: afterPhase.phase,
-      estimatedPhase 
-    });
     return { phase: estimatedPhase, percent: 0.8 };
   }
   
@@ -70,12 +63,6 @@ export const getMoonPhaseForDate = (targetDate: Date, summary: MonthlyAstronomic
     const lastPhaseIndex = getPhaseIndex(beforePhase.phase);
     const estimatedPhaseIndex = (lastPhaseIndex + 1) % 8;
     const estimatedPhase = getAllPhaseNames()[estimatedPhaseIndex];
-    
-    console.log('📅 After last phase, estimating:', { 
-      date: dateString, 
-      beforePhase: beforePhase.phase,
-      estimatedPhase 
-    });
     return { phase: estimatedPhase, percent: 0.2 };
   }
   
@@ -90,17 +77,6 @@ export const getMoonPhaseForDate = (targetDate: Date, summary: MonthlyAstronomic
   const totalDays = (afterDate.getTime() - beforeDate.getTime()) / (1000 * 60 * 60 * 24);
   const daysPassed = (targetDate.getTime() - beforeDate.getTime()) / (1000 * 60 * 60 * 24);
   const progressPercent = totalDays > 0 ? Math.max(0, Math.min(1, daysPassed / totalDays)) : 0;
-  
-  console.log('📅 Interpolated phase:', {
-    date: dateString,
-    beforePhase: beforePhase.phase,
-    beforeDate: beforePhase.date,
-    afterPhase: afterPhase.phase,
-    afterDate: afterPhase.date,
-    totalDays,
-    daysPassed,
-    progressPercent: progressPercent.toFixed(3)
-  });
   
   return {
     phase: beforePhase.phase as MoonPhaseResult['phase'],

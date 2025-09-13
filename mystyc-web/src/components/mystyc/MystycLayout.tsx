@@ -21,7 +21,7 @@ export default function MystycLayout({ children }: { children: React.ReactNode }
             {children}
           </Main>
         </div>
-        <div className='mb-24 md:mb-0'>
+        <div className={`${user && user.isOnboard ? 'mb-24' : ''} md:mb-0`}>
           <MystycFooter user={user} />
         </div>          
       </ScrollWrapper>

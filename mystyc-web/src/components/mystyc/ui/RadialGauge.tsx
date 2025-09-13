@@ -67,13 +67,13 @@ const RadialGauge: React.FC<RadialGaugeProps> = ({
       </div>
       
       {showPercentage && (
-        <div className="text-center">
+        <div className="items-center w-full flex justify-center">
           <div
             className={`
               absolute inset-0 flex items-center justify-center text-xl font-bold
               md:${inline 
                 ? 'absolute inset-0 flex items-center justify-center text-md font-bold' 
-                : 'relative md:inset-auto md:text-2xl md:mt-2 font-bold block'
+                : 'relative md:inset-auto md:text-2xl md:mt-4 font-bold block'
               }
             `}
             style={{ color }}
@@ -81,8 +81,8 @@ const RadialGauge: React.FC<RadialGaugeProps> = ({
             {percentage}%
           </div>
 
-          {!inline &&
-            <div className={`${inline ? 'text-xs' : 'text-sm'} text-gray-600 hidden md:block`}>
+          {(!inline && label.length) &&
+            <div className={`${inline ? 'text-xs' : 'text-sm'} text-gray-600 hidden md:block -mt-10`}>
               {label}
             </div>
           }

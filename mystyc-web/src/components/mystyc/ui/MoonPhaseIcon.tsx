@@ -43,18 +43,15 @@ const MoonPhaseIcon: React.FC<MoonPhaseIconProps> = ({
     // Handle wrap from Waning Crescent back to New Moon
     if (phaseName === 'Waning Crescent') {
       const result = current + (percent * (1 - current));
-      console.log(`Moon: ${phaseName} ${percent.toFixed(2)} -> ${result.toFixed(3)}`);
       return result >= 1 ? 0 : result;
     }
     
     const result = current + (percent * (next - current));
-    console.log(`Moon: ${phaseName} ${percent.toFixed(2)} -> ${result.toFixed(3)}`);
     return result;
   };
 
   const phaseValue = convertToPhaseValue(phase, percent);
 
-  // FIXED: Proper shadow positioning for full lunar cycle
   let shadowOffset;
   
   if (phaseValue <= 0.5) {

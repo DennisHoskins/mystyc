@@ -53,7 +53,7 @@ export default function PasswordResetPage() {
           <>
             Don&apos;t worry. These things happen.
             <br />
-            Enter your email address we will send you a link to set a new one.
+            Enter your email address we will send you a link to set a new one...
           </>
         }
         error={error}

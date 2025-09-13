@@ -34,7 +34,7 @@ export default function CalendarPage() {
       const today = new Date();
       const startDate = new Date(today);
       startDate.setDate(today.getDate() - 3);
-      
+
       const energy = await getWeeklyEnergy({
         deviceInfo,
         date: startDate

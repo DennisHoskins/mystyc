@@ -112,6 +112,7 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
           </div>
 
           <div className='flex flex-col space-y-4 md:col-span-2'>
+            <KeywordsPanel sign={signData} />
             <ModalityDetailsPanel modality={signData?.modalityData} />
             <PolarityDetailsPanel polarity={signData?.polarityData} />
             <Panel className='!p-4 md:!p-10'>
@@ -124,7 +125,6 @@ export default function SignPage({ sign } : { sign: ZodiacSignType }) {
                 ]} 
               />
             </Panel>
-            <KeywordsPanel sign={signData} />
           </div>
         </div>
       </div>
