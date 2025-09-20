@@ -1,0 +1,33 @@
+{
+  "name": "Taurus",
+  "degrees" : 11,
+  "stars": [
+    {"id": "Elnath", "x": 0.09, "y": 0, "brightness": 0.6, "size": 1},
+    {"id": "Tau Tauri", "x": 0.32, "y": 0.20, "brightness": 1, "size": 2},
+    {"id": "Ain", "x": 0.48, "y": 0.40, "brightness": 0.6, "size": 1},
+    {"id": "Aldebaran", "x": 0.26, "y": 0.52, "brightness": 1, "size": 2},
+    {"id": "Zeta Tauri", "x": 0, "y": 0.38, "brightness": 0.6, "size": 1},
+    {"id": "Hyadum I", "x": 0.55, "y": 0.6, "brightness": 0.6, "size": 1},
+    {"id": "Hyadum II", "x": 0.52, "y": 0.47, "brightness": 0.6, "size": 1},
+    {"id": "Lambda Tauri", "x": 0.65, "y": 0.68, "brightness": 0.6, "size": 1},
+    {"id": "Mu Tauri", "x": 0.5, "y": 0.9, "brightness": 0.6, "size": 1},
+    {"id": "Nu Tauri", "x": 0.7, "y": 1, "brightness": 0.6, "size": 1},
+    {"id": "Theta Tauri", "x": 0.42, "y": 0.60, "brightness": 0.6, "size": 1},
+    {"id": "Xi Tauri", "x": 0.9, "y": 0.6, "brightness": 0.6, "size": 1},
+    {"id": "Omicron Tauri", "x": 1, "y": 0.7, "brightness": 0.6, "size": 1}
+  ],
+  "lines": [
+    ["Elnath", "Tau Tauri"],
+    ["Tau Tauri", "Ain"],
+    ["Aldebaran", "Zeta Tauri"],
+    ["Hyadum I", "Hyadum II"],
+    ["Hyadum I", "Lambda Tauri"],
+    ["Lambda Tauri", "Mu Tauri"],
+    ["Nu Tauri", "Mu Tauri"],
+    ["Aldebaran", "Theta Tauri"],
+    ["Theta Tauri", "Hyadum I"],
+    ["Ain", "Hyadum II"],
+    ["Lambda Tauri", "Xi Tauri"],
+    ["Xi Tauri", "Omicron Tauri"]
+  ]
+}

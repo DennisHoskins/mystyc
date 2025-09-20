@@ -1,0 +1,67 @@
+.plus {
+  opacity: 1;
+}
+
+.loginPlus {
+  transform-origin: center center;
+  animation: loginPlusSparkle 0.75s ease-out forwards;
+  animation-delay: 1.25s;
+}
+
+.upgrade {
+  opacity: 0;
+  transform-origin: center center;
+  animation: upgradeSparkle 0.75s ease-out forwards;
+  animation-delay: 1s;
+}
+
+.downgrade {
+  opacity: 1;
+  transform-origin: center center;
+  animation: downgradeSparkle 0.75s ease-out forwards;
+}
+
+@keyframes loginPlusSparkle {
+  0% {
+    opacity: 0;
+    transform: translateX(0) translateY(0) scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-1px) translateY(1px) scale(1.5) rotate(180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1) rotate(360deg);
+  }
+}
+
+@keyframes upgradeSparkle {
+  0% {
+    opacity: 0;
+    transform: translateX(0) translateY(0) scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-1px) translateY(1px) scale(1.5) rotate(180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1) rotate(360deg);
+  }
+}
+
+@keyframes downgradeSparkle {
+  0% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-1px) translateY(1px) scale(1.5) rotate(-180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0) translateY(0) scale(0) rotate(-360deg);
+  }
+}

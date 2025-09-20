@@ -1,0 +1,15 @@
+{
+  "name": "Aries",
+  "degrees" : 12.5,
+  "stars": [
+    {"id": "41-Ari", "x": 0, "y": 0, "brightness": 0.8, "size": 1.5},
+    {"id": "Hamal", "x": 0.76, "y": 0.48, "brightness": 1, "size": 2},
+    {"id": "Sheratan", "x": 0.98, "y": 0.81, "brightness": 0.8, "size": 1.5},
+    {"id": "Mesarthim", "x": 1, "y": 1, "brightness": 0.8, "size": 1.5}
+  ],
+  "lines": [
+    ["41-Ari", "Hamal"],
+    ["Hamal", "Sheratan"],
+    ["Sheratan", "Mesarthim"]
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "Aquarius",
+  "degrees" : 17.5,
+  "stars": [
+    {"id": "Phil Aquarii", "x": 0, "y": 0.14, "brightness": 0.8, "size": 1},
+    {"id": "Lambda Aquarii", "x": 0.23, "y": 0.25, "brightness": 0.8, "size": 1.5},
+    {"id": "Tau Aquarii", "x": 0.20, "y": 0.55, "brightness": 1, "size": 2},
+    {"id": "Delta Aquarii / Skat", "x": 0.14, "y": 0.70, "brightness": 0.8, "size": 1.5},
+    {"id": "88 Aquarii", "x": 0, "y": 1, "brightness": 1, "size": 2},
+    {"id": "Eta Aquarii", "x": 0.22, "y": 0, "brightness": 0.6, "size": 1},
+    {"id": "Zeta Aquarii", "x": 0.33, "y": 0.03, "brightness": 0.6, "size": 1},
+    {"id": "Sadachbia", "x": 0.39, "y": 0.13, "brightness": 0.6, "size": 1},
+    {"id": "Sadalmelik", "x": 0.65, "y": 0.08, "brightness": 1, "size": 2},
+    {"id": "Ancha", "x": 0.45, "y": 0.39, "brightness": 0.8, "size": 1.5},
+    {"id": "38 Auqarii", "x": 0.49, "y": 0.54, "brightness": 0.8, "size": 1},
+    {"id": "Iota Auqarii", "x": 0.55, "y": 0.75, "brightness": 0.8, "size": 1},
+    {"id": "Sadalsuud", "x": 0.78, "y": 0.46, "brightness": 1, "size": 2},
+    {"id": "Al Bali", "x": 1, "y": 0.8, "brightness": 0.6, "size": 1}
+  ],
+  "lines": [
+    ["Phil Aquarii", "Lambda Aquarii"],
+    ["Lambda Aquarii", "Tau Aquarii"],
+    ["Tau Aquarii", "Delta Aquarii / Skat"],
+    ["88 Aquarii", "Delta Aquarii / Skat"],
+    ["Sadalsuud", "Sadalmelik"],
+    ["Sadalmelik", "Sadachbia"],
+    ["Sadachbia", "Zeta Aquarii"],
+    ["Zeta Aquarii", "Eta Aquarii"],
+    ["Eta Aquarii", "Phil Aquarii"],
+    ["Sadalmelik", "Ancha"],
+    ["Ancha", "38 Auqarii"],
+    ["38 Auqarii", "Iota Auqarii"],
+    ["Al Bali", "Sadalsuud"]
+  ]
+}

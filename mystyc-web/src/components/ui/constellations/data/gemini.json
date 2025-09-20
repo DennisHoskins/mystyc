@@ -1,0 +1,43 @@
+{
+  "name": "Gemini",
+  "degrees" : 12.5,
+  "stars": [
+    {"id": "Alhena", "x": 0.67, "y": 0.83, "brightness": 0.8, "size": 1.5},
+    {"id": "Mekbuta", "x": 0.41, "y": 0.64, "brightness": 0.6, "size": 1},
+    {"id": "Wasat", "x": 0.25, "y": 0.57, "brightness": 0.6, "size": 1},
+    {"id": "Lambda Geminorum", "x": 0.27, "y": 0.83, "brightness": 0.6, "size": 1},
+    {"id": "Alzirr", "x": 0.59, "y": 1, "brightness": 0.6, "size": 1},
+    {"id": "Upsilon Geminorum", "x": 0.09, "y": 0.34, "brightness": 0.6, "size": 1},
+    {"id": "Kappa Geminorum", "x": 0.01, "y": 0.45, "brightness": 0.6, "size": 1},
+    {"id": "Pollux", "x": 0, "y": 0.28, "brightness": 1, "size": 2},
+    {"id": "Propus", "x": 0.19, "y": 0.29, "brightness": 0.6, "size": 1},
+    {"id": "Tau Geminorum", "x": 0.34, "y": 0.18, "brightness": 0.6, "size": 1},
+    {"id": "Rho Geminorum", "x": 0.19, "y": 0.09, "brightness": 0.6, "size": 1},
+    {"id": "Castor", "x": 0.11, "y": 0.1, "brightness": 1, "size": 2},
+    {"id": "Theta Geminorum", "x": 0.52, "y": 0, "brightness": 0.6, "size": 1},
+    {"id": "Msbsuta", "x": 0.61, "y": 0.42, "brightness": 0.8, "size": 1.5},
+    {"id": "Nu Geminorum", "x": 0.75, "y": 0.65, "brightness": 0.6, "size": 1},
+    {"id": "Tejat Posterior", "x": 0.81, "y": 0.54, "brightness": 0.6, "size": 1},
+    {"id": "Eta Geminorum", "x": 0.89, "y": 0.54, "brightness": 0.6, "size": 1},
+    {"id": "M35", "x": 1, "y": 0.51, "brightness": 0.6, "size": 1}
+  ],
+  "lines": [
+    ["Alhena", "Mekbuta"],
+    ["Mekbuta", "Wasat"],
+    ["Wasat", "Lambda Geminorum"],
+    ["Lambda Geminorum", "Alzirr"],
+    ["Wasat", "Upsilon Geminorum"],
+    ["Upsilon Geminorum", "Kappa Geminorum"],
+    ["Upsilon Geminorum", "Pollux"],
+    ["Upsilon Geminorum", "Propus"],
+    ["Propus", "Tau Geminorum"],
+    ["Rho Geminorum", "Castor"],
+    ["Tau Geminorum", "Rho Geminorum"],
+    ["Tau Geminorum", "Theta Geminorum"],
+    ["Tau Geminorum", "Msbsuta"],
+    ["Msbsuta", "Nu Geminorum"],
+    ["Msbsuta", "Tejat Posterior"],
+    ["Tejat Posterior", "Eta Geminorum"],
+    ["Eta Geminorum", "M35"]
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Cancer",
+  "degrees" : 17.5,
+  "stars": [
+    {"id": "Iota Cancari", "x": 0.28, "y": 0, "brightness": 0.8, "size": 2},
+    {"id": "Arsellus Borealis", "x": 0.42, "y": 0.35, "brightness": 0.6, "size": 1},
+    {"id": "Arsellus Australis", "x": 0.45, "y": 0.54, "brightness": 1, "size": 2},
+    {"id": "Acubens", "x": 1, "y": 1, "brightness": 0.6, "size": 1},
+    {"id": "Altarf", "x": 0.1, "y": 0.86, "brightness": 1, "size": 2}
+  ],
+  "lines": [
+    ["Iota Cancari", "Arsellus Borealis"],
+    ["Arsellus Borealis", "Arsellus Australis"],
+    ["Arsellus Australis", "Acubens"],
+    ["Arsellus Australis", "Altarf"]
+  ]
+}
