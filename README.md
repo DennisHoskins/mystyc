@@ -1,5 +1,6 @@
 # Mystyc.app
 [Live Site](https://mystyc.app)
+
 Full-stack astrology application providing personalized birth charts, daily horoscopes, and AI-generated astrological insights.
 
 
