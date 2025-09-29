@@ -1,0 +1,22 @@
+{
+  "name": "Libra",
+  "degrees" : 14,
+  "stars": [
+    {"id": "Zuben Elschemali", "x": 0.58, "y": 0, "brightness": 0.6, "size": 1},
+    {"id": "Theta Librae", "x": 0.15, "y": 1, "brightness": 0.6, "size": 1},
+    {"id": "Upsilon Librae", "x": 0.19, "y": 0.85, "brightness": 1, "size": 2},
+    {"id": "Zuben Elakrab", "x": 0.19, "y": 0.19, "brightness": 1, "size": 2},
+    {"id": "Zuben Elgenubi", "x": 0.9, "y": 0.30, "brightness": 1, "size": 2},
+    {"id": "Brachium", "x": 0.79, "y": 0.8, "brightness": 0.6, "size": 1},
+    {"id": "Tau Libre", "x": 0.88, "y": 0.9, "brightness": 0.6, "size": 1}
+  ],
+  "lines": [
+    ["Upsilon Librae", "Theta Librae"],
+    ["Upsilon Librae", "Zuben Elakrab"],
+    ["Zuben Elakrab", "Zuben Elschemali"],
+    ["Zuben Elschemali", "Zuben Elgenubi"],
+    ["Zuben Elgenubi", "Brachium"],
+    ["Zuben Elgenubi", "Zuben Elakrab"],
+    ["Brachium", "Tau Libre"]
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Leo",
+  "degrees" : 18,
+  "stars": [
+    {"id": "Denebola", "x": 0, "y": 0.81, "brightness": 1, "size": 2},
+    {"id": "Chertan", "x": 0.28, "y": 0.75, "brightness": 0.8, "size": 1.5},
+    {"id": "Regulus", "x": 0.82, "y": 1, "brightness": 1, "size": 2},
+    {"id": "Al Jabhah", "x": 0.83, "y": 0.66, "brightness": 0.6, "size": 1},
+    {"id": "Algieba", "x": 0.72, "y": 0.44, "brightness": 0.6, "size": 1},
+    {"id": "Zosma", "x": 0.28, "y": 0.39, "brightness": 0.8, "size": 1.5},
+    {"id": "Adhafera", "x": 0.75, "y": 0.18, "brightness": 0.6, "size": 1},
+    {"id": "Rasalas", "x": 0.94, "y": 0, "brightness": 0.6, "size": 1},
+    {"id": "Algenubi", "x": 1, "y": 0.16, "brightness": 0.6, "size": 1}
+  ],
+  "lines": [
+    ["Denebola", "Chertan"],
+    ["Chertan", "Regulus"],
+    ["Regulus", "Al Jabhah"],
+    ["Al Jabhah", "Algieba"],
+    ["Algieba", "Zosma"],
+    ["Zosma", "Denebola"],
+    ["Algieba", "Adhafera"],
+    ["Adhafera", "Rasalas"],
+    ["Rasalas", "Algenubi"],
+    ["Zosma", "Chertan"]
+  ]
+}

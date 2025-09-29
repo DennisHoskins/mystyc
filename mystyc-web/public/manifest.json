@@ -1,0 +1,33 @@
+{
+  "name": "Mystyc - Daily Horoscope & Personalized Astrology Readings",
+  "short_name": "Mystyc",
+  "description": "Let the stars be your guide - personalized daily horoscopes, birth chart analysis, and astrological insights.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#331944",
+  "background_color": "#331944",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["lifestyle", "entertainment", "wellness"],
+  "icons": [
+    {
+      "src": "/favicon/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon/favicon-512x512.png",
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

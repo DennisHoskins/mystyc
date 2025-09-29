@@ -1,0 +1,62 @@
+.icon {
+  color: white;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1))
+          drop-shadow(0 0 25px rgba(255, 255, 255, 0.25));
+}
+
+.eyeWorking {
+  animation: ping-eye 1.2s cubic-bezier(0, 0.25, 0.75, 1) infinite;
+}
+
+@keyframes ping-eye {
+  0% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+  75% {
+    transform: scale(1.75);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.75);
+    opacity: 0.25;
+  }
+}
+
+
+.animatePingSoft {
+  animation: ping-soft 1.2s cubic-bezier(0, 0.25, 0.75, 1) infinite;
+}
+
+@keyframes ping-soft {
+  0% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+  75% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0.1;
+  }
+}
+
+.fadeIn {
+  animation: fade-in 300ms ease-out forwards;
+}
+
+.fadeOut {
+  animation: fade-out 300ms ease-out forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}

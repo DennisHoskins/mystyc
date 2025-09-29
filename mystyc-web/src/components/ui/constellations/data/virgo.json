@@ -1,0 +1,30 @@
+{
+  "name": "Virgo",
+  "degrees" : 15.5,
+  "stars": [
+    {"id": "Zavijava", "x": 1, "y": 0.3, "brightness": 1, "size": 2},
+    {"id": "Zaniah", "x": 0.82, "y": 0.53, "brightness": 0.6, "size": 1},
+    {"id": "Porrima", "x": 0.69, "y": 0.56, "brightness": 1, "size": 2},
+    {"id": "Spica", "x": 0.55, "y": 0.84, "brightness": 1, "size": 2},
+    {"id": "Syrma", "x": 0.17, "y": 0.87, "brightness": 0.6, "size": 1},
+    {"id": "Rijl al Awwa", "x": 0.02, "y": 0.75, "brightness": 1, "size": 2},
+    {"id": "Heze", "x": 0.4, "y": 0.52, "brightness": 1, "size": 2},
+    {"id": "v-1", "x": 0.25, "y": 0.43, "brightness": 0.6, "size": 1},
+    {"id": "v-0", "x": 0, "y": 0.41, "brightness": 0.6, "size": 1},
+    {"id": "Auva", "x": 0.61, "y": 0.34, "brightness": 0.6, "size": 1},
+    {"id": "Vindieamatrix", "x": 0.58, "y": 0, "brightness": 0.6, "size": 1}
+  ],
+  "lines": [
+    ["Zavijava", "Zaniah"],
+    ["Zaniah", "Porrima"],
+    ["Porrima", "Spica"],
+    ["Spica", "Syrma"],
+    ["Syrma", "Rijl al Awwa"],
+    ["Spica", "Heze"],
+    ["Heze", "v-1"],
+    ["v-1", "v-0"],
+    ["Heze", "Auva"],
+    ["Auva", "Vindieamatrix"],
+    ["Auva", "Porrima"]
+  ]
+}

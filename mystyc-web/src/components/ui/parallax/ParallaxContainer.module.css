@@ -1,0 +1,89 @@
+.parallaxWrapper {
+  position: relative;
+  width: 100%;
+  height: var(--client-height);
+  perspective: 2px;
+  perspective-origin: 0 0;
+  transform-style: preserve-3d;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(107 114 128) transparent;
+}
+
+.parallaxLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  transform-origin: 0 0;
+}
+
+.stars {
+  z-index: 0;
+  width: 130%;
+  opacity: 0.75;
+  overflow: hidden;
+  transform:  translateX(-15%) translateZ(-10px) scale(5);
+}
+
+.background {
+  background: linear-gradient(
+    to bottom,
+    #180325 0%,
+    #4a0e4e 30%,
+    #F44336 100%
+  );
+  z-index: 1;
+  height: 133%;
+  transform: translateZ(0);
+  mix-blend-mode: color;
+}
+
+.layer1 {
+  width: 100%;
+  height: 20%;
+  margin-left: 0;
+  margin-top: 160dvh;
+  z-index: 2;
+  transform: translateZ(-3px) scale(2.5);
+}
+
+.layer2 {
+  width: 110%;
+  height: 20%;
+  margin-left: -10%;
+  margin-top: 145dvh;
+  z-index: 3;
+  transform: translateZ(-2px) scale(2);
+}
+
+.layer3 {
+  width: 100%;
+  height: 40%;
+  margin-left: 0;
+  margin-top: 120dvh;
+  z-index: 4;
+  transform: translateZ(-1px) scale(1.5);
+}
+
+.content {
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  transform: translateZ(0) scale(1);
+}
+
+@supports (-webkit-overflow-scrolling: touch) {
+  .parallaxLayer {
+    position: sticky;
+    top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallaxLayer {
+    transform: none !important;
+  }
+}
